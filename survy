@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>شركة تطوير للمباني (TBC) - نظام الحصر الميداني</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --tbc-petrol: #37889b;
+      --tbc-petrol-dark: #276270;
+      --tbc-petrol-light: #edf6f8;
+      --tbc-gold: #eebb43;
+      --tbc-gold-hover: #d8a531;
+      --tbc-gold-light: #fef8eb;
+      --bg-canvas: #f5f8fa;
+      --surface-card: #ffffff;
+      --border-subtle: #dbe7ec;
+      --text-main: #1f333a;
+      --text-muted: #5e7782;
+      --success: #10b981;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(39,98,112,0.06);
+      --shadow-md: 0 4px 14px rgba(39,98,112,0.09);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: #ffffff; color: var(--tbc-petrol-dark); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--tbc-petrol); box-shadow: var(--shadow-sm); }
+    .brand-logo-area { display: flex; align-items: center; gap: 12px; }
+    .tbc-logo-svg { height: 48px; width: auto; display: block; }
+    .brand-title-box { border-right: 2px solid var(--border-subtle); padding-right: 12px; margin-right: 4px; }
+    .brand-title { font-size: 1.05rem; font-weight: 800; color: var(--tbc-petrol-dark); }
+    .brand-subtitle { font-size: 0.72rem; color: var(--tbc-petrol); font-weight: 700; }
+    .user-badge { font-size: 0.82rem; font-weight: 700; color: var(--tbc-petrol-dark); background: var(--tbc-petrol-light); border: 1px solid var(--border-subtle); padding: 6px 14px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 22px; margin-bottom: 16px; box-shadow: var(--shadow-md); }
+    .btn { padding: 11px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.92rem; }
+    .btn-petrol { background: var(--tbc-petrol); color: #fff; }
+    .btn-petrol:hover { background: var(--tbc-petrol-dark); }
+    .btn-gold { background: var(--tbc-gold); color: #1f333a; }
+    .btn-gold:hover { background: var(--tbc-gold-hover); }
+    .btn-outline { background: #fff; border: 1.5px solid var(--border-subtle); color: var(--tbc-petrol-dark); }
+    .form-group { margin-bottom: 14px; text-align: right; }
+    label { display: block; margin-bottom: 6px; font-size: 0.88rem; font-weight: 700; color: var(--tbc-petrol-dark); }
+    input, select, textarea { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1.5px solid var(--border-subtle); font-size: 0.95rem; outline: none; background: #ffffff; color: var(--text-main); }
+    input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); box-shadow: 0 0 0 3px rgba(55,136,155,0.15); }
+    .hidden { display: none !important; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); }
+    .q-row { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-subtle); margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-logo-area">
+      <svg class="tbc-logo-svg" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 30 H110 V58 H80 V130 H49 V58 H20 Z" fill="#37889b" />
+        <path d="M125 30 H195 C215 30 228 40 228 56 C228 68 220 76 210 80 C223 85 232 95 232 110 C232 125 218 130 195 130 H125 Z M156 50 V70 H188 C195 70 200 66 200 60 C200 54 195 50 188 50 Z M156 88 V110 H192 C200 110 205 106 205 99 C205 92 200 88 192 88 Z" fill="#37889b" />
+        <path d="M230 80 L280 50 V110 Z" fill="#eebb43" />
+        <path d="M295 30 C345 30 380 55 380 80 C380 105 345 130 295 130 C270 130 248 122 235 110 L258 92 C267 101 280 106 295 106 C322 106 348 95 348 80 C348 65 322 54 295 54 C280 54 267 59 258 68 L235 50 C248 38 270 30 295 30 Z" fill="#37889b" />
+        <text x="200" y="148" font-family="'Tajawal', sans-serif" font-size="16" font-weight="900" fill="#37889b" text-anchor="middle">شركة تطوير للمباني</text>
+        <text x="200" y="159" font-family="'Tajawal', sans-serif" font-size="9" font-weight="700" fill="#5e7782" text-anchor="middle" letter-spacing="1">Tatweer Buildings Company</text>
+      </svg>
+      <div class="brand-title-box">
+        <div class="brand-title">منظومة الحصر الميداني</div>
+        <div class="brand-subtitle">قسم التخطيط والتحكم</div>
+      </div>
+    </div>
+    <div id="userBadge" class="user-badge" onclick="logout()">
+      <span>👤 تسجيل دخول</span>
+    </div>
+  </header>
+
+  <div id="loginView" style="max-width: 400px; margin: 40px auto; width: 90%;">
+    <div class="card" style="text-align: center; border-top: 4px solid var(--tbc-petrol);">
+      <div style="margin-bottom: 12px; display: flex; justify-content: center;">
+        <span style="background:var(--tbc-gold-light); color:var(--tbc-petrol-dark); border:1px solid var(--tbc-gold); padding:4px 14px; border-radius:20px; font-weight:800; font-size:0.8rem;">
+          بوابة المشرفين الميدانيين
+        </span>
+      </div>
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">تسجيل الدخول</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">قسم التخطيط والتحكم - ضبط جودة المنشآت التعليمية</p>
+      
+      <div class="form-group">
+        <label>اسم المستخدم (الرمز الوظيفي)</label>
+        <input type="text" id="loginUsername" placeholder="اسم المستخدم">
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="btn btn-petrol" style="width: 100%; padding: 13px;" id="loginBtn" onclick="handleOnlineLogin()">دخول المنظومة 🔒</button>
+      <div id="loginLoading" style="color:var(--tbc-petrol); font-size:0.85rem; margin-top:10px; display:none; font-weight:700;">⏳ جارٍ التحقق من قاعدة البيانات...</div>
+    </div>
+  </div>
+
+  <div id="appView" class="hidden" style="max-width:720px; margin:0 auto; padding:20px 16px; width:100%;">
+    <div id="adminPanel" class="card hidden" style="border-right: 4px solid var(--tbc-gold); background: #ffffff;">
+      <h4 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">لوحة تحكم قسم التخطيط والتحكم</h4>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">أي عملية حصر يتم اعتمادها هنا تُنشر فورياً لجميع المشرفين الـ 80 في الميدان.</p>
+      <button class="btn btn-gold" style="width: 100%;" onclick="openNewSurveyModal()">+ إنشاء نموذج حصر ميداني جديد للجميع</button>
+    </div>
+
+    <div id="newSurveyBox" class="card hidden">
+      <div style="border-bottom: 2px solid var(--tbc-petrol-light); padding-bottom: 10px; margin-bottom: 14px;">
+        <h3 style="color:var(--tbc-petrol-dark);">إعداد استمارة حصر ميداني</h3>
+        <p style="font-size:0.82rem; color:var(--text-muted);">شركة تطوير للمباني - قسم التخطيط والتحكم</p>
+      </div>
+
+      <div class="form-group">
+        <label>مسمى عملية الحصر *</label>
+        <input type="text" id="srvTitle" placeholder="مثال: حصر أجهزة السلامة ومضخات الحريق">
+      </div>
+      <div class="form-group">
+        <label>الوصف والتوجيهات الفنية للمشرفين</label>
+        <input type="text" id="srvDesc" placeholder="توجيهات التدقيق الميداني">
+      </div>
+      
+      <label style="margin-top: 15px;">عناصر الفحص والبنود المطلوبة:</label>
+      <div id="questionsBuilder"></div>
+      <button class="btn btn-outline" style="width:100%; margin-bottom:15px;" onclick="addQuestionField()">+ إضافة بند فحص</button>
+      
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-petrol" style="flex:1;" id="saveSrvBtn" onclick="saveSurveyOnline()">نشر الحصر للمشرفين ✓</button>
+        <button class="btn btn-outline" onclick="closeNewSurveyModal()">إلغاء</button>
+      </div>
+    </div>
+
+    <div id="surveysListContainer">
+      <div style="text-align:center; padding:30px; color:var(--text-muted);">⏳ جارٍ مزامنة النماذج المعتمدة من السيرفر...</div>
+    </div>
+
+    <div id="fillSurveyBox" class="card hidden">
+      <button class="btn btn-outline" style="font-size:0.85rem; margin-bottom:14px; padding:6px 12px;" onclick="backToSurveysList()">← رجوع للحصورات</button>
+      
+      <div style="border-bottom: 1.5px solid var(--border-subtle); padding-bottom: 10px; margin-bottom: 14px;">
+        <span class="badge" style="background:var(--tbc-gold-light); color:var(--tbc-petrol-dark); border:1px solid var(--tbc-gold);">استمارة تدقيق رسمي</span>
+        <h3 id="fillTitle" style="color:var(--tbc-petrol-dark); margin-top:4px;"></h3>
+        <p id="fillDesc" style="color:var(--text-muted); font-size:0.85rem;"></p>
+      </div>
+
+      <div class="form-group">
+        <label>اسم المنشأة التعليمية / المدرسة *</label>
+        <input type="text" id="fillSchool" placeholder="أدخل اسم المدرسة">
+      </div>
+
+      <div class="form-group" style="background:var(--tbc-petrol-light); border:1px dashed var(--tbc-petrol); padding:14px; border-radius:8px;">
+        <label style="color:var(--tbc-petrol-dark);">📍 التوثيق المكاني للمدرسة (GPS)</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <input type="text" id="fillGps" placeholder="الإحداثيات تظهر هنا.." readonly style="background:#fff; flex:1;">
+          <button type="button" class="btn btn-petrol" style="font-size:0.85rem; white-space:nowrap;" onclick="captureGps()">التقاط GPS</button>
+        </div>
+        <small id="gpsStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:block;">اضغط الزر لتحديد موقع المدرسة بدقة عبر الأقمار الصناعية.</small>
+      </div>
+
+      <div id="dynamicFields"></div>
+
+      <button class="btn btn-petrol" id="submitResponseBtn" style="width:100%; padding:14px; font-size:1rem; margin-top:12px;" onclick="submitResponseOnline()">
+        اعتماد وإرسال التقرير لـ Google Drive ✓
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ضع رابط الويب آب (Google Apps Script) هنا بين علامتي التنصيص
+    const API_URL = "ضع_هنا_رابط_WEB_APP_URL_الخاص_بك";
+
+    let currentUser = null;
+    let surveys = [];
+
+    async function handleOnlineLogin() {
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value.trim();
+      if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
+
+      document.getElementById('loginLoading').style.display = "block";
+      document.getElementById('loginBtn').disabled = true;
+
+      try {
+        const res = await fetch(`${API_URL}?action=getUsers`);
+        const json = await res.json();
+        const matched = json.users.find(user => user.username.toLowerCase() === u.toLowerCase() && user.password === p);
+
+        if (matched) {
+          currentUser = matched;
+          document.getElementById('loginView').classList.add('hidden');
+          document.getElementById('appView').classList.remove('hidden');
+          document.getElementById('userBadge').innerHTML = `<span>👤 ${currentUser.name}</span> | <span style="text-decoration:underline;">خروج</span>`;
+
+          if (currentUser.role === 'admin') {
+            document.getElementById('adminPanel').classList.remove('hidden');
+          }
+          syncSurveys();
+        } else {
+          alert("اسم المستخدم أو كلمة المرور غير صحيحة. راجع قسم التخطيط والتحكم.");
+        }
+      } catch (e) {
+        alert("تعذر الاتصال بقاعدة البيانات. تأكد من اتصالك بالإنترنت ورابط السكربت.");
+      } finally {
+        document.getElementById('loginLoading').style.display = "none";
+        document.getElementById('loginBtn').disabled = false;
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('userBadge').innerHTML = "<span>👤 تسجيل دخول</span>";
+    }
+
+    async function syncSurveys() {
+      const container = document.getElementById('surveysListContainer');
+      container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">⏳ جارٍ جلب عمليات الحصر النشطة...</div>';
+      try {
+        const res = await fetch(`${API_URL}?action=getSurveys`);
+        const json = await res.json();
+        surveys = json.surveys;
+        renderSurveys();
+      } catch (e) {
+        container.innerHTML = '<div style="color:var(--danger); text-align:center;">تعذر تحميل الحصورات من السيرفر.</div>';
+      }
+    }
+
+    function renderSurveys() {
+      const container = document.getElementById('surveysListContainer');
+      container.innerHTML = '';
+      if (!surveys || surveys.length === 0) {
+        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد أي استمارات حصر نشطة حالياً.</div>';
+        return;
+      }
+      surveys.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-weight:800; font-size:1.05rem; color:var(--tbc-petrol-dark);">${s.title} <span class="badge">معتمد</span></div>
+              <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">${s.desc || 'لا يوجد وصف مضاف.'}</div>
+              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 يتضمن ${s.fields.length} بنود فحص</div>
+            </div>
+            <button class="btn btn-petrol" style="font-size:0.85rem;" onclick="openFillSurvey('${s.id}')">بدء الفحص الميداني</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function openNewSurveyModal() {
+      document.getElementById('newSurveyBox').classList.remove('hidden');
+      document.getElementById('questionsBuilder').innerHTML = '';
+      addQuestionField();
+    }
+    function closeNewSurveyModal() {
+      document.getElementById('newSurveyBox').classList.add('hidden');
+    }
+
+    function addQuestionField() {
+      const c = document.getElementById('questionsBuilder');
+      const idx = c.children.length + 1;
+      const d = document.createElement('div');
+      d.className = 'q-row';
+      d.innerHTML = `
+        <div style="display:flex; gap:8px; margin-bottom:6px;">
+          <input type="text" placeholder="بند الفحص / السؤال #${idx}" class="q-label" style="flex:2;">
+          <select class="q-type" style="flex:1;">
+            <option value="text">نص قصير</option>
+            <option value="number">عدد / كمية</option>
+            <option value="textarea">تقرير فني (نص طويل)</option>
+            <option value="image">📷 صورة توثيقية بالكاميرا</option>
+          </select>
+          <button class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.parentElement.remove()">✕</button>
+        </div>
+      `;
+      c.appendChild(d);
+    }
+
+    async function saveSurveyOnline() {
+      const title = document.getElementById('srvTitle').value.trim();
+      const desc = document.getElementById('srvDesc').value.trim();
+      if (!title) return alert("يرجى إدخال مسمى عملية الحصر");
+
+      const qNodes = document.querySelectorAll('#questionsBuilder .q-row');
+      const fields = [];
+      qNodes.forEach(node => {
+        const l = node.querySelector('.q-label').value.trim();
+        const t = node.querySelector('.q-type').value;
+        if (l) fields.push({ label: l, type: t });
+      });
+
+      if (fields.length === 0) return alert("يرجى إضافة بند فحص واحد على الأقل");
+
+      const btn = document.getElementById('saveSrvBtn');
+      btn.disabled = true;
+      btn.innerText = "⏳ جارٍ الحفظ في السيرفر...";
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "saveSurvey", title, desc, fields })
+        });
+        alert("✓ تم اعتماد ونشر نموذج الحصر لجميع المشرفين!");
+        closeNewSurveyModal();
+        setTimeout(syncSurveys, 1500);
+      } catch (e) {
+        alert("حدث خطأ أثناء حفظ النموذج.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "نشر الحصر للمشرفين ✓";
+      }
+    }
+
+    let activeSrv = null;
+    function openFillSurvey(id) {
+      activeSrv = surveys.find(s => String(s.id) === String(id));
+      if (!activeSrv) return;
+
+      document.getElementById('surveysListContainer').classList.add('hidden');
+      document.getElementById('adminPanel').classList.add('hidden');
+      document.getElementById('fillSurveyBox').classList.remove('hidden');
+
+      document.getElementById('fillTitle').innerText = activeSrv.title;
+      document.getElementById('fillDesc').innerText = activeSrv.desc || '';
+      document.getElementById('fillSchool').value = '';
+      document.getElementById('fillGps').value = '';
+
+      const container = document.getElementById('dynamicFields');
+      container.innerHTML = '';
+
+      activeSrv.fields.forEach(f => {
+        const d = document.createElement('div');
+        d.className = 'form-group';
+        let inputHtml = '';
+        if (f.type === 'text') inputHtml = `<input type="text" class="dyn-field" data-label="${f.label}">`;
+        if (f.type === 'number') inputHtml = `<input type="number" class="dyn-field" data-label="${f.label}">`;
+        if (f.type === 'textarea') inputHtml = `<textarea class="dyn-field" rows="3" data-label="${f.label}"></textarea>`;
+        if (f.type === 'image') inputHtml = `<input type="file" accept="image/*" capture="environment" class="dyn-field dyn-img" data-label="${f.label}" onchange="encodeImg(this)">`;
+        
+        d.innerHTML = `<label>${f.label}</label>${inputHtml}`;
+        container.appendChild(d);
+      });
+    }
+
+    function backToSurveysList() {
+      document.getElementById('fillSurveyBox').classList.add('hidden');
+      document.getElementById('surveysListContainer').classList.remove('hidden');
+      if (currentUser.role === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
+    }
+
+    function captureGps() {
+      const status = document.getElementById('gpsStatus');
+      const input = document.getElementById('fillGps');
+      if (!navigator.geolocation) return alert("المتصفح لا يدعم GPS");
+      status.innerText = "⏳ جارٍ الاتصال بالأقمار الصناعية...";
+      status.style.color = "var(--tbc-petrol)";
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+          status.innerText = `✓ تم تحديد الموقع بنجاح بدقة ${Math.round(pos.coords.accuracy)} متر.`;
+          status.style.color = "var(--success)";
+        },
+        err => {
+          status.innerText = "تعذر تحديد الموقع. يرجى تفعيل إذن الـ GPS في متصفح الهاتف.";
+          status.style.color = "var(--danger)";
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+    function encodeImg(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const cvs = document.createElement('canvas');
+          const max = 900;
+          let w = img.width, h = img.height;
+          if (w > h && w > max) { h *= max / w; w = max; }
+          else if (h > max) { w *= max / h; h = max; }
+          cvs.width = w; cvs.height = h;
+          cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitResponseOnline() {
+      const school = document.getElementById('fillSchool').value.trim();
+      const gps = document.getElementById('fillGps').value.trim();
+      if (!school) return alert("يرجى إدخال اسم المنشأة أو المدرسة");
+
+      const fields = document.querySelectorAll('.dyn-field');
+      const dataObj = {};
+      let uploadedPhoto = "";
+
+      fields.forEach(f => {
+        const label = f.getAttribute('data-label');
+        if (f.classList.contains('dyn-img')) {
+          if (f.dataset.base64) uploadedPhoto = f.dataset.base64;
+          dataObj[label] = uploadedPhoto ? "[صورة مرفوعة]" : "بدون صورة";
+        } else {
+          dataObj[label] = f.value;
+        }
+      });
+
+      const summary = Object.entries(dataObj).map(([k, v]) => `${k}: ${v}`).join(' | ');
+
+      const payload = {
+        action: "submitResponse",
+        school: school,
+        gps: gps,
+        surveyTitle: activeSrv.title,
+        date: new Date().toLocaleString('ar-SA'),
+        collectedBy: currentUser.name,
+        answersSummary: summary,
+        photoBase64: uploadedPhoto
+      };
+
+      const btn = document.getElementById('submitResponseBtn');
+      btn.disabled = true;
+      btn.innerText = "⏳ جارٍ رفع التقرير والصور إلى Google Drive...";
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        alert("✓ تم إرسال تقرير الحصر وحفظه في Google Drive بنجاح!");
+        backToSurveysList();
+      } catch (err) {
+        alert("حدث خطأ في الإرسال: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "اعتماد وإرسال التقرير لـ Google Drive ✓";
+      }
+    }
+  </script>
+</body>
+</html>
