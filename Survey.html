@@ -1,9 +1,15 @@
+تم اعتماد وتحديث كافة المسميات الرسمية بدقة في الترويسة وبطاقة تسجيل الدخول وتقارير الـ PDF، وإضافة بيانات الدعم الفني:
+ * المسمى الرسمي في الترويسة وبطاقة الدخول: بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية
+ * الإدارة المسؤولة: إدارة التخطيط والتحكم
+ * بيانات الدعم الفني: ERPMO@tbc.sa (مع رابط تواصل مباشر مخصص في شاشة الدخول وأسفل الصفحة).
+الكود الكامل للملف (Survey.html):
+(انسخ الكود بالكامل واستبدل به محتوى ملفك على GitHub واضغط Commit changes):
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>شركة تطوير للمباني (TBC) - منظومة الحصر وإدارة الاعتمادات</title>
+  <title>بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية - TBC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
@@ -41,7 +47,7 @@
     header {
       background: #ffffff;
       color: var(--tbc-petrol-dark);
-      padding: 10px 20px;
+      padding: 10px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -52,17 +58,17 @@
       box-shadow: var(--shadow-sm);
     }
     
-    .brand-logo-area { display: flex; align-items: center; gap: 12px; }
+    .brand-logo-area { display: flex; align-items: center; gap: 10px; }
     .tbc-logo-svg { height: 46px; width: auto; display: block; }
-    .brand-title-box { border-right: 2px solid var(--border-subtle); padding-right: 12px; margin-right: 4px; }
-    .brand-title { font-size: 1.05rem; font-weight: 800; color: var(--tbc-petrol-dark); }
-    .brand-subtitle { font-size: 0.72rem; color: var(--tbc-petrol); font-weight: 700; }
+    .brand-title-box { border-right: 2px solid var(--border-subtle); padding-right: 10px; margin-right: 2px; }
+    .brand-title { font-size: 0.96rem; font-weight: 800; color: var(--tbc-petrol-dark); line-height: 1.3; }
+    .brand-subtitle { font-size: 0.74rem; color: var(--tbc-petrol); font-weight: 700; }
 
     .header-user-actions { display: flex; align-items: center; gap: 8px; }
     .user-badge {
-      font-size: 0.82rem; font-weight: 700; color: var(--tbc-petrol-dark);
+      font-size: 0.8rem; font-weight: 700; color: var(--tbc-petrol-dark);
       background: var(--tbc-petrol-light); border: 1px solid var(--border-subtle);
-      padding: 6px 14px; border-radius: 20px; cursor: pointer;
+      padding: 6px 12px; border-radius: 20px; cursor: pointer;
     }
 
     .tabs-bar {
@@ -85,7 +91,6 @@
       border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-md);
     }
 
-    /* KPI Grid القابلة للضغط كفلاتر */
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
     @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     
@@ -104,7 +109,7 @@
     .kpi-box.total { border-top: 4px solid var(--tbc-petrol); }
     
     .kpi-num { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
-    .kpi-title { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .kpi-title { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
 
     .badge-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; }
     .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
@@ -169,6 +174,24 @@
       background: #ffffff; border-radius: var(--radius-md); max-width: 440px; width: 100%;
       padding: 24px; box-shadow: var(--shadow-md); border-top: 4px solid var(--tbc-gold);
     }
+
+    .support-footer {
+      text-align: center;
+      padding: 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      margin-top: auto;
+      background: #ffffff;
+    }
+    .support-link {
+      color: var(--tbc-petrol);
+      font-weight: 800;
+      text-decoration: none;
+      direction: ltr;
+      display: inline-block;
+    }
+    .support-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -184,8 +207,8 @@
         <text x="200" y="159" font-family="'Tajawal', sans-serif" font-size="9" font-weight="700" fill="#5e7782" text-anchor="middle" letter-spacing="1">Tatweer Buildings Company</text>
       </svg>
       <div class="brand-title-box">
-        <div class="brand-title">منظومة الحصر والاعتمادات الميدانية</div>
-        <div class="brand-subtitle" id="headerSubTitle">إدارة المشاريع والصيانة</div>
+        <div class="brand-title">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية</div>
+        <div class="brand-subtitle" id="headerSubTitle">إدارة التخطيط والتحكم</div>
       </div>
     </div>
     <div class="header-user-actions">
@@ -197,10 +220,11 @@
   </header>
 
   <!-- نافذة تسجيل الدخول -->
-  <div id="loginView" style="max-width: 420px; margin: 35px auto; width: 92%;">
+  <div id="loginView" style="max-width: 440px; margin: 30px auto; width: 92%;">
     <div class="card" style="text-align: center; border-top: 4px solid var(--tbc-petrol);">
-      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">تسجيل الدخول للمنظومة</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">شركة تطوير للمباني - بوابة الحصر الميداني</p>
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.15rem;">تسجيل الدخول للمنظومة</h3>
+      <p style="color:var(--tbc-petrol); font-weight:800; font-size:0.88rem; margin-bottom:4px;">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية</p>
+      <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:18px;">شركة تطوير للمباني - إدارة التخطيط والتحكم</p>
       
       <div class="form-group">
         <label>اسم المستخدم / الرمز الوظيفي</label>
@@ -212,7 +236,7 @@
       </div>
       <button class="btn btn-petrol" style="width: 100%; padding: 13px;" onclick="handleLogin()">دخول المنظومة 🔒</button>
       
-      <div style="margin-top:16px; font-size:0.78rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.6;">
+      <div style="margin-top:16px; font-size:0.78rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:12px; border-radius:8px; line-height:1.6;">
         💡 <b>الهيكل الوظيفي المعتمد (كلمة السر 123 أو 123456):</b><br>
         • <b>admin:</b> إدارة التخطيط والتحكم (صلاحية كاملة).<br>
         • <b>reg_east:</b> إدارة المنطقة الشرقية (إشراف ومتابعة).<br>
@@ -220,6 +244,10 @@
         • <b>sub_ahsa:</b> إدارة المكتب الفرعي بالأحساء.<br>
         • <b>sup_lead:</b> مدير الإشراف للقطاع (اعتماد التقارير).<br>
         • <b>user1 / user2:</b> مشرف ميداني (تعبئة الحصر).
+      </div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-subtle); font-size:0.82rem; color:var(--text-muted);">
+        للدعم الفني والاستفسارات: <a class="support-link" href="mailto:ERPMO@tbc.sa">ERPMO@tbc.sa</a>
       </div>
     </div>
   </div>
@@ -233,7 +261,6 @@
     </div>
 
     <main>
-      <!-- بطاقات المؤشرات الذكية القابلة للضغط كفلاتر تفاعلية -->
       <div id="kpiContainer" class="kpi-grid"></div>
 
       <!-- ================= 1. تبويب نماذج الحصر ================= -->
@@ -241,8 +268,8 @@
         <div id="adminPanel" class="card hidden" style="border-right: 4px solid var(--tbc-gold);">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <h4 style="color:var(--tbc-petrol-dark);">لوحة إدارة عمليات الحصر</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة، تعديلها، أو حذفها من قبل التخطيط والتحكم</p>
+              <h4 style="color:var(--tbc-petrol-dark);">إدارة عمليات الحصر الميداني</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة، تعديلها، أو حذفها - إدارة التخطيط والتحكم</p>
             </div>
             <button class="btn btn-gold" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
           </div>
@@ -332,13 +359,11 @@
       <!-- ================= 2. تبويب السجلات والفلاتر ================= -->
       <section id="secRecords" class="hidden">
         
-        <!-- إشعار الفلتر النشط من الكروت -->
         <div id="filterBanner" class="card hidden" style="padding:10px 16px; background:#f8fafc; border:1px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:0.85rem; font-weight:bold; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
           <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="filterByKpi('ALL')">إلغاء الفلتر ✕</button>
         </div>
 
-        <!-- فلاتر الحصر والمشرف -->
         <div id="adminFilterSection" class="filter-bar-card hidden">
           <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:10px;">
             <span>🔍 تصفية وتحليل أداء الحصورات والمشرفين</span>
@@ -362,7 +387,6 @@
           </div>
         </div>
 
-        <!-- ملخصات الإدارة -->
         <div id="adminSummarySection" class="hidden">
           <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
@@ -497,6 +521,14 @@
       </section>
 
     </main>
+
+    <!-- تذييل الدعم الفني المعتمد -->
+    <footer class="support-footer">
+      <div>شركة تطوير للمباني (TBC) • إدارة التخطيط والتحكم</div>
+      <div style="margin-top:4px;">
+        للدعم الفني والاستفسارات: <a class="support-link" href="mailto:ERPMO@tbc.sa">ERPMO@tbc.sa</a>
+      </div>
+    </footer>
   </div>
 
   <!-- نافذة تعديل كلمة المرور -->
@@ -526,7 +558,6 @@
   </div>
 
   <script>
-    // ================= قاموس الأدوار والمسميات الوظيفية =================
     const ROLE_LABELS = {
       ROLE_PLANNING: "١- إدارة التخطيط والتحكم",
       ROLE_REGION_EAST: "٢- إدارة المنطقة الشرقية",
@@ -536,8 +567,7 @@
       ROLE_INSPECTOR: "٦- المشرف الميداني"
     };
 
-    // الهيكل الافتراضي للمستخدمين
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v8')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v9')) || [
       {
         username: "admin",
         password: "123",
@@ -606,7 +636,7 @@
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v8')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v9')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -634,17 +664,15 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v8')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v9')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
     let editingSurveyId = null;
 
-    // الفلاتر
     let selectedSurveyFilter = "ALL";
     let selectedInspectorFilter = "ALL";
-    let selectedKpiStatusFilter = "ALL"; // فلتر الضغط على الكروت (pending, approved, rejected, ALL)
+    let selectedKpiStatusFilter = "ALL";
 
-    // ================= تسجيل الدخول =================
     function handleLogin() {
       const u = document.getElementById('loginUsername').value.trim().toLowerCase();
       const p = document.getElementById('loginPassword').value.trim();
@@ -656,17 +684,16 @@
       );
 
       if (!found) return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
-      if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل إدارة المنظومة.");
+      if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل إدارة التخطيط والتحكم.");
 
       currentUser = found;
 
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appView').classList.remove('hidden');
-      document.getElementById('userBadge').innerHTML = `<span>👤 ${currentUser.fullName} (${ROLE_LABELS[currentUser.role] || currentUser.role})</span> | <span style="text-decoration:underline;">خروج</span>`;
+      document.getElementById('userBadge').innerHTML = `<span>👤 ${currentUser.fullName}</span> | <span style="text-decoration:underline;">خروج</span>`;
       document.getElementById('changeMyPassBtn').classList.remove('hidden');
-      document.getElementById('headerSubTitle').innerText = ROLE_LABELS[currentUser.role] || "إدارة المشاريع والصيانة";
+      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم • " + (ROLE_LABELS[currentUser.role] || "");
 
-      // ضبط ظهور لوحات التحكم حسب الصلاحيات
       const isPlanning = currentUser.role === "ROLE_PLANNING";
       const isManagement = ["ROLE_PLANNING", "ROLE_REGION_EAST", "ROLE_SUB_EAST", "ROLE_SUB_AHSA", "ROLE_SUPERVISION_LEAD"].includes(currentUser.role);
 
@@ -676,7 +703,6 @@
       document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
       if (isManagement) populateFilterDropdowns();
-
       showTab('surveys');
     }
 
@@ -689,36 +715,29 @@
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('userBadge').innerHTML = "<span>👤 تسجيل دخول</span>";
       document.getElementById('changeMyPassBtn').classList.add('hidden');
-      document.getElementById('headerSubTitle').innerText = "إدارة المشاريع والصيانة";
+      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم";
     }
 
-    // ================= فلاتر بطاقات المؤشرات (Clickable KPI Filters) =================
     function filterByKpi(status) {
       selectedKpiStatusFilter = status;
       showTab('records');
     }
 
-    // فلترة السجلات المتاحة للمستخدم بناءً على دوره ومكتبه
     function getScopedResponses() {
       if (!currentUser) return [];
-
       let list = responses;
 
-      // قيود المكاتب الفرعية
       if (currentUser.role === "ROLE_SUB_EAST") {
         list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية");
       } else if (currentUser.role === "ROLE_SUB_AHSA") {
         list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء");
       } else if (currentUser.role === "ROLE_SUPERVISION_LEAD") {
-        // مدير الإشراف يرى تقارير مكتبه
         if (currentUser.branch && currentUser.branch !== "الكل") {
           list = list.filter(r => r.branch === currentUser.branch);
         }
       } else if (currentUser.role === "ROLE_INSPECTOR") {
-        // المشرف يرى تقاريره هو فقط
         list = list.filter(r => r.username === currentUser.username);
       }
-
       return list;
     }
 
@@ -729,7 +748,6 @@
       const scoped = getScopedResponses();
       let filtered = scoped;
 
-      // تطبيق فلاتر الحصر والمشرف إذا وُجدت
       if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter);
       if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
 
@@ -788,7 +806,6 @@
       }
     }
 
-    // ================= إدارة نماذج الحصر =================
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
@@ -868,7 +885,7 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً من المنظومة؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v8', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v9', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       renderSurveys();
@@ -939,13 +956,12 @@
         alert("✓ تم نشر نموذج الحصر الجديد!");
       }
 
-      localStorage.setItem('tbc_surveys_v8', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v9', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       renderSurveys();
     }
 
-    // ================= تعبئة الحصر الميداني =================
     let activeSrv = null;
     function openFillSurvey(id, existingData = null) {
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
@@ -1123,7 +1139,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v9', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -1145,7 +1161,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v9', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -1166,7 +1182,7 @@
       if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
-    // ================= السجلات والاعتمادات حسب الصلاحيات =================
+    // ================= السجلات والاعتمادات =================
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
@@ -1176,7 +1192,6 @@
 
       let visible = getScopedResponses();
 
-      // تطبيق فلتر الضغط على الكروت العلوية (KPI Click Filter)
       if (selectedKpiStatusFilter !== "ALL") {
         visible = visible.filter(r => r.status === selectedKpiStatusFilter);
         banner.classList.remove('hidden');
@@ -1186,7 +1201,6 @@
         banner.classList.add('hidden');
       }
 
-      // تطبيق الفلاتر الإضافية
       if (currentUser.role !== "ROLE_INSPECTOR") {
         if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter);
         if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
@@ -1258,7 +1272,6 @@
           ? `<button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF</button>`
           : '';
 
-        // أزرار الاعتماد: لمدير الإشراف للقطاع أو إدارة التخطيط والتحكم
         let approvalActionButtons = '';
         const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
         if (canApprove) {
@@ -1319,12 +1332,12 @@
     }
 
     function requestAdminEditPermission(reportId) {
-      alert("✓ تم إرسال طلب فتح صلاحية التعديل إلى مدير الإشراف وقسم التخطيط والتحكم.");
+      alert("✓ تم إرسال طلب فتح صلاحية التعديل إلى مدير الإشراف وإدارة التخطيط والتحكم.");
     }
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v9', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -1368,7 +1381,7 @@
       responses[index].status = status;
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName + " (" + ROLE_LABELS[currentUser.role] + ")";
-      localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v9', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وإرسال الملاحظة للمشرف.");
       updateKPIs();
       renderRecords();
@@ -1381,7 +1394,6 @@
       }
     }
 
-    // ================= تصدير تقرير أداء المشرفين PDF =================
     function printInspectorsSummaryPDF() {
       const scoped = getScopedResponses();
       let targetInspectors = [...new Set(scoped.map(r => r.collectedBy))];
@@ -1444,7 +1456,7 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">المنطقة الشرقية • تقرير إحصائي وتقييم أداء المشرفين الميدانيين</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:13px; color:#276270;">تقرير أداء المشرفين</div>
@@ -1482,9 +1494,9 @@
           <div style="margin-top:40px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
             <div><b>المعد:</b> مدير الإشراف للقطاع</div>
             <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
-              TBC - إدارة المنطقة الشرقية<br><span style="color:#eebb43;">معتمد رسمي</span>
+              TBC - إدارة التخطيط والتحكم<br><span style="color:#eebb43;">معتمد رسمي</span>
             </div>
-            <div><b>اعتماد إدارة التخطيط والتحكم:</b> ........................</div>
+            <div><b>الدعم الفني:</b> ERPMO@tbc.sa</div>
           </div>
         </body></html>
       `);
@@ -1530,7 +1542,7 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">${r.branch || 'المكتب الفرعي بالشرقية'} • ${statusTitle}</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">بوابة الحصر الشامل للمكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:13px; color:#276270;">${r.surveyTitle}</div>
@@ -1545,8 +1557,9 @@
           <div style="margin-top:30px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
             <div><b>المشرف الميداني:</b> ${r.collectedBy}</div>
             <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
-              TBC - مدير الإشراف للقطاع<br><span style="color:${r.status==='approved'?'#10b981':'#eebb43'};">${r.status==='approved'?'معتمد رسمياً':'قيد المراجعة'}</span>
+              TBC - إدارة التخطيط والتحكم<br><span style="color:${r.status==='approved'?'#10b981':'#eebb43'};">${r.status==='approved'?'معتمد رسمياً':'قيد المراجعة'}</span>
             </div>
+            <div><b>الدعم:</b> ERPMO@tbc.sa</div>
           </div>
         </body></html>
       `);
@@ -1616,10 +1629,10 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:17px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">${branchName} • السجل التاريخي والرقابي للمنشأة التعليمية</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">بوابة الحصر الشامل للمكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div>
             </div>
             <div style="text-align:left;">
-              <div style="font-weight:800; font-size:14px; color:#276270;">الملف الرقابي الموحد</div>
+              <div style="font-weight:800; font-size:14px; color:#276270;">الملف الرقابي والتاريخي الموحد</div>
               <div style="font-size:11px; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div>
             </div>
           </div>
@@ -1633,7 +1646,6 @@
       w.document.close();
     }
 
-    // ================= إدارة المستخدمين =================
     function renderUsersManagement() {
       const tbody = document.querySelector('#usersListTable tbody');
       if (!tbody) return;
@@ -1709,7 +1721,7 @@
         alert("✓ تم إضافة المستخدم الجديد وتفعيل دوره في المنظومة!");
       }
 
-      localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v9', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -1754,7 +1766,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v9', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -1762,7 +1774,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v9', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -1826,7 +1838,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v9', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
