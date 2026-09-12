@@ -155,7 +155,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* KPI Grid */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -181,7 +180,6 @@
     .kpi-num { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
     .kpi-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
 
-    /* شارات الحالات */
     .badge-status {
       display: inline-flex;
       align-items: center;
@@ -289,7 +287,6 @@
       .filter-grid { grid-template-columns: 1fr; }
     }
 
-    /* شيك بوكس الصلاحيات */
     .perm-checkbox-group {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -317,7 +314,6 @@
       accent-color: var(--tbc-petrol);
     }
 
-    /* نوافذ منبثقة (Modals) */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -384,10 +380,9 @@
       <button class="btn btn-petrol" style="width: 100%; padding: 13px;" onclick="handleLogin()">دخول المنظومة 🔒</button>
       
       <div style="margin-top:16px; font-size:0.8rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.6;">
-        💡 <b>حسابات تجريبية مسبقة:</b><br>
-        • <b>admin / 123456:</b> مسؤول قسم التخطيط والتحكم (إدارة المستخدمين والصلاحيات والاعتمادات).<br>
-        • <b>user1 / 123456:</b> مشرف ميداني (م. أحمد الغامدي).<br>
-        • <b>user2 / 123456:</b> مشرف ميداني (م. فهد القحطاني).
+        💡 <b>حسابات الدخول المعتمدة:</b><br>
+        • <b>admin:</b> كلمة المرور (<b>123456</b> أو <b>123</b>) - مسؤول قسم التخطيط والتحكم.<br>
+        • <b>user1 أو user2:</b> كلمة المرور (<b>123456</b> أو <b>123</b>) - مشرف ميداني.
       </div>
     </div>
   </div>
@@ -410,7 +405,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <h4 style="color:var(--tbc-petrol-dark);">لوحة تحكم قسم التخطيط والتحكم</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة وتعميمها على المشرفين</p>
+              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة، تعديلها، أو حذفها نهائياً</p>
             </div>
             <button class="btn btn-gold" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
           </div>
@@ -419,10 +414,10 @@
         <div id="surveysListContainer"></div>
       </section>
 
-      <!-- إنشاء حصر جديد -->
+      <!-- إنشاء أو تعديل حصر من قبل الأدمن -->
       <section id="secNewSurvey" class="hidden">
         <div class="card">
-          <h3 style="color:var(--tbc-petrol-dark); margin-bottom:12px;">إعداد استمارة حصر ميداني جديدة</h3>
+          <h3 style="color:var(--tbc-petrol-dark); margin-bottom:12px;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
           <div class="form-group">
             <label>مسمى عملية الحصر *</label>
             <input type="text" id="srvTitle" placeholder="مثال: حصر منظومة السلامة والإنذار">
@@ -432,18 +427,18 @@
             <input type="text" id="srvDesc" placeholder="تعليمات الزيارة الميدانية">
           </div>
           
-          <label style="margin-top: 15px;">عناصر الفحص:</label>
+          <label style="margin-top: 15px;">عناصر وبنود الفحص:</label>
           <div id="questionsBuilder"></div>
           <button class="btn btn-outline" style="width:100%; margin-bottom:15px;" onclick="addQuestionField()">+ إضافة بند فحص</button>
           
           <div style="display:flex; gap:10px;">
-            <button class="btn btn-petrol" style="flex:1;" onclick="saveLocalSurvey()">حفظ ونشر النموذج ✓</button>
+            <button class="btn btn-petrol" style="flex:1;" id="saveSurveyBtn" onclick="saveLocalSurvey()">حفظ ونشر النموذج ✓</button>
             <button class="btn btn-outline" onclick="closeNewSurveyModal()">إلغاء</button>
           </div>
         </div>
       </section>
 
-      <!-- تعبئة أو تعديل الحصر الميداني -->
+      <!-- تعبئة الحصر الميداني -->
       <section id="secFillSurvey" class="hidden">
         <div class="card">
           <button class="btn btn-outline" style="font-size:0.85rem; margin-bottom:14px; padding:6px 12px;" onclick="backToSurveysList()">← رجوع</button>
@@ -516,10 +511,16 @@
         </div>
 
         <div id="adminSummarySection" class="hidden">
+          <!-- ملخص أداء المشرفين مع زر تصدير PDF الشامل -->
           <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <h4 style="color:var(--tbc-petrol-dark);">📊 أداء المشرفين في الحصر</h4>
-              <span class="badge-status pending" id="activeFilterBadge" style="font-size:0.75rem;">شامل الكل</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h4 style="color:var(--tbc-petrol-dark); display:inline-block; margin-left:6px;">📊 أداء المشرفين في الحصر</h4>
+                <span class="badge-status pending" id="activeFilterBadge" style="font-size:0.75rem;">شامل الكل</span>
+              </div>
+              <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 14px;" onclick="printInspectorsSummaryPDF()">
+                🖨️ تصدير تقرير المشرفين PDF
+              </button>
             </div>
             <div style="overflow-x:auto;">
               <table class="data-table" id="inspectorsSummaryTable">
@@ -571,8 +572,6 @@
 
       <!-- ================= 3. تبويب إدارة المشرفين والصلاحيات (أدمن فقط) ================= -->
       <section id="secUsers" class="hidden">
-        
-        <!-- بطاقة إضافة / تعديل مشرف -->
         <div class="card" style="border-right: 4px solid var(--tbc-gold);">
           <h4 style="color:var(--tbc-petrol-dark); margin-bottom:12px;" id="userFormTitle">➕ إضافة مشرف / مستخدم جديد</h4>
           
@@ -627,7 +626,6 @@
           </div>
         </div>
 
-        <!-- جدول قائمة المشرفين والصلاحيات -->
         <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <h4 style="color:var(--tbc-petrol-dark);">👥 قائمة المشرفين وإدارة الأرقام السرية</h4>
@@ -654,7 +652,7 @@
     </main>
   </div>
 
-  <!-- نافذة تعديل كلمة المرور الذاتية للمشرف -->
+  <!-- نافذة تعديل كلمة المرور الذاتية -->
   <div id="changePasswordModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">🔑 تغيير كلمة المرور</h3>
@@ -681,8 +679,7 @@
   </div>
 
   <script>
-    // نظام المستخدمين الافتراضي المخزن محلياً
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v5')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v6')) || [
       {
         username: "admin",
         password: "123",
@@ -712,7 +709,7 @@
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v5')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v6')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -740,28 +737,26 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v5')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v6')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
+    let editingSurveyId = null; // لتعديل هيكل الحصر من قبل الأدمن
 
     let selectedSurveyFilter = "ALL";
     let selectedInspectorFilter = "ALL";
 
-    // ================= تسجيل الدخول وإدارة الجلسة =================
     function handleLogin() {
-      const u = document.getElementById('loginUsername').value.trim();
+      const u = document.getElementById('loginUsername').value.trim().toLowerCase();
       const p = document.getElementById('loginPassword').value.trim();
       if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
 
-      const found = usersList.find(x => x.username.toLowerCase() === u.toLowerCase() && String(x.password) === String(p));
+      const found = usersList.find(x => 
+        x.username.toLowerCase() === u && 
+        (String(x.password) === p || (p === "123456" && String(x.password) === "123") || (p === "123" && String(x.password) === "123456"))
+      );
 
-      if (!found) {
-        return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
-      }
-
-      if (found.active === false) {
-        return alert("تم تعطيل هذا الحساب من قبل قسم التخطيط والتحكم.");
-      }
+      if (!found) return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
+      if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل قسم التخطيط والتحكم.");
 
       currentUser = found;
 
@@ -790,13 +785,13 @@
     function logout() {
       currentUser = null;
       editingResponseId = null;
+      editingSurveyId = null;
       document.getElementById('appView').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('userBadge').innerHTML = "<span>👤 تسجيل دخول</span>";
       document.getElementById('changeMyPassBtn').classList.add('hidden');
     }
 
-    // ================= خدمة تغيير كلمة المرور الذاتية =================
     function openChangePasswordModal() {
       document.getElementById('cpCurrentPass').value = '';
       document.getElementById('cpNewPass').value = '';
@@ -814,296 +809,127 @@
       const n2 = document.getElementById('cpConfirmPass').value.trim();
 
       if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
-      if (cur !== currentUser.password) return alert("كلمة المرور الحالية غير صحيحة");
-      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة مع التأكيد");
+      if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
+      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
       if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
 
       const idx = usersList.findIndex(u => u.username === currentUser.username);
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v5', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v6', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
     }
 
-    // ================= نظام إدارة المشرفين والصلاحيات (الأدمن) =================
-    function renderUsersManagement() {
-      const tbody = document.querySelector('#usersListTable tbody');
-      tbody.innerHTML = '';
-      document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم`;
-
-      usersList.forEach((u, idx) => {
-        const perms = u.permissions || {};
-        let permsBadges = [];
-        if (perms.allowEdit) permsBadges.push('✏️ تعديل');
-        if (perms.requireGps) permsBadges.push('📍 GPS إلزامي');
-        if (perms.requirePhoto) permsBadges.push('📷 صور إلزامية');
-        if (perms.allowPdf) permsBadges.push('🖨️ PDF');
-
-        const roleText = u.role === 'admin' 
-          ? '<span style="color:var(--tbc-petrol); font-weight:800;">إدارة وتحكم</span>' 
-          : 'مشرف ميداني';
-
-        const statusBadge = u.active !== false 
-          ? '<span class="badge-status approved">نشط</span>' 
-          : '<span class="badge-status rejected">معطل</span>';
-
-        tbody.innerHTML += `
-          <tr>
-            <td><b>${u.fullName}</b></td>
-            <td><code>${u.username}</code></td>
-            <td>${roleText}</td>
-            <td><small>${permsBadges.join(' | ') || 'افتراضية'}</small></td>
-            <td>${statusBadge}</td>
-            <td>
-              <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="editUserPrompt(${idx})">⚙️ الصلاحيات</button>
-                <button class="btn btn-gold" style="padding:4px 8px; font-size:0.75rem;" onclick="adminResetPasswordPrompt(${idx})">🔑 كلمة السر</button>
-                <button class="btn ${u.active !== false ? 'btn-reject' : 'btn-approve'}" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleUserStatus(${idx})">
-                  ${u.active !== false ? 'تعطيل' : 'تفعيل'}
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    function saveUserRecord() {
-      const fullName = document.getElementById('usrFullName').value.trim();
-      const username = document.getElementById('usrUsername').value.trim();
-      const password = document.getElementById('usrPassword').value.trim();
-      const role = document.getElementById('usrRole').value;
-
-      if (!fullName || !username || !password) {
-        return alert("يرجى تعبئة الاسم الكامل، الرمز الوظيفي، وكلمة المرور.");
-      }
-
-      const permissions = {
-        allowEdit: document.getElementById('permAllowEdit').checked,
-        requireGps: document.getElementById('permRequireGps').checked,
-        requirePhoto: document.getElementById('permRequirePhoto').checked,
-        allowPdf: document.getElementById('permAllowPdf').checked
-      };
-
-      if (editingUserIndex >= 0) {
-        // تحديث مستخدم حالي
-        usersList[editingUserIndex].fullName = fullName;
-        usersList[editingUserIndex].username = username;
-        usersList[editingUserIndex].password = password;
-        usersList[editingUserIndex].role = role;
-        usersList[editingUserIndex].permissions = permissions;
-        alert("✓ تم تحديث بيانات المشرف والصلاحيات بنجاح!");
-      } else {
-        // إضافة مستخدم جديد
-        if (usersList.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-          return alert("اسم المستخدم (الرمز الوظيفي) مسجل مسبقاً! اختر رمزاً آخر.");
-        }
-        usersList.push({
-          fullName,
-          username,
-          password,
-          role,
-          active: true,
-          permissions
-        });
-        alert("✓ تم تسجيل المشرف الجديد وتفعيل صلاحياته بنجاح!");
-      }
-
-      localStorage.setItem('tbc_users_v5', JSON.stringify(usersList));
-      resetUserForm();
-      renderUsersManagement();
-    }
-
-    function editUserPrompt(idx) {
-      editingUserIndex = idx;
-      const u = usersList[idx];
-      document.getElementById('usrFullName').value = u.fullName;
-      document.getElementById('usrUsername').value = u.username;
-      document.getElementById('usrPassword').value = u.password;
-      document.getElementById('usrRole').value = u.role;
-
-      const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
-      document.getElementById('permAllowEdit').checked = p.allowEdit !== false;
-      document.getElementById('permRequireGps').checked = p.requireGps !== false;
-      document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false;
-      document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
-
-      document.getElementById('userFormTitle').innerText = `⚙️ تعديل صلاحيات وبيانات: ${u.fullName}`;
-      document.getElementById('cancelUserEditBtn').style.display = 'inline-flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetUserForm() {
-      editingUserIndex = -1;
-      document.getElementById('usrFullName').value = '';
-      document.getElementById('usrUsername').value = '';
-      document.getElementById('usrPassword').value = '';
-      document.getElementById('usrRole').value = 'user';
-      document.getElementById('permAllowEdit').checked = true;
-      document.getElementById('permRequireGps').checked = true;
-      document.getElementById('permRequirePhoto').checked = true;
-      document.getElementById('permAllowPdf').checked = true;
-      document.getElementById('userFormTitle').innerText = '➕ إضافة مشرف / مستخدم جديد';
-      document.getElementById('cancelUserEditBtn').style.display = 'none';
-    }
-
-    function adminResetPasswordPrompt(idx) {
-      const u = usersList[idx];
-      const newPass = prompt(`إعادة ضبط كلمة المرور للمشرف: ${u.fullName}\nأدخل كلمة المرور الجديدة:`, "123456");
-      if (newPass !== null && newPass.trim() !== "") {
-        usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v5', JSON.stringify(usersList));
-        alert(`✓ تم تعيين كلمة المرور الجديدة للمشرف ${u.fullName}: (${newPass.trim()})`);
-        renderUsersManagement();
-      }
-    }
-
-    function toggleUserStatus(idx) {
-      usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v5', JSON.stringify(usersList));
-      renderUsersManagement();
-    }
-
-    // ================= الفلاتر والإحصائيات =================
-    function populateFilterDropdowns() {
-      const sSelect = document.getElementById('filterBySurveySelect');
-      const iSelect = document.getElementById('filterByInspectorSelect');
-
-      sSelect.innerHTML = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
-      surveys.forEach(s => {
-        sSelect.innerHTML += `<option value="${s.title}">${s.title}</option>`;
-      });
-
-      iSelect.innerHTML = '<option value="ALL">-- كل المشرفين --</option>';
-      const inspectors = [...new Set(responses.map(r => r.collectedBy))];
-      inspectors.forEach(ins => {
-        iSelect.innerHTML += `<option value="${ins}">${ins}</option>`;
-      });
-    }
-
-    function applyAdminFilters() {
-      selectedSurveyFilter = document.getElementById('filterBySurveySelect').value;
-      selectedInspectorFilter = document.getElementById('filterByInspectorSelect').value;
-      updateKPIs();
-      renderRecords();
-    }
-
-    function resetAdminFilters() {
-      document.getElementById('filterBySurveySelect').value = "ALL";
-      document.getElementById('filterByInspectorSelect').value = "ALL";
-      selectedSurveyFilter = "ALL";
-      selectedInspectorFilter = "ALL";
-      updateKPIs();
-      renderRecords();
-    }
-
-    function updateKPIs() {
-      const c = document.getElementById('kpiContainer');
-      
-      if (currentUser.role === 'user') {
-        const myReports = responses.filter(r => r.username === currentUser.username);
-        const pending = myReports.filter(r => r.status === 'pending').length;
-        const rejected = myReports.filter(r => r.status === 'rejected').length;
-        const approved = myReports.filter(r => r.status === 'approved').length;
-        const total = myReports.length;
-
-        c.innerHTML = `
-          <div class="kpi-box total"><div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div><div class="kpi-title">إجمالي تقاريري</div></div>
-          <div class="kpi-box pending"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ قيد الاعتماد</div></div>
-          <div class="kpi-box rejected"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ مرفوض / للتعديل</div></div>
-          <div class="kpi-box approved"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ معتمد رسمياً</div></div>
-        `;
-      } else {
-        let filtered = responses;
-        if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter);
-        if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
-
-        const total = filtered.length;
-        const pending = filtered.filter(r => r.status === 'pending').length;
-        const approved = filtered.filter(r => r.status === 'approved').length;
-        const rejected = filtered.filter(r => r.status === 'rejected').length;
-
-        c.innerHTML = `
-          <div class="kpi-box total"><div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div><div class="kpi-title">التقارير المفلترة</div></div>
-          <div class="kpi-box pending"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ بانتظار اعتمادك</div></div>
-          <div class="kpi-box approved"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ تقارير معتمدة</div></div>
-          <div class="kpi-box rejected"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ تقارير مرفوضة</div></div>
-        `;
-      }
-    }
-
-    function showTab(tab) {
-      document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
-      document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
-      document.getElementById('tabUsers').classList.toggle('active', tab === 'users');
-
-      document.getElementById('secSurveys').classList.toggle('hidden', tab !== 'surveys');
-      document.getElementById('secRecords').classList.toggle('hidden', tab !== 'records');
-      document.getElementById('secUsers').classList.toggle('hidden', tab !== 'users');
-      document.getElementById('secNewSurvey').classList.add('hidden');
-      document.getElementById('secFillSurvey').classList.add('hidden');
-      document.getElementById('secSuccessModal').classList.add('hidden');
-
-      if (currentUser && currentUser.role === 'admin') populateFilterDropdowns();
-      updateKPIs();
-      if (tab === 'records') renderRecords();
-      if (tab === 'surveys') renderSurveys();
-      if (tab === 'users') renderUsersManagement();
-    }
-
+    // ================= إدارة نماذج الحصر (عرض، تعديل، حذف - أدمن فقط) =================
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
+      if (surveys.length === 0) {
+        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد أي استمارات حصر نشطة حالياً.</div>';
+        return;
+      }
+
       surveys.forEach(s => {
         const div = document.createElement('div');
         div.className = 'card';
+        
+        let adminActionButtons = '';
+        if (currentUser && currentUser.role === 'admin') {
+          adminActionButtons = `
+            <div style="display:flex; gap:6px; margin-top:8px; border-top:1px dashed var(--border-subtle); padding-top:8px;">
+              <button class="btn btn-outline" style="font-size:0.78rem; padding:4px 10px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button>
+              <button class="btn btn-reject" style="font-size:0.78rem; padding:4px 10px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button>
+            </div>
+          `;
+        }
+
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div>
               <div style="font-weight:800; font-size:1.05rem; color:var(--tbc-petrol-dark);">${s.title}</div>
               <div style="font-size:0.85rem; color:var(--text-muted);">${s.desc || ''}</div>
-              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 ${s.fields.length} بنود فحص</div>
+              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 ${s.fields.length} بنود فحص معتمدة</div>
             </div>
             <button class="btn btn-petrol" onclick="openFillSurvey('${s.id}')">بدء الحصر</button>
           </div>
+          ${adminActionButtons}
         `;
         container.appendChild(div);
       });
     }
 
     function openNewSurveyModal() {
+      editingSurveyId = null;
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
+      document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
+      document.getElementById('saveSurveyBtn').innerText = "حفظ ونشر النموذج ✓";
+      document.getElementById('srvTitle').value = '';
+      document.getElementById('srvDesc').value = '';
       document.getElementById('questionsBuilder').innerHTML = '';
       addQuestionField();
     }
+
+    function openEditSurveyTemplate(id) {
+      const s = surveys.find(x => String(x.id) === String(id));
+      if (!s) return;
+      editingSurveyId = s.id;
+
+      document.getElementById('secSurveys').classList.add('hidden');
+      document.getElementById('secNewSurvey').classList.remove('hidden');
+      document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
+      document.getElementById('saveSurveyBtn').innerText = "تحديث وتثبيت التعديلات ✓";
+
+      document.getElementById('srvTitle').value = s.title;
+      document.getElementById('srvDesc').value = s.desc || '';
+
+      const container = document.getElementById('questionsBuilder');
+      container.innerHTML = '';
+
+      s.fields.forEach(f => {
+        addQuestionField(f.label, f.type, f.options ? f.options.join(', ') : '');
+      });
+    }
+
     function closeNewSurveyModal() {
+      editingSurveyId = null;
       document.getElementById('secNewSurvey').classList.add('hidden');
       document.getElementById('secSurveys').classList.remove('hidden');
     }
 
-    function addQuestionField() {
+    function deleteSurveyTemplate(id) {
+      if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً من المنظومة؟ لن يتمكن المشرفون من تعبئته بعد الآن.")) return;
+      surveys = surveys.filter(s => String(s.id) !== String(id));
+      localStorage.setItem('tbc_surveys_v6', JSON.stringify(surveys));
+      alert("✓ تم حذف نموذج الحصر بنجاح.");
+      if (currentUser.role === 'admin') populateFilterDropdowns();
+      renderSurveys();
+    }
+
+    function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
       const c = document.getElementById('questionsBuilder');
       const idx = c.children.length + 1;
       const d = document.createElement('div');
       d.className = 'q-row';
+      const isRadio = typeVal === 'radio';
+
       d.innerHTML = `
         <div style="display:flex; gap:8px; margin-bottom:6px;">
-          <input type="text" placeholder="بند الفحص #${idx}" class="q-label" style="flex:2;">
+          <input type="text" placeholder="بند الفحص #${idx}" class="q-label" style="flex:2;" value="${labelVal}">
           <select class="q-type" style="flex:1;" onchange="handleTypeChange(this)">
-            <option value="text">نص قصير</option>
-            <option value="number">عدد / كمية</option>
-            <option value="radio">🔘 اختيار من متعدد</option>
-            <option value="date">📅 تاريخ</option>
-            <option value="textarea">ملاحظات فنية</option>
-            <option value="image">📷 صورة توثيقية</option>
+            <option value="text" ${typeVal==='text'?'selected':''}>نص قصير</option>
+            <option value="number" ${typeVal==='number'?'selected':''}>عدد / كمية</option>
+            <option value="radio" ${typeVal==='radio'?'selected':''}>🔘 اختيار من متعدد</option>
+            <option value="date" ${typeVal==='date'?'selected':''}>📅 تاريخ</option>
+            <option value="textarea" ${typeVal==='textarea'?'selected':''}>ملاحظات فنية</option>
+            <option value="image" ${typeVal==='image'?'selected':''}>📷 صورة توثيقية</option>
           </select>
           <button class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.parentElement.remove()">✕</button>
         </div>
-        <input type="text" placeholder="الخيارات مفصولة بفاصلة (مثال: مطابق, غير مطابق, معلق)" class="q-options hidden">
+        <input type="text" placeholder="الخيارات مفصولة بفاصلة (مثال: مطابق, غير مطابق, معلق)" class="q-options ${isRadio?'':'hidden'}" value="${optVal}">
       `;
       c.appendChild(d);
     }
@@ -1135,13 +961,29 @@
 
       if (fields.length === 0) return alert("أضف بند فحص واحد على الأقل");
 
-      surveys.push({ id: "SRV-" + Date.now(), title, desc, fields });
-      localStorage.setItem('tbc_surveys_v5', JSON.stringify(surveys));
-      alert("✓ تم حفظ ونشر نموذج الحصر الجديد!");
+      if (editingSurveyId) {
+        // تحديث حصر قائم
+        const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
+        if (idx !== -1) {
+          surveys[idx].title = title;
+          surveys[idx].desc = desc;
+          surveys[idx].fields = fields;
+          alert("✓ تم تحديث نموذج الحصر وتعميمه على جميع المشرفين بنجاح!");
+        }
+      } else {
+        // إنشاء حصر جديد
+        surveys.push({ id: "SRV-" + Date.now(), title, desc, fields });
+        alert("✓ تم حفظ ونشر نموذج الحصر الجديد لجميع المشرفين!");
+      }
+
+      localStorage.setItem('tbc_surveys_v6', JSON.stringify(surveys));
       closeNewSurveyModal();
+      if (currentUser.role === 'admin') populateFilterDropdowns();
       renderSurveys();
     }
 
+    // ================= تعبئة التقرير الميداني =================
+    let activeSrv = null;
     function openFillSurvey(id, existingData = null) {
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
       if (!activeSrv) return alert("تعذر العثور على نموذج الحصر المعتمد لهذا التقرير");
@@ -1254,7 +1096,6 @@
       reader.readAsDataURL(file);
     }
 
-    // إرسال الحصر مع تطبيق الصلاحيات الممنوحة
     function submitLocalResponse() {
       const school = document.getElementById('fillSchool').value.trim();
       const gps = document.getElementById('fillGps').value.trim();
@@ -1262,7 +1103,6 @@
 
       const userPerms = currentUser.permissions || { requireGps: true, requirePhoto: true };
 
-      // التحقق من صلاحية إلزامية الـ GPS
       if (userPerms.requireGps && (!gps || gps.trim() === '')) {
         return alert("تنبيه أمني: يتطلب حسابك التقاط إحداثيات الـ GPS الميدانية قبل الاعتماد.");
       }
@@ -1282,7 +1122,6 @@
         }
       });
 
-      // التحقق من صلاحية إلزامية التقاط الصور
       if (userPerms.requirePhoto && !hasImage && !editingResponseId) {
         return alert("تنبيه: يتطلب حسابك إرفاق صورة توثيقية واحدة على الأقل قبل اعتماد التقرير.");
       }
@@ -1312,7 +1151,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v5', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v6', JSON.stringify(responses));
           alert(currentUser.role === 'admin' ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -1333,13 +1172,12 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v5', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v6', JSON.stringify(responses));
       }
 
       editingResponseId = null;
       document.getElementById('secFillSurvey').classList.add('hidden');
       
-      // التحكم بظهور زر الـ PDF بناءً على صلاحية المشرف
       const printBtn = document.getElementById('printImmediateBtn');
       if (currentUser.permissions && currentUser.permissions.allowPdf === false) {
         printBtn.classList.add('hidden');
@@ -1355,6 +1193,7 @@
       if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
+    // ================= عرض السجلات والتقارير =================
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
@@ -1488,11 +1327,9 @@
     function triggerEditReport(reportId) {
       const rep = responses.find(r => r.id === reportId);
       if (!rep) return;
-
       if (currentUser.role !== 'admin' && (rep.editCount >= 2) && !rep.adminPermissionGranted) {
         return alert("عذراً، لقد استنفذت الحد الأقصى للتعديل (مرتان). يرجى طلب إذن من قسم التخطيط والتحكم.");
       }
-
       openFillSurvey(null, rep);
     }
 
@@ -1502,7 +1339,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v5', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v6', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير بنجاح!");
       renderRecords();
     }
@@ -1572,7 +1409,7 @@
     function setReportStatus(index, status, reason = "") {
       responses[index].status = status;
       responses[index].rejectionReason = reason;
-      localStorage.setItem('tbc_responses_v5', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v6', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وإرسال الملاحظة للمشرف.");
       updateKPIs();
       renderRecords();
@@ -1583,6 +1420,120 @@
       if (reason !== null && reason.trim() !== "") {
         setReportStatus(index, 'rejected', reason.trim());
       }
+    }
+
+    // ================= تصدير PDF لأداء المشرفين =================
+    function printInspectorsSummaryPDF() {
+      let targetInspectors = [...new Set(responses.map(r => r.collectedBy))];
+      if (selectedInspectorFilter !== "ALL") targetInspectors = [selectedInspectorFilter];
+
+      if (targetInspectors.length === 0) return alert("لا توجد بيانات للمشرفين لتصديرها حالياً.");
+
+      let tableRows = '';
+      let totalAll = 0, appAll = 0, pendAll = 0, rejAll = 0;
+
+      targetInspectors.forEach((ins, idx) => {
+        let list = responses.filter(r => r.collectedBy === ins);
+        if (selectedSurveyFilter !== "ALL") list = list.filter(r => r.surveyTitle === selectedSurveyFilter);
+
+        const total = list.length;
+        const app = list.filter(r => r.status === 'approved').length;
+        const pend = list.filter(r => r.status === 'pending').length;
+        const rej = list.filter(r => r.status === 'rejected').length;
+        const rate = total > 0 ? Math.round((app / total) * 100) : 0;
+
+        totalAll += total;
+        appAll += app;
+        pendAll += pend;
+        rejAll += rej;
+
+        tableRows += `
+          <tr>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center;">${idx + 1}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; font-weight:bold; color:#276270;">${ins}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center;">${selectedSurveyFilter === "ALL" ? "شامل جميع الحصورات" : selectedSurveyFilter}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${total}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; color:#047857; font-weight:bold;">${app}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; color:#b45309; font-weight:bold;">${pend}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; color:#b91c1c; font-weight:bold;">${rej}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; font-weight:bold; color:#37889b;">${rate}%</td>
+          </tr>
+        `;
+      });
+
+      const w = window.open('', '_blank');
+      w.document.write(`
+        <html dir="rtl">
+        <head>
+          <title>تقرير أداء المشرفين الميدانيين - TBC</title>
+          <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+          <style>
+            * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
+            body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.5; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 12px; margin-bottom: 15px; }
+            .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 18px; padding: 5px 12px; border-radius: 6px; }
+            @media print { .no-print { display: none !important; } @page { size: A4 landscape; margin: 10mm; } }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="margin-bottom:15px; text-align:left;">
+            <button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ طباعة تقرير المشرفين / حفظ PDF</button>
+          </div>
+          <div class="header">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="badge-tbc">TBC</span>
+                <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
+              </div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • تقرير المتابعة الرقابية وتقييم أداء المشرفين الميدانيين</div>
+            </div>
+            <div style="text-align:left;">
+              <div style="font-weight:800; font-size:13px; color:#276270;">تقرير أداء المشرفين</div>
+              <div style="font-size:11px; color:#5e7782;">التاريخ: ${new Date().toLocaleDateString('ar-SA')}</div>
+            </div>
+          </div>
+          <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:12px;">
+            <b>نطاق التقرير:</b> ${selectedSurveyFilter === "ALL" ? "كافة عمليات الحصر الميداني المعتمدة" : selectedSurveyFilter} &nbsp;|&nbsp; 
+            <b>المشرفين:</b> ${selectedInspectorFilter === "ALL" ? `إجمالي (${targetInspectors.length}) مشرفين` : selectedInspectorFilter} &nbsp;|&nbsp; 
+            <b>إجمالي التقارير المرفوعة:</b> ${totalAll} تقرير
+          </div>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:12px;">
+            <thead>
+              <tr style="background:#edf6f8; color:#276270;">
+                <th style="padding:9px; border:1px solid #cbd5e1; width:40px;">#</th>
+                <th style="padding:9px; border:1px solid #cbd5e1; text-align:right;">اسم المشرف الميداني</th>
+                <th style="padding:9px; border:1px solid #cbd5e1;">عملية الحصر</th>
+                <th style="padding:9px; border:1px solid #cbd5e1;">التقارير</th>
+                <th style="padding:9px; border:1px solid #cbd5e1; color:#047857;">معتمد ✅</th>
+                <th style="padding:9px; border:1px solid #cbd5e1; color:#b45309;">قيد الاعتماد ⏳</th>
+                <th style="padding:9px; border:1px solid #cbd5e1; color:#b91c1c;">مرفوض ❌</th>
+                <th style="padding:9px; border:1px solid #cbd5e1;">نسبة الاعتماد</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+              <tr style="background:#f8fafc; font-weight:bold;">
+                <td colspan="3" style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#276270;">الإجمالي الكلي</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center;">${totalAll}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#047857;">${appAll}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#b45309;">${pendAll}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#b91c1c;">${rejAll}</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#37889b;">${totalAll > 0 ? Math.round((appAll/totalAll)*100) : 0}%</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:40px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
+            <div><b>المعد:</b> إدارة التدقيق الميداني</div>
+            <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
+              TBC - قسم التخطيط والتحكم<br><span style="color:#eebb43;">معتمد رسمياً</span>
+            </div>
+            <div><b>اعتماد مدير قسم التخطيط والتحكم:</b> ........................</div>
+          </div>
+        </body></html>
+      `);
+      w.document.close();
     }
 
     function printSinglePDF(idx) {
