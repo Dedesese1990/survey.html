@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>شركة تطوير للمباني (TBC) - نظام الحصر الميداني</title>
+  <title>شركة تطوير للمباني (TBC) - نظام الحصر الميداني والاعتمادات</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
@@ -21,8 +21,13 @@
       --border-subtle: #dbe7ec;
       --text-main: #1f333a;
       --text-muted: #5e7782;
-      --success: #10b981;
-      --danger: #ef4444;
+      
+      --status-pending: #f59e0b;
+      --status-pending-bg: #fffbeb;
+      --status-approved: #10b981;
+      --status-approved-bg: #ecfdf5;
+      --status-rejected: #ef4444;
+      --status-rejected-bg: #fef2f2;
       
       --shadow-sm: 0 1px 3px rgba(39,98,112,0.06);
       --shadow-md: 0 4px 14px rgba(39,98,112,0.09);
@@ -128,7 +133,7 @@
 
     main {
       flex: 1;
-      max-width: 720px;
+      max-width: 760px;
       width: 100%;
       margin: 0 auto;
       padding: 20px 16px;
@@ -143,8 +148,49 @@
       box-shadow: var(--shadow-md);
     }
 
+    /* KPI Grid للوحة الإحصائيات والتنبيهات */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 600px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .kpi-box {
+      background: #fff;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .kpi-box.pending { border-top: 3px solid var(--status-pending); background: var(--status-pending-bg); }
+    .kpi-box.rejected { border-top: 3px solid var(--status-rejected); background: var(--status-rejected-bg); }
+    .kpi-box.approved { border-top: 3px solid var(--status-approved); background: var(--status-approved-bg); }
+    .kpi-box.total { border-top: 3px solid var(--tbc-petrol); }
+    
+    .kpi-num { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
+    .kpi-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+
+    /* شارات الحالات */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
+    .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
+    .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
+
     .btn {
-      padding: 11px 18px;
+      padding: 10px 16px;
       border-radius: var(--radius-sm);
       font-weight: 700;
       cursor: pointer;
@@ -152,99 +198,37 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      font-size: 0.92rem;
+      gap: 6px;
+      font-size: 0.88rem;
       transition: all 0.2s ease;
     }
     .btn:active { transform: scale(0.98); }
-    
-    .btn-petrol {
-      background: var(--tbc-petrol);
-      color: #fff;
-    }
-    .btn-petrol:hover {
-      background: var(--tbc-petrol-dark);
-    }
+    .btn-petrol { background: var(--tbc-petrol); color: #fff; }
+    .btn-petrol:hover { background: var(--tbc-petrol-dark); }
+    .btn-gold { background: var(--tbc-gold); color: #1f333a; }
+    .btn-gold:hover { background: var(--tbc-gold-hover); }
+    .btn-outline { background: #fff; border: 1.5px solid var(--border-subtle); color: var(--tbc-petrol-dark); }
+    .btn-approve { background: #10b981; color: #fff; }
+    .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-    .btn-gold {
-      background: var(--tbc-gold);
-      color: #1f333a;
-    }
-    .btn-gold:hover {
-      background: var(--tbc-gold-hover);
-    }
-
-    .btn-outline {
-      background: #fff;
-      border: 1.5px solid var(--border-subtle);
-      color: var(--tbc-petrol-dark);
-    }
-    .btn-outline:hover {
-      background: var(--tbc-petrol-light);
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-      text-align: right;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--tbc-petrol-dark);
-    }
+    .form-group { margin-bottom: 14px; text-align: right; }
+    label { display: block; margin-bottom: 6px; font-size: 0.88rem; font-weight: 700; color: var(--tbc-petrol-dark); }
     input, select, textarea {
       width: 100%;
       padding: 11px 12px;
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       border: 1.5px solid var(--border-subtle);
       font-size: 0.95rem;
       outline: none;
       background: #ffffff;
       color: var(--text-main);
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--tbc-petrol);
-      box-shadow: 0 0 0 3px rgba(55,136,155,0.15);
-    }
+    input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); }
 
     .hidden { display: none !important; }
+    .q-row { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-subtle); margin-bottom: 10px; }
+    .img-preview-box { max-width: 140px; max-height: 140px; border-radius: var(--radius-sm); margin-top: 10px; object-fit: cover; display: none; border: 1px solid var(--border-subtle); }
     
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      background: var(--tbc-petrol-light);
-      color: var(--tbc-petrol-dark);
-    }
-    
-    .q-row {
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      border: 1px dashed var(--border-subtle);
-      margin-bottom: 10px;
-    }
-    .img-preview-box {
-      max-width: 140px;
-      max-height: 140px;
-      border-radius: var(--radius-sm);
-      margin-top: 10px;
-      object-fit: cover;
-      display: none;
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* أسلوب خيارات متعددة شبيه بـ Google Forms */
-    .radio-group-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 6px;
-    }
     .radio-card-label {
       display: flex;
       align-items: center;
@@ -256,42 +240,35 @@
       background: #ffffff;
       font-weight: 600;
       font-size: 0.92rem;
-      transition: all 0.15s ease;
+      margin-bottom: 6px;
     }
     .radio-card-label:has(input:checked) {
       border-color: var(--tbc-petrol);
       background: var(--tbc-petrol-light);
       color: var(--tbc-petrol-dark);
     }
-    .radio-card-label input[type="radio"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--tbc-petrol);
-      margin: 0;
-    }
 
-    /* شريط فلترة تقرير المدرسة المجمع */
-    .school-report-bar {
+    /* جداول لوحة تحكم الأدمن */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    table.data-table th, table.data-table td {
+      padding: 10px;
+      border: 1px solid var(--border-subtle);
+      text-align: right;
+    }
+    table.data-table th {
       background: var(--tbc-petrol-light);
-      border: 1.5px solid var(--tbc-petrol);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      margin-bottom: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    /* صندوق إشعار نجاح الحصر الفوري */
-    .success-modal {
-      text-align: center;
-      padding: 26px 16px;
+      color: var(--tbc-petrol-dark);
+      font-weight: 800;
     }
   </style>
 </head>
 <body>
 
-  <!-- الترويسة الشعار الأصلي -->
   <header>
     <div class="brand-logo-area">
       <svg class="tbc-logo-svg" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -303,7 +280,7 @@
         <text x="200" y="159" font-family="'Tajawal', sans-serif" font-size="9" font-weight="700" fill="#5e7782" text-anchor="middle" letter-spacing="1">Tatweer Buildings Company</text>
       </svg>
       <div class="brand-title-box">
-        <div class="brand-title">منظومة الحصر الميداني</div>
+        <div class="brand-title">منظومة الحصر والاعتمادات الميدانية</div>
         <div class="brand-subtitle">قسم التخطيط والتحكم</div>
       </div>
     </div>
@@ -315,28 +292,23 @@
   <!-- نافذة تسجيل الدخول -->
   <div id="loginView" style="max-width: 400px; margin: 40px auto; width: 90%;">
     <div class="card" style="text-align: center; border-top: 4px solid var(--tbc-petrol);">
-      <div style="margin-bottom: 12px; display: flex; justify-content: center;">
-        <span style="background:var(--tbc-gold-light); color:var(--tbc-petrol-dark); border:1px solid var(--tbc-gold); padding:4px 14px; border-radius:20px; font-weight:800; font-size:0.8rem;">
-          بوابة المشرفين وقسم التخطيط
-        </span>
-      </div>
-      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">تسجيل الدخول</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">قسم التخطيط والتحكم - المعاينة الميدانية</p>
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">تسجيل الدخول للمنظومة</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">قسم التخطيط والتحكم - إدارة الاعتمادات الميدانية</p>
       
       <div class="form-group">
-        <label>اسم المستخدم</label>
-        <input type="text" id="loginUsername" placeholder="اكتب admin أو user">
+        <label>اسم المستخدم / الرمز الوظيفي</label>
+        <input type="text" id="loginUsername" placeholder="اكتب admin أو اسم المشرف (مثال: user1, user2)">
       </div>
       <div class="form-group">
-        <label>كلمة المرور (اختياري)</label>
+        <label>كلمة المرور</label>
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
-      <button class="btn btn-petrol" style="width: 100%; padding: 13px;" onclick="handleLocalLogin()">دخول المنظومة 🔒</button>
+      <button class="btn btn-petrol" style="width: 100%; padding: 13px;" onclick="handleLogin()">دخول المنظومة 🔒</button>
       
-      <div style="margin-top:16px; font-size:0.8rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.5;">
-        💡 <b>حسابات الدخول:</b><br>
-        • اكتب <b>admin</b> لدخول قسم التخطيط والتحكم.<br>
-        • اكتب <b>user</b> لدخول المشرف الميداني.
+      <div style="margin-top:16px; font-size:0.8rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.6;">
+        💡 <b>حسابات التجربة:</b><br>
+        • <b>admin:</b> حساب قسم التخطيط والتحكم (اعتماد/رفض التقارير وملخص شامل لكافة المدارس والمشرفين).<br>
+        • <b>user1 أو user2:</b> حسابات المشرفين الميدانيين (يرى المشرف تنبيهاته وإحصائياته الخاصة وتقاريره المرفوضة/المعتمدة فقط).
       </div>
     </div>
   </div>
@@ -345,124 +317,143 @@
   <div id="appView" class="hidden">
     <div class="tabs-bar">
       <button class="tab-btn active" id="tabSurveys" onclick="showTab('surveys')">📋 نماذج الحصر</button>
-      <button class="tab-btn" id="tabRecords" onclick="showTab('records')">📑 السجلات والتقارير</button>
+      <button class="tab-btn" id="tabRecords" onclick="showTab('records')">📑 السجلات والاعتمادات</button>
     </div>
 
     <main>
-      <!-- قائمة النماذج -->
+      <!-- ================= شريط التنبيهات والإحصائيات (يتغير حسب الدور) ================= -->
+      <div id="kpiContainer" class="kpi-grid"></div>
+
+      <!-- تبويب نماذج الحصر -->
       <section id="secSurveys">
         <div id="adminPanel" class="card hidden" style="border-right: 4px solid var(--tbc-gold);">
-          <h4 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">لوحة تحكم قسم التخطيط والتحكم</h4>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">يمكنك إنشاء استمارات حصر مخصصة جديدة مع خيارات متعددة وتاريخ وكاميرا.</p>
-          <button class="btn btn-gold" style="width: 100%;" onclick="openNewSurveyModal()">+ إنشاء نموذج حصر ميداني جديد</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h4 style="color:var(--tbc-petrol-dark);">لوحة تحكم قسم التخطيط والتحكم</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة وتعميمها على المشرفين</p>
+            </div>
+            <button class="btn btn-gold" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
+          </div>
         </div>
 
         <div id="surveysListContainer"></div>
       </section>
 
-      <!-- نافذة إنشاء حصر جديد -->
+      <!-- إنشاء حصر جديد -->
       <section id="secNewSurvey" class="hidden">
         <div class="card">
-          <div style="border-bottom: 2px solid var(--tbc-petrol-light); padding-bottom: 10px; margin-bottom: 14px;">
-            <h3 style="color:var(--tbc-petrol-dark);">إعداد استمارة حصر ميداني</h3>
-            <p style="font-size:0.82rem; color:var(--text-muted);">قسم التخطيط والتحكم</p>
-          </div>
-
+          <h3 style="color:var(--tbc-petrol-dark); margin-bottom:12px;">إعداد استمارة حصر ميداني جديدة</h3>
           <div class="form-group">
             <label>مسمى عملية الحصر *</label>
-            <input type="text" id="srvTitle" placeholder="مثال: حصر وسائل السلامة والإطفاء">
+            <input type="text" id="srvTitle" placeholder="مثال: حصر منظومة السلامة والإنذار">
           </div>
           <div class="form-group">
-            <label>الوصف والتوجيهات الفنية</label>
-            <input type="text" id="srvDesc" placeholder="توجيهات التدقيق الميداني">
+            <label>التوجيهات الفنية للمشرف</label>
+            <input type="text" id="srvDesc" placeholder="تعليمات الزيارة الميدانية">
           </div>
           
-          <label style="margin-top: 15px;">عناصر الفحص المطلوبة:</label>
+          <label style="margin-top: 15px;">عناصر الفحص:</label>
           <div id="questionsBuilder"></div>
           <button class="btn btn-outline" style="width:100%; margin-bottom:15px;" onclick="addQuestionField()">+ إضافة بند فحص</button>
           
           <div style="display:flex; gap:10px;">
-            <button class="btn btn-petrol" style="flex:1;" onclick="saveLocalSurvey()">حفظ النموذج ✓</button>
+            <button class="btn btn-petrol" style="flex:1;" onclick="saveLocalSurvey()">حفظ ونشر النموذج ✓</button>
             <button class="btn btn-outline" onclick="closeNewSurveyModal()">إلغاء</button>
           </div>
         </div>
       </section>
 
-      <!-- استمارة تعبئة الحصر الميداني -->
+      <!-- تعبئة الحصر الميداني -->
       <section id="secFillSurvey" class="hidden">
         <div class="card">
-          <button class="btn btn-outline" style="font-size:0.85rem; margin-bottom:14px; padding:6px 12px;" onclick="backToSurveysList()">← رجوع للحصورات</button>
-          
-          <div style="border-bottom: 1.5px solid var(--border-subtle); padding-bottom: 10px; margin-bottom: 14px;">
-            <span class="badge" style="background:var(--tbc-gold-light); color:var(--tbc-petrol-dark); border:1px solid var(--tbc-gold);">استمارة تدقيق رسمي</span>
-            <h3 id="fillTitle" style="color:var(--tbc-petrol-dark); margin-top:4px;"></h3>
-            <p id="fillDesc" style="color:var(--text-muted); font-size:0.85rem;"></p>
-          </div>
+          <button class="btn btn-outline" style="font-size:0.85rem; margin-bottom:14px; padding:6px 12px;" onclick="backToSurveysList()">← رجوع</button>
+          <h3 id="fillTitle" style="color:var(--tbc-petrol-dark);"></h3>
+          <p id="fillDesc" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;"></p>
 
           <div class="form-group">
             <label>اسم المنشأة التعليمية / المدرسة *</label>
-            <input type="text" id="fillSchool" placeholder="أدخل اسم المدرسة الميدانية بدقة">
+            <input type="text" id="fillSchool" placeholder="أدخل اسم المدرسة">
           </div>
 
-          <!-- نظام الـ GPS -->
           <div class="form-group" style="background:var(--tbc-petrol-light); border:1px dashed var(--tbc-petrol); padding:14px; border-radius:8px;">
-            <label style="color:var(--tbc-petrol-dark);">📍 التوثيق المكاني للمدرسة (GPS)</label>
+            <label style="color:var(--tbc-petrol-dark);">📍 التوثيق المكاني (GPS)</label>
             <div style="display:flex; gap:8px; margin-top:6px;">
-              <input type="text" id="fillGps" placeholder="الإحداثيات تظهر هنا.." readonly style="background:#fff; flex:1;">
-              <button type="button" class="btn btn-petrol" style="font-size:0.85rem; white-space:nowrap;" onclick="captureGps()">التقاط GPS</button>
+              <input type="text" id="fillGps" placeholder="الإحداثيات المكانية" readonly style="background:#fff; flex:1;">
+              <button type="button" class="btn btn-petrol" style="font-size:0.85rem;" onclick="captureGps()">التقاط GPS</button>
             </div>
-            <small id="gpsStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:block;">اضغط الزر لتحديد موقع المدرسة بالقمر الصناعي.</small>
+            <small id="gpsStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; display:block;">اضغط لتسجيل الإحداثيات.</small>
           </div>
 
           <div id="dynamicFields"></div>
 
           <button class="btn btn-petrol" style="width:100%; padding:14px; font-size:1rem; margin-top:12px;" onclick="submitLocalResponse()">
-            اعتماد وتوثيق الحصر ✓
+            رفع التقرير للاعتماد من قسم التخطيط والتحكم ✓
           </button>
         </div>
       </section>
 
-      <!-- نافذة نجاح الحصر وخيار تحميل الـ PDF الفوري للمشرف -->
+      <!-- نافذة نجاح الحصر الميداني للمشرف -->
       <section id="secSuccessModal" class="hidden">
-        <div class="card success-modal">
-          <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
-          <h3 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:6px;">تم اعتماد الحصر الميداني بنجاح!</h3>
-          <p id="successSchoolName" style="font-size:0.95rem; color:var(--text-muted); margin-bottom:20px;"></p>
-          
-          <div style="display:flex; flex-direction:column; gap:10px; max-width:340px; margin:0 auto;">
-            <button class="btn btn-gold" style="padding:14px;" onclick="printLastSubmittedPDF()">
-              🖨️ طباعة / تصدير تقرير الزيارة كـ PDF الآن
-            </button>
-            <button class="btn btn-outline" style="padding:12px;" onclick="backToSurveysList()">
-              ← العودة لقائمة عمليات الحصر
-            </button>
+        <div class="card" style="text-align:center; padding:25px;">
+          <div style="font-size:3rem; margin-bottom:10px;">⏳</div>
+          <h3 style="color:var(--tbc-petrol-dark);">تم رفع تقرير الحصر بنجاح!</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">تم إرسال التقرير وهو الآن <b>قيد المراجعة والاعتماد</b> من قبل قسم التخطيط والتحكم.</p>
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn btn-gold" onclick="printLastSubmittedPDF()">🖨️ طباعة نسخة PDF</button>
+            <button class="btn btn-outline" onclick="backToSurveysList()">العودة للرئيسية</button>
           </div>
         </div>
       </section>
 
-      <!-- شاشة السجلات والتقارير الميدانية -->
+      <!-- تبويب السجلات والاعتمادات -->
       <section id="secRecords" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <div>
-            <h3 style="color:var(--tbc-petrol-dark); font-size:1.15rem;">السجلات والتقارير الميدانية</h3>
-            <span style="font-size:0.78rem; color:var(--text-muted);">توثيق الزيارات واستخراج التقارير الفردية والمجمعة (متاحة للمشرف والأدمن)</span>
+        
+        <!-- قسم خاص بالأدمن: ملخص المشرفين والمدارس المنفصل -->
+        <div id="adminSummarySection" class="hidden">
+          <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
+            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:8px;">📊 ملخص أداء المشرفين الميدانيين</h4>
+            <div style="overflow-x:auto;">
+              <table class="data-table" id="inspectorsSummaryTable">
+                <thead>
+                  <tr>
+                    <th>المشرف</th>
+                    <th>إجمالي التقارير</th>
+                    <th>معتمد ✅</th>
+                    <th>قيد الاعتماد ⏳</th>
+                    <th>مرفوض ❌</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
-          <button class="btn btn-outline" style="font-size:0.85rem;" onclick="exportLocalCSV()">📊 تصدير Excel</button>
+
+          <div class="card" style="border-top: 3px solid var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:8px;">🏫 ملخص المدارس والزيارات المنفذة</h4>
+            <div style="overflow-x:auto;">
+              <table class="data-table" id="schoolsSummaryTable">
+                <thead>
+                  <tr>
+                    <th>اسم المدرسة</th>
+                    <th>عدد الحصورات</th>
+                    <th>آخر زيارة</th>
+                    <th>الحالة الحالية</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <!-- أداة استخراج تقرير موحد للمدرسة الواحدة -->
-        <div class="school-report-bar">
-          <div style="font-size:0.88rem; font-weight:800; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:6px;">
-            🏫 تقرير موحّد للمدرسة (كافة الحصورات السابقة معاً)
-          </div>
-          <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">إذا تكررت المدرسة في أكثر من حصر؛ اخترها من هنا لدمج كل زياراتها وصورها في ملف PDF رسمي واحد:</p>
+        <!-- أداة استخراج تقرير موحد للمدرسة -->
+        <div class="card" style="background:var(--tbc-petrol-light); border:1.5px solid var(--tbc-petrol);">
+          <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:6px;">🏫 التقرير التاريخي الموحد للمدرسة:</div>
           <div style="display:flex; gap:8px;">
-            <select id="schoolSelectFilter" style="flex:1; padding:8px 12px; font-size:0.88rem;">
-              <option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>
+            <select id="schoolSelectFilter" style="flex:1;">
+              <option value="">-- اختر مدرسة --</option>
             </select>
-            <button class="btn btn-gold" style="white-space:nowrap; padding:8px 14px; font-size:0.85rem;" onclick="printConsolidatedSchoolPDF()">
-              🖨️ طباعة تقرير المدرسة المجمّع
-            </button>
+            <button class="btn btn-gold" onclick="printConsolidatedSchoolPDF()">🖨️ طباعة الملف المجمع</button>
           </div>
         </div>
 
@@ -472,8 +463,11 @@
   </div>
 
   <script>
+    // الجلسة الحالية
     let currentUser = null;
-    let surveys = JSON.parse(localStorage.getItem('tbc_local_surveys')) || [
+
+    // استمارات الحصر
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v2')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -481,21 +475,28 @@
         fields: [
           { label: "رقم المبنى / الجناح التعليمي", type: "text" },
           { label: "عدد طفايات الحريق الصالحة", type: "number" },
-          { label: "تاريخ الفحص والمعاينة", type: "date" },
+          { label: "تاريخ الفحص", type: "date" },
           { label: "حالة منظومة الإنارة العامة", type: "radio", options: ["مطابقة للمواصفات", "تحتاج صيانة عاجلة", "معطلة بالكامل"] },
           { label: "صورة توثيقية بالكاميرا", type: "image" },
           { label: "ملاحظات وتوجيهات هندسية", type: "textarea" }
         ]
       }
     ];
-    let responses = JSON.parse(localStorage.getItem('tbc_local_responses')) || [];
-    let lastSavedResponseIdx = -1;
 
-    function handleLocalLogin() {
-      const u = document.getElementById('loginUsername').value.trim().toLowerCase();
-      if (!u) return alert("يرجى كتابة admin أو user في اسم المستخدم");
+    // السجلات مع نظام الاعتماد (approved, pending, rejected)
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v2')) || [];
+    let lastSavedIndex = -1;
 
-      currentUser = (u === 'admin') ? { name: "قسم التخطيط والتحكم", role: "admin" } : { name: "المشرف الميداني", role: "user" };
+    // تسجيل الدخول
+    function handleLogin() {
+      const u = document.getElementById('loginUsername').value.trim();
+      if (!u) return alert("يرجى إدخال اسم المستخدم");
+
+      if (u.toLowerCase() === 'admin') {
+        currentUser = { username: "admin", name: "قسم التخطيط والتحكم", role: "admin" };
+      } else {
+        currentUser = { username: u, name: u, role: "user" };
+      }
 
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appView').classList.remove('hidden');
@@ -503,9 +504,13 @@
 
       if (currentUser.role === 'admin') {
         document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('adminSummarySection').classList.remove('hidden');
       } else {
         document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('adminSummarySection').classList.add('hidden');
       }
+
+      updateKPIs();
       renderSurveys();
     }
 
@@ -514,6 +519,64 @@
       document.getElementById('appView').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('userBadge').innerHTML = "<span>👤 تسجيل دخول</span>";
+    }
+
+    // تحديث مؤشرات الأداء والتنبيهات حسب دور المستخدم
+    function updateKPIs() {
+      const c = document.getElementById('kpiContainer');
+      
+      if (currentUser.role === 'user') {
+        // حساب إحصائيات المشرف الخاصة به فقط
+        const myReports = responses.filter(r => r.username === currentUser.username);
+        const pending = myReports.filter(r => r.status === 'pending').length;
+        const rejected = myReports.filter(r => r.status === 'rejected').length;
+        const approved = myReports.filter(r => r.status === 'approved').length;
+        const total = myReports.length;
+
+        c.innerHTML = `
+          <div class="kpi-box total">
+            <div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div>
+            <div class="kpi-title">إجمالي تقاريري</div>
+          </div>
+          <div class="kpi-box pending">
+            <div class="kpi-num" style="color:var(--status-pending);">${pending}</div>
+            <div class="kpi-title">⏳ بانتظار الاعتماد</div>
+          </div>
+          <div class="kpi-box rejected">
+            <div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div>
+            <div class="kpi-title">❌ مرفوض / للتعديل</div>
+          </div>
+          <div class="kpi-box approved">
+            <div class="kpi-num" style="color:var(--status-approved);">${approved}</div>
+            <div class="kpi-title">✅ معتمد رسمياً</div>
+          </div>
+        `;
+      } else {
+        // حساب إحصائيات الأدمن المركزية
+        const total = responses.length;
+        const pending = responses.filter(r => r.status === 'pending').length;
+        const approved = responses.filter(r => r.status === 'approved').length;
+        const rejected = responses.filter(r => r.status === 'rejected').length;
+
+        c.innerHTML = `
+          <div class="kpi-box total">
+            <div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div>
+            <div class="kpi-title">إجمالي تقارير المدارس</div>
+          </div>
+          <div class="kpi-box pending">
+            <div class="kpi-num" style="color:var(--status-pending);">${pending}</div>
+            <div class="kpi-title">⏳ بانتظار اعتمادك</div>
+          </div>
+          <div class="kpi-box approved">
+            <div class="kpi-num" style="color:var(--status-approved);">${approved}</div>
+            <div class="kpi-title">✅ تقارير معتمدة</div>
+          </div>
+          <div class="kpi-box rejected">
+            <div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div>
+            <div class="kpi-title">❌ تقارير مرفوضة</div>
+          </div>
+        `;
+      }
     }
 
     function showTab(tab) {
@@ -526,6 +589,7 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
 
+      updateKPIs();
       if (tab === 'records') renderRecords();
       if (tab === 'surveys') renderSurveys();
     }
@@ -533,21 +597,17 @@
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
-      if (!surveys || surveys.length === 0) {
-        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد أي استمارات حصر نشطة حالياً.</div>';
-        return;
-      }
       surveys.forEach(s => {
         const div = document.createElement('div');
         div.className = 'card';
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-weight:800; font-size:1.05rem; color:var(--tbc-petrol-dark);">${s.title} <span class="badge">معتمد</span></div>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">${s.desc || 'لا يوجد وصف مضاف.'}</div>
-              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 يتضمن ${s.fields.length} بنود فحص</div>
+              <div style="font-weight:800; font-size:1.05rem; color:var(--tbc-petrol-dark);">${s.title}</div>
+              <div style="font-size:0.85rem; color:var(--text-muted);">${s.desc || ''}</div>
+              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 ${s.fields.length} بنود فحص</div>
             </div>
-            <button class="btn btn-petrol" style="font-size:0.85rem;" onclick="openFillSurvey('${s.id}')">بدء الفحص الميداني</button>
+            <button class="btn btn-petrol" onclick="openFillSurvey('${s.id}')">بدء الحصر</button>
           </div>
         `;
         container.appendChild(div);
@@ -565,7 +625,6 @@
       document.getElementById('secSurveys').classList.remove('hidden');
     }
 
-    // إضافة حقول في بناء الاستمارة بما فيها اختيار من متعدد والتاريخ
     function addQuestionField() {
       const c = document.getElementById('questionsBuilder');
       const idx = c.children.length + 1;
@@ -577,14 +636,14 @@
           <select class="q-type" style="flex:1;" onchange="handleTypeChange(this)">
             <option value="text">نص قصير</option>
             <option value="number">عدد / كمية</option>
-            <option value="radio">🔘 اختيار من متعدد (Google Forms)</option>
-            <option value="date">📅 تاريخ (Calendar)</option>
+            <option value="radio">🔘 اختيار من متعدد</option>
+            <option value="date">📅 تاريخ</option>
             <option value="textarea">ملاحظات فنية</option>
             <option value="image">📷 صورة توثيقية</option>
           </select>
           <button class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.parentElement.remove()">✕</button>
         </div>
-        <input type="text" placeholder="اكتب الخيارات مفصولة بفاصلة (مثال: مطابق, غير مطابق, معلق)" class="q-options hidden" style="margin-top:6px; font-size:0.85rem;">
+        <input type="text" placeholder="الخيارات مفصولة بفاصلة (مثال: مطابق, غير مطابق, معلق)" class="q-options hidden">
       `;
       c.appendChild(d);
     }
@@ -597,7 +656,7 @@
     function saveLocalSurvey() {
       const title = document.getElementById('srvTitle').value.trim();
       const desc = document.getElementById('srvDesc').value.trim();
-      if (!title) return alert("يرجى إدخال مسمى عملية الحصر");
+      if (!title) return alert("يرجى إدخال عنوان الحصر");
 
       const qNodes = document.querySelectorAll('#questionsBuilder .q-row');
       const fields = [];
@@ -614,11 +673,11 @@
         }
       });
 
-      if (fields.length === 0) return alert("يرجى إضافة بند فحص واحد على الأقل");
+      if (fields.length === 0) return alert("أضف بند فحص واحد على الأقل");
 
       surveys.push({ id: "SRV-" + Date.now(), title, desc, fields });
-      localStorage.setItem('tbc_local_surveys', JSON.stringify(surveys));
-      alert("✓ تم حفظ نموذج الحصر الجديد بنجاح!");
+      localStorage.setItem('tbc_surveys_v2', JSON.stringify(surveys));
+      alert("✓ تم حفظ ونشر نموذج الحصر الجديد!");
       closeNewSurveyModal();
       renderSurveys();
     }
@@ -650,18 +709,15 @@
         } else if (f.type === 'number') {
           inputHtml = `<input type="number" class="dyn-field" data-type="number" data-label="${f.label}">`;
         } else if (f.type === 'date') {
-          // اختيار تاريخ يفتح Calendar
           inputHtml = `<input type="date" class="dyn-field" data-type="date" data-label="${f.label}">`;
         } else if (f.type === 'radio') {
-          // اختيار من متعدد شبيه بجوجل فورم
-          const optionsList = f.options && f.options.length ? f.options : ["نعم", "لا"];
-          const optionsHtml = optionsList.map((opt, oIdx) => `
+          const opts = (f.options && f.options.length ? f.options : ["مطابق", "غير مطابق"]).map(opt => `
             <label class="radio-card-label">
-              <input type="radio" name="radio_f_${fIdx}" value="${opt}" class="dyn-radio-input" data-label="${f.label}">
+              <input type="radio" name="r_${fIdx}" value="${opt}">
               <span>${opt}</span>
             </label>
           `).join('');
-          inputHtml = `<div class="radio-group-container" data-type="radio" data-label="${f.label}">${optionsHtml}</div>`;
+          inputHtml = `<div class="radio-group" data-label="${f.label}">${opts}</div>`;
         } else if (f.type === 'textarea') {
           inputHtml = `<textarea class="dyn-field" data-type="textarea" rows="3" data-label="${f.label}"></textarea>`;
         } else if (f.type === 'image') {
@@ -680,25 +736,20 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
       document.getElementById('secSurveys').classList.remove('hidden');
-      if (currentUser.role === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
     }
 
     function captureGps() {
       const status = document.getElementById('gpsStatus');
       const input = document.getElementById('fillGps');
       if (!navigator.geolocation) return alert("المتصفح لا يدعم GPS");
-      status.innerText = "⏳ جارٍ تحديد موقع المنشأة بالأقمار الصناعية...";
-      status.style.color = "var(--tbc-petrol)";
+      status.innerText = "⏳ جارٍ التقاط الموقع...";
       navigator.geolocation.getCurrentPosition(
         pos => {
           input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
-          status.innerText = `✓ تم التقاط الإحداثيات بنجاح بدقة ${Math.round(pos.coords.accuracy)} متر.`;
+          status.innerText = `✓ تم تحديد الموقع بدقة ${Math.round(pos.coords.accuracy)} متر.`;
           status.style.color = "var(--success)";
         },
-        err => {
-          status.innerText = "تعذر تحديد الموقع. يرجى تفعيل إذن الـ GPS في متصفح الجوال.";
-          status.style.color = "var(--danger)";
-        },
+        err => { status.innerText = "تعذر تحديد الموقع."; status.style.color = "var(--danger)"; },
         { enableHighAccuracy: true }
       );
     }
@@ -719,9 +770,8 @@
           else if (h > max) { w *= max / h; h = max; }
           cvs.width = w; cvs.height = h;
           cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-          const compressed = cvs.toDataURL('image/jpeg', 0.65);
-          input.dataset.base64 = compressed;
-          preview.src = compressed;
+          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65);
+          preview.src = input.dataset.base64;
           preview.style.display = "block";
         };
       };
@@ -731,25 +781,16 @@
     function submitLocalResponse() {
       const school = document.getElementById('fillSchool').value.trim();
       const gps = document.getElementById('fillGps').value.trim();
-      if (!school) return alert("يرجى إدخال اسم المنشأة التعليمية");
+      if (!school) return alert("يرجى إدخال اسم المدرسة");
 
       const dataObj = {};
-
-      // قراءة الحقول العادية
-      const fields = document.querySelectorAll('.dyn-field');
-      fields.forEach(f => {
+      document.querySelectorAll('.dyn-field').forEach(f => {
         const label = f.getAttribute('data-label');
         const type = f.getAttribute('data-type');
-        if (type === 'image') {
-          dataObj[label] = f.dataset.base64 || '';
-        } else {
-          dataObj[label] = f.value;
-        }
+        dataObj[label] = type === 'image' ? (f.dataset.base64 || '') : f.value;
       });
 
-      // قراءة حقول الاختيار من متعدد
-      const radioGroups = document.querySelectorAll('.radio-group-container');
-      radioGroups.forEach(rg => {
+      document.querySelectorAll('.radio-group').forEach(rg => {
         const label = rg.getAttribute('data-label');
         const checked = rg.querySelector('input[type="radio"]:checked');
         dataObj[label] = checked ? checked.value : 'غير محدد';
@@ -762,93 +803,186 @@
         surveyTitle: activeSrv.title,
         date: new Date().toLocaleString('ar-SA'),
         collectedBy: currentUser.name,
+        username: currentUser.username,
+        status: "pending", // قيد الاعتماد بشكل افتراضي
+        rejectionReason: "",
         answers: dataObj
       };
 
       responses.push(entry);
-      lastSavedResponseIdx = responses.length - 1;
-      try {
-        localStorage.setItem('tbc_local_responses', JSON.stringify(responses));
-      } catch(e) {
-        alert("تنبيه: مساحة التخزين المؤقت ممتلئة بالصور.");
-      }
+      lastSavedIndex = responses.length - 1;
+      localStorage.setItem('tbc_responses_v2', JSON.stringify(responses));
 
-      // الانتقال لشاشة النجاح وتوفير خيار طباعة الـ PDF فوراً
       document.getElementById('secFillSurvey').classList.add('hidden');
-      document.getElementById('successSchoolName').innerText = `تم توثيق فحص: ${school}`;
       document.getElementById('secSuccessModal').classList.remove('hidden');
+      updateKPIs();
     }
 
     function printLastSubmittedPDF() {
-      if (lastSavedResponseIdx >= 0) {
-        printSinglePDF(lastSavedResponseIdx);
-      }
+      if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
+    // عرض السجلات وتطبيق الصلاحيات (المشرف يرى تقاريره فقط، الأدمن يرى ويعتمد الكل)
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
       container.innerHTML = '';
-      
-      schoolSelect.innerHTML = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
-      const schoolCounts = {};
-      responses.forEach(r => {
-        schoolCounts[r.school] = (schoolCounts[r.school] || 0) + 1;
-      });
-      Object.keys(schoolCounts).forEach(sch => {
+
+      // تصفية السجلات حسب المستخدم
+      const visibleResponses = currentUser.role === 'admin' 
+        ? responses 
+        : responses.filter(r => r.username === currentUser.username);
+
+      // تحديث قائمة المدارس المتاحة
+      schoolSelect.innerHTML = '<option value="">-- اختر مدرسة --</option>';
+      const uniqueSchools = [...new Set(visibleResponses.map(r => r.school))];
+      uniqueSchools.forEach(sch => {
         const opt = document.createElement('option');
         opt.value = sch;
-        opt.innerText = `${sch} (${schoolCounts[sch]} زيارة/حصر)`;
+        opt.innerText = sch;
         schoolSelect.appendChild(opt);
       });
 
-      if (responses.length === 0) {
-        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); padding:30px;">لا توجد أي سجلات مدخلة حتى الآن. ابدأ بتعبئة حصر جديد.</div>';
+      // إذا كان المستخدم أدمن، نحدّث جداول الملخصات المنفصلة للمشرفين والمدارس
+      if (currentUser.role === 'admin') {
+        renderAdminSummaries();
+      }
+
+      if (visibleResponses.length === 0) {
+        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); padding:25px;">لا توجد أي سجلات حالياً.</div>';
         return;
       }
 
-      responses.slice().reverse().forEach((r, idx) => {
-        const originalIdx = responses.length - 1 - idx;
+      visibleResponses.slice().reverse().forEach(r => {
+        const originalIdx = responses.findIndex(x => x.id === r.id);
         const div = document.createElement('div');
         div.className = 'card';
-        let detailsHtml = '';
 
-        if (r.gps) {
-          detailsHtml += `
-            <li style="font-size:0.85rem; margin-bottom:8px; background:#edf6f8; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-              <span><b>📍 الإحداثيات:</b> ${r.gps}</span>
-              <a href="https://maps.google.com/?q=${encodeURIComponent(r.gps)}" target="_blank" style="color:var(--tbc-petrol); font-weight:bold; text-decoration:none;">عرض الخريطة ↗</a>
-            </li>`;
+        let statusBadge = '';
+        if (r.status === 'approved') statusBadge = '<span class="badge-status approved">✅ معتمد</span>';
+        else if (r.status === 'rejected') statusBadge = '<span class="badge-status rejected">❌ تم الرفض</span>';
+        else statusBadge = '<span class="badge-status pending">⏳ بانتظار الاعتماد</span>';
+
+        let rejectionBox = '';
+        if (r.status === 'rejected' && r.rejectionReason) {
+          rejectionBox = `
+            <div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:8px 12px; border-radius:6px; margin:8px 0; font-size:0.85rem; color:#b91c1c;">
+              <b>⚠️ ملاحظة الرفض من الإدارة:</b> ${r.rejectionReason}
+            </div>
+          `;
         }
 
+        // أزرار التحكم للأدمن فقط
+        let adminActionButtons = '';
+        if (currentUser.role === 'admin') {
+          adminActionButtons = `
+            <div style="display:flex; gap:8px; margin-top:10px; border-top:1px dashed var(--border-subtle); padding-top:8px;">
+              <button class="btn btn-approve" style="font-size:0.8rem; padding:6px 12px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير</button>
+              <button class="btn btn-reject" style="font-size:0.8rem; padding:6px 12px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع ملاحظة</button>
+            </div>
+          `;
+        }
+
+        let detailsHtml = '';
         for (const [q, a] of Object.entries(r.answers)) {
           if (a && a.startsWith('data:image')) {
-            detailsHtml += `
-              <li style="font-size:0.85rem; margin-bottom:10px;">
-                <b style="color:var(--tbc-petrol-dark);">${q}:</b><br>
-                <img src="${a}" style="max-width:160px; border-radius:8px; margin-top:6px; border:1px solid #dbe7ec;">
-              </li>`;
+            detailsHtml += `<li style="font-size:0.85rem; margin-bottom:8px;"><b>${q}:</b><br><img src="${a}" style="max-width:140px; border-radius:6px; margin-top:4px;"></li>`;
           } else {
-            detailsHtml += `<li style="font-size:0.85rem; margin-bottom:6px; border-bottom:1px dashed #e2e8f0; padding-bottom:4px;"><b style="color:var(--tbc-petrol-dark);">${q}:</b> ${a || '-'}</li>`;
+            detailsHtml += `<li style="font-size:0.85rem; margin-bottom:4px; border-bottom:1px dashed #edf2f7; padding-bottom:3px;"><b>${q}:</b> ${a || '-'}</li>`;
           }
         }
 
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
             <div>
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">🏫 ${r.school}</h4>
-              <span style="font-size:0.75rem; color:var(--text-muted);">بواسطة: ${r.collectedBy} | ${r.date}</span>
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem;">🏫 ${r.school}</h4>
+              <span style="font-size:0.75rem; color:var(--text-muted);">المشرف: ${r.collectedBy} | ${r.date}</span>
             </div>
-            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF التقرير</button>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${statusBadge}
+              <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF</button>
+            </div>
           </div>
-          <div style="font-size:0.88rem; color:var(--tbc-gold-hover); font-weight:800; margin-bottom:8px;">📋 ${r.surveyTitle}</div>
+          
+          <div style="font-size:0.85rem; color:var(--tbc-gold-hover); font-weight:800; margin-bottom:6px;">📋 ${r.surveyTitle}</div>
+          ${rejectionBox}
           <ul style="list-style:none; padding:0;">${detailsHtml}</ul>
+          ${adminActionButtons}
         `;
         container.appendChild(div);
       });
     }
 
-    // طباعة تقرير PDF الرسمي للزيارة الواحدة (متاح للمشرف فوراً وللأدمن من السجلات)
+    // قرارات الأدمن للاعتماد أو الرفض
+    function setReportStatus(index, status, reason = "") {
+      responses[index].status = status;
+      responses[index].rejectionReason = reason;
+      localStorage.setItem('tbc_responses_v2', JSON.stringify(responses));
+      alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وإرسال الملاحظة للمشرف.");
+      updateKPIs();
+      renderRecords();
+    }
+
+    function promptRejectReport(index) {
+      const reason = prompt("يرجى كتابة سبب رفض هذا التقرير ليظهر للمشرف لتعديله:");
+      if (reason !== null && reason.trim() !== "") {
+        setReportStatus(index, 'rejected', reason.trim());
+      }
+    }
+
+    // جداول الملخصات المنفصلة للأدمن (المشرفين والمدارس)
+    function renderAdminSummaries() {
+      // 1. ملخص المشرفين
+      const inspectorTbody = document.querySelector('#inspectorsSummaryTable tbody');
+      inspectorTbody.innerHTML = '';
+      const inspectors = [...new Set(responses.map(r => r.collectedBy))];
+      
+      inspectors.forEach(ins => {
+        const insReports = responses.filter(r => r.collectedBy === ins);
+        const total = insReports.length;
+        const app = insReports.filter(r => r.status === 'approved').length;
+        const pend = insReports.filter(r => r.status === 'pending').length;
+        const rej = insReports.filter(r => r.status === 'rejected').length;
+
+        inspectorTbody.innerHTML += `
+          <tr>
+            <td><b>${ins}</b></td>
+            <td>${total}</td>
+            <td style="color:#047857; font-weight:bold;">${app}</td>
+            <td style="color:#b45309; font-weight:bold;">${pend}</td>
+            <td style="color:#b91c1c; font-weight:bold;">${rej}</td>
+          </tr>
+        `;
+      });
+
+      // 2. ملخص المدارس
+      const schoolTbody = document.querySelector('#schoolsSummaryTable tbody');
+      schoolTbody.innerHTML = '';
+      const schools = [...new Set(responses.map(r => r.school))];
+
+      schools.forEach(sch => {
+        const schReports = responses.filter(r => r.school === sch);
+        const total = schReports.length;
+        const lastVisit = schReports[schReports.length - 1].date;
+        const hasPending = schReports.some(r => r.status === 'pending');
+        const hasRejected = schReports.some(r => r.status === 'rejected');
+
+        let statusText = '<span style="color:#047857; font-weight:bold;">مكتملة ومعتمدة</span>';
+        if (hasRejected) statusText = '<span style="color:#b91c1c; font-weight:bold;">تحتاج متابعة (مرفوض)</span>';
+        else if (hasPending) statusText = '<span style="color:#b45309; font-weight:bold;">قيد الاعتماد</span>';
+
+        schoolTbody.innerHTML += `
+          <tr>
+            <td><b>${sch}</b></td>
+            <td>${total} زيارات</td>
+            <td>${lastVisit}</td>
+            <td>${statusText}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // طباعة تقرير PDF للزيارة الواحدة
     function printSinglePDF(idx) {
       const r = responses[idx];
       if (!r) return;
@@ -863,10 +997,12 @@
         }
       }
 
+      let statusTitle = r.status === 'approved' ? 'تقرير فحص معتمد رسمياً' : (r.status === 'rejected' ? 'تقرير فحص مرفوض' : 'تقرير فحص قيد الاعتماد');
+
       w.document.write(`
         <html dir="rtl">
         <head>
-          <title>تقرير حصر رسمي - ${r.school}</title>
+          <title>تقرير حصر - ${r.school}</title>
           <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
           <style>
             * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
@@ -886,7 +1022,7 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • تقرير فحص ميداني معتمد</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • ${statusTitle}</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:13px; color:#276270;">${r.surveyTitle}</div>
@@ -899,9 +1035,9 @@
           <table style="width:100%; border-collapse:collapse; margin-bottom:14px;">${rows}</table>
           ${imgs ? `<div style="font-weight:bold; color:#276270; margin-bottom:8px;">التوثيق المصور الميداني:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:20px;">${imgs}</div>` : ''}
           <div style="margin-top:30px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
-            <div><b>المفتش الميداني:</b> ${r.collectedBy}</div>
+            <div><b>المشرف الميداني:</b> ${r.collectedBy}</div>
             <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
-              TBC - قسم التخطيط والتحكم<br><span style="color:#eebb43;">معتمد ميدانياً</span>
+              TBC - قسم التخطيط والتحكم<br><span style="color:${r.status==='approved'?'#10b981':'#eebb43'};">${r.status==='approved'?'معتمد رسمياً':'قيد المراجعة'}</span>
             </div>
           </div>
         </body></html>
@@ -909,25 +1045,20 @@
       w.document.close();
     }
 
-    // تقرير موحد للمدرسة الواحدة يجمع كل الزيارات
+    // تقرير مجمع للمدرسة الواحدة
     function printConsolidatedSchoolPDF() {
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
-      if (!selectedSchool) {
-        return alert("يرجى اختيار المدرسة أولاً من القائمة لاستخراج ملفها الموحد.");
-      }
+      if (!selectedSchool) return alert("يرجى اختيار مدرسة أولاً.");
 
       const schoolSurveys = responses.filter(r => r.school === selectedSchool);
-      if (schoolSurveys.length === 0) {
-        return alert("لا توجد سجلات لهذه المدرسة.");
-      }
+      if (schoolSurveys.length === 0) return alert("لا توجد سجلات لهذه المدرسة.");
 
       const w = window.open('', '_blank');
       const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل';
 
       let sectionsHtml = '';
       schoolSurveys.forEach((entry, sIdx) => {
-        let rows = '';
-        let imgs = '';
+        let rows = '', imgs = '';
 
         for (const [q, a] of Object.entries(entry.answers)) {
           if (a && a.startsWith('data:image')) {
@@ -937,31 +1068,18 @@
                 <div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div>
               </div>`;
           } else {
-            rows += `
-              <tr>
-                <td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:bold; width:38%; background:#f8fafc; color:#276270;">${q}</td>
-                <td style="padding:8px 12px; border:1px solid #cbd5e1;">${a || '-'}</td>
-              </tr>`;
+            rows += `<tr><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:bold; width:38%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:8px 12px; border:1px solid #cbd5e1;">${a || '-'}</td></tr>`;
           }
         }
 
         sectionsHtml += `
           <div style="margin-top:20px; border:1.5px solid #cbd5e1; border-radius:8px; padding:14px; background:#fff; break-inside:avoid;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eebb43; padding-bottom:6px; margin-bottom:10px;">
-              <h4 style="margin:0; font-size:14px; color:#276270;">
-                الزيارة #${sIdx + 1}: ${entry.surveyTitle}
-              </h4>
-              <span style="font-size:11px; color:#5e7782;">تاريخ الفحص: ${entry.date} | المفتش: ${entry.collectedBy}</span>
+              <h4 style="margin:0; font-size:14px; color:#276270;">الزيارة #${sIdx + 1}: ${entry.surveyTitle} (${entry.status === 'approved' ? 'معتمد' : 'قيد الاعتماد'})</h4>
+              <span style="font-size:11px; color:#5e7782;">التاريخ: ${entry.date} | المفتش: ${entry.collectedBy}</span>
             </div>
-
-            <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px;">
-              <tbody>${rows}</tbody>
-            </table>
-
-            ${imgs ? `
-              <div style="font-weight:bold; color:#276270; font-size:12px; margin-bottom:6px;">الصور التوثيقية المرفقة بالزيارة:</div>
-              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">${imgs}</div>
-            ` : ''}
+            <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px;"><tbody>${rows}</tbody></table>
+            ${imgs ? `<div style="font-weight:bold; color:#276270; font-size:12px; margin-bottom:6px;">الصور المرفقة:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">${imgs}</div>` : ''}
           </div>
         `;
       });
@@ -976,71 +1094,42 @@
             body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.5; }
             .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 16px; }
             .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; }
-            @media print {
-              .no-print { display: none !important; }
-              @page { size: A4; margin: 10mm; }
-            }
+            @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } }
           </style>
         </head>
         <body>
           <div class="no-print" style="margin-bottom:15px; text-align:left;">
-            <button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:9px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">
-              🖨️ طباعة الملف الشامل للمدرسة / حفظ PDF
-            </button>
+            <button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:9px 20px; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ طباعة الملف الموحد / حفظ PDF</button>
           </div>
-
           <div class="header">
             <div>
               <div style="display:flex; align-items:center; gap:8px;">
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:17px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • السجل الفني التاريخي للمنشأة التعليمية</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • السجل التاريخي والرقابي للمنشأة التعليمية</div>
             </div>
             <div style="text-align:left;">
-              <div style="font-weight:800; font-size:14px; color:#276270;">الملف الرقابي والتاريخي الموحد</div>
-              <div style="font-size:11px; color:#5e7782;">تاريخ استخراج التقرير: ${new Date().toLocaleDateString('ar-SA')}</div>
+              <div style="font-weight:800; font-size:14px; color:#276270;">الملف الرقابي الموحد</div>
+              <div style="font-size:11px; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div>
             </div>
           </div>
-
           <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:8px; padding:12px 16px; margin-bottom:16px;">
-            <div style="font-size:15px; font-weight:800; color:#276270; margin-bottom:4px;">🏫 المنشأة التعليمية: ${selectedSchool}</div>
-            <div style="font-size:12px; color:#5e7782;">
-              <b>إجمالي عمليات الفحص والحصر المنفذة:</b> ${schoolSurveys.length} زيارات &nbsp;|&nbsp; 
-              <b>📍 إحداثيات الموقع (GPS):</b> ${schoolGps}
-            </div>
+            <div style="font-size:15px; font-weight:800; color:#276270;">🏫 المنشأة التعليمية: ${selectedSchool}</div>
+            <div style="font-size:12px; color:#5e7782; margin-top:4px;">إجمالي الزيارات: ${schoolSurveys.length} &nbsp;|&nbsp; 📍 GPS: ${schoolGps}</div>
           </div>
-
           ${sectionsHtml}
-
-          <div style="margin-top:35px; border-top:1.5px solid #cbd5e1; padding-top:18px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
-            <div style="text-align:center;">
-              <div style="font-weight:bold; color:#276270; margin-bottom:30px;">المسؤول الفني عن المتابعة</div>
-              <div style="font-size:11px; color:#5e7782;">إدارة التدقيق الميداني</div>
-            </div>
-
-            <div style="border:2px dashed #eebb43; padding:10px 20px; text-align:center; color:#276270; font-weight:bold; border-radius:8px; font-size:11px;">
-              شركة تطوير للمباني (TBC)<br>
-              <span style="font-weight:900; color:#37889b;">قسم التخطيط والتحكم</span><br>
-              <span style="color:#eebb43; font-size:10px;">ملف مدرسي موحّد معتمد</span>
-            </div>
-
-            <div style="text-align:center;">
-              <div style="font-weight:bold; color:#276270; margin-bottom:30px;">اعتماد رئيس قسم التخطيط والتحكم</div>
-              <div style="font-size:11px; color:#5e7782;">التاريخ: ${new Date().toLocaleDateString('ar-SA')}</div>
-            </div>
-          </div>
         </body></html>
       `);
       w.document.close();
     }
 
     function exportLocalCSV() {
-      if (responses.length === 0) return alert("لا توجد سجلات لتصديرها");
-      let csv = "\uFEFFالمدرسة,الموقع GPS,نوع الحصر,التاريخ,المشرف,البيانات\n";
+      if (responses.length === 0) return alert("لا توجد سجلات");
+      let csv = "\uFEFFالمدرسة,الموقع GPS,نوع الحصر,التاريخ,المشرف,حالة الاعتماد,البيانات\n";
       responses.forEach(r => {
         const clean = Object.entries(r.answers).map(([k,v]) => `${k}: ${v && v.startsWith('data:image') ? '[صورة]' : v}`).join(' | ');
-        csv += `"${r.school}","${r.gps || ''}","${r.surveyTitle}","${r.date}","${r.collectedBy}","${clean}"\n`;
+        csv += `"${r.school}","${r.gps || ''}","${r.surveyTitle}","${r.date}","${r.collectedBy}","${r.status}","${clean}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
