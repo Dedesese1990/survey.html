@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>شركة تطوير للمباني (TBC) - نظام الحصر الميداني والاعتمادات</title>
+  <title>شركة تطوير للمباني (TBC) - منظومة الحصر وإدارة الاعتمادات</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
@@ -35,22 +35,9 @@
       --radius-md: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Tajawal', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    
     header {
       background: #ffffff;
       color: var(--tbc-petrol-dark);
@@ -65,155 +52,72 @@
       box-shadow: var(--shadow-sm);
     }
     
-    .brand-logo-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .brand-logo-area { display: flex; align-items: center; gap: 12px; }
+    .tbc-logo-svg { height: 46px; width: auto; display: block; }
+    .brand-title-box { border-right: 2px solid var(--border-subtle); padding-right: 12px; margin-right: 4px; }
+    .brand-title { font-size: 1.05rem; font-weight: 800; color: var(--tbc-petrol-dark); }
+    .brand-subtitle { font-size: 0.72rem; color: var(--tbc-petrol); font-weight: 700; }
 
-    .tbc-logo-svg {
-      height: 46px;
-      width: auto;
-      display: block;
-    }
-
-    .brand-title-box {
-      border-right: 2px solid var(--border-subtle);
-      padding-right: 12px;
-      margin-right: 4px;
-    }
-    .brand-title {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--tbc-petrol-dark);
-    }
-    .brand-subtitle {
-      font-size: 0.72rem;
-      color: var(--tbc-petrol);
-      font-weight: 700;
-    }
-
-    .header-user-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .header-user-actions { display: flex; align-items: center; gap: 8px; }
     .user-badge {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--tbc-petrol-dark);
-      background: var(--tbc-petrol-light);
-      border: 1px solid var(--border-subtle);
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
+      font-size: 0.82rem; font-weight: 700; color: var(--tbc-petrol-dark);
+      background: var(--tbc-petrol-light); border: 1px solid var(--border-subtle);
+      padding: 6px 14px; border-radius: 20px; cursor: pointer;
     }
 
-    /* شريط التبويبات المطور */
     .tabs-bar {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 8px 12px;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
+      background: #ffffff; border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 12px; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 9px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid transparent;
-      background: #f8fafc;
-      color: var(--text-muted);
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid transparent;
+      background: #f8fafc; color: var(--text-muted); font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
     }
     .tab-btn.active {
-      background: var(--tbc-petrol-light);
-      color: var(--tbc-petrol-dark);
-      border: 1.5px solid var(--tbc-petrol);
-      box-shadow: var(--shadow-sm);
+      background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark);
+      border: 1.5px solid var(--tbc-petrol); box-shadow: var(--shadow-sm);
     }
 
-    main {
-      flex: 1;
-      max-width: 820px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 18px 14px;
-    }
-
+    main { flex: 1; max-width: 840px; width: 100%; margin: 0 auto; padding: 18px 14px; }
     .card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-md);
+      background: var(--surface-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-md);
     }
 
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 600px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    .kpi-box {
-      background: #fff;
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      border: 1px solid var(--border-subtle);
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-    }
-    .kpi-box.pending { border-top: 3px solid var(--status-pending); background: var(--status-pending-bg); }
-    .kpi-box.rejected { border-top: 3px solid var(--status-rejected); background: var(--status-rejected-bg); }
-    .kpi-box.approved { border-top: 3px solid var(--status-approved); background: var(--status-approved-bg); }
-    .kpi-box.total { border-top: 3px solid var(--tbc-petrol); }
+    /* KPI Grid القابلة للضغط كفلاتر */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     
-    .kpi-num { font-size: 1.4rem; font-weight: 900; line-height: 1.2; }
-    .kpi-title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 800;
+    .kpi-box {
+      background: #fff; border-radius: var(--radius-sm); padding: 12px;
+      border: 1.5px solid var(--border-subtle); text-align: center; box-shadow: var(--shadow-sm);
+      cursor: pointer; transition: all 0.2s ease; user-select: none;
     }
+    .kpi-box:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kpi-box:active { transform: scale(0.98); }
+    
+    .kpi-box.active-filter { outline: 2.5px solid var(--tbc-petrol); }
+    .kpi-box.pending { border-top: 4px solid var(--status-pending); background: var(--status-pending-bg); }
+    .kpi-box.rejected { border-top: 4px solid var(--status-rejected); background: var(--status-rejected-bg); }
+    .kpi-box.approved { border-top: 4px solid var(--status-approved); background: var(--status-approved-bg); }
+    .kpi-box.total { border-top: 4px solid var(--tbc-petrol); }
+    
+    .kpi-num { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
+    .kpi-title { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+    .badge-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; }
     .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
     .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
     .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
 
     .btn {
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 0.88rem;
-      transition: all 0.2s ease;
+      padding: 9px 15px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer;
+      border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 0.88rem; transition: all 0.2s ease;
     }
-    .btn:active { transform: scale(0.98); }
     .btn-petrol { background: var(--tbc-petrol); color: #fff; }
-    .btn-petrol:hover { background: var(--tbc-petrol-dark); }
     .btn-gold { background: var(--tbc-gold); color: #1f333a; }
-    .btn-gold:hover { background: var(--tbc-gold-hover); }
     .btn-outline { background: #fff; border: 1.5px solid var(--border-subtle); color: var(--tbc-petrol-dark); }
     .btn-approve { background: #10b981; color: #fff; }
     .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
@@ -221,14 +125,8 @@
     .form-group { margin-bottom: 14px; text-align: right; }
     label { display: block; margin-bottom: 6px; font-size: 0.88rem; font-weight: 700; color: var(--tbc-petrol-dark); }
     input, select, textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border-subtle);
-      font-size: 0.92rem;
-      outline: none;
-      background: #ffffff;
-      color: var(--text-main);
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--border-subtle);
+      font-size: 0.92rem; outline: none; background: #ffffff; color: var(--text-main);
     }
     input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); }
 
@@ -237,104 +135,39 @@
     .img-preview-box { max-width: 140px; max-height: 140px; border-radius: var(--radius-sm); margin-top: 10px; object-fit: cover; display: none; border: 1px solid var(--border-subtle); }
     
     .radio-card-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border: 1.5px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      background: #ffffff;
-      font-weight: 600;
-      font-size: 0.92rem;
-      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm);
+      cursor: pointer; background: #ffffff; font-weight: 600; font-size: 0.92rem; margin-bottom: 6px;
     }
-    .radio-card-label:has(input:checked) {
-      border-color: var(--tbc-petrol);
-      background: var(--tbc-petrol-light);
-      color: var(--tbc-petrol-dark);
-    }
+    .radio-card-label:has(input:checked) { border-color: var(--tbc-petrol); background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); }
 
-    table.data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.84rem;
-      margin-top: 10px;
-    }
-    table.data-table th, table.data-table td {
-      padding: 10px;
-      border: 1px solid var(--border-subtle);
-      text-align: right;
-    }
-    table.data-table th {
-      background: var(--tbc-petrol-light);
-      color: var(--tbc-petrol-dark);
-      font-weight: 800;
-    }
+    table.data-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-top: 10px; }
+    table.data-table th, table.data-table td { padding: 10px; border: 1px solid var(--border-subtle); text-align: right; }
+    table.data-table th { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); font-weight: 800; }
 
     .filter-bar-card {
-      background: #ffffff;
-      border: 1.5px solid var(--tbc-petrol);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow-sm);
+      background: #ffffff; border: 1.5px solid var(--tbc-petrol);
+      border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;
     }
-    .filter-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      align-items: flex-end;
-    }
-    @media (max-width: 600px) {
-      .filter-grid { grid-template-columns: 1fr; }
-    }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: flex-end; }
+    @media (max-width: 600px) { .filter-grid { grid-template-columns: 1fr; } }
 
     .perm-checkbox-group {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px dashed var(--border-subtle);
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-subtle);
     }
-    @media (max-width: 600px) {
-      .perm-checkbox-group { grid-template-columns: 1fr; }
-    }
-    .perm-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--tbc-petrol-dark);
-      cursor: pointer;
-    }
-    .perm-item input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--tbc-petrol);
-    }
+    @media (max-width: 600px) { .perm-checkbox-group { grid-template-columns: 1fr; } }
+    .perm-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--tbc-petrol-dark); cursor: pointer; }
+    .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--tbc-petrol); }
 
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15,28,45,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 16px;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,28,45,0.6); display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 16px;
     }
     .modal-content {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      max-width: 440px;
-      width: 100%;
-      padding: 24px;
-      box-shadow: var(--shadow-md);
-      border-top: 4px solid var(--tbc-gold);
+      background: #ffffff; border-radius: var(--radius-md); max-width: 440px; width: 100%;
+      padding: 24px; box-shadow: var(--shadow-md); border-top: 4px solid var(--tbc-gold);
     }
   </style>
 </head>
@@ -352,7 +185,7 @@
       </svg>
       <div class="brand-title-box">
         <div class="brand-title">منظومة الحصر والاعتمادات الميدانية</div>
-        <div class="brand-subtitle">قسم التخطيط والتحكم</div>
+        <div class="brand-subtitle" id="headerSubTitle">إدارة المشاريع والصيانة</div>
       </div>
     </div>
     <div class="header-user-actions">
@@ -363,15 +196,15 @@
     </div>
   </header>
 
-  <!-- تسجيل الدخول -->
-  <div id="loginView" style="max-width: 400px; margin: 40px auto; width: 90%;">
+  <!-- نافذة تسجيل الدخول -->
+  <div id="loginView" style="max-width: 420px; margin: 35px auto; width: 92%;">
     <div class="card" style="text-align: center; border-top: 4px solid var(--tbc-petrol);">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">تسجيل الدخول للمنظومة</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">شركة تطوير للمباني - قسم التخطيط والتحكم</p>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">شركة تطوير للمباني - بوابة الحصر الميداني</p>
       
       <div class="form-group">
         <label>اسم المستخدم / الرمز الوظيفي</label>
-        <input type="text" id="loginUsername" placeholder="اكتب admin أو الرمز الوظيفي">
+        <input type="text" id="loginUsername" placeholder="مثال: admin, sup_lead, user1">
       </div>
       <div class="form-group">
         <label>كلمة المرور</label>
@@ -379,10 +212,14 @@
       </div>
       <button class="btn btn-petrol" style="width: 100%; padding: 13px;" onclick="handleLogin()">دخول المنظومة 🔒</button>
       
-      <div style="margin-top:16px; font-size:0.8rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.6;">
-        💡 <b>بيانات الدخول الافتراضية:</b><br>
-        • <b>admin:</b> كلمة المرور (<b>123</b> أو <b>123456</b>).<br>
-        • <b>user1 أو user2:</b> كلمة المرور (<b>123</b> أو <b>123456</b>).
+      <div style="margin-top:16px; font-size:0.78rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:10px; border-radius:8px; line-height:1.6;">
+        💡 <b>الهيكل الوظيفي المعتمد (كلمة السر 123 أو 123456):</b><br>
+        • <b>admin:</b> إدارة التخطيط والتحكم (صلاحية كاملة).<br>
+        • <b>reg_east:</b> إدارة المنطقة الشرقية (إشراف ومتابعة).<br>
+        • <b>sub_east:</b> إدارة المكتب الفرعي بالشرقية.<br>
+        • <b>sub_ahsa:</b> إدارة المكتب الفرعي بالأحساء.<br>
+        • <b>sup_lead:</b> مدير الإشراف للقطاع (اعتماد التقارير).<br>
+        • <b>user1 / user2:</b> مشرف ميداني (تعبئة الحصر).
       </div>
     </div>
   </div>
@@ -391,12 +228,12 @@
   <div id="appView" class="hidden">
     <div class="tabs-bar">
       <button class="tab-btn active" id="tabSurveys" onclick="showTab('surveys')">📋 نماذج الحصر</button>
-      <button class="tab-btn" id="tabRecords" onclick="showTab('records')">📑 السجلات والتحليلات</button>
-      <button class="tab-btn hidden" id="tabUsers" onclick="showTab('users')">👥 إدارة المشرفين والصلاحيات</button>
+      <button class="tab-btn" id="tabRecords" onclick="showTab('records')">📑 السجلات والاعتمادات</button>
+      <button class="tab-btn hidden" id="tabUsers" onclick="showTab('users')">👥 إدارة المستخدمين والصلاحيات</button>
     </div>
 
     <main>
-      <!-- مؤشرات الأداء والتنبيهات -->
+      <!-- بطاقات المؤشرات الذكية القابلة للضغط كفلاتر تفاعلية -->
       <div id="kpiContainer" class="kpi-grid"></div>
 
       <!-- ================= 1. تبويب نماذج الحصر ================= -->
@@ -404,8 +241,8 @@
         <div id="adminPanel" class="card hidden" style="border-right: 4px solid var(--tbc-gold);">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <h4 style="color:var(--tbc-petrol-dark);">لوحة تحكم قسم التخطيط والتحكم</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة، تعديلها، أو حذفها نهائياً</p>
+              <h4 style="color:var(--tbc-petrol-dark);">لوحة إدارة عمليات الحصر</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">إصدار نماذج حصر جديدة، تعديلها، أو حذفها من قبل التخطيط والتحكم</p>
             </div>
             <button class="btn btn-gold" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
           </div>
@@ -414,7 +251,7 @@
         <div id="surveysListContainer"></div>
       </section>
 
-      <!-- إنشاء أو تعديل حصر من قبل الأدمن -->
+      <!-- إنشاء أو تعديل حصر -->
       <section id="secNewSurvey" class="hidden">
         <div class="card">
           <h3 style="color:var(--tbc-petrol-dark); margin-bottom:12px;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
@@ -450,6 +287,14 @@
           <p id="fillDesc" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;"></p>
 
           <div class="form-group">
+            <label>المكتب الفرعي التابع له المنشأة *</label>
+            <select id="fillBranch">
+              <option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option>
+              <option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label>اسم المنشأة التعليمية / المدرسة *</label>
             <input type="text" id="fillSchool" placeholder="أدخل اسم المدرسة">
           </div>
@@ -466,7 +311,7 @@
           <div id="dynamicFields"></div>
 
           <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:14px; font-size:1rem; margin-top:12px;" onclick="submitLocalResponse()">
-            رفع التقرير للاعتماد من قسم التخطيط والتحكم ✓
+            رفع التقرير للاعتماد من مدير الإشراف ✓
           </button>
         </div>
       </section>
@@ -476,7 +321,7 @@
         <div class="card" style="text-align:center; padding:25px;">
           <div style="font-size:3rem; margin-bottom:10px;">⏳</div>
           <h3 style="color:var(--tbc-petrol-dark);">تم رفع تقرير الحصر بنجاح!</h3>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">تم إرسال التقرير وهو الآن <b>قيد المراجعة والاعتماد</b> من قبل قسم التخطيط والتحكم.</p>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">التقرير الآن <b>بانتظار الاعتماد من مدير الإشراف للقطاع</b>.</p>
           <div style="display:flex; justify-content:center; gap:10px;">
             <button class="btn btn-gold" id="printImmediateBtn" onclick="printLastSubmittedPDF()">🖨️ طباعة نسخة PDF</button>
             <button class="btn btn-outline" onclick="backToSurveysList()">العودة للرئيسية</button>
@@ -487,6 +332,13 @@
       <!-- ================= 2. تبويب السجلات والفلاتر ================= -->
       <section id="secRecords" class="hidden">
         
+        <!-- إشعار الفلتر النشط من الكروت -->
+        <div id="filterBanner" class="card hidden" style="padding:10px 16px; background:#f8fafc; border:1px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.85rem; font-weight:bold; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
+          <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="filterByKpi('ALL')">إلغاء الفلتر ✕</button>
+        </div>
+
+        <!-- فلاتر الحصر والمشرف -->
         <div id="adminFilterSection" class="filter-bar-card hidden">
           <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:10px;">
             <span>🔍 تصفية وتحليل أداء الحصورات والمشرفين</span>
@@ -510,6 +362,7 @@
           </div>
         </div>
 
+        <!-- ملخصات الإدارة -->
         <div id="adminSummarySection" class="hidden">
           <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
@@ -526,28 +379,11 @@
                 <thead>
                   <tr>
                     <th>المشرف</th>
-                    <th>الحصر</th>
+                    <th>المكتب الفرعي</th>
                     <th>التقارير</th>
                     <th>معتمد ✅</th>
                     <th>قيد الاعتماد ⏳</th>
                     <th>مرفوض ❌</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card" style="border-top: 3px solid var(--tbc-gold);">
-            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:6px;">🏫 ملخص المدارس والزيارات المنفذة</h4>
-            <div style="overflow-x:auto;">
-              <table class="data-table" id="schoolsSummaryTable">
-                <thead>
-                  <tr>
-                    <th>اسم المدرسة</th>
-                    <th>عدد الحصورات</th>
-                    <th>آخر زيارة</th>
-                    <th>الحالة الحالية</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -569,41 +405,53 @@
         <div id="recordsContainer"></div>
       </section>
 
-      <!-- ================= 3. تبويب إدارة المشرفين والصلاحيات (أدمن فقط) ================= -->
+      <!-- ================= 3. تبويب إدارة المستخدمين والهيكل ================= -->
       <section id="secUsers" class="hidden">
         <div class="card" style="border-right: 4px solid var(--tbc-gold);">
-          <h4 style="color:var(--tbc-petrol-dark); margin-bottom:12px;" id="userFormTitle">➕ إضافة مشرف / مستخدم جديد</h4>
+          <h4 style="color:var(--tbc-petrol-dark); margin-bottom:12px;" id="userFormTitle">➕ إضافة مستخدم جديد في الهيكل الإداري</h4>
           
           <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
             <div class="form-group">
-              <label>الاسم الكامل للمشرف *</label>
-              <input type="text" id="usrFullName" placeholder="مثال: م. بندر الشمري">
+              <label>الاسم الكامل *</label>
+              <input type="text" id="usrFullName" placeholder="مثال: م. فهد الخالدي">
             </div>
             <div class="form-group">
-              <label>الرمز الوظيفي (اسم المستخدم) *</label>
-              <input type="text" id="usrUsername" placeholder="مثال: user80">
+              <label>الرمز الوظيفي (اسم الدخول) *</label>
+              <input type="text" id="usrUsername" placeholder="مثال: fahid88">
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
             <div class="form-group">
-              <label>كلمة المرور المبدئية *</label>
+              <label>كلمة المرور *</label>
               <input type="text" id="usrPassword" placeholder="••••••••">
             </div>
             <div class="form-group">
-              <label>الدور الوظيفي</label>
+              <label>النوع / المسمى الوظيفي *</label>
               <select id="usrRole">
-                <option value="user">مشرف ميداني (Field Inspector)</option>
-                <option value="admin">مسؤول قسم التخطيط والتحكم (Admin)</option>
+                <option value="ROLE_PLANNING">١- إدارة التخطيط والتحكم</option>
+                <option value="ROLE_REGION_EAST">٢- إدارة المنطقة الشرقية</option>
+                <option value="ROLE_SUB_EAST">٣- إدارة المكتب الفرعي بالشرقية</option>
+                <option value="ROLE_SUB_AHSA">٤- إدارة المكتب الفرعي بالاحساء</option>
+                <option value="ROLE_SUPERVISION_LEAD">٥- مدير الإشراف للقطاع</option>
+                <option value="ROLE_INSPECTOR" selected>٦- المشرف الميداني</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>المكتب الفرعي التابع له</label>
+              <select id="usrBranch">
+                <option value="الكل">كامل المنطقة الشرقية (إدارة عامة)</option>
+                <option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option>
+                <option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option>
               </select>
             </div>
           </div>
 
-          <label style="margin-top:4px;">الصلاحيات والسماحيات الممنوحة للمشرف:</label>
+          <label style="margin-top:4px;">الصلاحيات والسماحيات الممنوحة:</label>
           <div class="perm-checkbox-group" style="margin-bottom:16px;">
             <label class="perm-item">
               <input type="checkbox" id="permAllowEdit" checked>
-              <span>✏️ السماح بتعديل التقارير (بحد أقصى مرتين)</span>
+              <span>✏️ السماح بتعديل التقارير (مرتين للمشرف)</span>
             </label>
             <label class="perm-item">
               <input type="checkbox" id="permRequireGps" checked>
@@ -620,26 +468,26 @@
           </div>
 
           <div style="display:flex; gap:10px;">
-            <button class="btn btn-petrol" style="flex:1;" onclick="saveUserRecord()">حفظ وتفعيل المشرف ✓</button>
+            <button class="btn btn-petrol" style="flex:1;" onclick="saveUserRecord()">حفظ وتفعيل المستخدم ✓</button>
             <button class="btn btn-outline" id="cancelUserEditBtn" style="display:none;" onclick="resetUserForm()">إلغاء التعديل</button>
           </div>
         </div>
 
         <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h4 style="color:var(--tbc-petrol-dark);">👥 قائمة المشرفين وإدارة الأرقام السرية</h4>
+            <h4 style="color:var(--tbc-petrol-dark);">👥 الهيكل الإداري والمشرفين</h4>
             <span class="badge-status approved" id="totalUsersBadge"></span>
           </div>
           <div style="overflow-x:auto;">
             <table class="data-table" id="usersListTable">
               <thead>
                 <tr>
-                  <th>الاسم الكامل</th>
-                  <th>الرمز (User)</th>
-                  <th>الدور</th>
-                  <th>الصلاحيات الفعالة</th>
+                  <th>الاسم</th>
+                  <th>الرمز</th>
+                  <th>المسمى الوظيفي</th>
+                  <th>المكتب</th>
                   <th>الحالة</th>
-                  <th>إدارة الأرقام السرية والتحكم</th>
+                  <th>إدارة الحساب</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -678,37 +526,87 @@
   </div>
 
   <script>
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v7')) || [
+    // ================= قاموس الأدوار والمسميات الوظيفية =================
+    const ROLE_LABELS = {
+      ROLE_PLANNING: "١- إدارة التخطيط والتحكم",
+      ROLE_REGION_EAST: "٢- إدارة المنطقة الشرقية",
+      ROLE_SUB_EAST: "٣- إدارة المكتب الفرعي بالشرقية",
+      ROLE_SUB_AHSA: "٤- إدارة المكتب الفرعي بالاحساء",
+      ROLE_SUPERVISION_LEAD: "٥- مدير الإشراف للقطاع",
+      ROLE_INSPECTOR: "٦- المشرف الميداني"
+    };
+
+    // الهيكل الافتراضي للمستخدمين
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v8')) || [
       {
         username: "admin",
         password: "123",
-        fullName: "قسم التخطيط والتحكم (الرئيسي)",
-        role: "admin",
+        fullName: "إدارة التخطيط والتحكم (الرئيسي)",
+        role: "ROLE_PLANNING",
+        branch: "الكل",
+        active: true,
+        permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
+      },
+      {
+        username: "reg_east",
+        password: "123",
+        fullName: "م. عبد العزيز (إدارة الشرقية)",
+        role: "ROLE_REGION_EAST",
+        branch: "الكل",
+        active: true,
+        permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true }
+      },
+      {
+        username: "sub_east",
+        password: "123",
+        fullName: "إدارة المكتب الفرعي بالشرقية",
+        role: "ROLE_SUB_EAST",
+        branch: "المكتب الفرعي بالشرقية",
+        active: true,
+        permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true }
+      },
+      {
+        username: "sub_ahsa",
+        password: "123",
+        fullName: "إدارة المكتب الفرعي بالأحساء",
+        role: "ROLE_SUB_AHSA",
+        branch: "المكتب الفرعي بالأحساء",
+        active: true,
+        permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true }
+      },
+      {
+        username: "sup_lead",
+        password: "123",
+        fullName: "م. خالد السبيعي (مدير الإشراف للقطاع)",
+        role: "ROLE_SUPERVISION_LEAD",
+        branch: "المكتب الفرعي بالشرقية",
         active: true,
         permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
       },
       {
         username: "user1",
         password: "123",
-        fullName: "م. أحمد الغامدي",
-        role: "user",
+        fullName: "م. أحمد الغامدي (مشرف الشرقية)",
+        role: "ROLE_INSPECTOR",
+        branch: "المكتب الفرعي بالشرقية",
         active: true,
         permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
       },
       {
         username: "user2",
         password: "123",
-        fullName: "م. فهد القحطاني",
-        role: "user",
+        fullName: "م. فهد القحطاني (مشرف الأحساء)",
+        role: "ROLE_INSPECTOR",
+        branch: "المكتب الفرعي بالأحساء",
         active: true,
-        permissions: { allowEdit: true, requireGps: false, requirePhoto: true, allowPdf: true }
+        permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
       }
     ];
 
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v7')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v8')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -736,14 +634,17 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v7')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v8')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
     let editingSurveyId = null;
 
+    // الفلاتر
     let selectedSurveyFilter = "ALL";
     let selectedInspectorFilter = "ALL";
+    let selectedKpiStatusFilter = "ALL"; // فلتر الضغط على الكروت (pending, approved, rejected, ALL)
 
+    // ================= تسجيل الدخول =================
     function handleLogin() {
       const u = document.getElementById('loginUsername').value.trim().toLowerCase();
       const p = document.getElementById('loginPassword').value.trim();
@@ -755,27 +656,26 @@
       );
 
       if (!found) return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
-      if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل قسم التخطيط والتحكم.");
+      if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل إدارة المنظومة.");
 
       currentUser = found;
 
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appView').classList.remove('hidden');
-      document.getElementById('userBadge').innerHTML = `<span>👤 ${currentUser.fullName}</span> | <span style="text-decoration:underline;">خروج</span>`;
+      document.getElementById('userBadge').innerHTML = `<span>👤 ${currentUser.fullName} (${ROLE_LABELS[currentUser.role] || currentUser.role})</span> | <span style="text-decoration:underline;">خروج</span>`;
       document.getElementById('changeMyPassBtn').classList.remove('hidden');
+      document.getElementById('headerSubTitle').innerText = ROLE_LABELS[currentUser.role] || "إدارة المشاريع والصيانة";
 
-      if (currentUser.role === 'admin') {
-        document.getElementById('adminPanel').classList.remove('hidden');
-        document.getElementById('adminSummarySection').classList.remove('hidden');
-        document.getElementById('adminFilterSection').classList.remove('hidden');
-        document.getElementById('tabUsers').classList.remove('hidden');
-        populateFilterDropdowns();
-      } else {
-        document.getElementById('adminPanel').classList.add('hidden');
-        document.getElementById('adminSummarySection').classList.add('hidden');
-        document.getElementById('adminFilterSection').classList.add('hidden');
-        document.getElementById('tabUsers').classList.add('hidden');
-      }
+      // ضبط ظهور لوحات التحكم حسب الصلاحيات
+      const isPlanning = currentUser.role === "ROLE_PLANNING";
+      const isManagement = ["ROLE_PLANNING", "ROLE_REGION_EAST", "ROLE_SUB_EAST", "ROLE_SUB_AHSA", "ROLE_SUPERVISION_LEAD"].includes(currentUser.role);
+
+      document.getElementById('adminPanel').classList.toggle('hidden', !isPlanning);
+      document.getElementById('tabUsers').classList.toggle('hidden', !isPlanning);
+      document.getElementById('adminSummarySection').classList.toggle('hidden', !isManagement);
+      document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
+
+      if (isManagement) populateFilterDropdowns();
 
       showTab('surveys');
     }
@@ -784,21 +684,91 @@
       currentUser = null;
       editingResponseId = null;
       editingSurveyId = null;
+      selectedKpiStatusFilter = "ALL";
       document.getElementById('appView').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('userBadge').innerHTML = "<span>👤 تسجيل دخول</span>";
       document.getElementById('changeMyPassBtn').classList.add('hidden');
+      document.getElementById('headerSubTitle').innerText = "إدارة المشاريع والصيانة";
     }
 
-    // ================= دالة التبديل بين التابات (تم إصلاحها بالكامل) =================
+    // ================= فلاتر بطاقات المؤشرات (Clickable KPI Filters) =================
+    function filterByKpi(status) {
+      selectedKpiStatusFilter = status;
+      showTab('records');
+    }
+
+    // فلترة السجلات المتاحة للمستخدم بناءً على دوره ومكتبه
+    function getScopedResponses() {
+      if (!currentUser) return [];
+
+      let list = responses;
+
+      // قيود المكاتب الفرعية
+      if (currentUser.role === "ROLE_SUB_EAST") {
+        list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية");
+      } else if (currentUser.role === "ROLE_SUB_AHSA") {
+        list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء");
+      } else if (currentUser.role === "ROLE_SUPERVISION_LEAD") {
+        // مدير الإشراف يرى تقارير مكتبه
+        if (currentUser.branch && currentUser.branch !== "الكل") {
+          list = list.filter(r => r.branch === currentUser.branch);
+        }
+      } else if (currentUser.role === "ROLE_INSPECTOR") {
+        // المشرف يرى تقاريره هو فقط
+        list = list.filter(r => r.username === currentUser.username);
+      }
+
+      return list;
+    }
+
+    function updateKPIs() {
+      const c = document.getElementById('kpiContainer');
+      if (!c) return;
+
+      const scoped = getScopedResponses();
+      let filtered = scoped;
+
+      // تطبيق فلاتر الحصر والمشرف إذا وُجدت
+      if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter);
+      if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
+
+      const total = filtered.length;
+      const pending = filtered.filter(r => r.status === 'pending').length;
+      const approved = filtered.filter(r => r.status === 'approved').length;
+      const rejected = filtered.filter(r => r.status === 'rejected').length;
+
+      const totalActive = selectedKpiStatusFilter === 'ALL' ? 'active-filter' : '';
+      const pendingActive = selectedKpiStatusFilter === 'pending' ? 'active-filter' : '';
+      const approvedActive = selectedKpiStatusFilter === 'approved' ? 'active-filter' : '';
+      const rejectedActive = selectedKpiStatusFilter === 'rejected' ? 'active-filter' : '';
+
+      c.innerHTML = `
+        <div class="kpi-box total ${totalActive}" onclick="filterByKpi('ALL')" title="اضغط لعرض الكل">
+          <div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div>
+          <div class="kpi-title">📊 التقارير المفلترة</div>
+        </div>
+        <div class="kpi-box pending ${pendingActive}" onclick="filterByKpi('pending')" title="اضغط لتصفية بانتظار الاعتماد">
+          <div class="kpi-num" style="color:var(--status-pending);">${pending}</div>
+          <div class="kpi-title">⏳ بانتظار الاعتماد</div>
+        </div>
+        <div class="kpi-box approved ${approvedActive}" onclick="filterByKpi('approved')" title="اضغط لتصفية المعتمدة">
+          <div class="kpi-num" style="color:var(--status-approved);">${approved}</div>
+          <div class="kpi-title">✅ تقارير معتمدة</div>
+        </div>
+        <div class="kpi-box rejected ${rejectedActive}" onclick="filterByKpi('rejected')" title="اضغط لتصفية المرفوضة">
+          <div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div>
+          <div class="kpi-title">❌ تقارير مرفوضة</div>
+        </div>
+      `;
+    }
+
     function showTab(tab) {
-      // إزالة الحالة النشطة
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
       const tu = document.getElementById('tabUsers');
       if (tu) tu.classList.toggle('active', tab === 'users');
 
-      // إظهار وإخفاء الأقسام بأمان
       document.getElementById('secSurveys').classList.toggle('hidden', tab !== 'surveys');
       document.getElementById('secRecords').classList.toggle('hidden', tab !== 'records');
       document.getElementById('secUsers').classList.toggle('hidden', tab !== 'users');
@@ -810,42 +780,11 @@
 
       if (tab === 'surveys') renderSurveys();
       if (tab === 'records') {
-        if (currentUser && currentUser.role === 'admin') populateFilterDropdowns();
+        if (currentUser && currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
         renderRecords();
       }
-      if (tab === 'users' && currentUser && currentUser.role === 'admin') {
+      if (tab === 'users' && currentUser && currentUser.role === "ROLE_PLANNING") {
         renderUsersManagement();
-      }
-    }
-
-    function openChangePasswordModal() {
-      document.getElementById('cpCurrentPass').value = '';
-      document.getElementById('cpNewPass').value = '';
-      document.getElementById('cpConfirmPass').value = '';
-      document.getElementById('changePasswordModal').classList.remove('hidden');
-    }
-
-    function closeChangePasswordModal() {
-      document.getElementById('changePasswordModal').classList.add('hidden');
-    }
-
-    function submitPasswordChange() {
-      const cur = document.getElementById('cpCurrentPass').value.trim();
-      const n1 = document.getElementById('cpNewPass').value.trim();
-      const n2 = document.getElementById('cpConfirmPass').value.trim();
-
-      if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
-      if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
-      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
-      if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
-
-      const idx = usersList.findIndex(u => u.username === currentUser.username);
-      if (idx !== -1) {
-        usersList[idx].password = n1;
-        currentUser.password = n1;
-        localStorage.setItem('tbc_users_v7', JSON.stringify(usersList));
-        alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
-        closeChangePasswordModal();
       }
     }
 
@@ -854,7 +793,7 @@
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
       if (surveys.length === 0) {
-        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد أي استمارات حصر نشطة حالياً.</div>';
+        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد استمارات حصر نشطة حالياً.</div>';
         return;
       }
 
@@ -863,7 +802,7 @@
         div.className = 'card';
         
         let adminActionButtons = '';
-        if (currentUser && currentUser.role === 'admin') {
+        if (currentUser && currentUser.role === 'ROLE_PLANNING') {
           adminActionButtons = `
             <div style="display:flex; gap:6px; margin-top:8px; border-top:1px dashed var(--border-subtle); padding-top:8px;">
               <button class="btn btn-outline" style="font-size:0.78rem; padding:4px 10px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button>
@@ -927,11 +866,11 @@
     }
 
     function deleteSurveyTemplate(id) {
-      if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً من المنظومة؟ لن يتمكن المشرفون من تعبئته بعد الآن.")) return;
+      if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً من المنظومة؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v7', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v8', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
-      if (currentUser.role === 'admin') populateFilterDropdowns();
+      populateFilterDropdowns();
       renderSurveys();
     }
 
@@ -955,7 +894,7 @@
           </select>
           <button class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.parentElement.remove()">✕</button>
         </div>
-        <input type="text" placeholder="الخيارات مفصولة بفاصلة (مثال: مطابق, غير مطابق, معلق)" class="q-options ${isRadio?'':'hidden'}" value="${optVal}">
+        <input type="text" placeholder="الخيارات مفصولة بفاصلة" class="q-options ${isRadio?'':'hidden'}" value="${optVal}">
       `;
       c.appendChild(d);
     }
@@ -997,16 +936,16 @@
         }
       } else {
         surveys.push({ id: "SRV-" + Date.now(), title, desc, fields });
-        alert("✓ تم حفظ ونشر نموذج الحصر الجديد لجميع المشرفين!");
+        alert("✓ تم نشر نموذج الحصر الجديد!");
       }
 
-      localStorage.setItem('tbc_surveys_v7', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v8', JSON.stringify(surveys));
       closeNewSurveyModal();
-      if (currentUser.role === 'admin') populateFilterDropdowns();
+      populateFilterDropdowns();
       renderSurveys();
     }
 
-    // ================= تعبئة التقرير =================
+    // ================= تعبئة الحصر الميداني =================
     let activeSrv = null;
     function openFillSurvey(id, existingData = null) {
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
@@ -1027,13 +966,19 @@
       } else {
         editingResponseId = null;
         editBadge.classList.add('hidden');
-        submitBtn.innerText = "رفع التقرير للاعتماد من قسم التخطيط والتحكم ✓";
+        submitBtn.innerText = "رفع التقرير للاعتماد من مدير الإشراف ✓";
       }
 
       document.getElementById('fillTitle').innerText = (existingData ? "تعديل: " : "") + activeSrv.title;
       document.getElementById('fillDesc').innerText = activeSrv.desc || '';
       document.getElementById('fillSchool').value = existingData ? existingData.school : '';
       document.getElementById('fillGps').value = existingData ? (existingData.gps || '') : '';
+      
+      if (existingData && existingData.branch) {
+        document.getElementById('fillBranch').value = existingData.branch;
+      } else if (currentUser.branch && currentUser.branch !== "الكل") {
+        document.getElementById('fillBranch').value = currentUser.branch;
+      }
 
       const container = document.getElementById('dynamicFields');
       container.innerHTML = '';
@@ -1123,6 +1068,7 @@
     function submitLocalResponse() {
       const school = document.getElementById('fillSchool').value.trim();
       const gps = document.getElementById('fillGps').value.trim();
+      const branch = document.getElementById('fillBranch').value;
       if (!school) return alert("يرجى إدخال اسم المدرسة");
 
       const userPerms = currentUser.permissions || { requireGps: true, requirePhoto: true };
@@ -1160,11 +1106,13 @@
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
           const old = responses[idx];
-          const newEditCount = (currentUser.role === 'admin') ? (old.editCount || 0) : ((old.editCount || 0) + 1);
+          const isPlanning = currentUser.role === "ROLE_PLANNING";
+          const newEditCount = isPlanning ? (old.editCount || 0) : ((old.editCount || 0) + 1);
 
           responses[idx] = {
             ...old,
             school,
+            branch,
             gps,
             answers: dataObj,
             editCount: newEditCount,
@@ -1175,13 +1123,14 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v7', JSON.stringify(responses));
-          alert(currentUser.role === 'admin' ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
+          localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+          alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
         const entry = {
           id: Date.now(),
           school,
+          branch,
           gps,
           surveyTitle: activeSrv.title,
           date: new Date().toLocaleString('ar-SA'),
@@ -1196,7 +1145,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v7', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -1217,17 +1166,28 @@
       if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
-    // ================= عرض السجلات والتقارير =================
+    // ================= السجلات والاعتمادات حسب الصلاحيات =================
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
+      const banner = document.getElementById('filterBanner');
+      const bannerText = document.getElementById('filterBannerText');
       container.innerHTML = '';
 
-      let visible = currentUser.role === 'admin' 
-        ? responses 
-        : responses.filter(r => r.username === currentUser.username);
+      let visible = getScopedResponses();
 
-      if (currentUser.role === 'admin') {
+      // تطبيق فلتر الضغط على الكروت العلوية (KPI Click Filter)
+      if (selectedKpiStatusFilter !== "ALL") {
+        visible = visible.filter(r => r.status === selectedKpiStatusFilter);
+        banner.classList.remove('hidden');
+        const statusArabic = { pending: "بانتظار الاعتماد ⏳", approved: "المعتمدة ✅", rejected: "المرفوضة ❌" };
+        bannerText.innerText = `تصفية حسب الحالة: ${statusArabic[selectedKpiStatusFilter] || ''} (${visible.length} تقرير)`;
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // تطبيق الفلاتر الإضافية
+      if (currentUser.role !== "ROLE_INSPECTOR") {
         if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter);
         if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
         renderAdminTables();
@@ -1258,60 +1218,59 @@
         if (r.status === 'rejected' && r.rejectionReason) {
           rejectionBox = `
             <div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:8px 12px; border-radius:6px; margin:8px 0; font-size:0.85rem; color:#b91c1c;">
-              <b>⚠️ ملاحظة الرفض من الإدارة:</b> ${r.rejectionReason}
+              <b>⚠️ ملاحظة الرفض:</b> ${r.rejectionReason}
             </div>
           `;
         }
 
         const editsUsed = r.editCount || 0;
         let editButtonHtml = '';
-        const userPerms = currentUser.permissions || { allowEdit: true, allowPdf: true };
+        const isPlanning = currentUser.role === "ROLE_PLANNING";
+        const isInspector = currentUser.role === "ROLE_INSPECTOR";
 
-        if (currentUser.role === 'admin') {
+        if (isPlanning) {
           editButtonHtml = `
             <button class="btn btn-outline" style="font-size:0.8rem; padding:4px 10px;" onclick="triggerEditReport(${r.id})">
-              ✏️ تعديل كامل (إدارة)
+              ✏️ تعديل كامل (تخطيط وتحكم)
             </button>
           `;
-        } else {
-          if (userPerms.allowEdit === false) {
-            editButtonHtml = `<span style="font-size:0.75rem; color:var(--text-muted);">التعديل موقوف</span>`;
+        } else if (isInspector) {
+          const canEdit = (editsUsed < 2) || (r.adminPermissionGranted === true);
+          if (canEdit) {
+            editButtonHtml = `
+              <button class="btn btn-outline" style="font-size:0.8rem; padding:4px 10px;" onclick="triggerEditReport(${r.id})">
+                ✏️ تعديل التقرير (${editsUsed}/2)
+              </button>
+            `;
           } else {
-            const canEdit = (editsUsed < 2) || (r.adminPermissionGranted === true);
-            if (canEdit) {
-              editButtonHtml = `
-                <button class="btn btn-outline" style="font-size:0.8rem; padding:4px 10px;" onclick="triggerEditReport(${r.id})">
-                  ✏️ تعديل التقرير (${editsUsed}/2)
-                </button>
-              `;
-            } else {
-              editButtonHtml = `
-                <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.78rem; padding:4px 8px; cursor:not-allowed;">
-                  🔒 مقفل (${editsUsed}/2)
-                </button>
-                <button class="btn btn-gold" style="font-size:0.75rem; padding:4px 8px;" onclick="requestAdminEditPermission(${r.id})">
-                  📩 طلب إذن تعديل
-                </button>
-              `;
-            }
+            editButtonHtml = `
+              <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.78rem; padding:4px 8px; cursor:not-allowed;">
+                🔒 مقفل (${editsUsed}/2)
+              </button>
+              <button class="btn btn-gold" style="font-size:0.75rem; padding:4px 8px;" onclick="requestAdminEditPermission(${r.id})">
+                📩 طلب إذن تعديل
+              </button>
+            `;
           }
         }
 
-        const pdfButton = (currentUser.role === 'admin' || userPerms.allowPdf !== false)
+        const pdfButton = (currentUser.permissions && currentUser.permissions.allowPdf !== false)
           ? `<button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF</button>`
           : '';
 
-        let adminActionButtons = '';
-        if (currentUser.role === 'admin') {
+        // أزرار الاعتماد: لمدير الإشراف للقطاع أو إدارة التخطيط والتحكم
+        let approvalActionButtons = '';
+        const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
+        if (canApprove) {
           const grantPermissionBtn = (editsUsed >= 2 && !r.adminPermissionGranted) ? `
             <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="grantEditPermission(${originalIdx})">
               🔓 منح إذن تعديل إضافي للمشرف
             </button>
           ` : '';
 
-          adminActionButtons = `
+          approvalActionButtons = `
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; border-top:1px dashed var(--border-subtle); padding-top:8px;">
-              <button class="btn btn-approve" style="font-size:0.8rem; padding:6px 12px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير</button>
+              <button class="btn btn-approve" style="font-size:0.8rem; padding:6px 12px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير (مدير الإشراف)</button>
               <button class="btn btn-reject" style="font-size:0.8rem; padding:6px 12px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع ملاحظة</button>
               ${grantPermissionBtn}
             </div>
@@ -1331,7 +1290,9 @@
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
             <div>
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem;">🏫 ${r.school}</h4>
-              <span style="font-size:0.75rem; color:var(--text-muted);">المشرف: ${r.collectedBy} | ${r.date}</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">
+                المشرف: ${r.collectedBy} | ${r.branch || 'المكتب الفرعي بالشرقية'} | ${r.date}
+              </span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
               ${statusBadge}
@@ -1342,7 +1303,7 @@
           <div style="font-size:0.85rem; color:var(--tbc-gold-hover); font-weight:800; margin-bottom:6px;">📋 ${r.surveyTitle}</div>
           ${rejectionBox}
           <ul style="list-style:none; padding:0;">${detailsHtml}</ul>
-          ${adminActionButtons}
+          ${approvalActionButtons}
         `;
         container.appendChild(div);
       });
@@ -1351,20 +1312,20 @@
     function triggerEditReport(reportId) {
       const rep = responses.find(r => r.id === reportId);
       if (!rep) return;
-      if (currentUser.role !== 'admin' && (rep.editCount >= 2) && !rep.adminPermissionGranted) {
-        return alert("عذراً، لقد استنفذت الحد الأقصى للتعديل (مرتان). يرجى طلب إذن من قسم التخطيط والتحكم.");
+      if (currentUser.role === "ROLE_INSPECTOR" && (rep.editCount >= 2) && !rep.adminPermissionGranted) {
+        return alert("عذراً، استنفذت الحد الأقصى للتعديل (مرتان). يرجى طلب إذن من الإدارة.");
       }
       openFillSurvey(null, rep);
     }
 
     function requestAdminEditPermission(reportId) {
-      alert("✓ تم إرسال طلب فتح صلاحية التعديل إلى قسم التخطيط والتحكم بنجاح.");
+      alert("✓ تم إرسال طلب فتح صلاحية التعديل إلى مدير الإشراف وقسم التخطيط والتحكم.");
     }
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v7', JSON.stringify(responses));
-      alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير بنجاح!");
+      localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
+      alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
 
@@ -1375,57 +1336,28 @@
       const inspectorTbody = document.querySelector('#inspectorsSummaryTable tbody');
       if (inspectorTbody) {
         inspectorTbody.innerHTML = '';
-        let targetInspectors = [...new Set(responses.map(r => r.collectedBy))];
+        const scoped = getScopedResponses();
+        let targetInspectors = [...new Set(scoped.map(r => r.collectedBy))];
         if (selectedInspectorFilter !== "ALL") targetInspectors = [selectedInspectorFilter];
 
         targetInspectors.forEach(ins => {
-          let list = responses.filter(r => r.collectedBy === ins);
+          let list = scoped.filter(r => r.collectedBy === ins);
           if (selectedSurveyFilter !== "ALL") list = list.filter(r => r.surveyTitle === selectedSurveyFilter);
 
+          const branchName = list[0]?.branch || '-';
           const total = list.length;
           const app = list.filter(r => r.status === 'approved').length;
           const pend = list.filter(r => r.status === 'pending').length;
           const rej = list.filter(r => r.status === 'rejected').length;
-          const surveyColText = selectedSurveyFilter === "ALL" ? "متعدد / إجمالي" : selectedSurveyFilter;
 
           inspectorTbody.innerHTML += `
             <tr>
               <td><b>${ins}</b></td>
-              <td><small style="color:var(--tbc-petrol);">${surveyColText}</small></td>
+              <td><small style="color:var(--tbc-petrol);">${branchName}</small></td>
               <td><b>${total}</b></td>
               <td style="color:#047857; font-weight:bold;">${app}</td>
               <td style="color:#b45309; font-weight:bold;">${pend}</td>
               <td style="color:#b91c1c; font-weight:bold;">${rej}</td>
-            </tr>
-          `;
-        });
-      }
-
-      const schoolTbody = document.querySelector('#schoolsSummaryTable tbody');
-      if (schoolTbody) {
-        schoolTbody.innerHTML = '';
-        let filteredResponsesForSchools = responses;
-        if (selectedSurveyFilter !== "ALL") filteredResponsesForSchools = filteredResponsesForSchools.filter(r => r.surveyTitle === selectedSurveyFilter);
-        if (selectedInspectorFilter !== "ALL") filteredResponsesForSchools = filteredResponsesForSchools.filter(r => r.collectedBy === selectedInspectorFilter);
-
-        const schools = [...new Set(filteredResponsesForSchools.map(r => r.school))];
-        schools.forEach(sch => {
-          const schReports = filteredResponsesForSchools.filter(r => r.school === sch);
-          const total = schReports.length;
-          const lastVisit = schReports[schReports.length - 1].date;
-          const hasPending = schReports.some(r => r.status === 'pending');
-          const hasRejected = schReports.some(r => r.status === 'rejected');
-
-          let statusText = '<span style="color:#047857; font-weight:bold;">معتمد بالكامل</span>';
-          if (hasRejected) statusText = '<span style="color:#b91c1c; font-weight:bold;">مرفوض / يحتاج تعديل</span>';
-          else if (hasPending) statusText = '<span style="color:#b45309; font-weight:bold;">قيد الاعتماد</span>';
-
-          schoolTbody.innerHTML += `
-            <tr>
-              <td><b>${sch}</b></td>
-              <td>${total} زيارة</td>
-              <td>${lastVisit}</td>
-              <td>${statusText}</td>
             </tr>
           `;
         });
@@ -1435,7 +1367,8 @@
     function setReportStatus(index, status, reason = "") {
       responses[index].status = status;
       responses[index].rejectionReason = reason;
-      localStorage.setItem('tbc_responses_v7', JSON.stringify(responses));
+      responses[index].approvedBy = currentUser.fullName + " (" + ROLE_LABELS[currentUser.role] + ")";
+      localStorage.setItem('tbc_responses_v8', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وإرسال الملاحظة للمشرف.");
       updateKPIs();
       renderRecords();
@@ -1448,18 +1381,19 @@
       }
     }
 
-    // ================= تصدير PDF لأداء المشرفين =================
+    // ================= تصدير تقرير أداء المشرفين PDF =================
     function printInspectorsSummaryPDF() {
-      let targetInspectors = [...new Set(responses.map(r => r.collectedBy))];
+      const scoped = getScopedResponses();
+      let targetInspectors = [...new Set(scoped.map(r => r.collectedBy))];
       if (selectedInspectorFilter !== "ALL") targetInspectors = [selectedInspectorFilter];
 
-      if (targetInspectors.length === 0) return alert("لا توجد بيانات للمشرفين لتصديرها حالياً.");
+      if (targetInspectors.length === 0) return alert("لا توجد بيانات لتصديرها حالياً.");
 
       let tableRows = '';
       let totalAll = 0, appAll = 0, pendAll = 0, rejAll = 0;
 
       targetInspectors.forEach((ins, idx) => {
-        let list = responses.filter(r => r.collectedBy === ins);
+        let list = scoped.filter(r => r.collectedBy === ins);
         if (selectedSurveyFilter !== "ALL") list = list.filter(r => r.surveyTitle === selectedSurveyFilter);
 
         const total = list.length;
@@ -1467,16 +1401,15 @@
         const pend = list.filter(r => r.status === 'pending').length;
         const rej = list.filter(r => r.status === 'rejected').length;
         const rate = total > 0 ? Math.round((app / total) * 100) : 0;
+        const branchName = list[0]?.branch || '-';
 
-        totalAll += total;
-        appAll += app;
-        pendAll += pend;
-        rejAll += rej;
+        totalAll += total; appAll += app; pendAll += pend; rejAll += rej;
 
         tableRows += `
           <tr>
             <td style="padding:9px; border:1px solid #cbd5e1; text-align:center;">${idx + 1}</td>
             <td style="padding:9px; border:1px solid #cbd5e1; font-weight:bold; color:#276270;">${ins}</td>
+            <td style="padding:9px; border:1px solid #cbd5e1; text-align:center;">${branchName}</td>
             <td style="padding:9px; border:1px solid #cbd5e1; text-align:center;">${selectedSurveyFilter === "ALL" ? "شامل جميع الحصورات" : selectedSurveyFilter}</td>
             <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${total}</td>
             <td style="padding:9px; border:1px solid #cbd5e1; text-align:center; color:#047857; font-weight:bold;">${app}</td>
@@ -1491,7 +1424,7 @@
       w.document.write(`
         <html dir="rtl">
         <head>
-          <title>تقرير أداء المشرفين الميدانيين - TBC</title>
+          <title>تقرير متابعة المشرفين الميدانيين - TBC</title>
           <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
           <style>
             * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
@@ -1511,17 +1444,12 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • تقرير المتابعة الرقابية وتقييم أداء المشرفين الميدانيين</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">المنطقة الشرقية • تقرير إحصائي وتقييم أداء المشرفين الميدانيين</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:13px; color:#276270;">تقرير أداء المشرفين</div>
               <div style="font-size:11px; color:#5e7782;">التاريخ: ${new Date().toLocaleDateString('ar-SA')}</div>
             </div>
-          </div>
-          <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:12px;">
-            <b>نطاق التقرير:</b> ${selectedSurveyFilter === "ALL" ? "كافة عمليات الحصر الميداني المعتمدة" : selectedSurveyFilter} &nbsp;|&nbsp; 
-            <b>المشرفين:</b> ${selectedInspectorFilter === "ALL" ? `إجمالي (${targetInspectors.length}) مشرفين` : selectedInspectorFilter} &nbsp;|&nbsp; 
-            <b>إجمالي التقارير المرفوعة:</b> ${totalAll} تقرير
           </div>
 
           <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:12px;">
@@ -1529,18 +1457,19 @@
               <tr style="background:#edf6f8; color:#276270;">
                 <th style="padding:9px; border:1px solid #cbd5e1; width:40px;">#</th>
                 <th style="padding:9px; border:1px solid #cbd5e1; text-align:right;">اسم المشرف الميداني</th>
+                <th style="padding:9px; border:1px solid #cbd5e1;">المكتب الفرعي</th>
                 <th style="padding:9px; border:1px solid #cbd5e1;">عملية الحصر</th>
                 <th style="padding:9px; border:1px solid #cbd5e1;">التقارير</th>
                 <th style="padding:9px; border:1px solid #cbd5e1; color:#047857;">معتمد ✅</th>
                 <th style="padding:9px; border:1px solid #cbd5e1; color:#b45309;">قيد الاعتماد ⏳</th>
                 <th style="padding:9px; border:1px solid #cbd5e1; color:#b91c1c;">مرفوض ❌</th>
-                <th style="padding:9px; border:1px solid #cbd5e1;">نسبة الاعتماد</th>
+                <th style="padding:9px; border:1px solid #cbd5e1;">نسبة الإنجاز</th>
               </tr>
             </thead>
             <tbody>
               ${tableRows}
               <tr style="background:#f8fafc; font-weight:bold;">
-                <td colspan="3" style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#276270;">الإجمالي الكلي</td>
+                <td colspan="4" style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#276270;">الإجمالي الكلي</td>
                 <td style="padding:10px; border:1px solid #cbd5e1; text-align:center;">${totalAll}</td>
                 <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#047857;">${appAll}</td>
                 <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#b45309;">${pendAll}</td>
@@ -1551,11 +1480,11 @@
           </table>
 
           <div style="margin-top:40px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
-            <div><b>المعد:</b> إدارة التدقيق الميداني</div>
+            <div><b>المعد:</b> مدير الإشراف للقطاع</div>
             <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
-              TBC - قسم التخطيط والتحكم<br><span style="color:#eebb43;">معتمد رسمياً</span>
+              TBC - إدارة المنطقة الشرقية<br><span style="color:#eebb43;">معتمد رسمي</span>
             </div>
-            <div><b>اعتماد مدير قسم التخطيط والتحكم:</b> ........................</div>
+            <div><b>اعتماد إدارة التخطيط والتحكم:</b> ........................</div>
           </div>
         </body></html>
       `);
@@ -1601,7 +1530,7 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:16px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • ${statusTitle}</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">${r.branch || 'المكتب الفرعي بالشرقية'} • ${statusTitle}</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:13px; color:#276270;">${r.surveyTitle}</div>
@@ -1609,14 +1538,14 @@
             </div>
           </div>
           <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:6px; padding:10px 14px; margin-bottom:12px;">
-            <b>اسم المنشأة التعليمية:</b> ${r.school} &nbsp;|&nbsp; <b>المفتش:</b> ${r.collectedBy} &nbsp;|&nbsp; <b>الموقع (GPS):</b> ${r.gps || 'غير مسجل'}
+            <b>اسم المنشأة التعليمية:</b> ${r.school} &nbsp;|&nbsp; <b>المشرف:</b> ${r.collectedBy} &nbsp;|&nbsp; <b>المكتب:</b> ${r.branch || 'الشرقية'} &nbsp;|&nbsp; <b>الموقع (GPS):</b> ${r.gps || 'غير مسجل'}
           </div>
           <table style="width:100%; border-collapse:collapse; margin-bottom:14px;">${rows}</table>
           ${imgs ? `<div style="font-weight:bold; color:#276270; margin-bottom:8px;">التوثيق المصور الميداني:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:20px;">${imgs}</div>` : ''}
           <div style="margin-top:30px; border-top:1.5px solid #cbd5e1; padding-top:15px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
             <div><b>المشرف الميداني:</b> ${r.collectedBy}</div>
             <div style="border:2px dashed #eebb43; padding:8px 16px; text-align:center; color:#276270; font-weight:bold; border-radius:6px; font-size:11px;">
-              TBC - قسم التخطيط والتحكم<br><span style="color:${r.status==='approved'?'#10b981':'#eebb43'};">${r.status==='approved'?'معتمد رسمياً':'قيد المراجعة'}</span>
+              TBC - مدير الإشراف للقطاع<br><span style="color:${r.status==='approved'?'#10b981':'#eebb43'};">${r.status==='approved'?'معتمد رسمياً':'قيد المراجعة'}</span>
             </div>
           </div>
         </body></html>
@@ -1628,11 +1557,13 @@
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
       if (!selectedSchool) return alert("يرجى اختيار مدرسة أولاً.");
 
-      const schoolSurveys = responses.filter(r => r.school === selectedSchool);
+      const scoped = getScopedResponses();
+      const schoolSurveys = scoped.filter(r => r.school === selectedSchool);
       if (schoolSurveys.length === 0) return alert("لا توجد سجلات لهذه المدرسة.");
 
       const w = window.open('', '_blank');
       const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل';
+      const branchName = schoolSurveys[0]?.branch || 'المنطقة الشرقية';
 
       let sectionsHtml = '';
       schoolSurveys.forEach((entry, sIdx) => {
@@ -1685,7 +1616,7 @@
                 <span class="badge-tbc">TBC</span>
                 <span style="font-size:17px; font-weight:800; color:#276270;">شركة تطوير للمباني</span>
               </div>
-              <div style="font-size:11px; color:#5e7782; margin-top:3px;">قسم التخطيط والتحكم • السجل التاريخي والرقابي للمنشأة التعليمية</div>
+              <div style="font-size:11px; color:#5e7782; margin-top:3px;">${branchName} • السجل التاريخي والرقابي للمنشأة التعليمية</div>
             </div>
             <div style="text-align:left;">
               <div style="font-weight:800; font-size:14px; color:#276270;">الملف الرقابي الموحد</div>
@@ -1694,7 +1625,7 @@
           </div>
           <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:8px; padding:12px 16px; margin-bottom:16px;">
             <div style="font-size:15px; font-weight:800; color:#276270;">🏫 المنشأة التعليمية: ${selectedSchool}</div>
-            <div style="font-size:12px; color:#5e7782; margin-top:4px;">إجمالي الزيارات: ${schoolSurveys.length} &nbsp;|&nbsp; 📍 GPS: ${schoolGps}</div>
+            <div style="font-size:12px; color:#5e7782; margin-top:4px;">المكتب التابع له: ${branchName} &nbsp;|&nbsp; إجمالي الزيارات: ${schoolSurveys.length} &nbsp;|&nbsp; 📍 GPS: ${schoolGps}</div>
           </div>
           ${sectionsHtml}
         </body></html>
@@ -1710,17 +1641,7 @@
       document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم`;
 
       usersList.forEach((u, idx) => {
-        const perms = u.permissions || {};
-        let permsBadges = [];
-        if (perms.allowEdit) permsBadges.push('✏️ تعديل');
-        if (perms.requireGps) permsBadges.push('📍 GPS إلزامي');
-        if (perms.requirePhoto) permsBadges.push('📷 صور إلزامية');
-        if (perms.allowPdf) permsBadges.push('🖨️ PDF');
-
-        const roleText = u.role === 'admin' 
-          ? '<span style="color:var(--tbc-petrol); font-weight:800;">إدارة وتحكم</span>' 
-          : 'مشرف ميداني';
-
+        const roleLabel = ROLE_LABELS[u.role] || u.role;
         const statusBadge = u.active !== false 
           ? '<span class="badge-status approved">نشط</span>' 
           : '<span class="badge-status rejected">معطل</span>';
@@ -1729,12 +1650,12 @@
           <tr>
             <td><b>${u.fullName}</b></td>
             <td><code>${u.username}</code></td>
-            <td>${roleText}</td>
-            <td><small>${permsBadges.join(' | ') || 'افتراضية'}</small></td>
+            <td style="color:var(--tbc-petrol); font-weight:bold;">${roleLabel}</td>
+            <td><small>${u.branch || 'الكل'}</small></td>
             <td>${statusBadge}</td>
             <td>
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="editUserPrompt(${idx})">⚙️ الصلاحيات</button>
+                <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="editUserPrompt(${idx})">⚙️ تعديل</button>
                 <button class="btn btn-gold" style="padding:4px 8px; font-size:0.75rem;" onclick="adminResetPasswordPrompt(${idx})">🔑 كلمة السر</button>
                 <button class="btn ${u.active !== false ? 'btn-reject' : 'btn-approve'}" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleUserStatus(${idx})">
                   ${u.active !== false ? 'تعطيل' : 'تفعيل'}
@@ -1751,9 +1672,10 @@
       const username = document.getElementById('usrUsername').value.trim();
       const password = document.getElementById('usrPassword').value.trim();
       const role = document.getElementById('usrRole').value;
+      const branch = document.getElementById('usrBranch').value;
 
       if (!fullName || !username || !password) {
-        return alert("يرجى تعبئة الاسم الكامل، الرمز الوظيفي، وكلمة المرور.");
+        return alert("يرجى تعبئة الاسم الكامل، اسم الدخول، وكلمة المرور.");
       }
 
       const permissions = {
@@ -1768,24 +1690,26 @@
         usersList[editingUserIndex].username = username;
         usersList[editingUserIndex].password = password;
         usersList[editingUserIndex].role = role;
+        usersList[editingUserIndex].branch = branch;
         usersList[editingUserIndex].permissions = permissions;
-        alert("✓ تم تحديث بيانات المشرف والصلاحيات بنجاح!");
+        alert("✓ تم تحديث بيانات المستخدم بنجاح!");
       } else {
         if (usersList.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-          return alert("اسم المستخدم (الرمز الوظيفي) مسجل مسبقاً! اختر رمزاً آخر.");
+          return alert("اسم الدخول مسجل مسبقاً! اختر اسماً آخر.");
         }
         usersList.push({
           fullName,
           username,
           password,
           role,
+          branch,
           active: true,
           permissions
         });
-        alert("✓ تم تسجيل المشرف الجديد وتفعيل صلاحياته بنجاح!");
+        alert("✓ تم إضافة المستخدم الجديد وتفعيل دوره في المنظومة!");
       }
 
-      localStorage.setItem('tbc_users_v7', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -1797,6 +1721,7 @@
       document.getElementById('usrUsername').value = u.username;
       document.getElementById('usrPassword').value = u.password;
       document.getElementById('usrRole').value = u.role;
+      document.getElementById('usrBranch').value = u.branch || 'الكل';
 
       const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
       document.getElementById('permAllowEdit').checked = p.allowEdit !== false;
@@ -1804,7 +1729,7 @@
       document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false;
       document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
 
-      document.getElementById('userFormTitle').innerText = `⚙️ تعديل صلاحيات وبيانات: ${u.fullName}`;
+      document.getElementById('userFormTitle').innerText = `⚙️ تعديل بيانات: ${u.fullName}`;
       document.getElementById('cancelUserEditBtn').style.display = 'inline-flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1814,29 +1739,30 @@
       document.getElementById('usrFullName').value = '';
       document.getElementById('usrUsername').value = '';
       document.getElementById('usrPassword').value = '';
-      document.getElementById('usrRole').value = 'user';
+      document.getElementById('usrRole').value = 'ROLE_INSPECTOR';
+      document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
       document.getElementById('permAllowEdit').checked = true;
       document.getElementById('permRequireGps').checked = true;
       document.getElementById('permRequirePhoto').checked = true;
       document.getElementById('permAllowPdf').checked = true;
-      document.getElementById('userFormTitle').innerText = '➕ إضافة مشرف / مستخدم جديد';
+      document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد في الهيكل الإداري';
       document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
 
     function adminResetPasswordPrompt(idx) {
       const u = usersList[idx];
-      const newPass = prompt(`إعادة ضبط كلمة المرور للمشرف: ${u.fullName}\nأدخل كلمة المرور الجديدة:`, "123");
+      const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v7', JSON.stringify(usersList));
-        alert(`✓ تم تعيين كلمة المرور الجديدة للمشرف ${u.fullName}: (${newPass.trim()})`);
+        localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+        alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
     }
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v7', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -1851,7 +1777,8 @@
       });
 
       iSelect.innerHTML = '<option value="ALL">-- كل المشرفين --</option>';
-      const inspectors = [...new Set(responses.map(r => r.collectedBy))];
+      const scoped = getScopedResponses();
+      const inspectors = [...new Set(scoped.map(r => r.collectedBy))];
       inspectors.forEach(ins => {
         iSelect.innerHTML += `<option value="${ins}">${ins}</option>`;
       });
@@ -1869,44 +1796,39 @@
       document.getElementById('filterByInspectorSelect').value = "ALL";
       selectedSurveyFilter = "ALL";
       selectedInspectorFilter = "ALL";
+      selectedKpiStatusFilter = "ALL";
       updateKPIs();
       renderRecords();
     }
 
-    function updateKPIs() {
-      const c = document.getElementById('kpiContainer');
-      if (!c) return;
-      
-      if (!currentUser || currentUser.role === 'user') {
-        const username = currentUser ? currentUser.username : '';
-        const myReports = responses.filter(r => r.username === username);
-        const pending = myReports.filter(r => r.status === 'pending').length;
-        const rejected = myReports.filter(r => r.status === 'rejected').length;
-        const approved = myReports.filter(r => r.status === 'approved').length;
-        const total = myReports.length;
+    function openChangePasswordModal() {
+      document.getElementById('cpCurrentPass').value = '';
+      document.getElementById('cpNewPass').value = '';
+      document.getElementById('cpConfirmPass').value = '';
+      document.getElementById('changePasswordModal').classList.remove('hidden');
+    }
 
-        c.innerHTML = `
-          <div class="kpi-box total"><div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div><div class="kpi-title">إجمالي تقاريري</div></div>
-          <div class="kpi-box pending"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ قيد الاعتماد</div></div>
-          <div class="kpi-box rejected"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ مرفوض / للتعديل</div></div>
-          <div class="kpi-box approved"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ معتمد رسمياً</div></div>
-        `;
-      } else {
-        let filtered = responses;
-        if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter);
-        if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.add('hidden');
+    }
 
-        const total = filtered.length;
-        const pending = filtered.filter(r => r.status === 'pending').length;
-        const approved = filtered.filter(r => r.status === 'approved').length;
-        const rejected = filtered.filter(r => r.status === 'rejected').length;
+    function submitPasswordChange() {
+      const cur = document.getElementById('cpCurrentPass').value.trim();
+      const n1 = document.getElementById('cpNewPass').value.trim();
+      const n2 = document.getElementById('cpConfirmPass').value.trim();
 
-        c.innerHTML = `
-          <div class="kpi-box total"><div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div><div class="kpi-title">التقارير المفلترة</div></div>
-          <div class="kpi-box pending"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ بانتظار اعتمادك</div></div>
-          <div class="kpi-box approved"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ تقارير معتمدة</div></div>
-          <div class="kpi-box rejected"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ تقارير مرفوضة</div></div>
-        `;
+      if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
+      if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
+      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
+      if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
+
+      const idx = usersList.findIndex(u => u.username === currentUser.username);
+      if (idx !== -1) {
+        usersList[idx].password = n1;
+        currentUser.password = n1;
+        localStorage.setItem('tbc_users_v8', JSON.stringify(usersList));
+        alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
+        closeChangePasswordModal();
       }
     }
   </script>
