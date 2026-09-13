@@ -12,7 +12,7 @@
     :root {
       --tbc-petrol: #37889b;
       --tbc-petrol-dark: #1f333a; 
-      --tbc-petrol-sidebar: #2b5460; /* لون جديد أخف وأهدأ للقائمة الجانبية */
+      --tbc-petrol-sidebar: #2b5460;
       --tbc-petrol-mid: #276270;
       --tbc-petrol-light: #edf6f8;
       --tbc-gold: #eebb43;
@@ -66,6 +66,13 @@
 
     /* Header User Section */
     .header-user-section { display: flex; align-items: center; gap: 12px; position: relative; }
+    
+    .sync-status {
+      display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800;
+      padding: 6px 12px; border-radius: 20px; background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark);
+    }
+    .sync-status.syncing { background: #fef3c7; color: #b45309; }
+    
     .profile-btn {
       background: var(--tbc-petrol-light); border: 1.5px solid var(--border-subtle);
       border-radius: 30px; padding: 6px 16px; font-size: 0.95rem; font-weight: 700;
@@ -124,7 +131,7 @@
       min-height: calc(100vh - 75px);
     }
 
-    /* Professional Softer Sidebar */
+    /* Professional Sidebar */
     .sidebar {
       width: 260px;
       background-color: var(--tbc-petrol-sidebar);
@@ -136,52 +143,24 @@
     }
     
     .sidebar-title {
-      color: #b0c4de;
-      font-size: 0.85rem;
-      font-weight: 500; /* خط عادي بدلاً من البولد */
-      padding: 24px 24px 10px;
-      letter-spacing: 0.5px;
+      color: #b0c4de; font-size: 0.85rem; font-weight: 500;
+      padding: 24px 24px 10px; letter-spacing: 0.5px;
     }
 
-    .sidebar-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 0 12px;
-    }
-
+    .sidebar-menu { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
     .sidebar-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      color: #e2e8f0;
-      font-weight: 500; /* خط عادي للتبويبات غير النشطة */
-      font-size: 0.95rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-right: 4px solid transparent;
+      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+      color: #e2e8f0; font-weight: 500; font-size: 0.95rem; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s ease; border-right: 4px solid transparent;
     }
-
-    .sidebar-item:hover {
-      background-color: rgba(255,255,255,0.08);
-      color: #ffffff;
-    }
-
+    .sidebar-item:hover { background-color: rgba(255,255,255,0.08); color: #ffffff; }
     .sidebar-item.active {
-      background-color: rgba(255,255,255,0.15);
-      color: var(--tbc-gold);
-      border-right-color: var(--tbc-gold);
-      font-weight: 800; /* بولد للعنصر المفتوح فقط */
+      background-color: rgba(255,255,255,0.15); color: var(--tbc-gold);
+      border-right-color: var(--tbc-gold); font-weight: 800;
     }
 
     /* Main Content Area */
-    .main-content {
-      flex: 1;
-      padding: 24px 36px;
-      overflow-x: hidden;
-    }
+    .main-content { flex: 1; padding: 24px 36px; overflow-x: hidden; }
 
     .card {
       background: var(--surface-card); border: 1px solid var(--border-subtle);
@@ -189,8 +168,6 @@
       box-shadow: var(--shadow-sm); transition: box-shadow 0.3s;
     }
     .card:hover { box-shadow: var(--shadow-md); }
-
-    /* Utilities */
     .hidden { display: none !important; }
 
     /* BI Analytics Dashboard */
@@ -204,7 +181,6 @@
     .bi-num { font-size: 2.4rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); }
     .bi-kpi-card.highlight .bi-num { color: var(--tbc-gold); }
     .bi-sub { font-size: 0.82rem; font-weight: 700; margin-top: 8px; }
-
     .bi-charts-split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; margin-bottom: 24px; }
     @media (max-width: 1024px) { .bi-charts-split { grid-template-columns: 1fr; } }
 
@@ -304,7 +280,7 @@
       position: fixed; bottom: 30px; left: 30px; background: var(--tbc-petrol); color: #ffffff;
       padding: 14px 24px; border-radius: 30px; box-shadow: 0 10px 25px rgba(39,98,112,0.4);
       cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1rem;
-      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s;
     }
     .chat-floating-btn:hover { background: var(--tbc-petrol-dark); transform: scale(1.05); }
 
@@ -374,6 +350,8 @@
         </div>
 
         <div class="header-user-section" id="headerUserActions">
+          <div class="sync-status" id="cloudSyncStatus">☁️ متصل سحابياً</div>
+
           <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="window.toggleNotifPanel(event)">
             <span>🔔</span>
             <span id="notifCountBadge" class="notif-bell-badge hidden">0</span>
@@ -681,6 +659,7 @@
 
         <!-- ================= 3. Records Tab ================= -->
         <section id="secRecords" class="hidden">
+          <!-- البطاقات الملونة (تظهر بشكل دائم) -->
           <div id="kpiContainer" class="kpi-grid"></div>
 
           <div id="filterBanner" class="card hidden" style="padding:14px 20px; background:#f8fafc; border:2px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
@@ -872,7 +851,9 @@
 
   <!-- ================= Application Logic ================= -->
   <script>
-    // Constants & Master Keys
+    // Constants & Web App Setup
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlzcRwkKmbNlABPd34NOtrVoqqsiOYHvBGYeEPwrf26JG8AV3U32CG28lwngrnKyM/exec';
+    
     const ROLE_LABELS = {
       ROLE_PLANNING: "إدارة التخطيط والتحكم",
       ROLE_REGION_EAST: "إدارة المنطقة الشرقية",
@@ -904,22 +885,66 @@
     let selectedInspectorFilter = "ALL";
     let selectedKpiStatusFilter = "ALL";
 
-    // ================= App Initialization (Bulletproof Data Loading) =================
-    function initApp() {
-      const getLegacy = (keys) => {
-        for(let k of keys) {
-          const d = localStorage.getItem(k);
-          if(d) {
-            try { const p = JSON.parse(d); if(Array.isArray(p) && p.length > 0) return p; } catch(e){}
-          }
-        }
-        return null;
-      };
+    // ================= Cloud Sync Engine =================
+    function updateSyncStatus(status) {
+      const s = document.getElementById('cloudSyncStatus');
+      if (!s) return;
+      if (status === 'syncing') {
+        s.className = 'sync-status syncing';
+        s.innerHTML = '⏳ جاري المزامنة...';
+      } else if (status === 'connected') {
+        s.className = 'sync-status';
+        s.innerHTML = '☁️ متصل سحابياً';
+      }
+    }
 
-      // 1. Users
+    async function pullFromCloud() {
+      if(!currentUser) return;
+      try {
+        updateSyncStatus('syncing');
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        
+        if (data) {
+          if (data.users && data.users.length > 0) { usersList = data.users; localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); }
+          if (data.surveys && data.surveys.length > 0) { surveys = data.surveys; localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys)); }
+          if (data.responses) { responses = data.responses; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses)); }
+          if (data.chat && data.chat.length > 0) { chatMessages = data.chat; localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages)); }
+          
+          if (!document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true);
+          if (!document.getElementById('secRecords').classList.contains('hidden')) { updateKPIs(); renderRecords(); }
+          if (!document.getElementById('secSurveys').classList.contains('hidden')) renderSurveys();
+          renderChatMessages();
+        }
+        updateSyncStatus('connected');
+      } catch(e) {
+        console.log("Cloud pull failed, using local data.");
+        updateSyncStatus('connected');
+      }
+    }
+
+    async function pushToCloud() {
+      try {
+        updateSyncStatus('syncing');
+        const payload = { users: usersList, surveys: surveys, responses: responses, chat: chatMessages };
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        updateSyncStatus('connected');
+      } catch(e) {
+        console.log("Cloud push failed, saved locally.");
+        updateSyncStatus('connected');
+      }
+    }
+
+    // ================= App Initialization =================
+    function initApp() {
       try { const u = localStorage.getItem(MASTER_USERS_KEY); if(u) usersList = JSON.parse(u); } catch(e) {}
-      if (!usersList || !Array.isArray(usersList) || usersList.length === 0) {
-        usersList = getLegacy(['tbc_users_master_v2', 'tbc_users_store_v1', 'tbc_users_v26', 'tbc_users_v25']) || [
+      if (!usersList || usersList.length === 0) {
+        usersList = [
           { username: "admin", password: "123", fullName: "إدارة التخطيط والتحكم", email: "ERPMO@tbc.sa", role: "ROLE_PLANNING", branch: "الكل", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
           { username: "reg_east", password: "123", fullName: "م. عبد العزيز", email: "east.reg@tbc.sa", role: "ROLE_REGION_EAST", branch: "الكل", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
           { username: "sub_east", password: "123", fullName: "مكتب الشرقية", email: "east.sub@tbc.sa", role: "ROLE_SUB_EAST", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
@@ -931,124 +956,59 @@
         localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
       }
 
-      // 2. Surveys
       try { const s = localStorage.getItem(MASTER_SURVEYS_KEY); if(s) surveys = JSON.parse(s); } catch(e) {}
-      if (!surveys || !Array.isArray(surveys) || surveys.length === 0) {
-        surveys = getLegacy(['tbc_surveys_master_v2', 'tbc_surveys_store_v1', 'tbc_surveys_v26', 'tbc_surveys_v25']) || [
-          {
-            id: "SRV-101", title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية", desc: "فحص شامل لمخارج الطوارئ ومضخات الحريق والإنارة الداخلية", dueDate: "2026-09-30", targetSchoolsCount: 15,
-            fields: [
-              { label: "رقم المبنى / الجناح التعليمي", type: "text" }, { label: "عدد طفايات الحريق الصالحة", type: "number" },
-              { label: "تاريخ الفحص", type: "date" }, { label: "حالة منظومة الإنارة العامة", type: "radio", options: ["مطابقة للمواصفات", "تحتاج صيانة عاجلة", "معطلة بالكامل"] },
-              { label: "صورة توثيقية بالكاميرا", type: "image" }, { label: "ملاحظات وتوجيهات هندسية", type: "textarea" }
-            ]
-          },
-          {
-            id: "SRV-102", title: "حصر ومطابقة أنظمة التكييف والتهوية", desc: "تدقيق كفاءة وحدات التكييف واللوحات الكهربائية للمبنى", dueDate: "2026-10-15", targetSchoolsCount: 12,
-            fields: [
-              { label: "نوع التكييف المركزي/سبليت", type: "text" }, { label: "عدد الوحدات العاملة", type: "number" },
-              { label: "تاريخ آخر صيانة دورية", type: "date" }, { label: "حالة العزل الحراري", type: "radio", options: ["سليم وممتاز", "متوسط", "يحتاج استبدال فوري"] },
-              { label: "صورة توثيقية للوحدة الخارجية", type: "image" }
-            ]
-          }
-        ];
+      if (!surveys || surveys.length === 0) {
+        surveys = [{ id: "SRV-101", title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية", desc: "فحص شامل لمخارج الطوارئ ومضخات الحريق والإنارة الداخلية", dueDate: "2026-09-30", targetSchoolsCount: 15, fields: [{ label: "رقم المبنى / الجناح التعليمي", type: "text" }, { label: "حالة منظومة الإنارة العامة", type: "radio", options: ["مطابقة للمواصفات", "تحتاج صيانة عاجلة", "معطلة بالكامل"] }] }];
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
-      // 3. Responses
-      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)); } catch(e){}
-      if (!responses || !Array.isArray(responses)) {
-        responses = getLegacy(['tbc_responses_master_v2', 'tbc_responses_store_v1', 'tbc_responses_v26', 'tbc_responses_v25']) || [];
-        localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
-      }
-
-      // 4. Chat
+      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){ responses = []; }
+      
       try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
-      if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
-        chatMessages = getLegacy(['tbc_chat_messages_master_v2', 'tbc_chat_messages_v1']) || [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
+      if (!chatMessages || chatMessages.length === 0) {
+        chatMessages = [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
         localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
       }
 
-      // Check Auto-Login
       const savedUser = localStorage.getItem('tbc_remembered_user');
       if (savedUser) {
         try {
           const userObj = JSON.parse(savedUser);
           const found = usersList.find(x => x.username.toLowerCase() === userObj.username.toLowerCase() && x.password === userObj.password);
-          if (found && found.active !== false) {
-            loginSuccess(found);
-          }
+          if (found && found.active !== false) loginSuccess(found);
         } catch (e) {}
       }
+      
+      // Polling Cloud every 10 seconds
+      setInterval(pullFromCloud, 10000);
     }
 
-    // ================= Profile & Global UI Interactions =================
-    window.toggleProfileMenu = function(e) {
-      if (e) e.stopPropagation();
-      const m = document.getElementById('profileMenu');
-      if (m) m.classList.toggle('hidden');
+    // ================= Profile & UI =================
+    window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); const m = document.getElementById('profileMenu'); if (m) m.classList.toggle('hidden'); };
+    window.closeProfileMenu = function() { const m = document.getElementById('profileMenu'); if (m) m.classList.add('hidden'); };
+    window.toggleNotifPanel = function(e) { if (e) e.stopPropagation(); window.closeProfileMenu(); const p = document.getElementById('notifDropdown'); if (p) p.classList.toggle('hidden'); };
+    window.closeNotifPanel = function() { const p = document.getElementById('notifDropdown'); if (p) p.classList.add('hidden'); };
+    window.toggleChatWindow = function(e) { 
+      if (e) e.stopPropagation(); const win = document.getElementById('chatWindow'); 
+      if(win) { win.classList.toggle('hidden'); if (!win.classList.contains('hidden')) { renderChatMessages(); const badge = document.getElementById('chatBadge'); if(badge) badge.style.display = 'none'; } }
     };
-
-    window.closeProfileMenu = function() {
-      const m = document.getElementById('profileMenu');
-      if (m) m.classList.add('hidden');
-    };
-
-    window.toggleNotifPanel = function(e) {
-      if (e) e.stopPropagation();
-      window.closeProfileMenu(); 
-      const p = document.getElementById('notifDropdown');
-      if (p) p.classList.toggle('hidden');
-    };
-
-    window.closeNotifPanel = function() {
-      const p = document.getElementById('notifDropdown');
-      if (p) p.classList.add('hidden');
-    };
-
-    window.toggleChatWindow = function(e) {
-      if (e) e.stopPropagation();
-      const win = document.getElementById('chatWindow');
-      if(win) {
-         win.classList.toggle('hidden');
-         if (!win.classList.contains('hidden')) {
-             renderChatMessages();
-             const badge = document.getElementById('chatBadge');
-             if(badge) badge.style.display = 'none';
-         }
-      }
-    };
-
     document.addEventListener('click', function(e) {
-      const profM = document.getElementById('profileMenu');
-      const profC = document.getElementById('profileDropdownContainer');
-      if (profM && !profM.classList.contains('hidden')) {
-        if (profC && !profC.contains(e.target)) {
-          profM.classList.add('hidden');
-        }
-      }
-
-      const notifM = document.getElementById('notifDropdown');
-      const notifB = document.getElementById('notifBellBtn');
-      if (notifM && !notifM.classList.contains('hidden')) {
-        if (notifB && !notifB.contains(e.target) && !notifM.contains(e.target)) {
-          notifM.classList.add('hidden');
-        }
-      }
+      const profM = document.getElementById('profileMenu'); const profC = document.getElementById('profileDropdownContainer');
+      if (profM && !profM.classList.contains('hidden') && profC && !profC.contains(e.target)) profM.classList.add('hidden');
+      const notifM = document.getElementById('notifDropdown'); const notifB = document.getElementById('notifBellBtn');
+      if (notifM && !notifM.classList.contains('hidden') && notifB && !notifB.contains(e.target) && !notifM.contains(e.target)) notifM.classList.add('hidden');
     });
 
     // ================= Tabs Management =================
     function showTab(tab) {
       if(!currentUser) return;
       
-      // Update Tab Button Styles
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
       const tu = document.getElementById('tabUsers');
       if (tu) tu.classList.toggle('active', tab === 'users');
 
-      // Hide all main sections
       document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
@@ -1057,33 +1017,11 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
 
-      // Refresh Data from Storage Always before showing
-      try {
-        surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
-        responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
-      } catch(e){}
-
-      // Show specific tab & render its components securely via Timeout to prevent DOM reflow issues
       setTimeout(() => {
-        if(tab === 'analytics') {
-          document.getElementById('secAnalytics').classList.remove('hidden');
-          populateAnalyticsSurveyDropdown();
-          refreshAnalyticsDashboard(true);
-        } 
-        else if(tab === 'surveys') {
-          document.getElementById('secSurveys').classList.remove('hidden');
-          renderSurveys();
-        }
-        else if(tab === 'records') {
-          document.getElementById('secRecords').classList.remove('hidden');
-          if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
-          updateKPIs(); 
-          renderRecords(); 
-        }
-        else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
-          document.getElementById('secUsers').classList.remove('hidden');
-          renderUsersManagement();
-        }
+        if(tab === 'analytics') { document.getElementById('secAnalytics').classList.remove('hidden'); populateAnalyticsSurveyDropdown(); refreshAnalyticsDashboard(true); } 
+        else if(tab === 'surveys') { document.getElementById('secSurveys').classList.remove('hidden'); renderSurveys(); }
+        else if(tab === 'records') { document.getElementById('secRecords').classList.remove('hidden'); if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns(); updateKPIs(); renderRecords(); }
+        else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") { document.getElementById('secUsers').classList.remove('hidden'); renderUsersManagement(); }
         updateNotifications();
       }, 50);
     }
@@ -1096,26 +1034,19 @@
 
       if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
 
-      const found = usersList.find(x => 
-        x.username.toLowerCase() === u && 
-        (String(x.password) === p || (p === "123456" && String(x.password) === "123") || (p === "123" && String(x.password) === "123456"))
-      );
+      const found = usersList.find(x => x.username.toLowerCase() === u && (String(x.password) === p || (p === "123456" && String(x.password) === "123") || (p === "123" && String(x.password) === "123456")));
 
       if (!found) return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
       if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل إدارة التخطيط والتحكم.");
 
-      if (rememberMe) {
-        localStorage.setItem('tbc_remembered_user', JSON.stringify({ username: found.username, password: found.password }));
-      } else {
-        localStorage.removeItem('tbc_remembered_user');
-      }
+      if (rememberMe) localStorage.setItem('tbc_remembered_user', JSON.stringify({ username: found.username, password: found.password }));
+      else localStorage.removeItem('tbc_remembered_user');
 
       loginSuccess(found);
     }
 
     function loginSuccess(userObj) {
       currentUser = userObj;
-
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('appView').classList.remove('hidden');
       document.getElementById('profileDropdownContainer').classList.remove('hidden');
@@ -1125,7 +1056,6 @@
       document.getElementById('activeUserName').innerText = currentUser.fullName;
       document.getElementById('menuUserFullName').innerText = currentUser.fullName;
       document.getElementById('menuUserRole').innerText = ROLE_LABELS[currentUser.role] || currentUser.role;
-      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم";
 
       const isPlanning = currentUser.role === "ROLE_PLANNING";
       const isManagement = ["ROLE_PLANNING", "ROLE_REGION_EAST", "ROLE_SUB_EAST", "ROLE_SUB_AHSA", "ROLE_SUPERVISION_LEAD"].includes(currentUser.role);
@@ -1135,15 +1065,13 @@
       document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
       renderChatMessages();
-      
-      // Default initial tab
+      pullFromCloud(); // Pull immediately on login
       setTimeout(() => { showTab('analytics'); }, 100);
     }
 
     function logout() {
       currentUser = null;
       localStorage.removeItem('tbc_remembered_user');
-
       document.getElementById('appView').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('profileDropdownContainer').classList.add('hidden');
@@ -1152,71 +1080,91 @@
       document.getElementById('chatFloatingBtn').classList.add('hidden');
       document.getElementById('chatWindow').classList.add('hidden');
       window.closeProfileMenu();
-      
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
       document.getElementById('rememberMeCheckbox').checked = false;
     }
 
-    // ================= Forgot Pass =================
     function openForgotPasswordModal() { document.getElementById('forgotPasswordModal').classList.remove('hidden'); }
     function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').classList.add('hidden'); }
     function submitPasswordReset() {
       const u = document.getElementById('fpUsername').value.trim().toLowerCase();
       const em = document.getElementById('fpEmail').value.trim().toLowerCase();
       const np = document.getElementById('fpNewPass').value.trim();
-
       if (!u || !em || !np) return alert("يرجى تعبئة كافة الحقول المطلوبة.");
-
       const foundIdx = usersList.findIndex(x => x.username.toLowerCase() === u && (x.email || "").toLowerCase() === em);
-      if (foundIdx === -1) {
-        return alert("خطأ: بيانات اسم المستخدم أو البريد الإلكتروني غير مطابقة لسجلات المنظومة.");
-      }
-
+      if (foundIdx === -1) return alert("خطأ: بيانات اسم المستخدم أو البريد الإلكتروني غير مطابقة لسجلات المنظومة.");
       usersList[foundIdx].password = np;
       localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+      pushToCloud();
       alert("✓ تم تعيين كلمة المرور الجديدة بنجاح! يمكنك الآن تسجيل الدخول مباشرة.");
       closeForgotPasswordModal();
     }
 
-    // ================= Analytics Live Engine =================
-    setInterval(() => {
-      if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) {
-         refreshAnalyticsDashboard(true);
+    function openChangePasswordModal() { document.getElementById('cpCurrentPass').value = ''; document.getElementById('cpNewPass').value = ''; document.getElementById('cpConfirmPass').value = ''; document.getElementById('changePasswordModal').classList.remove('hidden'); }
+    function closeChangePasswordModal() { document.getElementById('changePasswordModal').classList.add('hidden'); }
+    function submitPasswordChange() {
+      const cur = document.getElementById('cpCurrentPass').value.trim();
+      const n1 = document.getElementById('cpNewPass').value.trim();
+      const n2 = document.getElementById('cpConfirmPass').value.trim();
+      if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
+      if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
+      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
+      if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
+      const idx = usersList.findIndex(u => u.username === currentUser.username);
+      if (idx !== -1) {
+        usersList[idx].password = n1;
+        currentUser.password = n1;
+        localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+        pushToCloud();
+        alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
+        closeChangePasswordModal();
       }
-      if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) {
-         updateKPIs();
-      }
-    }, 3000);
+    }
 
+    // ================= Chat =================
+    function renderChatMessages() {
+      const area = document.getElementById('chatMessagesArea');
+      if (!area) return;
+      area.innerHTML = '';
+      chatMessages.forEach(m => {
+        const isMine = currentUser && (m.sender === currentUser.fullName || (currentUser.role === 'ROLE_PLANNING' && m.role === 'ROLE_PLANNING'));
+        const div = document.createElement('div');
+        div.className = `chat-msg ${isMine ? 'mine' : 'theirs'}`;
+        div.innerHTML = `<div style="font-weight:800; font-size:0.75rem; color:${isMine ? 'var(--tbc-petrol-dark)' : '#475569'}; margin-bottom:2px;">${m.sender}</div><div>${m.text}</div><span class="chat-meta">${m.time}</span>`;
+        area.appendChild(div);
+      });
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !currentUser) return;
+      const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      chatMessages.push({ sender: currentUser.fullName, role: currentUser.role, text: text, time: timeStr });
+      localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
+      input.value = '';
+      renderChatMessages();
+      pushToCloud();
+    }
+
+    // ================= Analytics Live Engine =================
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
       if (!select) return;
       const currentVal = select.value;
-      
       let html = '<option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>';
-      if(surveys && surveys.length > 0) {
-        surveys.forEach(s => { html += `<option value="${s.title}">${s.title}</option>`; });
-      }
-      
+      if(surveys && surveys.length > 0) { surveys.forEach(s => { html += `<option value="${s.title}">${s.title}</option>`; }); }
       if(select.innerHTML !== html) {
         select.innerHTML = html;
-        if(currentVal && currentVal !== "" && html.includes(`value="${currentVal}"`)) {
-           select.value = currentVal;
-        } else {
-           select.value = "ALL";
-        }
+        if(currentVal && currentVal !== "" && html.includes(`value="${currentVal}"`)) select.value = currentVal;
+        else select.value = "ALL";
       }
     }
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
-      
-      try {
-        surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
-        responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
-      } catch(e) {}
-
       const select = document.getElementById('analyticsSurveyFilter');
       if(select && select.options.length <= 1) populateAnalyticsSurveyDropdown();
       const selectedSurvey = select ? select.value : "ALL";
@@ -1236,41 +1184,24 @@
       const totalSubmitted = scoped.length;
 
       let plannedTarget = 0;
-      if (selectedSurvey === "ALL") {
-        plannedTarget = surveys.reduce((acc, s) => acc + (s.targetSchoolsCount || 15), 0);
-      } else {
-        const sObj = surveys.find(s => s.title === selectedSurvey);
-        plannedTarget = sObj ? (sObj.targetSchoolsCount || 20) : 20;
-      }
+      if (selectedSurvey === "ALL") { plannedTarget = surveys.reduce((acc, s) => acc + (s.targetSchoolsCount || 15), 0); } 
+      else { const sObj = surveys.find(s => s.title === selectedSurvey); plannedTarget = sObj ? (sObj.targetSchoolsCount || 20) : 20; }
       if (plannedTarget < totalSubmitted) plannedTarget = totalSubmitted + 5;
 
       const remainingCount = Math.max(0, plannedTarget - approvedCount);
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
 
-      const elRate = document.getElementById('biActualRate');
-      if(elRate && elRate.innerText !== `${actualRate}%`) elRate.innerText = `${actualRate}%`;
-      
-      const elPlan = document.getElementById('biPlannedCount');
-      if(elPlan && elPlan.innerText !== String(plannedTarget)) elPlan.innerText = plannedTarget;
-      
-      const elApprv = document.getElementById('biApprovedCount');
-      if(elApprv && elApprv.innerText !== String(approvedCount)) elApprv.innerText = approvedCount;
-      
-      const elPend = document.getElementById('biPendingCount');
-      if(elPend && elPend.innerText !== String(pendingCount)) elPend.innerText = pendingCount;
-      
-      const elRem = document.getElementById('biRemainingCount');
-      if(elRem && elRem.innerText !== String(remainingCount)) elRem.innerText = remainingCount;
+      const elRate = document.getElementById('biActualRate'); if(elRate && elRate.innerText !== `${actualRate}%`) elRate.innerText = `${actualRate}%`;
+      const elPlan = document.getElementById('biPlannedCount'); if(elPlan && elPlan.innerText !== String(plannedTarget)) elPlan.innerText = plannedTarget;
+      const elApprv = document.getElementById('biApprovedCount'); if(elApprv && elApprv.innerText !== String(approvedCount)) elApprv.innerText = approvedCount;
+      const elPend = document.getElementById('biPendingCount'); if(elPend && elPend.innerText !== String(pendingCount)) elPend.innerText = pendingCount;
+      const elRem = document.getElementById('biRemainingCount'); if(elRem && elRem.innerText !== String(remainingCount)) elRem.innerText = remainingCount;
 
       const statusElem = document.getElementById('biActualStatus');
       if (statusElem) {
-        if (parseFloat(actualRate) >= 80) {
-          if(statusElem.innerText !== "✓ أداء ممتاز ومطابق للمخطط المستهدف") { statusElem.innerText = "✓ أداء ممتاز ومطابق للمخطط المستهدف"; statusElem.style.color = "#38bdf8"; }
-        } else if (parseFloat(actualRate) >= 50) {
-          if(statusElem.innerText !== "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية") { statusElem.innerText = "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية"; statusElem.style.color = "#fef08a"; }
-        } else {
-          if(statusElem.innerText !== "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية") { statusElem.innerText = "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية"; statusElem.style.color = "#fca5a5"; }
-        }
+        if (parseFloat(actualRate) >= 80) { if(statusElem.innerText !== "✓ أداء ممتاز ومطابق للمخطط المستهدف") { statusElem.innerText = "✓ أداء ممتاز ومطابق للمخطط المستهدف"; statusElem.style.color = "#38bdf8"; } } 
+        else if (parseFloat(actualRate) >= 50) { if(statusElem.innerText !== "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية") { statusElem.innerText = "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية"; statusElem.style.color = "#fef08a"; } } 
+        else { if(statusElem.innerText !== "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية") { statusElem.innerText = "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية"; statusElem.style.color = "#fca5a5"; } }
       }
 
       renderSCurveChart(plannedTarget, approvedCount);
@@ -1281,18 +1212,10 @@
     function renderSCurveChart(plannedTotal, approvedTotal) {
       try {
         if (typeof Chart === 'undefined') return;
-        
         const labels = ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'];
-        const plannedPoints = [
-          Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58),
-          Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal
-        ];
-
+        const plannedPoints = [ Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58), Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal ];
         const currentPoint = Math.min(approvedTotal, plannedTotal);
-        const actualPoints = [
-          Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75),
-          currentPoint, null, null
-        ];
+        const actualPoints = [ Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75), currentPoint, null, null ];
 
         if (sCurveChartInstance) {
           sCurveChartInstance.data.datasets[0].data = plannedPoints;
@@ -1304,18 +1227,8 @@
           const ctx = canvas.getContext('2d');
           sCurveChartInstance = new Chart(ctx, {
             type: 'line',
-            data: {
-              labels: labels,
-              datasets: [
-                { label: 'المستهدف المخطط التراكمي (Planned S-Curve)', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 },
-                { label: 'الإنجاز الفعلي المعتمد (Actual Verified)', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#276270' }
-              ]
-            },
-            options: {
-              responsive: true, maintainAspectRatio: false,
-              plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } },
-              scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Tajawal' } } }, x: { grid: { display: false }, ticks: { font: { family: 'Tajawal' } } } }
-            }
+            data: { labels: labels, datasets: [ { label: 'المستهدف المخطط (Planned)', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 }, { label: 'الإنجاز الفعلي (Actual)', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#276270' } ] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Tajawal' } } }, x: { grid: { display: false }, ticks: { font: { family: 'Tajawal' } } } } }
           });
         }
       } catch(e) { console.error("Chart load error:", e); }
@@ -1324,23 +1237,13 @@
     function renderBranchProgressBars(scopedResponses) {
       const container = document.getElementById('branchProgressBarsContainer');
       if(!container) return;
-      
       const branches = [ { name: "المكتب الفرعي بالشرقية", target: 35 }, { name: "المكتب الفرعي بالأحساء", target: 25 } ];
       let html = '';
-
       branches.forEach(b => {
         const bReports = scopedResponses.filter(r => r.branch === b.name && r.status === 'approved');
         const done = bReports.length;
         const rate = Math.min(100, Math.round((done / b.target) * 100));
-        html += `
-          <div class="region-prog-item">
-            <div class="region-prog-label">
-              <span>🏢 ${b.name}</span>
-              <span style="color:var(--tbc-petrol); font-weight:900;">${done} من ${b.target} مبنى (${rate}%)</span>
-            </div>
-            <div class="region-bar-bg"><div class="region-bar-fill" style="width: ${rate}%;"></div></div>
-          </div>
-        `;
+        html += `<div class="region-prog-item"><div class="region-prog-label"><span>🏢 ${b.name}</span><span style="color:var(--tbc-petrol); font-weight:900;">${done} من ${b.target} مبنى (${rate}%)</span></div><div class="region-bar-bg"><div class="region-bar-fill" style="width: ${rate}%;"></div></div></div>`;
       });
       if(container.innerHTML !== html) container.innerHTML = html;
     }
@@ -1361,26 +1264,15 @@
         const rate = total > 0 ? Math.round((approved / total) * 100) : (approved > 0 ? 100 : 0);
         return { name: ins.fullName, approved, total, rate };
       });
-
       stats.sort((a, b) => b.approved - a.approved || b.rate - a.rate);
       let html = '';
-
       stats.forEach((item, idx) => {
         const rank = idx + 1;
         const isFirst = rank === 1 && item.approved > 0;
         const crown = isFirst ? '👑 ' : '';
         let initials = '?';
         if(item.name) initials = item.name.split(' ').slice(0, 2).map(n => n[0]).join('');
-
-        html += `
-          <div class="leader-card ${isFirst ? 'rank-1' : ''}">
-            <div class="leader-badge-num">${rank}</div>
-            <div class="leader-avatar">${initials}</div>
-            <div class="leader-name">${crown}${item.name}</div>
-            <div class="leader-rate">${item.rate}%</div>
-            <div class="leader-count">${item.approved} تقارير معتمدة</div>
-          </div>
-        `;
+        html += `<div class="leader-card ${isFirst ? 'rank-1' : ''}"><div class="leader-badge-num">${rank}</div><div class="leader-avatar">${initials}</div><div class="leader-name">${crown}${item.name}</div><div class="leader-rate">${item.rate}%</div><div class="leader-count">${item.approved} تقارير معتمدة</div></div>`;
       });
       if(container.innerHTML !== html) container.innerHTML = html;
     }
@@ -1390,115 +1282,65 @@
       const container = document.getElementById('surveysListContainer');
       if(!container) return;
       container.innerHTML = '';
-      
-      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
-
       if (!surveys || surveys.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <h4>لا توجد نماذج حصر نشطة حالياً</h4>
-            <p>عندما تقوم إدارة التخطيط والتحكم بنشر استمارة حصر جديدة، ستظهر هنا مباشرة.</p>
-          </div>`;
+        container.innerHTML = `<div class="empty-state"><h4>لا توجد نماذج حصر نشطة حالياً</h4><p>عندما تقوم إدارة التخطيط والتحكم بنشر استمارة حصر جديدة، ستظهر هنا مباشرة.</p></div>`;
         return;
       }
 
       const todayStr = new Date().toISOString().split('T')[0];
-
       surveys.forEach(s => {
         const div = document.createElement('div');
         div.className = 'card';
-        
         let overdueBadge = '';
         if (s.dueDate) {
           if (s.dueDate < todayStr) { overdueBadge = `<span class="badge-status overdue">⚠️ متأخر (${s.dueDate})</span>`; }
           else { overdueBadge = `<span class="badge-status pending">📅 موعد: ${s.dueDate}</span>`; }
         }
-
         let adminActionButtons = '';
         if (currentUser && currentUser.role === 'ROLE_PLANNING') {
-          adminActionButtons = `
-            <div style="display:flex; gap:8px; margin-top:14px; border-top:1px dashed var(--border-subtle); padding-top:12px;">
-              <button class="btn btn-outline" style="font-size:0.85rem; padding:6px 16px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button>
-              <button class="btn btn-reject" style="font-size:0.85rem; padding:6px 16px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button>
-            </div>
-          `;
+          adminActionButtons = `<div style="display:flex; gap:8px; margin-top:14px; border-top:1px dashed var(--border-subtle); padding-top:12px;"><button class="btn btn-outline" style="font-size:0.85rem; padding:6px 16px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button><button class="btn btn-reject" style="font-size:0.85rem; padding:6px 16px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button></div>`;
         }
-
         const safeFieldsCount = s.fields ? s.fields.length : 0;
         const safeTitle = s.title || 'استمارة حصر غير معنونة';
         const safeDesc = s.desc || 'لا توجد تعليمات إضافية لهذا الحصر.';
 
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-            <div>
-              <div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                <span>${safeTitle}</span>
-                ${overdueBadge}
-              </div>
-              <div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${safeDesc}</div>
-              <div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${safeFieldsCount} بنود فحص معتمدة</div>
-            </div>
-            <button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button>
-          </div>
-          ${adminActionButtons}
-        `;
+        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;"><div><div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><span>${safeTitle}</span>${overdueBadge}</div><div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${safeDesc}</div><div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${safeFieldsCount} بنود فحص معتمدة</div></div><button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button></div>${adminActionButtons}`;
         container.appendChild(div);
       });
     }
 
     function openNewSurveyModal() {
       editingSurveyId = null;
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
-      document.getElementById('saveSurveyBtn').innerText = "حفظ ونشر النموذج مع إرسال الإشعارات ✓";
-      document.getElementById('srvTitle').value = '';
-      document.getElementById('srvDueDate').value = '';
-      document.getElementById('srvDesc').value = '';
+      document.getElementById('srvTitle').value = ''; document.getElementById('srvDueDate').value = ''; document.getElementById('srvDesc').value = '';
       document.getElementById('questionsBuilder').innerHTML = '';
       addQuestionField();
     }
 
     function openEditSurveyTemplate(id) {
-      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
       const s = surveys.find(x => String(x.id) === String(id));
       if (!s) return;
       editingSurveyId = s.id;
-
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
-      document.getElementById('saveSurveyBtn').innerText = "تحديث وتثبيت التعديلات ✓";
-
-      document.getElementById('srvTitle').value = s.title;
-      document.getElementById('srvDueDate').value = s.dueDate || '';
-      document.getElementById('srvDesc').value = s.desc || '';
-
+      document.getElementById('srvTitle').value = s.title; document.getElementById('srvDueDate').value = s.dueDate || ''; document.getElementById('srvDesc').value = s.desc || '';
       const container = document.getElementById('questionsBuilder');
       container.innerHTML = '';
-      if(s.fields && s.fields.length > 0) {
-        s.fields.forEach(f => { addQuestionField(f.label, f.type, f.options || []); });
-      } else {
-        addQuestionField();
-      }
+      if(s.fields && s.fields.length > 0) { s.fields.forEach(f => { addQuestionField(f.label, f.type, f.options || []); }); } else { addQuestionField(); }
     }
 
-    function closeNewSurveyModal() {
-      editingSurveyId = null;
-      document.getElementById('secNewSurvey').classList.add('hidden');
-      showTab('surveys');
-    }
+    function closeNewSurveyModal() { editingSurveyId = null; document.getElementById('secNewSurvey').classList.add('hidden'); showTab('surveys'); }
 
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟ ستختفي الاستمارة من جميع أجهزة المشرفين.")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
+      pushToCloud();
       alert("✓ تم حذف نموذج الحصر بنجاح.");
-      populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      renderSurveys();
+      showTab('surveys');
     }
 
     function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
@@ -1507,40 +1349,10 @@
       const d = document.createElement('div');
       d.className = 'q-row';
       const isRadio = typeVal === 'radio';
-
       let initialOptions = ["خيار 1", "خيار 2"];
-      if (optVal && Array.isArray(optVal)) initialOptions = optVal;
-      else if (optVal) initialOptions = optVal.split(',').map(s => s.trim()).filter(Boolean);
-
-      const optionsHtml = initialOptions.map(opt => `
-        <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-          <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
-          <input type="text" class="opt-input" value="${opt}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
-          <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
-        </div>
-      `).join('');
-
-      d.innerHTML = `
-        <div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;">
-          <span style="font-weight:900; color:var(--tbc-petrol); font-size:1.1rem;">#${idx}</span>
-          <input type="text" placeholder="اكتب نص بند الفحص المطلوب إجابته..." class="q-label" style="flex:2;" value="${labelVal}">
-          <select class="q-type" style="flex:1;" onchange="handleTypeChange(this)">
-            <option value="text" ${typeVal==='text'?'selected':''}>نص قصير</option>
-            <option value="number" ${typeVal==='number'?'selected':''}>عدد / كمية</option>
-            <option value="radio" ${typeVal==='radio'?'selected':''}>🔘 اختيار من متعدد</option>
-            <option value="date" ${typeVal==='date'?'selected':''}>📅 تاريخ</option>
-            <option value="textarea" ${typeVal==='textarea'?'selected':''}>ملاحظات فنية</option>
-            <option value="image" ${typeVal==='image'?'selected':''}>📷 صورة توثيقية</option>
-          </select>
-          <button type="button" class="btn" style="background:#fee2e2; color:#b91c1c; padding:8px 16px;" onclick="this.closest('.q-row').remove()">إزالة</button>
-        </div>
-        <div class="radio-builder-area ${isRadio ? '' : 'hidden'}" style="background:#ffffff; border:1.5px dashed var(--border-subtle); padding:16px; border-radius:8px; margin-top:10px;">
-          <div class="options-container">${optionsHtml}</div>
-          <button type="button" class="btn btn-outline" style="font-size:0.88rem; padding:8px 16px; margin-top:8px; border-style:dashed;" onclick="addOptionToField(this)">
-            + إضافة خيار إضافي
-          </button>
-        </div>
-      `;
+      if (optVal && Array.isArray(optVal)) initialOptions = optVal; else if (optVal) initialOptions = optVal.split(',').map(s => s.trim()).filter(Boolean);
+      const optionsHtml = initialOptions.map(opt => `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="${opt}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`).join('');
+      d.innerHTML = `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;"><span style="font-weight:900; color:var(--tbc-petrol); font-size:1.1rem;">#${idx}</span><input type="text" placeholder="اكتب نص بند الفحص المطلوب إجابته..." class="q-label" style="flex:2;" value="${labelVal}"><select class="q-type" style="flex:1;" onchange="handleTypeChange(this)"><option value="text" ${typeVal==='text'?'selected':''}>نص قصير</option><option value="number" ${typeVal==='number'?'selected':''}>عدد / كمية</option><option value="radio" ${typeVal==='radio'?'selected':''}>🔘 اختيار من متعدد</option><option value="date" ${typeVal==='date'?'selected':''}>📅 تاريخ</option><option value="textarea" ${typeVal==='textarea'?'selected':''}>ملاحظات فنية</option><option value="image" ${typeVal==='image'?'selected':''}>📷 صورة توثيقية</option></select><button type="button" class="btn" style="background:#fee2e2; color:#b91c1c; padding:8px 16px;" onclick="this.closest('.q-row').remove()">إزالة</button></div><div class="radio-builder-area ${isRadio ? '' : 'hidden'}" style="background:#ffffff; border:1.5px dashed var(--border-subtle); padding:16px; border-radius:8px; margin-top:10px;"><div class="options-container">${optionsHtml}</div><button type="button" class="btn btn-outline" style="font-size:0.88rem; padding:8px 16px; margin-top:8px; border-style:dashed;" onclick="addOptionToField(this)">+ إضافة خيار إضافي</button></div>`;
       c.appendChild(d);
     }
 
@@ -1549,34 +1361,14 @@
       if (selectElem.value === 'radio') {
         area.classList.remove('hidden');
         const container = area.querySelector('.options-container');
-        if (container.children.length === 0) {
-          container.innerHTML = `
-            <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-              <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
-              <input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
-              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
-            </div>
-            <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-              <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
-              <input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
-              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
-            </div>
-          `;
-        }
+        if (container.children.length === 0) { container.innerHTML = `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div><div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`; }
       } else { area.classList.add('hidden'); }
     }
 
     function addOptionToField(btn) {
-      const container = btn.previousElementSibling;
-      const count = container.querySelectorAll('.option-row').length + 1;
-      const div = document.createElement('div');
-      div.className = 'option-row';
-      div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;';
-      div.innerHTML = `
-        <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
-        <input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
-        <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
-      `;
+      const container = btn.previousElementSibling; const count = container.querySelectorAll('.option-row').length + 1;
+      const div = document.createElement('div'); div.className = 'option-row'; div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;';
+      div.innerHTML = `<span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>`;
       container.appendChild(div);
     }
 
@@ -1588,7 +1380,6 @@
 
       const qNodes = document.querySelectorAll('#questionsBuilder .q-row');
       const fields = [];
-
       qNodes.forEach(node => {
         const l = node.querySelector('.q-label').value.trim();
         const t = node.querySelector('.q-type').value;
@@ -1605,53 +1396,33 @@
 
       if (fields.length === 0) return alert("الرجاء إضافة بند فحص واحد على الأقل ليتمكن المشرف من الإجابة عليه.");
 
-      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
-
       if (editingSurveyId) {
         const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
-        if (idx !== -1) {
-          surveys[idx].title = title;
-          surveys[idx].dueDate = dueDate;
-          surveys[idx].desc = desc;
-          surveys[idx].fields = fields;
-          alert("✓ تم تحديث نموذج الحصر بنجاح وتعميمه!");
-        }
+        if (idx !== -1) { surveys[idx].title = title; surveys[idx].dueDate = dueDate; surveys[idx].desc = desc; surveys[idx].fields = fields; alert("✓ تم تحديث نموذج الحصر بنجاح وتعميمه!"); }
       } else {
         surveys.push({ id: "SRV-" + Date.now(), title, dueDate, desc, targetSchoolsCount: 15, fields });
         alert("✓ تم إنشاء ونشر نموذج الحصر وتوجيه إشعار فوري إلى بريد المشرفين بنجاح!");
       }
 
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
+      pushToCloud();
       closeNewSurveyModal();
-      populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      showTab('surveys'); 
     }
 
     // ================= Fill Survey =================
     function openFillSurvey(id, existingData = null) {
-      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
-      if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير. قد يكون قد تم حذفه من قبل الإدارة.");
+      if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير.");
 
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
       document.getElementById('secFillSurvey').classList.remove('hidden');
-      document.getElementById('secSuccessModal').classList.add('hidden');
 
       const editBadge = document.getElementById('editModeIndicator');
       const submitBtn = document.getElementById('submitSurveyBtn');
 
-      if (existingData) {
-        editingResponseId = existingData.id;
-        editBadge.classList.remove('hidden');
-        submitBtn.innerText = "حفظ التعديلات وإعادة الإرسال للاعتماد ✓";
-      } else {
-        editingResponseId = null;
-        editBadge.classList.add('hidden');
-        submitBtn.innerText = "رفع التقرير للاعتماد من مدير الإشراف ✓";
-      }
+      if (existingData) { editingResponseId = existingData.id; editBadge.classList.remove('hidden'); submitBtn.innerText = "حفظ التعديلات وإعادة الإرسال للاعتماد ✓"; } 
+      else { editingResponseId = null; editBadge.classList.add('hidden'); submitBtn.innerText = "رفع التقرير للاعتماد من مدير الإشراف ✓"; }
 
       document.getElementById('fillTitle').innerText = (existingData ? "تعديل تقرير: " : "تسجيل حصر: ") + (activeSrv.title || '');
       document.getElementById('fillDesc').innerText = activeSrv.desc || '';
@@ -1666,8 +1437,7 @@
 
       if(activeSrv.fields && Array.isArray(activeSrv.fields)) {
         activeSrv.fields.forEach((f, fIdx) => {
-          const d = document.createElement('div');
-          d.className = 'form-group';
+          const d = document.createElement('div'); d.className = 'form-group';
           let inputHtml = '';
           const existingVal = existingData && existingData.answers ? existingData.answers[f.label] : '';
           
@@ -1675,21 +1445,13 @@
           else if (f.type === 'number') { inputHtml = `<input type="number" class="dyn-field" data-type="number" data-label="${f.label}" value="${existingVal || ''}">`; } 
           else if (f.type === 'date') { inputHtml = `<input type="date" class="dyn-field" data-type="date" data-label="${f.label}" value="${existingVal || ''}">`; } 
           else if (f.type === 'radio') {
-            const opts = (f.options && f.options.length ? f.options : ["مطابق", "غير مطابق"]).map(opt => `
-              <label class="custom-radio-card">
-                <input type="radio" name="r_${fIdx}" value="${opt}" ${existingVal === opt ? 'checked' : ''} style="width:20px; height:20px; accent-color:var(--tbc-petrol); cursor:pointer; margin:0;">
-                <span style="font-size:0.95rem; font-weight:700; color:var(--text-main); line-height:1.4;">${opt}</span>
-              </label>
-            `).join('');
+            const opts = (f.options && f.options.length ? f.options : ["مطابق", "غير مطابق"]).map(opt => `<label class="custom-radio-card"><input type="radio" name="r_${fIdx}" value="${opt}" ${existingVal === opt ? 'checked' : ''} style="width:20px; height:20px; accent-color:var(--tbc-petrol); cursor:pointer; margin:0;"><span style="font-size:0.95rem; font-weight:700; color:var(--text-main); line-height:1.4;">${opt}</span></label>`).join('');
             inputHtml = `<div class="radio-group" data-label="${f.label}" style="display:flex; flex-direction:column; width:100%;">${opts}</div>`;
           } 
           else if (f.type === 'textarea') { inputHtml = `<textarea class="dyn-field" data-type="textarea" rows="3" data-label="${f.label}">${existingVal || ''}</textarea>`; } 
           else if (f.type === 'image') {
             const hasImg = existingVal && String(existingVal).startsWith('data:image');
-            inputHtml = `
-              <input type="file" accept="image/*" capture="environment" class="dyn-field dyn-img" data-type="image" data-label="${f.label}" data-base64="${hasImg ? existingVal : ''}" onchange="encodeImg(this)">
-              <img class="img-preview-box" src="${hasImg ? existingVal : ''}" style="${hasImg ? 'display:block;' : ''}" />
-            `;
+            inputHtml = `<input type="file" accept="image/*" capture="environment" class="dyn-field dyn-img" data-type="image" data-label="${f.label}" data-base64="${hasImg ? existingVal : ''}" onchange="encodeImg(this)"><img class="img-preview-box" src="${hasImg ? existingVal : ''}" style="${hasImg ? 'display:block;' : ''}" />`;
           }
           d.innerHTML = `<label>${f.label}</label>${inputHtml}`;
           container.appendChild(d);
@@ -1697,45 +1459,30 @@
       }
     }
 
-    function backToSurveysList() {
-      editingResponseId = null;
-      document.getElementById('secFillSurvey').classList.add('hidden');
-      showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records');
-    }
+    function backToSurveysList() { editingResponseId = null; showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records'); }
 
     function captureGps() {
-      const status = document.getElementById('gpsStatus');
-      const input = document.getElementById('fillGps');
+      const status = document.getElementById('gpsStatus'); const input = document.getElementById('fillGps');
       if (!navigator.geolocation) return alert("المتصفح الذي تستخدمه لا يدعم تحديد الموقع (GPS).");
       status.innerText = "⏳ جارٍ الاتصال بالأقمار الصناعية لالتقاط الموقع...";
       navigator.geolocation.getCurrentPosition(
-        pos => {
-          input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
-          status.innerText = `✓ تم تحديد الموقع وتوثيقه بنجاح (دقة ${Math.round(pos.coords.accuracy)} متر).`;
-          status.style.color = "var(--success)";
-        },
+        pos => { input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; status.innerText = `✓ تم تحديد الموقع وتوثيقه بنجاح (دقة ${Math.round(pos.coords.accuracy)} متر).`; status.style.color = "var(--success)"; },
         err => { status.innerText = "تعذر تحديد الموقع. يرجى التأكد من تشغيل (خدمات الموقع/GPS) في جهازك والموافقة على الصلاحية."; status.style.color = "var(--danger)"; },
         { enableHighAccuracy: true }
       );
     }
 
     function encodeImg(input) {
-      const file = input.files[0];
-      const preview = input.nextElementSibling;
+      const file = input.files[0]; const preview = input.nextElementSibling;
       if (!file) return;
       const reader = new FileReader();
       reader.onload = e => {
-        const img = new Image();
-        img.src = e.target.result;
+        const img = new Image(); img.src = e.target.result;
         img.onload = () => {
-          const cvs = document.createElement('canvas');
-          const max = 800; let w = img.width, h = img.height;
+          const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height;
           if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
-          cvs.width = w; cvs.height = h;
-          cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65);
-          preview.src = input.dataset.base64;
-          preview.style.display = "block";
+          cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65); preview.src = input.dataset.base64; preview.style.display = "block";
         };
       };
       reader.readAsDataURL(file);
@@ -1748,71 +1495,43 @@
       if (!school) return alert("إلزامي: يرجى إدخال اسم المنشأة التعليمية / المدرسة.");
 
       const userPerms = currentUser.permissions || { requireGps: true, requirePhoto: true };
-      if (userPerms.requireGps && (!gps || gps.trim() === '')) {
-        return alert("تنبيه أمني: يتطلب حسابك التقاط إحداثيات الـ GPS الميدانية الحية قبل الاعتماد ورفع التقرير.");
-      }
+      if (userPerms.requireGps && (!gps || gps.trim() === '')) { return alert("تنبيه أمني: يتطلب حسابك التقاط إحداثيات الـ GPS الميدانية الحية قبل الاعتماد ورفع التقرير."); }
 
-      const dataObj = {};
-      let hasImage = false;
-
+      const dataObj = {}; let hasImage = false;
       document.querySelectorAll('.dyn-field').forEach(f => {
-        const label = f.getAttribute('data-label');
-        const type = f.getAttribute('data-type');
-        if (type === 'image') {
-          const imgVal = f.dataset.base64 || '';
-          if (imgVal) hasImage = true;
-          dataObj[label] = imgVal;
-        } else {
-          dataObj[label] = f.value;
-        }
+        const label = f.getAttribute('data-label'); const type = f.getAttribute('data-type');
+        if (type === 'image') { const imgVal = f.dataset.base64 || ''; if (imgVal) hasImage = true; dataObj[label] = imgVal; } 
+        else { dataObj[label] = f.value; }
       });
 
-      if (userPerms.requirePhoto && !hasImage && !editingResponseId) {
-        return alert("تنبيه أمني: يتطلب حسابك إرفاق صورة توثيقية ميدانية واحدة على الأقل قبل اعتماد التقرير من النظام.");
-      }
+      if (userPerms.requirePhoto && !hasImage && !editingResponseId) { return alert("تنبيه أمني: يتطلب حسابك إرفاق صورة توثيقية ميدانية واحدة على الأقل قبل اعتماد التقرير من النظام."); }
 
       document.querySelectorAll('.radio-group').forEach(rg => {
-        const label = rg.getAttribute('data-label');
-        const checked = rg.querySelector('input[type="radio"]:checked');
+        const label = rg.getAttribute('data-label'); const checked = rg.querySelector('input[type="radio"]:checked');
         dataObj[label] = checked ? checked.value : 'غير محدد';
       });
-
-      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses; } catch(e){}
 
       if (editingResponseId) {
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
           const old = responses[idx];
           const isPlanning = currentUser.role === "ROLE_PLANNING";
-          
           if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") {
             const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60);
-            if (reportAgeHours > 48 && !old.adminPermissionGranted) {
-              return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن خاص من الإدارة للتمكن من تعديله.");
-            }
+            if (reportAgeHours > 48 && !old.adminPermissionGranted) { return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن خاص من الإدارة للتمكن من تعديله."); }
           }
-
-          responses[idx] = {
-            ...old, school, branch, gps, answers: dataObj,
-            lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'),
-            status: "pending", rejectionReason: ""
-          };
+          responses[idx] = { ...old, school, branch, gps, answers: dataObj, lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'), status: "pending", rejectionReason: "" };
           lastSavedIndex = idx;
           localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
         }
       } else {
-        const entry = {
-          id: Date.now(), school, branch, gps,
-          surveyTitle: activeSrv.title, dueDate: activeSrv.dueDate || '',
-          date: new Date().toLocaleString('ar-SA'),
-          collectedBy: currentUser.fullName, username: currentUser.username,
-          status: "pending", rejectionReason: "", adminPermissionGranted: false, answers: dataObj
-        };
+        const entry = { id: Date.now(), school, branch, gps, surveyTitle: activeSrv.title, dueDate: activeSrv.dueDate || '', date: new Date().toLocaleString('ar-SA'), collectedBy: currentUser.fullName, username: currentUser.username, status: "pending", rejectionReason: "", adminPermissionGranted: false, answers: dataObj };
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
         localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
       }
 
+      pushToCloud();
       editingResponseId = null;
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.remove('hidden');
@@ -1822,20 +1541,14 @@
     function printLastSubmittedPDF() { if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex); }
 
     // ================= KPI, Filters & Records =================
-    function filterByKpi(status) {
-      selectedKpiStatusFilter = status;
-      renderRecords(); 
-    }
+    function filterByKpi(status) { selectedKpiStatusFilter = status; renderRecords(); }
 
     function getScopedResponses() {
       if (!currentUser) return [];
-      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){}
       let list = responses;
       if (currentUser.role === "ROLE_SUB_EAST") { list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية"); } 
       else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } 
-      else if (currentUser.role === "ROLE_SUPERVISION_LEAD") {
-        if (currentUser.branch && currentUser.branch !== "الكل") { list = list.filter(r => r.branch === currentUser.branch); }
-      } 
+      else if (currentUser.role === "ROLE_SUPERVISION_LEAD") { if (currentUser.branch && currentUser.branch !== "الكل") { list = list.filter(r => r.branch === currentUser.branch); } } 
       else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); }
       return list;
     }
@@ -1862,7 +1575,7 @@
 
       const html = `
         <div class="kpi-box total ${totalActive}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي">
-          <div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div>
+          <div class="kpi-num">${total}</div>
           <div class="kpi-title">📊 إجمالي التقارير المرفوعة</div>
         </div>
         <div class="kpi-box pending ${pendingActive}" onclick="filterByKpi('pending')" title="انقر لعرض المعلقة فقط">
@@ -1887,17 +1600,12 @@
       if (!sSelect || !iSelect) return;
 
       let sHtml = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
-      if(surveys && surveys.length > 0) {
-         surveys.forEach(s => { sHtml += `<option value="${s.title}">${s.title}</option>`; });
-      }
+      if(surveys && surveys.length > 0) { surveys.forEach(s => { sHtml += `<option value="${s.title}">${s.title}</option>`; }); }
       if(sSelect.innerHTML !== sHtml) sSelect.innerHTML = sHtml;
 
       let iHtml = '<option value="ALL">-- كل المشرفين --</option>';
       const scoped = getScopedResponses();
-      if(scoped && scoped.length > 0) {
-         const inspectors = [...new Set(scoped.map(r => r.collectedBy))];
-         inspectors.forEach(ins => { iHtml += `<option value="${ins}">${ins}</option>`; });
-      }
+      if(scoped && scoped.length > 0) { const inspectors = [...new Set(scoped.map(r => r.collectedBy))]; inspectors.forEach(ins => { iHtml += `<option value="${ins}">${ins}</option>`; }); }
       if(iSelect.innerHTML !== iHtml) iSelect.innerHTML = iHtml;
     }
 
@@ -1927,17 +1635,13 @@
       
       let visible = getScopedResponses();
 
-      // تطبيق فلتر الحالة (مقبول، مرفوض، قيد الاعتماد) من البطاقات الملونة
       if (selectedKpiStatusFilter !== "ALL") {
         visible = visible.filter(r => r.status === selectedKpiStatusFilter);
         banner.classList.remove('hidden');
         const statusArabic = { pending: "بانتظار الاعتماد ⏳", approved: "المعتمدة ✅", rejected: "المرفوضة ❌" };
         bannerText.innerText = `نتائج التصفية الحالية: عرض التقارير [ ${statusArabic[selectedKpiStatusFilter] || ''} ] (الإجمالي: ${visible.length})`;
-      } else {
-        banner.classList.add('hidden');
-      }
+      } else { banner.classList.add('hidden'); }
 
-      // تطبيق فلاتر الإدارة العلوية (المشرف / نوع الحصر)
       if (currentUser.role !== "ROLE_INSPECTOR") {
         if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter);
         if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
@@ -1951,16 +1655,11 @@
       }
 
       if (visible.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <h4>لا توجد سجلات مطابقة للبحث أو التصفية الحالية</h4>
-            <p>حاول تغيير الفلاتر من الأعلى أو انتظر ريثما يتم رفع تقارير جديدة.</p>
-          </div>`;
+        container.innerHTML = `<div class="empty-state"><h4>لا توجد سجلات مطابقة للبحث أو التصفية الحالية</h4><p>حاول تغيير الفلاتر من الأعلى أو انتظر ريثما يتم رفع تقارير جديدة.</p></div>`;
         return;
       }
 
       let newHtml = '';
-
       visible.slice().reverse().forEach(r => {
         const originalIdx = responses.findIndex(x => x.id === r.id);
         
@@ -1971,11 +1670,7 @@
 
         let rejectionBox = '';
         if (r.status === 'rejected' && r.rejectionReason) {
-          rejectionBox = `
-            <div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:12px 16px; border-radius:8px; margin:14px 0; font-size:0.95rem; font-weight:700; color:#b91c1c;">
-              <b>⚠️ ملاحظات رفض الإدارة:</b> ${r.rejectionReason}
-            </div>
-          `;
+          rejectionBox = `<div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:12px 16px; border-radius:8px; margin:14px 0; font-size:0.95rem; font-weight:700; color:#b91c1c;"><b>⚠️ ملاحظات رفض الإدارة:</b> ${r.rejectionReason}</div>`;
         }
 
         let editButtonHtml = '';
@@ -1987,69 +1682,29 @@
         } else if (isInspector) {
           const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
           const canEditWithin48 = (reportAgeHours <= 48) || (r.adminPermissionGranted === true);
-          
-          if (canEditWithin48) {
-            editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (متاح 48 ساعة)</button>`;
-          } else {
-            editButtonHtml = `
-              <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;" title="انتهت مهلة الـ 48 ساعة المتاحة لتعديل التقرير.">🔒 مقفل</button>
-              <button class="btn btn-gold" style="font-size:0.82rem; padding:6px 12px;" onclick="requestAdminEditPermission(${r.id})">📩 طلب إذن إضافي</button>
-            `;
-          }
+          if (canEditWithin48) { editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (متاح 48 ساعة)</button>`; } 
+          else { editButtonHtml = `<button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;" title="انتهت مهلة الـ 48 ساعة المتاحة لتعديل التقرير.">🔒 مقفل</button><button class="btn btn-gold" style="font-size:0.82rem; padding:6px 12px;" onclick="requestAdminEditPermission(${r.id})">📩 طلب إذن إضافي</button>`; }
         }
 
-        const pdfButton = (currentUser.permissions && currentUser.permissions.allowPdf !== false)
-          ? `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="printSinglePDF(${originalIdx})">🖨️ تصدير PDF</button>` : '';
+        const pdfButton = (currentUser.permissions && currentUser.permissions.allowPdf !== false) ? `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="printSinglePDF(${originalIdx})">🖨️ تصدير PDF</button>` : '';
 
         let approvalActionButtons = '';
         const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
         if (canApprove) {
           const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
-          const grantPermissionBtn = (reportAgeHours > 48 && !r.adminPermissionGranted) ? `
-            <button class="btn btn-gold" style="font-size:0.85rem; padding:8px 16px;" onclick="grantEditPermission(${originalIdx})">🔓 إعطاء إذن تعديل إضافي للمشرف</button>
-          ` : '';
-
-          approvalActionButtons = `
-            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; border-top:1px dashed var(--border-subtle); padding-top:16px;">
-              <button class="btn btn-approve" style="font-size:0.9rem; padding:8px 20px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير ميدانياً</button>
-              <button class="btn btn-reject" style="font-size:0.9rem; padding:8px 20px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع تدوين ملاحظة</button>
-              ${grantPermissionBtn}
-            </div>
-          `;
+          const grantPermissionBtn = (reportAgeHours > 48 && !r.adminPermissionGranted) ? `<button class="btn btn-gold" style="font-size:0.85rem; padding:8px 16px;" onclick="grantEditPermission(${originalIdx})">🔓 إعطاء إذن تعديل إضافي للمشرف</button>` : '';
+          approvalActionButtons = `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; border-top:1px dashed var(--border-subtle); padding-top:16px;"><button class="btn btn-approve" style="font-size:0.9rem; padding:8px 20px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير ميدانياً</button><button class="btn btn-reject" style="font-size:0.9rem; padding:8px 20px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع تدوين ملاحظة</button>${grantPermissionBtn}</div>`;
         }
 
         let detailsHtml = '';
         if(r.answers && typeof r.answers === 'object'){
           for (const [q, a] of Object.entries(r.answers)) {
-            if (a && String(a).startsWith('data:image')) {
-              detailsHtml += `<li style="font-size:0.95rem; margin-bottom:12px; font-weight:700;"><b>${q}:</b><br><img src="${a}" style="max-width:180px; border-radius:8px; margin-top:6px; border:2px solid #e2e8f0; box-shadow:var(--shadow-sm);"></li>`;
-            } else {
-              detailsHtml += `<li style="font-size:0.95rem; margin-bottom:8px; border-bottom:1px dashed #edf2f7; padding-bottom:8px;"><b>${q}:</b> <span style="color:var(--tbc-petrol-dark); font-weight:700;">${a || '-'}</span></li>`;
-            }
+            if (a && String(a).startsWith('data:image')) { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:12px; font-weight:700;"><b>${q}:</b><br><img src="${a}" style="max-width:180px; border-radius:8px; margin-top:6px; border:2px solid #e2e8f0; box-shadow:var(--shadow-sm);"></li>`; } 
+            else { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:8px; border-bottom:1px dashed #edf2f7; padding-bottom:8px;"><b>${q}:</b> <span style="color:var(--tbc-petrol-dark); font-weight:700;">${a || '-'}</span></li>`; }
           }
         }
 
-        newHtml += `
-          <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-              <div>
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:4px;">🏫 ${r.school}</h4>
-                <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">
-                  المشرف: <span style="color:var(--tbc-petrol);">${r.collectedBy}</span> | المكتب: ${r.branch || 'الشرقية'} | الوقت: ${r.date}
-                </span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-                ${statusBadge}
-                ${editButtonHtml}
-                ${pdfButton}
-              </div>
-            </div>
-            <div style="font-size:1rem; color:var(--tbc-gold-hover); font-weight:900; margin-bottom:12px;">📋 ${r.surveyTitle}</div>
-            ${rejectionBox}
-            <ul style="list-style:none; padding:0; background:#f8fafc; border-radius:8px; padding:16px; border:1px solid #e2e8f0;">${detailsHtml}</ul>
-            ${approvalActionButtons}
-          </div>
-        `;
+        newHtml += `<div class="card"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;"><div><h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:4px;">🏫 ${r.school}</h4><span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">المشرف: <span style="color:var(--tbc-petrol);">${r.collectedBy}</span> | المكتب: ${r.branch || 'الشرقية'} | الوقت: ${r.date}</span></div><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">${statusBadge}${editButtonHtml}${pdfButton}</div></div><div style="font-size:1rem; color:var(--tbc-gold-hover); font-weight:900; margin-bottom:12px;">📋 ${r.surveyTitle}</div>${rejectionBox}<ul style="list-style:none; padding:0; background:#f8fafc; border-radius:8px; padding:16px; border:1px solid #e2e8f0;">${detailsHtml}</ul>${approvalActionButtons}</div>`;
       });
       
       if(container.innerHTML !== newHtml) container.innerHTML = newHtml;
@@ -2060,20 +1715,17 @@
       if (!rep) return;
       if (currentUser.role === "ROLE_INSPECTOR") {
         const reportAgeHours = (Date.now() - rep.id) / (1000 * 60 * 60);
-        if (reportAgeHours > 48 && !rep.adminPermissionGranted) {
-          return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن من الإدارة لإعادة الفتح.");
-        }
+        if (reportAgeHours > 48 && !rep.adminPermissionGranted) { return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن من الإدارة لإعادة الفتح."); }
       }
       openFillSurvey(null, rep);
     }
 
-    function requestAdminEditPermission(reportId) {
-      alert("✓ تم إرسال إشعار وطلب فتح صلاحية التعديل لهذا التقرير إلى مدير الإشراف وإدارة التخطيط بنجاح.");
-    }
+    function requestAdminEditPermission(reportId) { alert("✓ تم إرسال إشعار وطلب فتح صلاحية التعديل لهذا التقرير إلى مدير الإشراف وإدارة التخطيط بنجاح."); }
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
       localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
+      pushToCloud();
       alert("✓ تم منح المشرف الميداني إذن تعديل إضافي لهذا التقرير ومفتوح الصلاحية الآن!");
       renderRecords();
     }
@@ -2083,6 +1735,7 @@
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName;
       localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
+      pushToCloud();
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وحفظ الملاحظة التوجيهية للمشرف لتعديله.");
       updateKPIs();
       renderRecords();
@@ -2090,9 +1743,7 @@
 
     function promptRejectReport(index) {
       const reason = prompt("إجراء تنظيمي: يرجى كتابة سبب التعديل أو الرفض ليظهر بشكل واضح في شاشة المشرف:");
-      if (reason !== null && reason.trim() !== "") {
-        setReportStatus(index, 'rejected', reason.trim());
-      }
+      if (reason !== null && reason.trim() !== "") { setReportStatus(index, 'rejected', reason.trim()); }
     }
 
     // ================= Print PDF Logic =================
@@ -2103,11 +1754,8 @@
       let rows = '', imgs = '';
 
       for (const [q, a] of Object.entries(r.answers)) {
-        if (a && String(a).startsWith('data:image')) {
-          imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#fafafa; break-inside:avoid;"><img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div></div>`;
-        } else {
-          rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`;
-        }
+        if (a && String(a).startsWith('data:image')) { imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#fafafa; break-inside:avoid;"><img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div></div>`; } 
+        else { rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`; }
       }
 
       w.document.write(`
@@ -2176,11 +1824,7 @@
 
         for (const [q, a] of Object.entries(entry.answers)) {
           if (a && String(a).startsWith('data:image')) {
-            imgs += `
-              <div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;">
-                <img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;">
-                <div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div>
-              </div>`;
+            imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;"><img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div></div>`;
           } else {
             rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`;
           }
@@ -2314,6 +1958,7 @@
       }
 
       localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+      pushToCloud();
       resetUserForm();
       renderUsersManagement();
     }
@@ -2361,6 +2006,7 @@
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
         localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+        pushToCloud();
         alert(`✓ تم تعيين وتفعيل كلمة المرور الجديدة: (${newPass.trim()}) بنجاح`);
         renderUsersManagement();
       }
@@ -2369,10 +2015,11 @@
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
       localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+      pushToCloud();
       renderUsersManagement();
     }
 
-    // Call initApp on startup to robustly load ALL data
+    // Call initApp on startup 
     initApp();
 
   </script>
