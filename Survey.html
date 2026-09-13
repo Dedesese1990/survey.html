@@ -794,7 +794,6 @@
 
   <!-- التطبيق الرئيسي -->
   <div id="appView" class="hidden">
-    <!-- شريط التبويبات العلوي المتصل بدالة showTab -->
     <div class="tabs-bar">
       <div class="container-fluid">
         <div class="tabs-inner">
@@ -1182,7 +1181,7 @@
       ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v25')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v26')) || [
       {
         username: "admin",
         password: "123",
@@ -1255,7 +1254,7 @@
       }
     ];
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v25')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v26')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -1287,7 +1286,7 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v25')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v26')) || [];
     let chatMessages = JSON.parse(localStorage.getItem('tbc_chat_messages_v2')) || [
       {
         sender: "إدارة التخطيط والتحكم",
@@ -1444,7 +1443,7 @@
       }
 
       usersList[foundIdx].password = np;
-      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v26', JSON.stringify(usersList));
       alert("✓ تم تعيين كلمة المرور الجديدة بنجاح! يمكنك الآن تسجيل الدخول مباشرة.");
       closeForgotPasswordModal();
     }
@@ -1789,7 +1788,7 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v25', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v26', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
@@ -1920,11 +1919,11 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      localStorage.setItem('tbc_surveys_v25', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v26', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
-      showTab('surveys'); // الانتقال التلقائي لعرض قائمة الحصورات المنشورة
+      showTab('surveys'); // الانتقال الفوري والمضمون لعرض قائمة الحصورات المنشورة
     }
 
     // ================= تعبئة الحصر الميداني =================
@@ -2105,7 +2104,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v26', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -2128,7 +2127,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v26', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -2400,7 +2399,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v26', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -2409,7 +2408,7 @@
       responses[index].status = status;
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName;
-      localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v26', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
       updateNotifications();
@@ -2635,7 +2634,7 @@
         alert("✓ تم إضافة المستخدم وربط البريد الإلكتروني بالإشعارات!");
       }
 
-      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v26', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -2682,7 +2681,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v26', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -2690,7 +2689,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v26', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -2731,7 +2730,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v26', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
