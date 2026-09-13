@@ -77,7 +77,7 @@
       position: absolute; top: 52px; left: 0; width: 280px; background: #ffffff;
       border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
       box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden;
-      animation: fadeIn 0.15s ease-out;
+      animation: fadeIn 0.15s ease-out; display: block;
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     .profile-menu-header { background: #f8fafc; padding: 16px; border-bottom: 1px solid var(--border-subtle); text-align: right; }
@@ -107,7 +107,7 @@
     .notif-dropdown {
       position: absolute; top: 52px; left: 0; width: 340px; background: #ffffff;
       border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden;
+      box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden; display: block;
     }
     .notif-header { background: var(--tbc-petrol); color: #fff; padding: 14px 16px; font-size: 0.95rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .notif-list { max-height: 320px; overflow-y: auto; padding: 8px; }
@@ -139,6 +139,9 @@
       box-shadow: var(--shadow-sm); transition: box-shadow 0.3s;
     }
     .card:hover { box-shadow: var(--shadow-md); }
+
+    /* Utilities */
+    .hidden { display: none !important; }
 
     /* BI Analytics Dashboard */
     .bi-banner-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
@@ -229,7 +232,6 @@
     }
     input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); box-shadow: 0 0 0 3px var(--tbc-petrol-light); }
 
-    .hidden { display: none !important; }
     .q-row { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1.5px dashed var(--border-subtle); margin-bottom: 16px; transition: 0.2s; }
     .q-row:hover { border-color: var(--tbc-petrol); background: #f1f5f9; }
     .img-preview-box { max-width: 180px; max-height: 180px; border-radius: var(--radius-sm); margin-top: 12px; object-fit: cover; border: 2px solid var(--border-subtle); }
@@ -239,6 +241,13 @@
     table.data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 16px; }
     table.data-table th, table.data-table td { padding: 14px; border: 1px solid var(--border-subtle); text-align: right; }
     table.data-table th { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); font-weight: 900; }
+
+    .filter-bar-card { background: #ffffff; border: 1.5px solid var(--tbc-petrol); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 20px; }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: flex-end; }
+
+    .perm-checkbox-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px dashed var(--border-subtle); }
+    .perm-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--tbc-petrol-dark); cursor: pointer; }
+    .perm-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tbc-petrol); }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,28,45,0.7); display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 20px; backdrop-filter: blur(4px); }
     .modal-content { background: #ffffff; border-radius: var(--radius-md); max-width: 500px; width: 100%; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-top: 6px solid var(--tbc-gold); }
@@ -251,7 +260,7 @@
       position: fixed; bottom: 30px; left: 30px; background: var(--tbc-petrol); color: #ffffff;
       padding: 14px 24px; border-radius: 30px; box-shadow: 0 10px 25px rgba(39,98,112,0.4);
       cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1rem;
-      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s;
     }
     .chat-floating-btn:hover { background: var(--tbc-petrol-dark); transform: scale(1.05); }
 
@@ -269,9 +278,20 @@
     .chat-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: block; text-align: left; }
     .chat-footer { padding: 12px; background: #ffffff; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; }
 
-    /* Professional Empty States */
+    /* Empty States */
     .empty-state { text-align: center; padding: 50px 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed var(--border-subtle); color: var(--text-muted); }
-    .empty-state h4 { color: var(--tbc-petrol-dark); font-size: 1.2rem; margin-bottom: 8px; }
+    .empty-state h4 { color: var(--tbc-petrol-dark); font-size: 1.2rem; margin-bottom: 8px; font-weight: 900; }
+
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      .header-content { flex-direction: column; align-items: stretch; gap: 10px; }
+      .brand-section { justify-content: space-between; }
+      .brand-text-box { border-right: none; padding-right: 0; }
+      .header-user-section { justify-content: space-between; width: 100%; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .card { padding: 18px 14px; }
+      .filter-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -296,7 +316,7 @@
         </div>
 
         <div class="header-user-section" id="headerUserActions">
-          <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="toggleNotifPanel(event)">
+          <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="window.toggleNotifPanel(event)">
             <span>🔔</span>
             <span id="notifCountBadge" class="notif-bell-badge hidden">0</span>
           </div>
@@ -304,13 +324,13 @@
           <div id="notifDropdown" class="notif-dropdown hidden">
             <div class="notif-header">
               <span>مركز التنبيهات المباشرة</span>
-              <span style="cursor:pointer;" onclick="closeNotifPanel()">✕</span>
+              <span style="cursor:pointer;" onclick="window.closeNotifPanel()">✕</span>
             </div>
             <div class="notif-list" id="notifListContainer"></div>
           </div>
 
           <div id="profileDropdownContainer" class="hidden" style="position:relative;">
-            <div class="profile-btn" onclick="toggleProfileMenu(event)">
+            <div class="profile-btn" onclick="window.toggleProfileMenu(event)">
               <span>👤</span>
               <span id="activeUserName">المستخدم</span>
               <span style="font-size:0.75rem; color:var(--tbc-petrol);">▾</span>
@@ -322,11 +342,11 @@
                 <div class="profile-user-role" id="menuUserRole">الدور الوظيفي</div>
               </div>
               <div class="profile-menu-body">
-                <button class="profile-menu-item" onclick="openChangePasswordModal(); closeProfileMenu();">
+                <button class="profile-menu-item" onclick="openChangePasswordModal(); window.closeProfileMenu();">
                   <span>🔑</span>
                   <span>تغيير كلمة المرور</span>
                 </button>
-                <button class="profile-menu-item logout-item" onclick="logout(); closeProfileMenu();">
+                <button class="profile-menu-item logout-item" onclick="logout(); window.closeProfileMenu();">
                   <span>🚪</span>
                   <span>تسجيل الخروج من المنظومة</span>
                 </button>
@@ -467,7 +487,7 @@
             <div class="card" style="margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني التراكمي (Actual vs Planned)</h4>
-                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي</span>
+                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي مباشر</span>
               </div>
               <div style="height: 300px; position: relative; width:100%;">
                 <canvas id="sCurveChart"></canvas>
@@ -594,7 +614,6 @@
 
         <!-- ================= 3. Records Tab ================= -->
         <section id="secRecords" class="hidden">
-          <!-- البطاقات الملونة (تظهر بشكل دائم) -->
           <div id="kpiContainer" class="kpi-grid"></div>
 
           <div id="filterBanner" class="card hidden" style="padding:14px 20px; background:#f8fafc; border:2px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
@@ -770,7 +789,7 @@
   </div>
 
   <!-- Chat Floating Window -->
-  <div id="chatFloatingBtn" class="chat-floating-btn hidden" onclick="toggleChatWindow()">
+  <div id="chatFloatingBtn" class="chat-floating-btn hidden" onclick="window.toggleChatWindow(event)">
     <span style="font-size:1.2rem;">💬</span>
     <span>المحادثة والدعم الفني</span>
     <span id="chatBadge" style="background:#ef4444; color:#fff; border-radius:12px; padding:2px 8px; font-size:0.8rem; display:none; margin-right:4px;">1</span>
@@ -782,7 +801,7 @@
         <span style="font-size:1.2rem;">💬</span>
         <span style="font-size:1rem; font-weight:900;" id="chatHeaderTitle">الدعم والتخطيط المباشر</span>
       </div>
-      <span style="cursor:pointer; font-size:1.2rem; font-weight:bold;" onclick="toggleChatWindow()">✕</span>
+      <span style="cursor:pointer; font-size:1.2rem; font-weight:bold;" onclick="window.toggleChatWindow(event)">✕</span>
     </div>
     <div class="chat-body" id="chatMessagesArea"></div>
     <div class="chat-footer">
@@ -827,7 +846,6 @@
 
     // ================= App Initialization (Bulletproof Data Loading) =================
     function initApp() {
-      // Helper to migrate legacy data safely without breaking JSON
       const getLegacy = (keys) => {
         for(let k of keys) {
           const d = localStorage.getItem(k);
@@ -877,20 +895,21 @@
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
-      // 3. Responses & Chat
+      // 3. Responses
       try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)); } catch(e){}
       if (!responses || !Array.isArray(responses)) {
         responses = getLegacy(['tbc_responses_master_v2', 'tbc_responses_store_v1', 'tbc_responses_v26', 'tbc_responses_v25']) || [];
         localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
       }
 
+      // 4. Chat
       try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
       if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
         chatMessages = getLegacy(['tbc_chat_messages_master_v2', 'tbc_chat_messages_v1']) || [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
         localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
       }
 
-      // Check Auto-Login
+      // Auto Login Setup
       const savedUser = localStorage.getItem('tbc_remembered_user');
       if (savedUser) {
         try {
@@ -903,18 +922,71 @@
       }
     }
 
+    // ================= Profile & Global UI Interactions =================
+    window.toggleProfileMenu = function(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('profileMenu');
+      if (m) m.classList.toggle('hidden');
+    };
+
+    window.closeProfileMenu = function() {
+      const m = document.getElementById('profileMenu');
+      if (m) m.classList.add('hidden');
+    };
+
+    window.toggleNotifPanel = function(e) {
+      if (e) e.stopPropagation();
+      window.closeProfileMenu(); 
+      const p = document.getElementById('notifDropdown');
+      if (p) p.classList.toggle('hidden');
+    };
+
+    window.closeNotifPanel = function() {
+      const p = document.getElementById('notifDropdown');
+      if (p) p.classList.add('hidden');
+    };
+
+    window.toggleChatWindow = function(e) {
+      if (e) e.stopPropagation();
+      const win = document.getElementById('chatWindow');
+      if(win) {
+         win.classList.toggle('hidden');
+         if (!win.classList.contains('hidden')) {
+             renderChatMessages();
+             const badge = document.getElementById('chatBadge');
+             if(badge) badge.style.display = 'none';
+         }
+      }
+    };
+
+    document.addEventListener('click', function(e) {
+      const profM = document.getElementById('profileMenu');
+      const profC = document.getElementById('profileDropdownContainer');
+      if (profM && !profM.classList.contains('hidden')) {
+        if (profC && !profC.contains(e.target)) {
+          profM.classList.add('hidden');
+        }
+      }
+
+      const notifM = document.getElementById('notifDropdown');
+      const notifB = document.getElementById('notifBellBtn');
+      if (notifM && !notifM.classList.contains('hidden')) {
+        if (notifB && !notifB.contains(e.target) && !notifM.contains(e.target)) {
+          notifM.classList.add('hidden');
+        }
+      }
+    });
+
     // ================= Tabs Management =================
     function showTab(tab) {
       if(!currentUser) return;
       
-      // Sync Buttons
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
       const tu = document.getElementById('tabUsers');
       if (tu) tu.classList.toggle('active', tab === 'users');
 
-      // Hide all sections initially
       document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
@@ -923,13 +995,12 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
 
-      // Refresh Data from Storage Always before showing
       try {
         surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
         responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
       } catch(e){}
 
-      // Show specific tab & render its components securely via Timeout to prevent DOM reflow issues
+      // Prevent DOM reflow drawing issues
       setTimeout(() => {
         if(tab === 'analytics') {
           document.getElementById('secAnalytics').classList.remove('hidden');
@@ -943,7 +1014,7 @@
         else if(tab === 'records') {
           document.getElementById('secRecords').classList.remove('hidden');
           if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
-          updateKPIs(); // Display permanent color cards
+          updateKPIs(); 
           renderRecords();
         }
         else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
@@ -1002,10 +1073,7 @@
 
       renderChatMessages();
       
-      // Important: Allow the DOM to render the block containers before initializing charts
-      setTimeout(() => {
-         showTab('analytics');
-      }, 100);
+      setTimeout(() => { showTab('analytics'); }, 100);
     }
 
     function logout() {
@@ -1019,7 +1087,7 @@
       document.getElementById('notifDropdown').classList.add('hidden');
       document.getElementById('chatFloatingBtn').classList.add('hidden');
       document.getElementById('chatWindow').classList.add('hidden');
-      closeProfileMenu();
+      window.closeProfileMenu();
       
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
@@ -1047,14 +1115,44 @@
       closeForgotPasswordModal();
     }
 
+    function openChangePasswordModal() {
+      document.getElementById('cpCurrentPass').value = '';
+      document.getElementById('cpNewPass').value = '';
+      document.getElementById('cpConfirmPass').value = '';
+      document.getElementById('changePasswordModal').classList.remove('hidden');
+    }
+
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.add('hidden');
+    }
+
+    function submitPasswordChange() {
+      const cur = document.getElementById('cpCurrentPass').value.trim();
+      const n1 = document.getElementById('cpNewPass').value.trim();
+      const n2 = document.getElementById('cpConfirmPass').value.trim();
+
+      if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
+      if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
+      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
+      if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
+
+      const idx = usersList.findIndex(u => u.username === currentUser.username);
+      if (idx !== -1) {
+        usersList[idx].password = n1;
+        currentUser.password = n1;
+        localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
+        alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
+        closeChangePasswordModal();
+      }
+    }
+
     // ================= Analytics Live Engine =================
-    // Background sync without refreshing the whole DOM, avoiding flash
     setInterval(() => {
       if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) {
-         refreshAnalyticsDashboard(true); // silent refresh
+         refreshAnalyticsDashboard(true);
       }
       if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) {
-         updateKPIs(); // silent refresh
+         updateKPIs();
       }
     }, 3000);
 
@@ -1166,7 +1264,7 @@
         if (sCurveChartInstance) {
           sCurveChartInstance.data.datasets[0].data = plannedPoints;
           sCurveChartInstance.data.datasets[1].data = actualPoints;
-          sCurveChartInstance.update('none'); // Update without animation flicker
+          sCurveChartInstance.update('none');
         } else {
           const canvas = document.getElementById('sCurveChart');
           if(!canvas) return;
@@ -1357,7 +1455,7 @@
     function closeNewSurveyModal() {
       editingSurveyId = null;
       document.getElementById('secNewSurvey').classList.add('hidden');
-      showTab('surveys');
+      showTab('surveys'); 
     }
 
     function deleteSurveyTemplate(id) {
@@ -1367,7 +1465,7 @@
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
-      showTab('surveys');
+      renderSurveys();
     }
 
     function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
@@ -1693,7 +1791,7 @@
     // ================= KPI, Filters & Records =================
     function filterByKpi(status) {
       selectedKpiStatusFilter = status;
-      renderRecords(); // direct update
+      renderRecords(); 
     }
 
     function getScopedResponses() {
@@ -1793,11 +1891,9 @@
       const banner = document.getElementById('filterBanner');
       const bannerText = document.getElementById('filterBannerText');
       if(!container) return;
-      container.innerHTML = '';
-
+      
       let visible = getScopedResponses();
 
-      // تطبيق فلتر الحالة (مقبول، مرفوض، قيد الاعتماد) من البطاقات الملونة
       if (selectedKpiStatusFilter !== "ALL") {
         visible = visible.filter(r => r.status === selectedKpiStatusFilter);
         banner.classList.remove('hidden');
@@ -1807,13 +1903,11 @@
         banner.classList.add('hidden');
       }
 
-      // تطبيق فلاتر الإدارة العلوية (المشرف / نوع الحصر)
       if (currentUser.role !== "ROLE_INSPECTOR") {
         if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter);
         if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
       }
 
-      // تعبئة قائمة استخراج تقرير المدرسة التاريخي
       if(schoolSelect) {
         let schHtml = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
         const uniqueSchools = [...new Set(visible.map(r => r.school))];
@@ -1830,11 +1924,11 @@
         return;
       }
 
+      let newHtml = '';
+
       visible.slice().reverse().forEach(r => {
         const originalIdx = responses.findIndex(x => x.id === r.id);
-        const div = document.createElement('div');
-        div.className = 'card';
-
+        
         let statusBadge = '';
         if (r.status === 'approved') statusBadge = '<span class="badge-status approved">✅ معتمد</span>';
         else if (r.status === 'rejected') statusBadge = '<span class="badge-status rejected">❌ تم الرفض</span>';
@@ -1900,27 +1994,30 @@
           }
         }
 
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-            <div>
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:4px;">🏫 ${r.school}</h4>
-              <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">
-                المشرف: <span style="color:var(--tbc-petrol);">${r.collectedBy}</span> | المكتب: ${r.branch || 'الشرقية'} | الوقت: ${r.date}
-              </span>
+        newHtml += `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+              <div>
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:4px;">🏫 ${r.school}</h4>
+                <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">
+                  المشرف: <span style="color:var(--tbc-petrol);">${r.collectedBy}</span> | المكتب: ${r.branch || 'الشرقية'} | الوقت: ${r.date}
+                </span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                ${statusBadge}
+                ${editButtonHtml}
+                ${pdfButton}
+              </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-              ${statusBadge}
-              ${editButtonHtml}
-              ${pdfButton}
-            </div>
+            <div style="font-size:1rem; color:var(--tbc-gold-hover); font-weight:900; margin-bottom:12px;">📋 ${r.surveyTitle}</div>
+            ${rejectionBox}
+            <ul style="list-style:none; padding:0; background:#f8fafc; border-radius:8px; padding:16px; border:1px solid #e2e8f0;">${detailsHtml}</ul>
+            ${approvalActionButtons}
           </div>
-          <div style="font-size:1rem; color:var(--tbc-gold-hover); font-weight:900; margin-bottom:12px;">📋 ${r.surveyTitle}</div>
-          ${rejectionBox}
-          <ul style="list-style:none; padding:0; background:#f8fafc; border-radius:8px; padding:16px; border:1px solid #e2e8f0;">${detailsHtml}</ul>
-          ${approvalActionButtons}
         `;
-        container.appendChild(div);
       });
+      
+      if(container.innerHTML !== newHtml) container.innerHTML = newHtml;
     }
 
     function triggerEditReport(reportId) {
@@ -2240,7 +2337,7 @@
       renderUsersManagement();
     }
 
-    // Call initApp on startup to robustly load ALL data
+    // Initialize all logic reliably
     initApp();
 
   </script>
