@@ -104,7 +104,7 @@
       margin-top: 3px;
     }
 
-    /* منطقة المستخدم اليسارية */
+    /* منطقة المستخدم في أقصى اليسار */
     .header-user-section {
       display: flex;
       align-items: center;
@@ -112,12 +112,11 @@
       position: relative;
     }
 
-    /* قائمة الملف الشخصي المنسدلة */
     .profile-btn {
       background: var(--tbc-petrol-light);
       border: 1.5px solid var(--border-subtle);
       border-radius: 30px;
-      padding: 6px 14px;
+      padding: 6px 16px;
       font-size: 0.92rem;
       font-weight: 700;
       color: var(--tbc-petrol-dark);
@@ -204,7 +203,6 @@
       background: #fee2e2;
     }
 
-    /* جرس الإشعارات */
     .notif-bell-btn {
       position: relative;
       background: var(--tbc-petrol-light);
@@ -270,7 +268,6 @@
     .notif-item.warning { background: var(--status-pending-bg); border-right: 4px solid var(--status-pending); color: #92400e; }
     .notif-item.success { background: var(--status-approved-bg); border-right: 4px solid var(--status-approved); color: #065f46; }
 
-    /* شريط التبويبات */
     .tabs-bar {
       background: #ffffff;
       border-bottom: 1px solid var(--border-subtle);
@@ -303,7 +300,6 @@
       box-shadow: var(--shadow-sm);
     }
 
-    /* المحتوى الرئيسي */
     main {
       flex: 1;
       padding: 26px 0;
@@ -318,7 +314,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* شبكة المؤشرات */
     .kpi-grid { 
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
@@ -474,7 +469,7 @@
 </head>
 <body>
 
-  <!-- الترويسة مع القائمة المنسدلة الاحترافية -->
+  <!-- الترويسة الرئيسية -->
   <header>
     <div class="container-fluid">
       <div class="header-content">
@@ -494,7 +489,7 @@
           </div>
         </div>
 
-        <!-- اليسار: الإشعارات وقائمة الملف الشخصي المنسدلة -->
+        <!-- أقصى اليسار: الإشعارات واسم المستخدم المنسدل -->
         <div class="header-user-section" id="headerUserActions">
           <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="toggleNotifPanel(event)">
             <span>🔔</span>
@@ -509,11 +504,11 @@
             <div class="notif-list" id="notifListContainer"></div>
           </div>
 
-          <!-- زر وقائمة الملف الشخصي المنسدلة -->
+          <!-- زر اسم الشخص فقط -->
           <div id="profileDropdownContainer" class="hidden" style="position:relative;">
             <div class="profile-btn" onclick="toggleProfileMenu(event)">
               <span>👤</span>
-              <span id="activeUserName">إدارة الحساب</span>
+              <span id="activeUserName">المستخدم</span>
               <span style="font-size:0.75rem; color:var(--tbc-petrol);">▾</span>
             </div>
 
@@ -895,19 +890,19 @@
 
   <script>
     const ROLE_LABELS = {
-      ROLE_PLANNING: "١- إدارة التخطيط والتحكم",
-      ROLE_REGION_EAST: "٢- إدارة المنطقة الشرقية",
-      ROLE_SUB_EAST: "٣- إدارة المكتب الفرعي بالشرقية",
-      ROLE_SUB_AHSA: "٤- إدارة المكتب الفرعي بالاحساء",
-      ROLE_SUPERVISION_LEAD: "٥- مدير الإشراف للقطاع",
-      ROLE_INSPECTOR: "٦- المشرف الميداني"
+      ROLE_PLANNING: "إدارة التخطيط والتحكم",
+      ROLE_REGION_EAST: "إدارة المنطقة الشرقية",
+      ROLE_SUB_EAST: "إدارة المكتب الفرعي بالشرقية",
+      ROLE_SUB_AHSA: "إدارة المكتب الفرعي بالاحساء",
+      ROLE_SUPERVISION_LEAD: "مدير الإشراف للقطاع",
+      ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v16')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v17')) || [
       {
         username: "admin",
         password: "123",
-        fullName: "إدارة التخطيط والتحكم (الرئيسي)",
+        fullName: "إدارة التخطيط والتحكم",
         email: "ERPMO@tbc.sa",
         role: "ROLE_PLANNING",
         branch: "الكل",
@@ -917,7 +912,7 @@
       {
         username: "reg_east",
         password: "123",
-        fullName: "م. عبد العزيز (إدارة الشرقية)",
+        fullName: "م. عبد العزيز",
         email: "east.reg@tbc.sa",
         role: "ROLE_REGION_EAST",
         branch: "الكل",
@@ -927,7 +922,7 @@
       {
         username: "sub_east",
         password: "123",
-        fullName: "إدارة المكتب الفرعي بالشرقية",
+        fullName: "مكتب الشرقية",
         email: "east.sub@tbc.sa",
         role: "ROLE_SUB_EAST",
         branch: "المكتب الفرعي بالشرقية",
@@ -937,7 +932,7 @@
       {
         username: "sub_ahsa",
         password: "123",
-        fullName: "إدارة المكتب الفرعي بالأحساء",
+        fullName: "مكتب الأحساء",
         email: "ahsa.sub@tbc.sa",
         role: "ROLE_SUB_AHSA",
         branch: "المكتب الفرعي بالأحساء",
@@ -947,7 +942,7 @@
       {
         username: "sup_lead",
         password: "123",
-        fullName: "م. خالد السبيعي (مدير الإشراف للقطاع)",
+        fullName: "م. خالد السبيعي",
         email: "k.subaie@tbc.sa",
         role: "ROLE_SUPERVISION_LEAD",
         branch: "المكتب الفرعي بالشرقية",
@@ -957,7 +952,7 @@
       {
         username: "user1",
         password: "123",
-        fullName: "م. أحمد الغامدي (مشرف الشرقية)",
+        fullName: "م. أحمد الغامدي",
         email: "a.ghamdi@tbc.sa",
         role: "ROLE_INSPECTOR",
         branch: "المكتب الفرعي بالشرقية",
@@ -967,7 +962,7 @@
       {
         username: "user2",
         password: "123",
-        fullName: "م. فهد القحطاني (مشرف الأحساء)",
+        fullName: "م. فهد القحطاني",
         email: "f.qahtani@tbc.sa",
         role: "ROLE_INSPECTOR",
         branch: "المكتب الفرعي بالأحساء",
@@ -979,7 +974,7 @@
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v16')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v17')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -1009,7 +1004,7 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v16')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v17')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
     let editingSurveyId = null;
@@ -1018,7 +1013,6 @@
     let selectedInspectorFilter = "ALL";
     let selectedKpiStatusFilter = "ALL";
 
-    // التحكم بقائمة الملف الشخصي المنسدلة
     function toggleProfileMenu(event) {
       event.stopPropagation();
       const m = document.getElementById('profileMenu');
@@ -1050,11 +1044,11 @@
       document.getElementById('profileDropdownContainer').classList.remove('hidden');
       document.getElementById('notifBellBtn').classList.remove('hidden');
       
-      // تعبئة بيانات بطاقة المستخدم
+      // إظهار اسم الشخص فقط بدون إضافات
       document.getElementById('activeUserName').innerText = currentUser.fullName;
       document.getElementById('menuUserFullName').innerText = currentUser.fullName;
       document.getElementById('menuUserRole').innerText = ROLE_LABELS[currentUser.role] || currentUser.role;
-      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم • " + (ROLE_LABELS[currentUser.role] || "");
+      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم";
 
       const isPlanning = currentUser.role === "ROLE_PLANNING";
       const isManagement = ["ROLE_PLANNING", "ROLE_REGION_EAST", "ROLE_SUB_EAST", "ROLE_SUB_AHSA", "ROLE_SUPERVISION_LEAD"].includes(currentUser.role);
@@ -1097,7 +1091,6 @@
       document.getElementById('notifDropdown').classList.add('hidden');
     }
 
-    // إغلاق أي قائمة مفتوحة عند النقر في الخارج
     document.addEventListener('click', function(e) {
       const notifP = document.getElementById('notifDropdown');
       const notifB = document.getElementById('notifBellBtn');
@@ -1379,7 +1372,7 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v16', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v17', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       renderSurveys();
@@ -1515,7 +1508,7 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      localStorage.setItem('tbc_surveys_v16', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v17', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       updateNotifications();
@@ -1698,7 +1691,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v16', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v17', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -1721,7 +1714,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v16', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v17', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -1897,7 +1890,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v16', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v17', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -1940,8 +1933,8 @@
     function setReportStatus(index, status, reason = "") {
       responses[index].status = status;
       responses[index].rejectionReason = reason;
-      responses[index].approvedBy = currentUser.fullName + " (" + ROLE_LABELS[currentUser.role] + ")";
-      localStorage.setItem('tbc_responses_v16', JSON.stringify(responses));
+      responses[index].approvedBy = currentUser.fullName;
+      localStorage.setItem('tbc_responses_v17', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
       updateNotifications();
@@ -2001,7 +1994,7 @@
           <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
           <style>
             * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
-            body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.5; }
+            body { margin: 0; padding: 20px; color: #1f333a; background: #fff; font-size: 12px; line-height: 1.5; }
             .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 12px; margin-bottom: 15px; }
             .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 18px; padding: 5px 12px; border-radius: 6px; }
             @media print { .no-print { display: none !important; } @page { size: A4 landscape; margin: 10mm; } }
@@ -2286,7 +2279,7 @@
         alert("✓ تم إضافة المستخدم وربط البريد الإلكتروني بالإشعارات!");
       }
 
-      localStorage.setItem('tbc_users_v16', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v17', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -2333,7 +2326,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v16', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v17', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -2341,7 +2334,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v16', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v17', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -2405,7 +2398,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v16', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v17', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
