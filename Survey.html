@@ -39,24 +39,10 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     html { font-size: 16px; scroll-behavior: smooth; }
-    body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-    }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
 
     /* Header */
-    header {
-      background: #ffffff;
-      border-bottom: 3px solid var(--tbc-petrol);
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+    header { background: #ffffff; border-bottom: 3px solid var(--tbc-petrol); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000; }
     .header-content { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 15px; }
     .brand-section { display: flex; align-items: center; gap: 16px; }
     .tbc-logo-svg { height: 48px; width: auto; max-width: 140px; display: block; }
@@ -66,212 +52,49 @@
 
     /* Header User Section */
     .header-user-section { display: flex; align-items: center; gap: 12px; position: relative; }
-    
-    .sync-status {
-      display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800;
-      padding: 6px 12px; border-radius: 20px; background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark);
-    }
+    .sync-status { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; padding: 6px 12px; border-radius: 20px; background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); }
     .sync-status.syncing { background: #fef3c7; color: #b45309; }
-    
-    .profile-btn {
-      background: var(--tbc-petrol-light); border: 1.5px solid var(--border-subtle);
-      border-radius: 30px; padding: 6px 16px; font-size: 0.95rem; font-weight: 700;
-      color: var(--tbc-petrol-dark); display: flex; align-items: center; gap: 8px;
-      cursor: pointer; transition: all 0.2s; user-select: none;
-    }
+    .profile-btn { background: var(--tbc-petrol-light); border: 1.5px solid var(--border-subtle); border-radius: 30px; padding: 6px 16px; font-size: 0.95rem; font-weight: 700; color: var(--tbc-petrol-dark); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; user-select: none; }
     .profile-btn:hover { background: #e2f0f4; border-color: var(--tbc-petrol); }
-    .profile-dropdown-menu {
-      position: absolute; top: 52px; left: 0; width: 280px; background: #ffffff;
-      border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden;
-      animation: fadeIn 0.15s ease-out; display: block;
-    }
+    .profile-dropdown-menu { position: absolute; top: 52px; left: 0; width: 280px; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden; animation: fadeIn 0.15s ease-out; display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     .profile-menu-header { background: #f8fafc; padding: 16px; border-bottom: 1px solid var(--border-subtle); text-align: right; }
     .profile-user-name { font-weight: 900; color: var(--tbc-petrol-dark); font-size: 1rem; margin-bottom: 2px; }
     .profile-user-role { font-size: 0.82rem; color: var(--tbc-petrol); font-weight: 700; }
     .profile-menu-body { padding: 8px; }
-    .profile-menu-item {
-      display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 6px;
-      font-size: 0.92rem; font-weight: 700; color: var(--text-main); cursor: pointer;
-      border: none; background: transparent; width: 100%; text-align: right; transition: 0.2s;
-    }
+    .profile-menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 6px; font-size: 0.92rem; font-weight: 700; color: var(--text-main); cursor: pointer; border: none; background: transparent; width: 100%; text-align: right; transition: 0.2s; }
     .profile-menu-item:hover { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); }
     .profile-menu-item.logout-item { color: #b91c1c; border-top: 1px solid #f1f5f9; margin-top: 4px; padding-top: 14px; }
     .profile-menu-item.logout-item:hover { background: #fee2e2; }
 
-    /* Notifications */
-    .notif-bell-btn {
-      position: relative; background: var(--tbc-petrol-light); border: 1.5px solid var(--border-subtle);
-      width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 1.25rem; user-select: none; transition: 0.2s;
-    }
+    .notif-bell-btn { position: relative; background: var(--tbc-petrol-light); border: 1.5px solid var(--border-subtle); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.25rem; transition: 0.2s; }
     .notif-bell-btn:hover { background: #e2f0f4; border-color: var(--tbc-petrol); }
-    .notif-bell-badge {
-      position: absolute; top: -4px; right: -4px; background: var(--status-rejected); color: #fff;
-      font-size: 0.72rem; font-weight: 900; padding: 3px 6px; border-radius: 10px; border: 2px solid #fff; line-height: 1;
-    }
-    .notif-dropdown {
-      position: absolute; top: 52px; left: 0; width: 340px; background: #ffffff;
-      border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden;
-    }
+    .notif-bell-badge { position: absolute; top: -4px; right: -4px; background: var(--status-rejected); color: #fff; font-size: 0.72rem; font-weight: 900; padding: 3px 6px; border-radius: 10px; border: 2px solid #fff; line-height: 1; }
+    .notif-dropdown { position: absolute; top: 52px; left: 0; width: 340px; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 2000; overflow: hidden; }
     .notif-header { background: var(--tbc-petrol); color: #fff; padding: 14px 16px; font-size: 0.95rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .notif-list { max-height: 320px; overflow-y: auto; padding: 8px; }
     .notif-item { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; cursor: pointer; border-radius: 6px; margin-bottom: 4px; transition: 0.2s; }
     .notif-item:hover { background: #f8fafc; transform: translateX(-4px); }
-    .notif-item.danger { background: var(--status-rejected-bg); border-right: 4px solid var(--status-rejected); color: #991b1b; }
-    .notif-item.warning { background: var(--status-pending-bg); border-right: 4px solid var(--status-pending); color: #92400e; }
-    .notif-item.success { background: var(--status-approved-bg); border-right: 4px solid var(--status-approved); color: #065f46; }
 
-    /* App Layout (Sidebar + Main) */
-    .app-layout {
-      display: flex;
-      flex-direction: row; 
-      min-height: calc(100vh - 75px);
-    }
+    /* App Layout */
+    .app-layout { display: flex; flex-direction: row; min-height: calc(100vh - 75px); }
 
-    /* Professional Softer Sidebar */
-    .sidebar {
-      width: 260px;
-      background-color: var(--tbc-petrol-sidebar);
-      box-shadow: -2px 0 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      z-index: 900;
-    }
-    
-    .sidebar-title {
-      color: #b0c4de;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 24px 24px 10px;
-      letter-spacing: 0.5px;
-    }
+    /* Sidebar */
+    .sidebar { width: 260px; background-color: var(--tbc-petrol-sidebar); box-shadow: -2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex-shrink: 0; z-index: 900; }
+    .sidebar-title { color: #b0c4de; font-size: 0.85rem; font-weight: 500; padding: 24px 24px 10px; letter-spacing: 0.5px; }
+    .sidebar-menu { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: #e2e8f0; font-weight: 500; font-size: 0.95rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border-right: 4px solid transparent; }
+    .sidebar-item:hover { background-color: rgba(255,255,255,0.08); color: #ffffff; }
+    .sidebar-item.active { background-color: rgba(255,255,255,0.15); color: var(--tbc-gold); border-right-color: var(--tbc-gold); font-weight: 800; }
 
-    .sidebar-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 0 12px;
-    }
-
-    .sidebar-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      color: #e2e8f0;
-      font-weight: 500;
-      font-size: 0.95rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-right: 4px solid transparent;
-    }
-
-    .sidebar-item:hover {
-      background-color: rgba(255,255,255,0.08);
-      color: #ffffff;
-    }
-
-    .sidebar-item.active {
-      background-color: rgba(255,255,255,0.15);
-      color: var(--tbc-gold);
-      border-right-color: var(--tbc-gold);
-      font-weight: 800;
-    }
-
-    /* Main Content Area */
-    .main-content {
-      flex: 1;
-      padding: 24px 36px;
-      overflow-x: hidden;
-    }
-
-    .card {
-      background: var(--surface-card); border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md); padding: 26px; margin-bottom: 24px;
-      box-shadow: var(--shadow-sm); transition: box-shadow 0.3s;
-    }
+    /* Main Content */
+    .main-content { flex: 1; padding: 24px 36px; overflow-x: hidden; }
+    .card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 26px; margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: box-shadow 0.3s; }
     .card:hover { box-shadow: var(--shadow-md); }
-
-    /* Utilities */
     .hidden { display: none !important; }
 
-    /* BI Analytics Dashboard */
-    .bi-banner-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    @media (max-width: 1200px) { .bi-banner-grid { grid-template-columns: repeat(2, 1fr); } }
-    .bi-kpi-card { background: #fff; border-radius: var(--radius-md); padding: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
-    .bi-kpi-card.highlight { background: #1e293b; border: none; }
-    .bi-kpi-card.highlight .bi-title { color: #94a3b8; }
-    .bi-kpi-card.highlight .bi-num { color: #38bdf8; }
-    .bi-title { font-size: 0.88rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
-    .bi-num { font-size: 2.4rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); }
-    .bi-kpi-card.highlight .bi-num { color: var(--tbc-gold); }
-    .bi-sub { font-size: 0.82rem; font-weight: 700; margin-top: 8px; }
-
-    .bi-charts-split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; margin-bottom: 24px; }
-    @media (max-width: 1024px) { .bi-charts-split { grid-template-columns: 1fr; } }
-
-    /* Leaderboard */
-    .leaderboard-podium { display: flex; justify-content: center; align-items: flex-end; gap: 16px; padding: 20px 10px 10px; flex-wrap: wrap; }
-    .leader-card {
-      background: #f8fafc; border: 1.5px solid var(--border-subtle); border-radius: 12px;
-      padding: 16px 10px; text-align: center; width: 130px; position: relative; transition: all 0.3s;
-    }
-    .leader-card.rank-1 { border-color: #f59e0b; background: #fefce8; transform: translateY(-12px); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25); }
-    .leader-avatar {
-      width: 54px; height: 54px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center;
-      justify-content: center; margin: 0 auto 10px; font-weight: 900; font-size: 1.1rem; color: #334155; border: 3px solid #fff; box-shadow: var(--shadow-sm);
-    }
-    .rank-1 .leader-avatar { background: #fef08a; border-color: #f59e0b; color: #854d0e; }
-    .leader-name { font-size: 0.85rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
-    .leader-rate { font-size: 1.2rem; font-weight: 900; color: var(--tbc-petrol-mid); }
-    .leader-count { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
-    .leader-badge-num {
-      position: absolute; top: -10px; right: calc(50% - 14px); width: 28px; height: 28px;
-      border-radius: 50%; background: #64748b; color: #fff; font-size: 0.8rem; font-weight: 900;
-      display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);
-    }
-    .rank-1 .leader-badge-num { background: #f59e0b; }
-
-    /* Region Progress */
-    .region-prog-item { margin-bottom: 16px; }
-    .region-prog-label { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 800; margin-bottom: 6px; }
-    .region-bar-bg { background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; }
-    .region-bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #37889b, #10b981); transition: width 0.8s ease; }
-
-    /* KPI Grid */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .kpi-box {
-      background: #fff; border-radius: var(--radius-sm); padding: 20px 14px;
-      border: 1px solid var(--border-subtle); text-align: center; box-shadow: var(--shadow-sm);
-      cursor: pointer; transition: all 0.2s ease;
-    }
-    .kpi-box:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .kpi-box.active-filter { outline: 3px solid var(--tbc-petrol); background: var(--tbc-petrol-light); }
-    .kpi-box.pending { border-top: 4px solid var(--status-pending); }
-    .kpi-box.rejected { border-top: 4px solid var(--status-rejected); }
-    .kpi-box.approved { border-top: 4px solid var(--status-approved); }
-    .kpi-box.total { border-top: 4px solid var(--tbc-petrol); }
-    .kpi-num { font-size: 2.2rem; font-weight: 900; line-height: 1.1; color: var(--tbc-petrol-dark); }
-    .kpi-title { font-size: 0.95rem; font-weight: 800; color: var(--text-muted); margin-top: 6px; }
-
-    /* Badges */
-    .badge-status { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; }
-    .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
-    .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
-    .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
-    .badge-status.overdue { background: #fef2f2; color: #dc2626; border: 1px solid #f87171; }
-
-    /* Buttons & Forms */
-    .btn {
-      padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer;
-      border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      font-size: 0.95rem; transition: all 0.2s ease;
-    }
+    /* Forms & UI */
+    .btn { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; transition: all 0.2s ease; }
     .btn-petrol { background: var(--tbc-petrol); color: #fff; }
     .btn-petrol:hover { background: var(--tbc-petrol-dark); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     .btn-gold { background: var(--tbc-gold); color: #1f333a; }
@@ -283,18 +106,8 @@
 
     .form-group { margin-bottom: 18px; text-align: right; }
     label { display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 800; color: var(--tbc-petrol-dark); }
-    input, select, textarea {
-      width: 100%; padding: 12px 14px; border-radius: 8px; border: 1.5px solid var(--border-subtle);
-      font-size: 1rem; outline: none; background: #ffffff; color: var(--text-main); font-weight: 600;
-      transition: 0.2s;
-    }
+    input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1.5px solid var(--border-subtle); font-size: 1rem; outline: none; background: #ffffff; color: var(--text-main); font-weight: 600; transition: 0.2s; }
     input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); box-shadow: 0 0 0 3px var(--tbc-petrol-light); }
-
-    .q-row { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1.5px dashed var(--border-subtle); margin-bottom: 16px; transition: 0.2s; }
-    .q-row:hover { border-color: var(--tbc-petrol); background: #f1f5f9; }
-    .img-preview-box { max-width: 180px; max-height: 180px; border-radius: var(--radius-sm); margin-top: 12px; object-fit: cover; border: 2px solid var(--border-subtle); }
-    .custom-radio-card { transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 1.5px solid var(--border-subtle); border-radius: 8px; cursor: pointer; background: #ffffff; margin-bottom: 10px; width: 100%; }
-    .custom-radio-card:hover { background: var(--tbc-petrol-light); border-color: var(--tbc-petrol); }
 
     table.data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 16px; }
     table.data-table th, table.data-table td { padding: 14px; border: 1px solid var(--border-subtle); text-align: right; }
@@ -303,59 +116,37 @@
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,28,45,0.7); display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 20px; backdrop-filter: blur(4px); }
     .modal-content { background: #ffffff; border-radius: var(--radius-md); max-width: 500px; width: 100%; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-top: 6px solid var(--tbc-gold); }
 
-    .support-footer { text-align: center; padding: 20px; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); border-top: 1px solid var(--border-subtle); margin-top: auto; background: #ffffff; }
-    .support-link { color: var(--tbc-petrol); font-weight: 900; text-decoration: none; direction: ltr; display: inline-block; }
+    /* Badges */
+    .badge-status { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; }
+    .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
+    .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
+    .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
 
-    /* Chat Button */
-    .chat-floating-btn {
-      position: fixed; bottom: 30px; left: 30px; background: var(--tbc-petrol); color: #ffffff;
-      padding: 14px 24px; border-radius: 30px; box-shadow: 0 10px 25px rgba(39,98,112,0.4);
-      cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1rem;
-      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .chat-floating-btn:hover { background: var(--tbc-petrol-dark); transform: scale(1.05); }
-
-    .chat-window {
-      position: fixed; bottom: 90px; left: 30px; width: 400px; max-width: 90vw; height: 500px;
-      background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-      box-shadow: 0 20px 40px rgba(15,28,45,0.2); z-index: 950; display: flex; flex-direction: column;
-      overflow: hidden; animation: fadeIn 0.2s ease-out;
-    }
-    .chat-header { background: var(--tbc-petrol); color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .chat-body { flex: 1; padding: 16px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
-    .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; position: relative; }
-    .chat-msg.mine { align-self: flex-start; background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); border-bottom-right-radius: 4px; }
-    .chat-msg.theirs { align-self: flex-end; background: #ffffff; border: 1px solid var(--border-subtle); color: var(--text-main); border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
-    .chat-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: block; text-align: left; }
-    .chat-footer { padding: 12px; background: #ffffff; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; }
-
-    /* Empty States */
+    /* Custom UI */
+    .bi-banner-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .bi-kpi-card { background: #fff; border-radius: var(--radius-md); padding: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+    .bi-kpi-card.highlight { background: #1e293b; border: none; }
+    .bi-title { font-size: 0.88rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
+    .bi-num { font-size: 2.4rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); }
+    .bi-kpi-card.highlight .bi-num { color: var(--tbc-gold); }
+    
+    .q-row { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1.5px dashed var(--border-subtle); margin-bottom: 16px; }
     .empty-state { text-align: center; padding: 50px 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed var(--border-subtle); color: var(--text-muted); }
     .empty-state h4 { color: var(--tbc-petrol-dark); font-size: 1.2rem; margin-bottom: 8px; font-weight: 900; }
+
+    /* Bulk Import Box */
+    .bulk-import-box { background: #fefce8; border: 1.5px dashed var(--tbc-gold); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    .bulk-import-box textarea { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 0.9rem; margin-top: 10px; direction: ltr; text-align: left; }
 
     /* Responsive Sidebar */
     @media (max-width: 992px) {
       .app-layout { flex-direction: column; }
-      .sidebar { 
-        width: 100%; height: auto; position: static; padding: 10px; 
-        overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--tbc-petrol);
-      }
+      .sidebar { width: 100%; height: auto; position: static; padding: 10px; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--tbc-petrol); }
       .sidebar-title { display: none; }
       .sidebar-menu { display: flex; flex-direction: row; gap: 8px; }
       .sidebar-item { border-right: none; border-bottom: 4px solid transparent; padding: 12px 16px; border-radius: 0; }
       .sidebar-item.active { border-right-color: transparent; border-bottom-color: var(--tbc-gold); border-radius: 8px 8px 0 0; }
-      .main-content { padding: 20px 14px; }
-    }
-    
-    @media (max-width: 768px) {
-      html { font-size: 14px; }
-      .header-content { flex-direction: column; align-items: stretch; gap: 10px; }
-      .brand-section { justify-content: space-between; }
-      .brand-text-box { border-right: none; padding-right: 0; }
-      .header-user-section { justify-content: space-between; width: 100%; }
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .card { padding: 18px 14px; }
-      .filter-grid { grid-template-columns: 1fr; }
+      .bi-banner-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -366,7 +157,7 @@
     <div class="container-fluid">
       <div class="header-content">
         <div class="brand-section">
-          <svg class="tbc-logo-svg" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="tbc-logo-svg" viewBox="0 0 400 160" fill="none">
             <path d="M20 30 H110 V58 H80 V130 H49 V58 H20 Z" fill="#37889b" />
             <path d="M125 30 H195 C215 30 228 40 228 56 C228 68 220 76 210 80 C223 85 232 95 232 110 C232 125 218 130 195 130 H125 Z M156 50 V70 H188 C195 70 200 66 200 60 C200 54 195 50 188 50 Z M156 88 V110 H192 C200 110 205 106 205 99 C205 92 200 88 192 88 Z" fill="#37889b" />
             <path d="M236 50 L288 80 L236 110 Z" fill="#eebb43" />
@@ -385,7 +176,6 @@
 
           <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="window.toggleNotifPanel(event)">
             <span>🔔</span>
-            <span id="notifCountBadge" class="notif-bell-badge hidden">0</span>
           </div>
 
           <div id="notifDropdown" class="notif-dropdown hidden">
@@ -410,12 +200,10 @@
               </div>
               <div class="profile-menu-body">
                 <button class="profile-menu-item" onclick="openChangePasswordModal(); window.closeProfileMenu();">
-                  <span>🔑</span>
-                  <span>تغيير كلمة المرور</span>
+                  <span>🔑</span> <span>تغيير كلمة المرور</span>
                 </button>
                 <button class="profile-menu-item logout-item" onclick="logout(); window.closeProfileMenu();">
-                  <span>🚪</span>
-                  <span>تسجيل الخروج من المنظومة</span>
+                  <span>🚪</span> <span>تسجيل الخروج من المنظومة</span>
                 </button>
               </div>
             </div>
@@ -444,23 +232,12 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="rememberMeCheckbox" style="width:18px; height:18px; accent-color:var(--tbc-petrol); cursor:pointer;">
-          <label for="rememberMeCheckbox" style="font-size:0.9rem; font-weight:700; color:var(--text-main); cursor:pointer; margin-bottom:0;">
-            تذكر بيانات الدخول
-          </label>
+          <label for="rememberMeCheckbox" style="font-size:0.9rem; font-weight:700; color:var(--text-main); cursor:pointer; margin-bottom:0;">تذكر بيانات الدخول</label>
         </div>
         <a href="javascript:void(0)" style="font-size:0.85rem; color:var(--tbc-petrol); font-weight:800; text-decoration:none;" onclick="openForgotPasswordModal()">نسيت كلمة المرور؟</a>
       </div>
 
       <button class="btn btn-petrol" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="handleLogin()">دخول المنظومة 🔒</button>
-      
-      <div style="margin-top:20px; font-size:0.85rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:16px; border-radius:8px; line-height:1.7;">
-        💡 <b>الهيكل الوظيفي المعتمد (كلمة السر 123 أو 123456):</b><br>
-        • <b>admin:</b> إدارة التخطيط والتحكم.<br>
-        • <b>reg_east:</b> إدارة المنطقة الشرقية.<br>
-        • <b>sub_east / sub_ahsa:</b> إدارة المكاتب الفرعية.<br>
-        • <b>sup_lead:</b> مدير الإشراف للقطاع (اعتماد التقارير).<br>
-        • <b>user1 / user2:</b> مشرف ميداني.
-      </div>
     </div>
   </div>
 
@@ -468,23 +245,11 @@
   <div id="forgotPasswordModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.2rem;">🔐 استعادة كلمة المرور</h3>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">أدخل اسم المستخدم والبريد الإلكتروني المعتمد لتعيين كلمة مرور جديدة.</p>
-
-      <div class="form-group">
-        <label>اسم المستخدم (الرمز الوظيفي)</label>
-        <input type="text" id="fpUsername" placeholder="مثال: user1">
-      </div>
-      <div class="form-group">
-        <label>البريد الإلكتروني المسجل</label>
-        <input type="email" id="fpEmail" placeholder="example@tbc.sa">
-      </div>
-      <div class="form-group">
-        <label>كلمة المرور الجديدة</label>
-        <input type="password" id="fpNewPass" placeholder="••••••••">
-      </div>
-
+      <div class="form-group"><label>اسم المستخدم</label><input type="text" id="fpUsername"></div>
+      <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="fpEmail"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fpNewPass"></div>
       <div style="display:flex; gap:12px; margin-top:24px;">
-        <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordReset()">تأكيد واستعادة الحساب ✓</button>
+        <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordReset()">تأكيد واستعادة</button>
         <button class="btn btn-outline" onclick="closeForgotPasswordModal()">إلغاء</button>
       </div>
     </div>
@@ -524,10 +289,7 @@
               <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="analyticsScopeNote">متابعة الأداء الحي لعمليات الحصر الميداني</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.9rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
-                <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
-              </select>
-              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
+              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.9rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)"></select>
             </div>
           </div>
 
@@ -560,31 +322,11 @@
           </div>
 
           <div class="bi-charts-split">
-            <div class="card" style="margin-bottom:0;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني التراكمي (Actual vs Planned)</h4>
-                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي مباشر</span>
-              </div>
-              <div style="height: 300px; position: relative; width:100%;">
-                <canvas id="sCurveChart"></canvas>
-              </div>
-            </div>
-
+            <div class="card" style="margin-bottom:0;"><canvas id="sCurveChart" style="height: 300px; width:100%;"></canvas></div>
             <div class="card" style="margin-bottom:0;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🏢 نسب الإنجاز حسب المكاتب والقطاعات</h4>
               <div id="branchProgressBarsContainer"></div>
             </div>
-          </div>
-
-          <div class="card" style="margin-top:24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-              <div>
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem;">🏆 ترتيب وأداء المشرفين الميدانيين</h4>
-                <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">ترتيب المشرفين حسب التقارير المعتمدة ونسب التغطية</p>
-              </div>
-              <span class="badge-status approved" id="activeInspectorsCountBadge" style="font-size:0.9rem; padding:8px 16px;">0 مشرفين</span>
-            </div>
-            <div class="leaderboard-podium" id="leaderboardContainer"></div>
           </div>
         </section>
 
@@ -599,7 +341,6 @@
               <button class="btn btn-gold" style="font-size:1rem; padding:12px 20px;" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
             </div>
           </div>
-
           <div id="surveysListContainer"></div>
         </section>
 
@@ -608,19 +349,10 @@
           <div class="card">
             <h3 style="color:var(--tbc-petrol-dark); margin-bottom:20px; font-size:1.3rem;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;">
-              <div class="form-group">
-                <label>مسمى عملية الحصر *</label>
-                <input type="text" id="srvTitle" placeholder="مثال: حصر منظومة السلامة والإنذار">
-              </div>
-              <div class="form-group">
-                <label>تاريخ الاستحقاق (موعد الإنجاز النهائي) 📅</label>
-                <input type="date" id="srvDueDate">
-              </div>
+              <div class="form-group"><label>مسمى عملية الحصر *</label><input type="text" id="srvTitle" placeholder="مثال: حصر منظومة السلامة والإنذار"></div>
+              <div class="form-group"><label>تاريخ الاستحقاق 📅</label><input type="date" id="srvDueDate"></div>
             </div>
-            <div class="form-group">
-              <label>التوجيهات الفنية للمشرفين</label>
-              <input type="text" id="srvDesc" placeholder="تعليمات الزيارة الميدانية وأهداف الحصر">
-            </div>
+            <div class="form-group"><label>التوجيهات الفنية للمشرفين</label><input type="text" id="srvDesc" placeholder="تعليمات الزيارة الميدانية وأهداف الحصر"></div>
             
             <div style="margin-top: 24px; padding-top:16px; border-top:2px solid var(--border-subtle);">
               <label style="font-size:1.1rem; color:var(--tbc-petrol-dark); margin-bottom:12px;">عناصر وبنود الفحص المطلوبة:</label>
@@ -635,7 +367,7 @@
           </div>
         </section>
 
-        <!-- Fill Survey -->
+        <!-- Fill Survey (Updated to Dropdown for Schools) -->
         <section id="secFillSurvey" class="hidden">
           <div class="card">
             <button class="btn btn-outline" style="font-size:0.9rem; margin-bottom:20px; padding:8px 16px;" onclick="backToSurveysList()">← رجوع للقائمة</button>
@@ -645,19 +377,21 @@
             </div>
             <p id="fillDesc" style="color:var(--text-muted); font-size:0.95rem; font-weight:600; margin-bottom:24px;"></p>
             
-            <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:16px; margin-bottom:8px;">
-              <div class="form-group">
-                <label>المكتب الفرعي التابع له المنشأة *</label>
-                <select id="fillBranch">
-                  <option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option>
-                  <option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option>
-                </select>
-              </div>
+            <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; margin-bottom:8px;">
               <div class="form-group">
                 <label>اسم المنشأة التعليمية / المدرسة *</label>
-                <input type="text" id="fillSchool" placeholder="أدخل اسم المدرسة بالكامل">
+                <select id="fillSchool" style="font-weight:800; color:var(--tbc-petrol-dark);" onchange="window.autoSelectBranch()"></select>
+              </div>
+              <div class="form-group">
+                <label>المكتب الفرعي التابع له المنشأة *</label>
+                <select id="fillBranch" disabled style="background:#f1f5f9;">
+                  <option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option>
+                  <option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option>
+                  <option value="المنطقة (كامل)">المنطقة (كامل)</option>
+                </select>
               </div>
             </div>
+            
             <div class="form-group" style="background:var(--tbc-petrol-light); border:2px dashed var(--tbc-petrol); padding:20px; border-radius:10px; margin-bottom:24px;">
               <label style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📍 التوثيق المكاني (GPS)</label>
               <div style="display:flex; gap:12px; margin-top:10px;">
@@ -668,10 +402,7 @@
             </div>
             
             <div id="dynamicFields" style="margin-bottom:24px; padding-top:16px; border-top:1px solid var(--border-subtle);"></div>
-            
-            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:16px; font-size:1.15rem;" onclick="submitLocalResponse()">
-              رفع التقرير للاعتماد من مدير الإشراف ✓
-            </button>
+            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:16px; font-size:1.15rem;" onclick="submitLocalResponse()">رفع التقرير للاعتماد من مدير الإشراف ✓</button>
           </div>
         </section>
 
@@ -680,8 +411,7 @@
           <div class="card" style="text-align:center; padding:50px 30px;">
             <div style="font-size:4rem; margin-bottom:16px;">✅</div>
             <h3 style="color:var(--tbc-petrol-dark); font-size:1.6rem; margin-bottom:10px;">تم رفع تقرير الحصر بنجاح!</h3>
-            <p style="color:var(--text-muted); font-size:1.05rem; font-weight:600; margin-bottom:30px;">تم تسجيل التقرير في النظام وإرسال إشعار فوري لمدير الإشراف للمراجعة والاعتماد.</p>
-            <div style="display:flex; justify-content:center; gap:16px;">
+            <div style="display:flex; justify-content:center; gap:16px; margin-top:20px;">
               <button class="btn btn-gold" id="printImmediateBtn" style="font-size:1.05rem; padding:12px 24px;" onclick="printLastSubmittedPDF()">🖨️ طباعة نسخة PDF</button>
               <button class="btn btn-outline" style="font-size:1.05rem; padding:12px 24px;" onclick="backToSurveysList()">العودة للرئيسية</button>
             </div>
@@ -690,116 +420,45 @@
 
         <!-- ================= 3. Records Tab ================= -->
         <section id="secRecords" class="hidden">
-          <!-- البطاقات الملونة (تظهر بشكل دائم) -->
           <div id="kpiContainer" class="kpi-grid"></div>
-
-          <div id="filterBanner" class="card hidden" style="padding:14px 20px; background:#f8fafc; border:2px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:1rem; font-weight:800; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
-            <button class="btn btn-outline" style="padding:6px 16px; font-size:0.85rem;" onclick="filterByKpi('ALL')">إلغاء التصفية ✕</button>
-          </div>
-
-          <div id="adminFilterSection" class="filter-bar-card hidden">
-            <div style="font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.1rem; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
-              🔍 تصفية وتحليل أداء الحصورات والمشرفين
-            </div>
-            <div class="filter-grid">
-              <div>
-                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب عملية الحصر:</label>
-                <select id="filterBySurveySelect" style="font-weight:700;" onchange="applyAdminFilters()">
-                  <option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب المشرف الميداني:</label>
-                <select id="filterByInspectorSelect" style="font-weight:700;" onchange="applyAdminFilters()">
-                  <option value="ALL">-- كل المشرفين --</option>
-                </select>
-              </div>
-              <div>
-                <button class="btn btn-outline" style="width:100%; font-size:0.95rem; padding:11px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="background:var(--tbc-petrol-light); border:2px solid var(--tbc-petrol); padding:20px 24px;">
-            <div style="font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:12px; font-size:1.1rem;">🏫 التقرير التاريخي الموحد للمدرسة:</div>
-            <div style="display:flex; gap:12px;">
-              <select id="schoolSelectFilter" style="flex:1; font-size:1rem; font-weight:700;">
-                <option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>
-              </select>
-              <button class="btn btn-gold" style="font-size:1rem; padding:10px 24px;" onclick="printConsolidatedSchoolPDF()">🖨️ طباعة الملف المجمع</button>
-            </div>
-          </div>
-
           <div id="recordsContainer"></div>
         </section>
 
-        <!-- ================= 4. Users Tab ================= -->
+        <!-- ================= 4. Users & Schools Import Tab ================= -->
         <section id="secUsers" class="hidden">
-          <div class="card" style="border-right: 6px solid var(--tbc-gold); padding:24px 30px;">
+          
+          <!-- Bulk Import Schools Block -->
+          <div class="bulk-import-box card" style="border-top: 5px solid var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">🏢 استيراد المدارس وربطها بالمشرفين (من الإكسيل)</h4>
+            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:16px;">انسخ الأعمدة الثلاثة من ملف الإكسيل بالترتيب الموضح والصقها في المربع أدناه (نسخ ولصق مباشر).</p>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">1. اسم المدرسة</span>
+              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">2. المكتب الفرعي (بالشرقية/بالأحساء)</span>
+              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">3. الرمز الوظيفي للمشرف الميداني</span>
+            </div>
+            <textarea id="bulkExcelData" rows="6" placeholder="مدرسة طارق بن زياد    المكتب الفرعي بالشرقية    user1&#10;مدرسة الملك فهد    المكتب الفرعي بالأحساء    user2"></textarea>
+            <button class="btn btn-gold" style="width:100%; margin-top:16px; padding:14px; font-size:1.05rem;" onclick="importSchoolsFromExcel()">استيراد البيانات وتحديث القواعد الميدانية ✓</button>
+          </div>
+
+          <div class="card" style="border-top: 5px solid var(--tbc-petrol); padding:24px 30px;">
             <h4 style="color:var(--tbc-petrol-dark); margin-bottom:20px; font-size:1.25rem; font-weight:900;" id="userFormTitle">➕ إضافة وتعديل حسابات المنظومة</h4>
-            
             <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
-              <div class="form-group">
-                <label>الاسم الكامل *</label>
-                <input type="text" id="usrFullName" placeholder="مثال: م. فهد الخالدي">
-              </div>
-              <div class="form-group">
-                <label>الرمز الوظيفي (اسم الدخول) *</label>
-                <input type="text" id="usrUsername" placeholder="مثال: fahid88">
-              </div>
-              <div class="form-group">
-                <label>البريد الإلكتروني للإشعارات *</label>
-                <input type="email" id="usrEmail" placeholder="f.khaldi@tbc.sa">
-              </div>
+              <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="usrFullName" placeholder="مثال: م. فهد الخالدي"></div>
+              <div class="form-group"><label>الرمز الوظيفي (اسم الدخول) *</label><input type="text" id="usrUsername" placeholder="مثال: fahid88"></div>
+              <div class="form-group"><label>البريد الإلكتروني للإشعارات *</label><input type="email" id="usrEmail" placeholder="f.khaldi@tbc.sa"></div>
             </div>
-
             <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
-              <div class="form-group">
-                <label>كلمة المرور *</label>
-                <input type="text" id="usrPassword" placeholder="••••••••">
-              </div>
-              <div class="form-group">
-                <label>النوع / المسمى الوظيفي *</label>
-                <select id="usrRole">
-                  <option value="ROLE_PLANNING">١- إدارة التخطيط والتحكم</option>
-                  <option value="ROLE_REGION_EAST">٢- إدارة المنطقة الشرقية</option>
-                  <option value="ROLE_SUB_EAST">٣- إدارة المكتب الفرعي بالشرقية</option>
-                  <option value="ROLE_SUB_AHSA">٤- إدارة المكتب الفرعي بالاحساء</option>
-                  <option value="ROLE_SUPERVISION_LEAD">٥- مدير الإشراف للقطاع</option>
-                  <option value="ROLE_INSPECTOR" selected>٦- المشرف الميداني</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>المكتب الفرعي التابع له</label>
-                <select id="usrBranch">
-                  <option value="الكل">كامل المنطقة الشرقية (إدارة عامة)</option>
-                  <option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option>
-                  <option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option>
-                </select>
-              </div>
+              <div class="form-group"><label>كلمة المرور *</label><input type="text" id="usrPassword" placeholder="••••••••"></div>
+              <div class="form-group"><label>النوع / المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">١- إدارة التخطيط والتحكم</option><option value="ROLE_REGION_EAST">٢- إدارة المنطقة الشرقية</option><option value="ROLE_SUB_EAST">٣- إدارة المكتب الفرعي بالشرقية</option><option value="ROLE_SUB_AHSA">٤- إدارة المكتب الفرعي بالاحساء</option><option value="ROLE_SUPERVISION_LEAD">٥- مدير الإشراف للقطاع</option><option value="ROLE_INSPECTOR" selected>٦- المشرف الميداني</option></select></div>
+              <div class="form-group"><label>المكتب الفرعي التابع له</label><select id="usrBranch"><option value="الكل">كامل المنطقة الشرقية (إدارة عامة)</option><option value="المكتب الفرعي بالشرقية">المكتب الفرعي بالشرقية</option><option value="المكتب الفرعي بالأحساء">المكتب الفرعي بالأحساء</option></select></div>
             </div>
-
             <label style="margin-top:10px; font-size:1.05rem;">الصلاحيات والسماحيات الممنوحة:</label>
             <div class="perm-checkbox-group" style="margin-bottom:24px;">
-              <label class="perm-item">
-                <input type="checkbox" id="permAllowEdit" checked>
-                <span>✏️ السماح بتعديل التقارير (خلال 48 ساعة من إنشائها)</span>
-              </label>
-              <label class="perm-item">
-                <input type="checkbox" id="permRequireGps" checked>
-                <span>📍 إلزامية التقاط الموقع (GPS)</span>
-              </label>
-              <label class="perm-item">
-                <input type="checkbox" id="permRequirePhoto" checked>
-                <span>📷 إلزامية التقاط الصور التوثيقية</span>
-              </label>
-              <label class="perm-item">
-                <input type="checkbox" id="permAllowPdf" checked>
-                <span>🖨️ السماح بطباعة وتصدير تقارير PDF</span>
-              </label>
+              <label class="perm-item"><input type="checkbox" id="permAllowEdit" checked><span>✏️ السماح بتعديل التقارير (خلال 48 ساعة)</span></label>
+              <label class="perm-item"><input type="checkbox" id="permRequireGps" checked><span>📍 إلزامية التقاط الموقع (GPS)</span></label>
+              <label class="perm-item"><input type="checkbox" id="permRequirePhoto" checked><span>📷 إلزامية التقاط الصور التوثيقية</span></label>
+              <label class="perm-item"><input type="checkbox" id="permAllowPdf" checked><span>🖨️ السماح بطباعة وتصدير تقارير PDF</span></label>
             </div>
-
             <div style="display:flex; gap:16px;">
               <button class="btn btn-petrol" style="flex:1; font-size:1.05rem; padding:14px;" onclick="saveUserRecord()">حفظ وتحديث حساب المستخدم ✓</button>
               <button class="btn btn-outline" id="cancelUserEditBtn" style="display:none; font-size:1.05rem; padding:14px 30px;" onclick="resetUserForm()">إلغاء التعديل</button>
@@ -808,22 +467,12 @@
 
           <div class="card" style="border-top: 5px solid var(--tbc-petrol); padding:24px 30px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">👥 الهيكل الإداري وقائمة المستخدمين</h4>
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">👥 قائمة المستخدمين المسجلين</h4>
               <span class="badge-status approved" id="totalUsersBadge" style="font-size:1rem; padding:8px 16px;"></span>
             </div>
             <div style="overflow-x:auto;">
               <table class="data-table" id="usersListTable">
-                <thead>
-                  <tr>
-                    <th>الاسم الكامل</th>
-                    <th>الرمز الوظيفي</th>
-                    <th>البريد الإلكتروني</th>
-                    <th>المسمى الوظيفي</th>
-                    <th>المكتب الفرعي</th>
-                    <th>الحالة</th>
-                    <th>إدارة الحساب</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>الاسم الكامل</th><th>الرمز الوظيفي</th><th>البريد الإلكتروني</th><th>المسمى الوظيفي</th><th>المكتب الفرعي</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -839,18 +488,9 @@
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:8px; font-size:1.3rem;">🔑 تغيير كلمة المرور</h3>
       <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; font-weight:600;">يرجى إدخال كلمة المرور الحالية ثم تعيين كلمة المرور الجديدة الآمنة.</p>
-      <div class="form-group">
-        <label>كلمة المرور الحالية</label>
-        <input type="password" id="cpCurrentPass" placeholder="••••••••">
-      </div>
-      <div class="form-group">
-        <label>كلمة المرور الجديدة</label>
-        <input type="password" id="cpNewPass" placeholder="••••••••">
-      </div>
-      <div class="form-group">
-        <label>تأكيد كلمة المرور الجديدة</label>
-        <input type="password" id="cpConfirmPass" placeholder="••••••••">
-      </div>
+      <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="cpCurrentPass" placeholder="••••••••"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="cpNewPass" placeholder="••••••••"></div>
+      <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="cpConfirmPass" placeholder="••••••••"></div>
       <div style="display:flex; gap:12px; margin-top:26px;">
         <button class="btn btn-petrol" style="flex:1; font-size:1.05rem;" onclick="submitPasswordChange()">تحديث كلمة المرور ✓</button>
         <button class="btn btn-outline" style="font-size:1.05rem; padding:10px 24px;" onclick="closeChangePasswordModal()">إلغاء</button>
@@ -858,52 +498,24 @@
     </div>
   </div>
 
-  <!-- Chat Floating Window -->
-  <div id="chatFloatingBtn" class="chat-floating-btn hidden" onclick="window.toggleChatWindow(event)">
-    <span style="font-size:1.2rem;">💬</span>
-    <span>المحادثة والدعم الفني</span>
-    <span id="chatBadge" style="background:#ef4444; color:#fff; border-radius:12px; padding:2px 8px; font-size:0.8rem; display:none; margin-right:4px;">1</span>
-  </div>
-
-  <div id="chatWindow" class="chat-window hidden">
-    <div class="chat-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size:1.2rem;">💬</span>
-        <span style="font-size:1rem; font-weight:900;" id="chatHeaderTitle">الدعم والتخطيط المباشر</span>
-      </div>
-      <span style="cursor:pointer; font-size:1.2rem; font-weight:bold;" onclick="window.toggleChatWindow(event)">✕</span>
-    </div>
-    <div class="chat-body" id="chatMessagesArea"></div>
-    <div class="chat-footer">
-      <input type="text" id="chatInput" placeholder="اكتب استفسارك أو مشكلتك هنا..." style="padding:10px 14px; font-size:0.9rem; border:1px solid #cbd5e1; border-radius:8px; flex:1; outline:none; font-weight:600;" onkeydown="if(event.key==='Enter') sendChatMessage()">
-      <button class="btn btn-petrol" style="padding:10px 18px; font-size:0.9rem;" onclick="sendChatMessage()">إرسال</button>
-    </div>
-  </div>
-
   <!-- ================= Application Logic ================= -->
   <script>
-    // Constants & Web App Setup
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlzcRwkKmbNlABPd34NOtrVoqqsiOYHvBGYeEPwrf26JG8AV3U32CG28lwngrnKyM/exec';
     
     const ROLE_LABELS = {
-      ROLE_PLANNING: "إدارة التخطيط والتحكم",
-      ROLE_REGION_EAST: "إدارة المنطقة الشرقية",
-      ROLE_SUB_EAST: "إدارة المكتب الفرعي بالشرقية",
-      ROLE_SUB_AHSA: "إدارة المكتب الفرعي بالاحساء",
-      ROLE_SUPERVISION_LEAD: "مدير الإشراف للقطاع",
-      ROLE_INSPECTOR: "مشرف ميداني"
+      ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_REGION_EAST: "إدارة المنطقة الشرقية", ROLE_SUB_EAST: "إدارة المكتب الفرعي بالشرقية",
+      ROLE_SUB_AHSA: "إدارة المكتب الفرعي بالاحساء", ROLE_SUPERVISION_LEAD: "مدير الإشراف للقطاع", ROLE_INSPECTOR: "مشرف ميداني"
     };
 
     const MASTER_USERS_KEY = 'tbc_users_master_v3';
     const MASTER_SURVEYS_KEY = 'tbc_surveys_master_v3';
     const MASTER_RECORDS_KEY = 'tbc_responses_master_v3';
-    const MASTER_CHAT_KEY = 'tbc_chat_messages_master_v3';
+    const MASTER_SCHOOLS_KEY = 'tbc_schools_master_v3';
 
-    // Global Data Stores
     let usersList = [];
     let surveys = [];
     let responses = [];
-    let chatMessages = [];
+    let schoolsList = [];
     
     let currentUser = null;
     let editingUserIndex = -1;
@@ -916,17 +528,11 @@
     let selectedInspectorFilter = "ALL";
     let selectedKpiStatusFilter = "ALL";
 
-    // ================= Cloud Sync Engine =================
     function updateSyncStatus(status) {
       const s = document.getElementById('cloudSyncStatus');
       if (!s) return;
-      if (status === 'syncing') {
-        s.className = 'sync-status syncing';
-        s.innerHTML = '⏳ جاري المزامنة...';
-      } else if (status === 'connected') {
-        s.className = 'sync-status';
-        s.innerHTML = '☁️ متصل سحابياً';
-      }
+      if (status === 'syncing') { s.className = 'sync-status syncing'; s.innerHTML = '⏳ جاري المزامنة...'; } 
+      else if (status === 'connected') { s.className = 'sync-status'; s.innerHTML = '☁️ متصل سحابياً'; }
     }
 
     async function pullFromCloud() {
@@ -940,66 +546,43 @@
           if (data.users && data.users.length > 0) { usersList = data.users; localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); }
           if (data.surveys && data.surveys.length > 0) { surveys = data.surveys; localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys)); }
           if (data.responses) { responses = data.responses; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses)); }
-          if (data.chat && data.chat.length > 0) { chatMessages = data.chat; localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages)); }
+          if (data.schools) { schoolsList = data.schools; localStorage.setItem(MASTER_SCHOOLS_KEY, JSON.stringify(schoolsList)); }
           
           if (!document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true);
           if (!document.getElementById('secRecords').classList.contains('hidden')) { updateKPIs(); renderRecords(); }
           if (!document.getElementById('secSurveys').classList.contains('hidden')) renderSurveys();
-          renderChatMessages();
         }
         updateSyncStatus('connected');
-      } catch(e) {
-        console.log("Cloud pull failed, using local data.");
-        updateSyncStatus('connected');
-      }
+      } catch(e) { updateSyncStatus('connected'); }
     }
 
     async function pushToCloud() {
       try {
         updateSyncStatus('syncing');
-        const payload = { users: usersList, surveys: surveys, responses: responses, chat: chatMessages };
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          redirect: "follow",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
+        const payload = { users: usersList, surveys: surveys, responses: responses, schools: schoolsList };
+        await fetch(SCRIPT_URL, { method: 'POST', redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         updateSyncStatus('connected');
-      } catch(e) {
-        console.log("Cloud push failed, saved locally.");
-        updateSyncStatus('connected');
-      }
+      } catch(e) { updateSyncStatus('connected'); }
     }
 
-    // ================= App Initialization =================
     function initApp() {
       try { const u = localStorage.getItem(MASTER_USERS_KEY); if(u) usersList = JSON.parse(u); } catch(e) {}
       if (!usersList || usersList.length === 0) {
         usersList = [
           { username: "admin", password: "123", fullName: "إدارة التخطيط والتحكم", email: "ERPMO@tbc.sa", role: "ROLE_PLANNING", branch: "الكل", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "reg_east", password: "123", fullName: "م. عبد العزيز", email: "east.reg@tbc.sa", role: "ROLE_REGION_EAST", branch: "الكل", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "sub_east", password: "123", fullName: "مكتب الشرقية", email: "east.sub@tbc.sa", role: "ROLE_SUB_EAST", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "sub_ahsa", password: "123", fullName: "مكتب الأحساء", email: "ahsa.sub@tbc.sa", role: "ROLE_SUB_AHSA", branch: "المكتب الفرعي بالأحساء", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "sup_lead", password: "123", fullName: "م. خالد السبيعي", email: "k.subaie@tbc.sa", role: "ROLE_SUPERVISION_LEAD", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "user1", password: "123", fullName: "م. أحمد الغامدي", email: "a.ghamdi@tbc.sa", role: "ROLE_INSPECTOR", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
-          { username: "user2", password: "123", fullName: "م. فهد القحطاني", email: "f.qahtani@tbc.sa", role: "ROLE_INSPECTOR", branch: "المكتب الفرعي بالأحساء", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } }
+          { username: "user1", password: "123", fullName: "مشرف تجريبي", email: "a@tbc.sa", role: "ROLE_INSPECTOR", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } }
         ];
         localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
       }
 
       try { const s = localStorage.getItem(MASTER_SURVEYS_KEY); if(s) surveys = JSON.parse(s); } catch(e) {}
       if (!surveys || surveys.length === 0) {
-        surveys = [{ id: "SRV-101", title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية", desc: "فحص شامل لمخارج الطوارئ ومضخات الحريق والإنارة الداخلية", dueDate: "2026-09-30", targetSchoolsCount: 15, fields: [{ label: "رقم المبنى / الجناح التعليمي", type: "text" }, { label: "حالة منظومة الإنارة العامة", type: "radio", options: ["مطابقة للمواصفات", "تحتاج صيانة عاجلة", "معطلة بالكامل"] }] }];
+        surveys = [{ id: "SRV-101", title: "حصر تجريبي", desc: "تعليمات الحصر", dueDate: "2026-10-30", fields: [{ label: "رقم المبنى", type: "text" }, { label: "حالة منظومة الإنارة", type: "radio", options: ["مطابق", "غير مطابق"] }] }];
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
       try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){ responses = []; }
-      
-      try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
-      if (!chatMessages || chatMessages.length === 0) {
-        chatMessages = [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
-        localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
-      }
+      try { schoolsList = JSON.parse(localStorage.getItem(MASTER_SCHOOLS_KEY)) || []; } catch(e){ schoolsList = []; }
 
       const savedUser = localStorage.getItem('tbc_remembered_user');
       if (savedUser) {
@@ -1010,7 +593,6 @@
         } catch (e) {}
       }
       
-      // Polling Cloud every 10 seconds
       setInterval(pullFromCloud, 10000);
     }
 
@@ -1019,41 +601,29 @@
     window.closeProfileMenu = function() { const m = document.getElementById('profileMenu'); if (m) m.classList.add('hidden'); };
     window.toggleNotifPanel = function(e) { if (e) e.stopPropagation(); window.closeProfileMenu(); const p = document.getElementById('notifDropdown'); if (p) p.classList.toggle('hidden'); };
     window.closeNotifPanel = function() { const p = document.getElementById('notifDropdown'); if (p) p.classList.add('hidden'); };
-    window.toggleChatWindow = function(e) { 
-      if (e) e.stopPropagation(); const win = document.getElementById('chatWindow'); 
-      if(win) { win.classList.toggle('hidden'); if (!win.classList.contains('hidden')) { renderChatMessages(); const badge = document.getElementById('chatBadge'); if(badge) badge.style.display = 'none'; } }
-    };
+
     document.addEventListener('click', function(e) {
       const profM = document.getElementById('profileMenu'); const profC = document.getElementById('profileDropdownContainer');
       if (profM && !profM.classList.contains('hidden') && profC && !profC.contains(e.target)) profM.classList.add('hidden');
-      const notifM = document.getElementById('notifDropdown'); const notifB = document.getElementById('notifBellBtn');
-      if (notifM && !notifM.classList.contains('hidden') && notifB && !notifB.contains(e.target) && !notifM.contains(e.target)) notifM.classList.add('hidden');
     });
 
-    // ================= Tabs Management =================
     function showTab(tab) {
       if(!currentUser) return;
-      
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
-      const tu = document.getElementById('tabUsers');
-      if (tu) tu.classList.toggle('active', tab === 'users');
+      const tu = document.getElementById('tabUsers'); if (tu) tu.classList.toggle('active', tab === 'users');
 
-      document.getElementById('secAnalytics').classList.add('hidden');
-      document.getElementById('secSurveys').classList.add('hidden');
-      document.getElementById('secRecords').classList.add('hidden');
-      document.getElementById('secUsers').classList.add('hidden');
-      document.getElementById('secNewSurvey').classList.add('hidden');
-      document.getElementById('secFillSurvey').classList.add('hidden');
+      document.getElementById('secAnalytics').classList.add('hidden'); document.getElementById('secSurveys').classList.add('hidden');
+      document.getElementById('secRecords').classList.add('hidden'); document.getElementById('secUsers').classList.add('hidden');
+      document.getElementById('secNewSurvey').classList.add('hidden'); document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
 
       setTimeout(() => {
-        if(tab === 'analytics') { document.getElementById('secAnalytics').classList.remove('hidden'); populateAnalyticsSurveyDropdown(); refreshAnalyticsDashboard(true); } 
+        if(tab === 'analytics') { document.getElementById('secAnalytics').classList.remove('hidden'); refreshAnalyticsDashboard(true); } 
         else if(tab === 'surveys') { document.getElementById('secSurveys').classList.remove('hidden'); renderSurveys(); }
-        else if(tab === 'records') { document.getElementById('secRecords').classList.remove('hidden'); if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns(); updateKPIs(); renderRecords(); }
+        else if(tab === 'records') { document.getElementById('secRecords').classList.remove('hidden'); updateKPIs(); renderRecords(); }
         else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") { document.getElementById('secUsers').classList.remove('hidden'); renderUsersManagement(); }
-        updateNotifications();
       }, 50);
     }
 
@@ -1062,11 +632,8 @@
       const u = document.getElementById('loginUsername').value.trim().toLowerCase();
       const p = document.getElementById('loginPassword').value.trim();
       const rememberMe = document.getElementById('rememberMeCheckbox').checked;
-
       if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
-
       const found = usersList.find(x => x.username.toLowerCase() === u && (String(x.password) === p || (p === "123456" && String(x.password) === "123") || (p === "123" && String(x.password) === "123456")));
-
       if (!found) return alert("اسم المستخدم أو كلمة المرور غير صحيحة.");
       if (found.active === false) return alert("تم تعطيل هذا الحساب من قبل إدارة التخطيط والتحكم.");
 
@@ -1078,147 +645,62 @@
 
     function loginSuccess(userObj) {
       currentUser = userObj;
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden');
       document.getElementById('profileDropdownContainer').classList.remove('hidden');
-      document.getElementById('notifBellBtn').classList.remove('hidden');
-      document.getElementById('chatFloatingBtn').classList.remove('hidden');
-      
       document.getElementById('activeUserName').innerText = currentUser.fullName;
       document.getElementById('menuUserFullName').innerText = currentUser.fullName;
       document.getElementById('menuUserRole').innerText = ROLE_LABELS[currentUser.role] || currentUser.role;
 
       const isPlanning = currentUser.role === "ROLE_PLANNING";
-      const isManagement = ["ROLE_PLANNING", "ROLE_REGION_EAST", "ROLE_SUB_EAST", "ROLE_SUB_AHSA", "ROLE_SUPERVISION_LEAD"].includes(currentUser.role);
-
       document.getElementById('adminPanel').classList.toggle('hidden', !isPlanning);
       document.getElementById('tabUsers').classList.toggle('hidden', !isPlanning);
-      document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
-      renderChatMessages();
-      pullFromCloud(); // Pull immediately on login
+      pullFromCloud();
       setTimeout(() => { showTab('analytics'); }, 100);
     }
 
     function logout() {
-      currentUser = null;
-      localStorage.removeItem('tbc_remembered_user');
-      document.getElementById('appView').classList.add('hidden');
-      document.getElementById('loginView').classList.remove('hidden');
+      currentUser = null; localStorage.removeItem('tbc_remembered_user');
+      document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden');
       document.getElementById('profileDropdownContainer').classList.add('hidden');
-      document.getElementById('notifBellBtn').classList.add('hidden');
-      document.getElementById('notifDropdown').classList.add('hidden');
-      document.getElementById('chatFloatingBtn').classList.add('hidden');
-      document.getElementById('chatWindow').classList.add('hidden');
-      window.closeProfileMenu();
-      document.getElementById('loginUsername').value = '';
-      document.getElementById('loginPassword').value = '';
-      document.getElementById('rememberMeCheckbox').checked = false;
+      window.closeProfileMenu(); document.getElementById('loginUsername').value = ''; document.getElementById('loginPassword').value = '';
     }
 
     function openForgotPasswordModal() { document.getElementById('forgotPasswordModal').classList.remove('hidden'); }
     function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').classList.add('hidden'); }
     function submitPasswordReset() {
-      const u = document.getElementById('fpUsername').value.trim().toLowerCase();
-      const em = document.getElementById('fpEmail').value.trim().toLowerCase();
-      const np = document.getElementById('fpNewPass').value.trim();
-      if (!u || !em || !np) return alert("يرجى تعبئة كافة الحقول المطلوبة.");
+      const u = document.getElementById('fpUsername').value.trim().toLowerCase(); const em = document.getElementById('fpEmail').value.trim().toLowerCase(); const np = document.getElementById('fpNewPass').value.trim();
+      if (!u || !em || !np) return alert("يرجى تعبئة كافة الحقول.");
       const foundIdx = usersList.findIndex(x => x.username.toLowerCase() === u && (x.email || "").toLowerCase() === em);
-      if (foundIdx === -1) return alert("خطأ: بيانات اسم المستخدم أو البريد الإلكتروني غير مطابقة لسجلات المنظومة.");
-      usersList[foundIdx].password = np;
-      localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
-      pushToCloud();
-      alert("✓ تم تعيين كلمة المرور الجديدة بنجاح! يمكنك الآن تسجيل الدخول مباشرة.");
-      closeForgotPasswordModal();
+      if (foundIdx === -1) return alert("خطأ: بيانات غير مطابقة.");
+      usersList[foundIdx].password = np; localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud();
+      alert("✓ تم تعيين كلمة المرور الجديدة بنجاح!"); closeForgotPasswordModal();
     }
-
     function openChangePasswordModal() { document.getElementById('cpCurrentPass').value = ''; document.getElementById('cpNewPass').value = ''; document.getElementById('cpConfirmPass').value = ''; document.getElementById('changePasswordModal').classList.remove('hidden'); }
     function closeChangePasswordModal() { document.getElementById('changePasswordModal').classList.add('hidden'); }
     function submitPasswordChange() {
-      const cur = document.getElementById('cpCurrentPass').value.trim();
-      const n1 = document.getElementById('cpNewPass').value.trim();
-      const n2 = document.getElementById('cpConfirmPass').value.trim();
+      const cur = document.getElementById('cpCurrentPass').value.trim(); const n1 = document.getElementById('cpNewPass').value.trim(); const n2 = document.getElementById('cpConfirmPass').value.trim();
       if (!cur || !n1 || !n2) return alert("يرجى ملء كافة الحقول");
       if (cur !== currentUser.password && !(cur === "123456" && currentUser.password === "123")) return alert("كلمة المرور الحالية غير صحيحة");
-      if (n1 !== n2) return alert("كلمة المرور الجديدة غير متطابقة");
-      if (n1.length < 3) return alert("يجب أن تكون كلمة المرور 3 خانات على الأقل");
+      if (n1 !== n2) return alert("الكلمة غير متطابقة");
       const idx = usersList.findIndex(u => u.username === currentUser.username);
-      if (idx !== -1) {
-        usersList[idx].password = n1;
-        currentUser.password = n1;
-        localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
-        pushToCloud();
-        alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
-        closeChangePasswordModal();
-      }
+      if (idx !== -1) { usersList[idx].password = n1; currentUser.password = n1; localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); alert("✓ تم التحديث بنجاح!"); closeChangePasswordModal(); }
     }
 
-    // ================= Chat =================
-    function renderChatMessages() {
-      const area = document.getElementById('chatMessagesArea');
-      if (!area) return;
-      area.innerHTML = '';
-      chatMessages.forEach(m => {
-        const isMine = currentUser && (m.sender === currentUser.fullName || (currentUser.role === 'ROLE_PLANNING' && m.role === 'ROLE_PLANNING'));
-        const div = document.createElement('div');
-        div.className = `chat-msg ${isMine ? 'mine' : 'theirs'}`;
-        div.innerHTML = `<div style="font-weight:800; font-size:0.75rem; color:${isMine ? 'var(--tbc-petrol-dark)' : '#475569'}; margin-bottom:2px;">${m.sender}</div><div>${m.text}</div><span class="chat-meta">${m.time}</span>`;
-        area.appendChild(div);
-      });
-      area.scrollTop = area.scrollHeight;
-    }
-
-    function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text || !currentUser) return;
-      const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-      chatMessages.push({ sender: currentUser.fullName, role: currentUser.role, text: text, time: timeStr });
-      localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
-      input.value = '';
-      renderChatMessages();
-      pushToCloud();
-    }
-
-    // ================= Analytics Live Engine =================
-    function populateAnalyticsSurveyDropdown() {
-      const select = document.getElementById('analyticsSurveyFilter');
-      if (!select) return;
-      const currentVal = select.value;
-      let html = '<option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>';
-      if(surveys && surveys.length > 0) { surveys.forEach(s => { html += `<option value="${s.title}">${s.title}</option>`; }); }
-      if(select.innerHTML !== html) {
-        select.innerHTML = html;
-        if(currentVal && currentVal !== "" && html.includes(`value="${currentVal}"`)) select.value = currentVal;
-        else select.value = "ALL";
-      }
-    }
+    // ================= Analytics =================
+    setInterval(() => {
+      if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) { refreshAnalyticsDashboard(true); }
+      if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) { updateKPIs(); }
+    }, 3000);
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
-      const select = document.getElementById('analyticsSurveyFilter');
-      if(select && select.options.length <= 1) populateAnalyticsSurveyDropdown();
-      const selectedSurvey = select ? select.value : "ALL";
-
       let scoped = getScopedResponses();
-      if (selectedSurvey !== "ALL") scoped = scoped.filter(r => r.surveyTitle === selectedSurvey);
-
-      const noteElem = document.getElementById('analyticsScopeNote');
-      if(noteElem && !isSilent) {
-        if (currentUser.role === 'ROLE_INSPECTOR') noteElem.innerText = `عرض خاص بالمشرف: ${currentUser.fullName} • متابعة أدائك الشخصي ونسبة اعتمادك`;
-        else if (currentUser.branch && currentUser.branch !== 'الكل') noteElem.innerText = `نطاق العرض: ${currentUser.branch} • الإحصائيات التراكمية للمكتب`;
-        else noteElem.innerText = `عرض قيادي شامل: المكتب الإقليمي بالشرقية وإدارة التخطيط والتحكم`;
-      }
-
       const approvedCount = scoped.filter(r => r.status === 'approved').length;
       const pendingCount = scoped.filter(r => r.status === 'pending').length;
       const totalSubmitted = scoped.length;
-
-      let plannedTarget = 0;
-      if (selectedSurvey === "ALL") { plannedTarget = surveys.reduce((acc, s) => acc + (s.targetSchoolsCount || 15), 0); } 
-      else { const sObj = surveys.find(s => s.title === selectedSurvey); plannedTarget = sObj ? (sObj.targetSchoolsCount || 20) : 20; }
+      let plannedTarget = surveys.reduce((acc, s) => acc + (s.targetSchoolsCount || 15), 0);
       if (plannedTarget < totalSubmitted) plannedTarget = totalSubmitted + 5;
-
       const remainingCount = Math.max(0, plannedTarget - approvedCount);
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
 
@@ -1227,251 +709,123 @@
       const elApprv = document.getElementById('biApprovedCount'); if(elApprv && elApprv.innerText !== String(approvedCount)) elApprv.innerText = approvedCount;
       const elPend = document.getElementById('biPendingCount'); if(elPend && elPend.innerText !== String(pendingCount)) elPend.innerText = pendingCount;
       const elRem = document.getElementById('biRemainingCount'); if(elRem && elRem.innerText !== String(remainingCount)) elRem.innerText = remainingCount;
-
-      const statusElem = document.getElementById('biActualStatus');
-      if (statusElem) {
-        if (parseFloat(actualRate) >= 80) { if(statusElem.innerText !== "✓ أداء ممتاز ومطابق للمخطط المستهدف") { statusElem.innerText = "✓ أداء ممتاز ومطابق للمخطط المستهدف"; statusElem.style.color = "#38bdf8"; } } 
-        else if (parseFloat(actualRate) >= 50) { if(statusElem.innerText !== "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية") { statusElem.innerText = "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية"; statusElem.style.color = "#fef08a"; } } 
-        else { if(statusElem.innerText !== "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية") { statusElem.innerText = "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية"; statusElem.style.color = "#fca5a5"; } }
-      }
-
-      renderSCurveChart(plannedTarget, approvedCount);
-      renderBranchProgressBars(scoped);
-      renderLeaderboard(scoped);
+      renderSCurveChart(plannedTarget, approvedCount); renderBranchProgressBars(scoped); renderLeaderboard(scoped);
     }
 
     function renderSCurveChart(plannedTotal, approvedTotal) {
       try {
         if (typeof Chart === 'undefined') return;
-        const labels = ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'];
         const plannedPoints = [ Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58), Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal ];
         const currentPoint = Math.min(approvedTotal, plannedTotal);
         const actualPoints = [ Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75), currentPoint, null, null ];
 
-        if (sCurveChartInstance) {
-          sCurveChartInstance.data.datasets[0].data = plannedPoints;
-          sCurveChartInstance.data.datasets[1].data = actualPoints;
-          sCurveChartInstance.update('none');
-        } else {
-          const canvas = document.getElementById('sCurveChart');
-          if(!canvas) return;
-          const ctx = canvas.getContext('2d');
-          sCurveChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labels, datasets: [ { label: 'المستهدف المخطط (Planned)', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 }, { label: 'الإنجاز الفعلي (Actual)', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#276270' } ] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Tajawal' } } }, x: { grid: { display: false }, ticks: { font: { family: 'Tajawal' } } } } }
+        if (sCurveChartInstance) { sCurveChartInstance.data.datasets[0].data = plannedPoints; sCurveChartInstance.data.datasets[1].data = actualPoints; sCurveChartInstance.update('none'); } 
+        else {
+          const canvas = document.getElementById('sCurveChart'); if(!canvas) return;
+          sCurveChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'line', data: { labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'], datasets: [ { label: 'المستهدف المخطط', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 }, { label: 'الإنجاز الفعلي', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5 } ] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
           });
         }
-      } catch(e) { console.error("Chart load error:", e); }
+      } catch(e) {}
     }
 
     function renderBranchProgressBars(scopedResponses) {
-      const container = document.getElementById('branchProgressBarsContainer');
-      if(!container) return;
-      const branches = [ { name: "المكتب الفرعي بالشرقية", target: 35 }, { name: "المكتب الفرعي بالأحساء", target: 25 } ];
-      let html = '';
+      const container = document.getElementById('branchProgressBarsContainer'); if(!container) return;
+      const branches = [ { name: "المكتب الفرعي بالشرقية", target: 35 }, { name: "المكتب الفرعي بالأحساء", target: 25 } ]; let html = '';
       branches.forEach(b => {
-        const bReports = scopedResponses.filter(r => r.branch === b.name && r.status === 'approved');
-        const done = bReports.length;
-        const rate = Math.min(100, Math.round((done / b.target) * 100));
+        const bReports = scopedResponses.filter(r => r.branch === b.name && r.status === 'approved'); const done = bReports.length; const rate = Math.min(100, Math.round((done / b.target) * 100));
         html += `<div class="region-prog-item"><div class="region-prog-label"><span>🏢 ${b.name}</span><span style="color:var(--tbc-petrol); font-weight:900;">${done} من ${b.target} مبنى (${rate}%)</span></div><div class="region-bar-bg"><div class="region-bar-fill" style="width: ${rate}%;"></div></div></div>`;
       });
       if(container.innerHTML !== html) container.innerHTML = html;
     }
 
     function renderLeaderboard(scopedResponses) {
-      const container = document.getElementById('leaderboardContainer');
-      const countBadge = document.getElementById('activeInspectorsCountBadge');
-      if(!container || !countBadge) return;
-
-      const inspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR');
-      const badgeText = `${inspectors.length} مشرفين مسجلين`;
-      if(countBadge.innerText !== badgeText) countBadge.innerText = badgeText;
-
-      const stats = inspectors.map(ins => {
-        const myReports = scopedResponses.filter(r => r.username === ins.username);
-        const approved = myReports.filter(r => r.status === 'approved').length;
-        const total = myReports.length;
-        const rate = total > 0 ? Math.round((approved / total) * 100) : (approved > 0 ? 100 : 0);
-        return { name: ins.fullName, approved, total, rate };
-      });
-      stats.sort((a, b) => b.approved - a.approved || b.rate - a.rate);
-      let html = '';
-      stats.forEach((item, idx) => {
-        const rank = idx + 1;
-        const isFirst = rank === 1 && item.approved > 0;
-        const crown = isFirst ? '👑 ' : '';
-        let initials = '?';
-        if(item.name) initials = item.name.split(' ').slice(0, 2).map(n => n[0]).join('');
-        html += `<div class="leader-card ${isFirst ? 'rank-1' : ''}"><div class="leader-badge-num">${rank}</div><div class="leader-avatar">${initials}</div><div class="leader-name">${crown}${item.name}</div><div class="leader-rate">${item.rate}%</div><div class="leader-count">${item.approved} تقارير معتمدة</div></div>`;
-      });
+      const container = document.getElementById('leaderboardContainer'); const countBadge = document.getElementById('activeInspectorsCountBadge'); if(!container || !countBadge) return;
+      const inspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR'); countBadge.innerText = `${inspectors.length} مشرفين مسجلين`;
+      const stats = inspectors.map(ins => { const myReports = scopedResponses.filter(r => r.username === ins.username); const approved = myReports.filter(r => r.status === 'approved').length; const total = myReports.length; const rate = total > 0 ? Math.round((approved / total) * 100) : (approved > 0 ? 100 : 0); return { name: ins.fullName, approved, total, rate }; });
+      stats.sort((a, b) => b.approved - a.approved || b.rate - a.rate); let html = '';
+      stats.forEach((item, idx) => { const rank = idx + 1; const isFirst = rank === 1 && item.approved > 0; const crown = isFirst ? '👑 ' : ''; let initials = '?'; if(item.name) initials = item.name.split(' ').slice(0, 2).map(n => n[0]).join(''); html += `<div class="leader-card ${isFirst ? 'rank-1' : ''}"><div class="leader-badge-num">${rank}</div><div class="leader-avatar">${initials}</div><div class="leader-name">${crown}${item.name}</div><div class="leader-rate">${item.rate}%</div><div class="leader-count">${item.approved} تقارير معتمدة</div></div>`; });
       if(container.innerHTML !== html) container.innerHTML = html;
     }
 
-    // ================= Surveys Management =================
+    // ================= Surveys & Fill =================
     function renderSurveys() {
-      const container = document.getElementById('surveysListContainer');
-      if(!container) return;
-      container.innerHTML = '';
-      if (!surveys || surveys.length === 0) {
-        container.innerHTML = `<div class="empty-state"><h4>لا توجد نماذج حصر نشطة حالياً</h4><p>عندما تقوم إدارة التخطيط والتحكم بنشر استمارة حصر جديدة، ستظهر هنا مباشرة.</p></div>`;
-        return;
-      }
-
-      const todayStr = new Date().toISOString().split('T')[0];
+      const container = document.getElementById('surveysListContainer'); if(!container) return; container.innerHTML = '';
+      if (!surveys || surveys.length === 0) { container.innerHTML = `<div class="empty-state"><h4>لا توجد نماذج حصر نشطة حالياً</h4></div>`; return; }
       surveys.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        let overdueBadge = '';
-        if (s.dueDate) {
-          if (s.dueDate < todayStr) { overdueBadge = `<span class="badge-status overdue">⚠️ متأخر (${s.dueDate})</span>`; }
-          else { overdueBadge = `<span class="badge-status pending">📅 موعد: ${s.dueDate}</span>`; }
-        }
+        const div = document.createElement('div'); div.className = 'card';
         let adminActionButtons = '';
-        if (currentUser && currentUser.role === 'ROLE_PLANNING') {
-          adminActionButtons = `<div style="display:flex; gap:8px; margin-top:14px; border-top:1px dashed var(--border-subtle); padding-top:12px;"><button class="btn btn-outline" style="font-size:0.85rem; padding:6px 16px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button><button class="btn btn-reject" style="font-size:0.85rem; padding:6px 16px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button></div>`;
-        }
-        const safeFieldsCount = s.fields ? s.fields.length : 0;
-        const safeTitle = s.title || 'استمارة حصر غير معنونة';
-        const safeDesc = s.desc || 'لا توجد تعليمات إضافية لهذا الحصر.';
-
-        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;"><div><div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><span>${safeTitle}</span>${overdueBadge}</div><div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${safeDesc}</div><div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${safeFieldsCount} بنود فحص معتمدة</div></div><button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button></div>${adminActionButtons}`;
+        if (currentUser && currentUser.role === 'ROLE_PLANNING') { adminActionButtons = `<div style="display:flex; gap:8px; margin-top:14px; border-top:1px dashed var(--border-subtle); padding-top:12px;"><button class="btn btn-outline" style="font-size:0.85rem; padding:6px 16px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button><button class="btn btn-reject" style="font-size:0.85rem; padding:6px 16px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button></div>`; }
+        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;"><div><div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><span>${s.title || 'استمارة حصر'}</span><span class="badge-status pending">📅 موعد: ${s.dueDate || 'غير محدد'}</span></div><div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${s.desc || ''}</div><div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${s.fields ? s.fields.length : 0} بنود فحص معتمدة</div></div><button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button></div>${adminActionButtons}`;
         container.appendChild(div);
       });
     }
 
-    function openNewSurveyModal() {
-      editingSurveyId = null;
-      document.getElementById('secSurveys').classList.add('hidden');
-      document.getElementById('secNewSurvey').classList.remove('hidden');
-      document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
-      document.getElementById('srvTitle').value = ''; document.getElementById('srvDueDate').value = ''; document.getElementById('srvDesc').value = '';
-      document.getElementById('questionsBuilder').innerHTML = '';
-      addQuestionField();
-    }
-
-    function openEditSurveyTemplate(id) {
-      const s = surveys.find(x => String(x.id) === String(id));
-      if (!s) return;
-      editingSurveyId = s.id;
-      document.getElementById('secSurveys').classList.add('hidden');
-      document.getElementById('secNewSurvey').classList.remove('hidden');
-      document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
-      document.getElementById('srvTitle').value = s.title; document.getElementById('srvDueDate').value = s.dueDate || ''; document.getElementById('srvDesc').value = s.desc || '';
-      const container = document.getElementById('questionsBuilder');
-      container.innerHTML = '';
-      if(s.fields && s.fields.length > 0) { s.fields.forEach(f => { addQuestionField(f.label, f.type, f.options || []); }); } else { addQuestionField(); }
-    }
-
+    function openNewSurveyModal() { editingSurveyId = null; document.getElementById('secSurveys').classList.add('hidden'); document.getElementById('secNewSurvey').classList.remove('hidden'); document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة"; document.getElementById('srvTitle').value = ''; document.getElementById('srvDueDate').value = ''; document.getElementById('srvDesc').value = ''; document.getElementById('questionsBuilder').innerHTML = ''; addQuestionField(); }
+    function openEditSurveyTemplate(id) { const s = surveys.find(x => String(x.id) === String(id)); if (!s) return; editingSurveyId = s.id; document.getElementById('secSurveys').classList.add('hidden'); document.getElementById('secNewSurvey').classList.remove('hidden'); document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`; document.getElementById('srvTitle').value = s.title; document.getElementById('srvDueDate').value = s.dueDate || ''; document.getElementById('srvDesc').value = s.desc || ''; const container = document.getElementById('questionsBuilder'); container.innerHTML = ''; if(s.fields && s.fields.length > 0) { s.fields.forEach(f => { addQuestionField(f.label, f.type, f.options || []); }); } else { addQuestionField(); } }
     function closeNewSurveyModal() { editingSurveyId = null; document.getElementById('secNewSurvey').classList.add('hidden'); showTab('surveys'); }
-
-    function deleteSurveyTemplate(id) {
-      if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟ ستختفي الاستمارة من جميع أجهزة المشرفين.")) return;
-      surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
-      pushToCloud();
-      alert("✓ تم حذف نموذج الحصر بنجاح.");
-      showTab('surveys');
-    }
-
+    function deleteSurveyTemplate(id) { if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return; surveys = surveys.filter(s => String(s.id) !== String(id)); localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys)); pushToCloud(); alert("✓ تم الحذف بنجاح."); showTab('surveys'); }
+    
     function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
-      const c = document.getElementById('questionsBuilder');
-      const idx = c.children.length + 1;
-      const d = document.createElement('div');
-      d.className = 'q-row';
-      const isRadio = typeVal === 'radio';
-      let initialOptions = ["خيار 1", "خيار 2"];
-      if (optVal && Array.isArray(optVal)) initialOptions = optVal; else if (optVal) initialOptions = optVal.split(',').map(s => s.trim()).filter(Boolean);
+      const c = document.getElementById('questionsBuilder'); const idx = c.children.length + 1; const d = document.createElement('div'); d.className = 'q-row'; const isRadio = typeVal === 'radio';
+      let initialOptions = ["خيار 1", "خيار 2"]; if (optVal && Array.isArray(optVal)) initialOptions = optVal; else if (optVal) initialOptions = optVal.split(',').map(s => s.trim()).filter(Boolean);
       const optionsHtml = initialOptions.map(opt => `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="${opt}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`).join('');
       d.innerHTML = `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;"><span style="font-weight:900; color:var(--tbc-petrol); font-size:1.1rem;">#${idx}</span><input type="text" placeholder="اكتب نص بند الفحص المطلوب إجابته..." class="q-label" style="flex:2;" value="${labelVal}"><select class="q-type" style="flex:1;" onchange="handleTypeChange(this)"><option value="text" ${typeVal==='text'?'selected':''}>نص قصير</option><option value="number" ${typeVal==='number'?'selected':''}>عدد / كمية</option><option value="radio" ${typeVal==='radio'?'selected':''}>🔘 اختيار من متعدد</option><option value="date" ${typeVal==='date'?'selected':''}>📅 تاريخ</option><option value="textarea" ${typeVal==='textarea'?'selected':''}>ملاحظات فنية</option><option value="image" ${typeVal==='image'?'selected':''}>📷 صورة توثيقية</option></select><button type="button" class="btn" style="background:#fee2e2; color:#b91c1c; padding:8px 16px;" onclick="this.closest('.q-row').remove()">إزالة</button></div><div class="radio-builder-area ${isRadio ? '' : 'hidden'}" style="background:#ffffff; border:1.5px dashed var(--border-subtle); padding:16px; border-radius:8px; margin-top:10px;"><div class="options-container">${optionsHtml}</div><button type="button" class="btn btn-outline" style="font-size:0.88rem; padding:8px 16px; margin-top:8px; border-style:dashed;" onclick="addOptionToField(this)">+ إضافة خيار إضافي</button></div>`;
       c.appendChild(d);
     }
 
-    function handleTypeChange(selectElem) {
-      const area = selectElem.closest('.q-row').querySelector('.radio-builder-area');
-      if (selectElem.value === 'radio') {
-        area.classList.remove('hidden');
-        const container = area.querySelector('.options-container');
-        if (container.children.length === 0) { container.innerHTML = `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div><div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`; }
-      } else { area.classList.add('hidden'); }
-    }
-
-    function addOptionToField(btn) {
-      const container = btn.previousElementSibling; const count = container.querySelectorAll('.option-row').length + 1;
-      const div = document.createElement('div'); div.className = 'option-row'; div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;';
-      div.innerHTML = `<span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>`;
-      container.appendChild(div);
-    }
+    function handleTypeChange(selectElem) { const area = selectElem.closest('.q-row').querySelector('.radio-builder-area'); if (selectElem.value === 'radio') { area.classList.remove('hidden'); const container = area.querySelector('.options-container'); if (container.children.length === 0) { container.innerHTML = `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div><div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`; } } else { area.classList.add('hidden'); } }
+    function addOptionToField(btn) { const container = btn.previousElementSibling; const count = container.querySelectorAll('.option-row').length + 1; const div = document.createElement('div'); div.className = 'option-row'; div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;'; div.innerHTML = `<span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
 
     function saveLocalSurvey() {
-      const title = document.getElementById('srvTitle').value.trim();
-      const dueDate = document.getElementById('srvDueDate').value;
-      const desc = document.getElementById('srvDesc').value.trim();
+      const title = document.getElementById('srvTitle').value.trim(); const dueDate = document.getElementById('srvDueDate').value; const desc = document.getElementById('srvDesc').value.trim();
       if (!title) return alert("يرجى إدخال مسمى عملية الحصر بشكل إلزامي.");
+      const qNodes = document.querySelectorAll('#questionsBuilder .q-row'); const fields = [];
+      qNodes.forEach(node => { const l = node.querySelector('.q-label').value.trim(); const t = node.querySelector('.q-type').value; if (l) { let optionsList = []; if (t === 'radio') { const optInputs = node.querySelectorAll('.opt-input'); optInputs.forEach(input => { const val = input.value.trim(); if(val) optionsList.push(val); }); if (optionsList.length === 0) optionsList = ["مطابق", "غير مطابق"]; } fields.push({ label: l, type: t, options: optionsList }); } });
+      if (fields.length === 0) return alert("الرجاء إضافة بند فحص واحد على الأقل.");
 
-      const qNodes = document.querySelectorAll('#questionsBuilder .q-row');
-      const fields = [];
-      qNodes.forEach(node => {
-        const l = node.querySelector('.q-label').value.trim();
-        const t = node.querySelector('.q-type').value;
-        if (l) {
-          let optionsList = [];
-          if (t === 'radio') {
-            const optInputs = node.querySelectorAll('.opt-input');
-            optInputs.forEach(input => { const val = input.value.trim(); if(val) optionsList.push(val); });
-            if (optionsList.length === 0) optionsList = ["مطابق", "غير مطابق"];
-          }
-          fields.push({ label: l, type: t, options: optionsList });
-        }
-      });
-
-      if (fields.length === 0) return alert("الرجاء إضافة بند فحص واحد على الأقل ليتمكن المشرف من الإجابة عليه.");
-
-      if (editingSurveyId) {
-        const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
-        if (idx !== -1) { surveys[idx].title = title; surveys[idx].dueDate = dueDate; surveys[idx].desc = desc; surveys[idx].fields = fields; alert("✓ تم تحديث نموذج الحصر بنجاح وتعميمه!"); }
-      } else {
-        surveys.push({ id: "SRV-" + Date.now(), title, dueDate, desc, targetSchoolsCount: 15, fields });
-        alert("✓ تم إنشاء ونشر نموذج الحصر وتوجيه إشعار فوري إلى بريد المشرفين بنجاح!");
-      }
-
-      localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
-      pushToCloud();
-      closeNewSurveyModal();
+      if (editingSurveyId) { const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId)); if (idx !== -1) { surveys[idx].title = title; surveys[idx].dueDate = dueDate; surveys[idx].desc = desc; surveys[idx].fields = fields; alert("✓ تم تحديث النموذج بنجاح!"); } } 
+      else { surveys.push({ id: "SRV-" + Date.now(), title, dueDate, desc, targetSchoolsCount: 15, fields }); alert("✓ تم نشر نموذج الحصر بنجاح!"); }
+      localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys)); pushToCloud(); closeNewSurveyModal(); showTab('surveys'); 
     }
 
     // ================= Fill Survey =================
+    window.autoSelectBranch = function() {
+      const sName = document.getElementById('fillSchool').value;
+      const sch = schoolsList.find(s => s.name === sName);
+      if(sch && sch.branch) { document.getElementById('fillBranch').value = sch.branch; }
+    };
+
     function openFillSurvey(id, existingData = null) {
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
-      if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير.");
+      if (!activeSrv) return alert("عذراً، تعذر العثور على النموذج الأساسي.");
 
-      document.getElementById('secSurveys').classList.add('hidden');
-      document.getElementById('secRecords').classList.add('hidden');
-      document.getElementById('secFillSurvey').classList.remove('hidden');
+      document.getElementById('secSurveys').classList.add('hidden'); document.getElementById('secRecords').classList.add('hidden');
+      document.getElementById('secFillSurvey').classList.remove('hidden'); document.getElementById('secSuccessModal').classList.add('hidden');
 
-      const editBadge = document.getElementById('editModeIndicator');
-      const submitBtn = document.getElementById('submitSurveyBtn');
-
-      if (existingData) { editingResponseId = existingData.id; editBadge.classList.remove('hidden'); submitBtn.innerText = "حفظ التعديلات وإعادة الإرسال للاعتماد ✓"; } 
-      else { editingResponseId = null; editBadge.classList.add('hidden'); submitBtn.innerText = "رفع التقرير للاعتماد من مدير الإشراف ✓"; }
+      const editBadge = document.getElementById('editModeIndicator'); const submitBtn = document.getElementById('submitSurveyBtn');
+      if (existingData) { editingResponseId = existingData.id; editBadge.classList.remove('hidden'); submitBtn.innerText = "حفظ التعديلات وإعادة الإرسال ✓"; } 
+      else { editingResponseId = null; editBadge.classList.add('hidden'); submitBtn.innerText = "رفع التقرير للاعتماد من الإدارة ✓"; }
 
       document.getElementById('fillTitle').innerText = (existingData ? "تعديل تقرير: " : "تسجيل حصر: ") + (activeSrv.title || '');
       document.getElementById('fillDesc').innerText = activeSrv.desc || '';
-      document.getElementById('fillSchool').value = existingData ? (existingData.school || '') : '';
-      document.getElementById('fillGps').value = existingData ? (existingData.gps || '') : '';
       
+      // Populate Schools Dropdown
+      const schoolSelect = document.getElementById('fillSchool');
+      schoolSelect.innerHTML = '<option value="">-- اختر المدرسة من القائمة المخصصة لك --</option>';
+      let mySchools = schoolsList;
+      if(currentUser.role === 'ROLE_INSPECTOR') { mySchools = schoolsList.filter(s => s.inspector === currentUser.username || s.inspector === currentUser.email); }
+      mySchools.forEach(sch => { const selected = (existingData && existingData.school === sch.name) ? 'selected' : ''; schoolSelect.innerHTML += `<option value="${sch.name}" ${selected}>${sch.name} (${sch.branch})</option>`; });
+      if(existingData && existingData.school && !mySchools.some(s => s.name === existingData.school)) { schoolSelect.innerHTML += `<option value="${existingData.school}" selected>${existingData.school} (سجل سابق)</option>`; }
+
       if (existingData && existingData.branch) { document.getElementById('fillBranch').value = existingData.branch; } 
-      else if (currentUser.branch && currentUser.branch !== "الكل") { document.getElementById('fillBranch').value = currentUser.branch; }
+      else { window.autoSelectBranch(); }
 
-      const container = document.getElementById('dynamicFields');
-      container.innerHTML = '';
-
+      const container = document.getElementById('dynamicFields'); container.innerHTML = '';
       if(activeSrv.fields && Array.isArray(activeSrv.fields)) {
         activeSrv.fields.forEach((f, fIdx) => {
-          const d = document.createElement('div'); d.className = 'form-group';
-          let inputHtml = '';
-          const existingVal = existingData && existingData.answers ? existingData.answers[f.label] : '';
-          
+          const d = document.createElement('div'); d.className = 'form-group'; let inputHtml = ''; const existingVal = existingData && existingData.answers ? existingData.answers[f.label] : '';
           if (f.type === 'text') { inputHtml = `<input type="text" class="dyn-field" data-type="text" data-label="${f.label}" value="${existingVal || ''}">`; } 
           else if (f.type === 'number') { inputHtml = `<input type="number" class="dyn-field" data-type="number" data-label="${f.label}" value="${existingVal || ''}">`; } 
           else if (f.type === 'date') { inputHtml = `<input type="date" class="dyn-field" data-type="date" data-label="${f.label}" value="${existingVal || ''}">`; } 
@@ -1484,8 +838,7 @@
             const hasImg = existingVal && String(existingVal).startsWith('data:image');
             inputHtml = `<input type="file" accept="image/*" capture="environment" class="dyn-field dyn-img" data-type="image" data-label="${f.label}" data-base64="${hasImg ? existingVal : ''}" onchange="encodeImg(this)"><img class="img-preview-box" src="${hasImg ? existingVal : ''}" style="${hasImg ? 'display:block;' : ''}" />`;
           }
-          d.innerHTML = `<label>${f.label}</label>${inputHtml}`;
-          container.appendChild(d);
+          d.innerHTML = `<label>${f.label}</label>${inputHtml}`; container.appendChild(d);
         });
       }
     }
@@ -1495,571 +848,150 @@
     function captureGps() {
       const status = document.getElementById('gpsStatus'); const input = document.getElementById('fillGps');
       if (!navigator.geolocation) return alert("المتصفح الذي تستخدمه لا يدعم تحديد الموقع (GPS).");
-      status.innerText = "⏳ جارٍ الاتصال بالأقمار الصناعية لالتقاط الموقع...";
+      status.innerText = "⏳ جارٍ التقاط الموقع...";
       navigator.geolocation.getCurrentPosition(
-        pos => { input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; status.innerText = `✓ تم تحديد الموقع وتوثيقه بنجاح (دقة ${Math.round(pos.coords.accuracy)} متر).`; status.style.color = "var(--success)"; },
-        err => { status.innerText = "تعذر تحديد الموقع. يرجى التأكد من تشغيل (خدمات الموقع/GPS) في جهازك والموافقة على الصلاحية."; status.style.color = "var(--danger)"; },
+        pos => { input.value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; status.innerText = `✓ تم تحديد الموقع وتوثيقه بنجاح.`; status.style.color = "var(--status-approved)"; },
+        err => { status.innerText = "تعذر تحديد الموقع. يرجى التأكد من تشغيل الموقع/GPS."; status.style.color = "var(--status-rejected)"; },
         { enableHighAccuracy: true }
       );
     }
 
     function encodeImg(input) {
-      const file = input.files[0]; const preview = input.nextElementSibling;
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image(); img.src = e.target.result;
-        img.onload = () => {
-          const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height;
-          if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
-          cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65); preview.src = input.dataset.base64; preview.style.display = "block";
-        };
-      };
-      reader.readAsDataURL(file);
+      const file = input.files[0]; const preview = input.nextElementSibling; if (!file) return; const reader = new FileReader();
+      reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height; if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; } cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h); input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65); preview.src = input.dataset.base64; preview.style.display = "block"; }; }; reader.readAsDataURL(file);
     }
 
     function submitLocalResponse() {
-      const school = document.getElementById('fillSchool').value.trim();
-      const gps = document.getElementById('fillGps').value.trim();
-      const branch = document.getElementById('fillBranch').value;
-      if (!school) return alert("إلزامي: يرجى إدخال اسم المنشأة التعليمية / المدرسة.");
-
+      const school = document.getElementById('fillSchool').value.trim(); const gps = document.getElementById('fillGps').value.trim(); const branch = document.getElementById('fillBranch').value;
+      if (!school) return alert("إلزامي: يرجى تحديد المنشأة التعليمية / المدرسة.");
       const userPerms = currentUser.permissions || { requireGps: true, requirePhoto: true };
-      if (userPerms.requireGps && (!gps || gps.trim() === '')) { return alert("تنبيه أمني: يتطلب حسابك التقاط إحداثيات الـ GPS الميدانية الحية قبل الاعتماد ورفع التقرير."); }
+      if (userPerms.requireGps && (!gps || gps.trim() === '')) { return alert("تنبيه أمني: التقاط إحداثيات الـ GPS الميدانية إلزامي."); }
 
       const dataObj = {}; let hasImage = false;
-      document.querySelectorAll('.dyn-field').forEach(f => {
-        const label = f.getAttribute('data-label'); const type = f.getAttribute('data-type');
-        if (type === 'image') { const imgVal = f.dataset.base64 || ''; if (imgVal) hasImage = true; dataObj[label] = imgVal; } 
-        else { dataObj[label] = f.value; }
-      });
+      document.querySelectorAll('.dyn-field').forEach(f => { const label = f.getAttribute('data-label'); const type = f.getAttribute('data-type'); if (type === 'image') { const imgVal = f.dataset.base64 || ''; if (imgVal) hasImage = true; dataObj[label] = imgVal; } else { dataObj[label] = f.value; } });
+      if (userPerms.requirePhoto && !hasImage && !editingResponseId) { return alert("تنبيه أمني: إرفاق صورة توثيقية إلزامي."); }
 
-      if (userPerms.requirePhoto && !hasImage && !editingResponseId) { return alert("تنبيه أمني: يتطلب حسابك إرفاق صورة توثيقية ميدانية واحدة على الأقل قبل اعتماد التقرير من النظام."); }
-
-      document.querySelectorAll('.radio-group').forEach(rg => {
-        const label = rg.getAttribute('data-label'); const checked = rg.querySelector('input[type="radio"]:checked');
-        dataObj[label] = checked ? checked.value : 'غير محدد';
-      });
+      document.querySelectorAll('.radio-group').forEach(rg => { const label = rg.getAttribute('data-label'); const checked = rg.querySelector('input[type="radio"]:checked'); dataObj[label] = checked ? checked.value : 'غير محدد'; });
 
       if (editingResponseId) {
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
-          const old = responses[idx];
-          const isPlanning = currentUser.role === "ROLE_PLANNING";
-          if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") {
-            const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60);
-            if (reportAgeHours > 48 && !old.adminPermissionGranted) { return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن خاص من الإدارة للتمكن من تعديله."); }
-          }
-          responses[idx] = { ...old, school, branch, gps, answers: dataObj, lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'), status: "pending", rejectionReason: "" };
-          lastSavedIndex = idx;
-          localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
+          const old = responses[idx]; const isPlanning = currentUser.role === "ROLE_PLANNING";
+          if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") { const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60); if (reportAgeHours > 48 && !old.adminPermissionGranted) { return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة."); } }
+          responses[idx] = { ...old, school, branch, gps, answers: dataObj, lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'), status: "pending", rejectionReason: "" }; lastSavedIndex = idx; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
         }
       } else {
         const entry = { id: Date.now(), school, branch, gps, surveyTitle: activeSrv.title, dueDate: activeSrv.dueDate || '', date: new Date().toLocaleString('ar-SA'), collectedBy: currentUser.fullName, username: currentUser.username, status: "pending", rejectionReason: "", adminPermissionGranted: false, answers: dataObj };
-        responses.push(entry);
-        lastSavedIndex = responses.length - 1;
-        localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
+        responses.push(entry); lastSavedIndex = responses.length - 1; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
       }
-
-      pushToCloud();
-      editingResponseId = null;
-      document.getElementById('secFillSurvey').classList.add('hidden');
-      document.getElementById('secSuccessModal').classList.remove('hidden');
-      updateNotifications();
+      pushToCloud(); editingResponseId = null; document.getElementById('secFillSurvey').classList.add('hidden'); document.getElementById('secSuccessModal').classList.remove('hidden'); updateNotifications();
     }
 
     function printLastSubmittedPDF() { if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex); }
 
     // ================= KPI, Filters & Records =================
     function filterByKpi(status) { selectedKpiStatusFilter = status; renderRecords(); }
-
-    function getScopedResponses() {
-      if (!currentUser) return [];
-      let list = responses;
-      if (currentUser.role === "ROLE_SUB_EAST") { list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية"); } 
-      else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } 
-      else if (currentUser.role === "ROLE_SUPERVISION_LEAD") { if (currentUser.branch && currentUser.branch !== "الكل") { list = list.filter(r => r.branch === currentUser.branch); } } 
-      else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); }
-      return list;
-    }
+    function getScopedResponses() { if (!currentUser) return []; let list = responses; if (currentUser.role === "ROLE_SUB_EAST") { list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية"); } else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } else if (currentUser.role === "ROLE_SUPERVISION_LEAD") { if (currentUser.branch && currentUser.branch !== "الكل") { list = list.filter(r => r.branch === currentUser.branch); } } else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); } return list; }
 
     function updateKPIs() {
-      const c = document.getElementById('kpiContainer');
-      if (!c) return;
-
-      const scoped = getScopedResponses();
-      let filtered = scoped;
-
-      if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter);
-      if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
-
-      const total = filtered.length;
-      const pending = filtered.filter(r => r.status === 'pending').length;
-      const approved = filtered.filter(r => r.status === 'approved').length;
-      const rejected = filtered.filter(r => r.status === 'rejected').length;
-
-      const totalActive = selectedKpiStatusFilter === 'ALL' ? 'active-filter' : '';
-      const pendingActive = selectedKpiStatusFilter === 'pending' ? 'active-filter' : '';
-      const approvedActive = selectedKpiStatusFilter === 'approved' ? 'active-filter' : '';
-      const rejectedActive = selectedKpiStatusFilter === 'rejected' ? 'active-filter' : '';
-
-      const html = `
-        <div class="kpi-box total ${totalActive}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي">
-          <div class="kpi-num">${total}</div>
-          <div class="kpi-title">📊 إجمالي التقارير المرفوعة</div>
-        </div>
-        <div class="kpi-box pending ${pendingActive}" onclick="filterByKpi('pending')" title="انقر لعرض المعلقة فقط">
-          <div class="kpi-num" style="color:var(--status-pending);">${pending}</div>
-          <div class="kpi-title">⏳ بانتظار الاعتماد والمراجعة</div>
-        </div>
-        <div class="kpi-box approved ${approvedActive}" onclick="filterByKpi('approved')" title="انقر لعرض المعتمدة فقط">
-          <div class="kpi-num" style="color:var(--status-approved);">${approved}</div>
-          <div class="kpi-title">✅ تقارير معتمدة رسمياً</div>
-        </div>
-        <div class="kpi-box rejected ${rejectedActive}" onclick="filterByKpi('rejected')" title="انقر لعرض المرفوضة فقط">
-          <div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div>
-          <div class="kpi-title">❌ تقارير مرفوضة (تحتاج تعديل)</div>
-        </div>
-      `;
-      if(c.innerHTML !== html) c.innerHTML = html;
-    }
-
-    function populateFilterDropdowns() {
-      const sSelect = document.getElementById('filterBySurveySelect');
-      const iSelect = document.getElementById('filterByInspectorSelect');
-      if (!sSelect || !iSelect) return;
-
-      let sHtml = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
-      if(surveys && surveys.length > 0) { surveys.forEach(s => { sHtml += `<option value="${s.title}">${s.title}</option>`; }); }
-      if(sSelect.innerHTML !== sHtml) sSelect.innerHTML = sHtml;
-
-      let iHtml = '<option value="ALL">-- كل المشرفين --</option>';
-      const scoped = getScopedResponses();
-      if(scoped && scoped.length > 0) { const inspectors = [...new Set(scoped.map(r => r.collectedBy))]; inspectors.forEach(ins => { iHtml += `<option value="${ins}">${ins}</option>`; }); }
-      if(iSelect.innerHTML !== iHtml) iSelect.innerHTML = iHtml;
-    }
-
-    function applyAdminFilters() {
-      selectedSurveyFilter = document.getElementById('filterBySurveySelect').value;
-      selectedInspectorFilter = document.getElementById('filterByInspectorSelect').value;
-      updateKPIs();
-      renderRecords();
-    }
-
-    function resetAdminFilters() {
-      document.getElementById('filterBySurveySelect').value = "ALL";
-      document.getElementById('filterByInspectorSelect').value = "ALL";
-      selectedSurveyFilter = "ALL";
-      selectedInspectorFilter = "ALL";
-      selectedKpiStatusFilter = "ALL";
-      updateKPIs();
-      renderRecords();
+      const c = document.getElementById('kpiContainer'); if (!c) return; const scoped = getScopedResponses(); let filtered = scoped;
+      if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter); if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
+      const total = filtered.length; const pending = filtered.filter(r => r.status === 'pending').length; const approved = filtered.filter(r => r.status === 'approved').length; const rejected = filtered.filter(r => r.status === 'rejected').length;
+      c.innerHTML = `<div class="kpi-box total ${selectedKpiStatusFilter === 'ALL' ? 'active-filter' : ''}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي"><div class="kpi-num">${total}</div><div class="kpi-title">📊 إجمالي التقارير המرفوعة</div></div><div class="kpi-box pending ${selectedKpiStatusFilter === 'pending' ? 'active-filter' : ''}" onclick="filterByKpi('pending')" title="انقر لعرض المعلقة فقط"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ بانتظار الاعتماد والمراجعة</div></div><div class="kpi-box approved ${selectedKpiStatusFilter === 'approved' ? 'active-filter' : ''}" onclick="filterByKpi('approved')" title="انقر لعرض المعتمدة فقط"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ تقارير معتمدة رسمياً</div></div><div class="kpi-box rejected ${selectedKpiStatusFilter === 'rejected' ? 'active-filter' : ''}" onclick="filterByKpi('rejected')" title="انقر لعرض المرفوضة فقط"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ تقارير مرفوضة (تحتاج تعديل)</div></div>`;
     }
 
     function renderRecords() {
-      const container = document.getElementById('recordsContainer');
-      const schoolSelect = document.getElementById('schoolSelectFilter');
-      const banner = document.getElementById('filterBanner');
-      const bannerText = document.getElementById('filterBannerText');
-      if(!container) return;
-      
+      const container = document.getElementById('recordsContainer'); const banner = document.getElementById('filterBanner'); const bannerText = document.getElementById('filterBannerText'); if(!container) return; container.innerHTML = '';
       let visible = getScopedResponses();
-
-      if (selectedKpiStatusFilter !== "ALL") {
-        visible = visible.filter(r => r.status === selectedKpiStatusFilter);
-        banner.classList.remove('hidden');
-        const statusArabic = { pending: "بانتظار الاعتماد ⏳", approved: "المعتمدة ✅", rejected: "المرفوضة ❌" };
-        bannerText.innerText = `نتائج التصفية الحالية: عرض التقارير [ ${statusArabic[selectedKpiStatusFilter] || ''} ] (الإجمالي: ${visible.length})`;
-      } else { banner.classList.add('hidden'); }
-
-      if (currentUser.role !== "ROLE_INSPECTOR") {
-        if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter);
-        if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
-      }
-
-      if(schoolSelect) {
-        let schHtml = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
-        const uniqueSchools = [...new Set(visible.map(r => r.school))];
-        uniqueSchools.forEach(sch => { schHtml += `<option value="${sch}">${sch}</option>`; });
-        if(schoolSelect.innerHTML !== schHtml) schoolSelect.innerHTML = schHtml;
-      }
-
-      if (visible.length === 0) {
-        container.innerHTML = `<div class="empty-state"><h4>لا توجد سجلات مطابقة للبحث أو التصفية الحالية</h4><p>حاول تغيير الفلاتر من الأعلى أو انتظر ريثما يتم رفع تقارير جديدة.</p></div>`;
-        return;
-      }
+      if (selectedKpiStatusFilter !== "ALL") { visible = visible.filter(r => r.status === selectedKpiStatusFilter); banner.classList.remove('hidden'); const statusArabic = { pending: "بانتظار الاعتماد ⏳", approved: "المعتمدة ✅", rejected: "المرفوضة ❌" }; bannerText.innerText = `نتائج التصفية الحالية: عرض التقارير [ ${statusArabic[selectedKpiStatusFilter] || ''} ] (الإجمالي: ${visible.length})`; } else { banner.classList.add('hidden'); }
+      if (currentUser.role !== "ROLE_INSPECTOR") { if (selectedSurveyFilter !== "ALL") visible = visible.filter(r => r.surveyTitle === selectedSurveyFilter); if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter); }
+      if (visible.length === 0) { container.innerHTML = `<div class="empty-state"><h4>لا توجد سجلات مطابقة للبحث أو التصفية الحالية</h4><p>حاول تغيير الفلاتر من الأعلى أو انتظر ريثما يتم رفع تقارير جديدة.</p></div>`; return; }
 
       let newHtml = '';
       visible.slice().reverse().forEach(r => {
         const originalIdx = responses.findIndex(x => x.id === r.id);
-        
-        let statusBadge = '';
-        if (r.status === 'approved') statusBadge = '<span class="badge-status approved">✅ معتمد</span>';
-        else if (r.status === 'rejected') statusBadge = '<span class="badge-status rejected">❌ تم الرفض</span>';
-        else statusBadge = '<span class="badge-status pending">⏳ قيد الاعتماد</span>';
-
-        let rejectionBox = '';
-        if (r.status === 'rejected' && r.rejectionReason) {
-          rejectionBox = `<div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:12px 16px; border-radius:8px; margin:14px 0; font-size:0.95rem; font-weight:700; color:#b91c1c;"><b>⚠️ ملاحظات رفض الإدارة:</b> ${r.rejectionReason}</div>`;
-        }
-
-        let editButtonHtml = '';
-        const isPlanning = currentUser.role === "ROLE_PLANNING";
-        const isInspector = currentUser.role === "ROLE_INSPECTOR";
-
-        if (isPlanning) {
-          editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (صلاحية إدارة)</button>`;
-        } else if (isInspector) {
-          const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
-          const canEditWithin48 = (reportAgeHours <= 48) || (r.adminPermissionGranted === true);
-          if (canEditWithin48) { editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (متاح 48 ساعة)</button>`; } 
-          else { editButtonHtml = `<button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;" title="انتهت مهلة الـ 48 ساعة المتاحة لتعديل التقرير.">🔒 مقفل</button><button class="btn btn-gold" style="font-size:0.82rem; padding:6px 12px;" onclick="requestAdminEditPermission(${r.id})">📩 طلب إذن إضافي</button>`; }
-        }
-
+        let statusBadge = ''; if (r.status === 'approved') statusBadge = '<span class="badge-status approved">✅ معتمد</span>'; else if (r.status === 'rejected') statusBadge = '<span class="badge-status rejected">❌ تم الرفض</span>'; else statusBadge = '<span class="badge-status pending">⏳ قيد الاعتماد</span>';
+        let rejectionBox = ''; if (r.status === 'rejected' && r.rejectionReason) { rejectionBox = `<div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:12px 16px; border-radius:8px; margin:14px 0; font-size:0.95rem; font-weight:700; color:#b91c1c;"><b>⚠️ ملاحظات رفض الإدارة:</b> ${r.rejectionReason}</div>`; }
+        let editButtonHtml = ''; const isPlanning = currentUser.role === "ROLE_PLANNING"; const isInspector = currentUser.role === "ROLE_INSPECTOR";
+        if (isPlanning) { editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (صلاحية إدارة)</button>`; } else if (isInspector) { const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60); const canEditWithin48 = (reportAgeHours <= 48) || (r.adminPermissionGranted === true); if (canEditWithin48) { editButtonHtml = `<button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">✏️ تعديل (متاح 48 ساعة)</button>`; } else { editButtonHtml = `<button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;" title="انتهت مهلة الـ 48 ساعة المتاحة لتعديل التقرير.">🔒 مقفل</button><button class="btn btn-gold" style="font-size:0.82rem; padding:6px 12px;" onclick="requestAdminEditPermission(${r.id})">📩 طلب إذن إضافي</button>`; } }
         const pdfButton = (currentUser.permissions && currentUser.permissions.allowPdf !== false) ? `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="printSinglePDF(${originalIdx})">🖨️ تصدير PDF</button>` : '';
-
-        let approvalActionButtons = '';
-        const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
-        if (canApprove) {
-          const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
-          const grantPermissionBtn = (reportAgeHours > 48 && !r.adminPermissionGranted) ? `<button class="btn btn-gold" style="font-size:0.85rem; padding:8px 16px;" onclick="grantEditPermission(${originalIdx})">🔓 إعطاء إذن تعديل إضافي للمشرف</button>` : '';
-          approvalActionButtons = `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; border-top:1px dashed var(--border-subtle); padding-top:16px;"><button class="btn btn-approve" style="font-size:0.9rem; padding:8px 20px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير ميدانياً</button><button class="btn btn-reject" style="font-size:0.9rem; padding:8px 20px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع تدوين ملاحظة</button>${grantPermissionBtn}</div>`;
-        }
-
-        let detailsHtml = '';
-        if(r.answers && typeof r.answers === 'object'){
-          for (const [q, a] of Object.entries(r.answers)) {
-            if (a && String(a).startsWith('data:image')) { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:12px; font-weight:700;"><b>${q}:</b><br><img src="${a}" style="max-width:180px; border-radius:8px; margin-top:6px; border:2px solid #e2e8f0; box-shadow:var(--shadow-sm);"></li>`; } 
-            else { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:8px; border-bottom:1px dashed #edf2f7; padding-bottom:8px;"><b>${q}:</b> <span style="color:var(--tbc-petrol-dark); font-weight:700;">${a || '-'}</span></li>`; }
-          }
-        }
-
+        let approvalActionButtons = ''; const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
+        if (canApprove) { const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60); const grantPermissionBtn = (reportAgeHours > 48 && !r.adminPermissionGranted) ? `<button class="btn btn-gold" style="font-size:0.85rem; padding:8px 16px;" onclick="grantEditPermission(${originalIdx})">🔓 إعطاء إذن تعديل إضافي للمشرف</button>` : ''; approvalActionButtons = `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; border-top:1px dashed var(--border-subtle); padding-top:16px;"><button class="btn btn-approve" style="font-size:0.9rem; padding:8px 20px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير ميدانياً</button><button class="btn btn-reject" style="font-size:0.9rem; padding:8px 20px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع تدوين ملاحظة</button>${grantPermissionBtn}</div>`; }
+        let detailsHtml = ''; if(r.answers && typeof r.answers === 'object'){ for (const [q, a] of Object.entries(r.answers)) { if (a && String(a).startsWith('data:image')) { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:12px; font-weight:700;"><b>${q}:</b><br><img src="${a}" style="max-width:180px; border-radius:8px; margin-top:6px; border:2px solid #e2e8f0; box-shadow:var(--shadow-sm);"></li>`; } else { detailsHtml += `<li style="font-size:0.95rem; margin-bottom:8px; border-bottom:1px dashed #edf2f7; padding-bottom:8px;"><b>${q}:</b> <span style="color:var(--tbc-petrol-dark); font-weight:700;">${a || '-'}</span></li>`; } } }
         newHtml += `<div class="card"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;"><div><h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:4px;">🏫 ${r.school}</h4><span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">المشرف: <span style="color:var(--tbc-petrol);">${r.collectedBy}</span> | المكتب: ${r.branch || 'الشرقية'} | الوقت: ${r.date}</span></div><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">${statusBadge}${editButtonHtml}${pdfButton}</div></div><div style="font-size:1rem; color:var(--tbc-gold-hover); font-weight:900; margin-bottom:12px;">📋 ${r.surveyTitle}</div>${rejectionBox}<ul style="list-style:none; padding:0; background:#f8fafc; border-radius:8px; padding:16px; border:1px solid #e2e8f0;">${detailsHtml}</ul>${approvalActionButtons}</div>`;
       });
-      
       if(container.innerHTML !== newHtml) container.innerHTML = newHtml;
     }
 
-    function triggerEditReport(reportId) {
-      const rep = responses.find(r => r.id === reportId);
-      if (!rep) return;
-      if (currentUser.role === "ROLE_INSPECTOR") {
-        const reportAgeHours = (Date.now() - rep.id) / (1000 * 60 * 60);
-        if (reportAgeHours > 48 && !rep.adminPermissionGranted) { return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن من الإدارة لإعادة الفتح."); }
-      }
-      openFillSurvey(null, rep);
-    }
-
+    function triggerEditReport(reportId) { const rep = responses.find(r => r.id === reportId); if (!rep) return; if (currentUser.role === "ROLE_INSPECTOR") { const reportAgeHours = (Date.now() - rep.id) / (1000 * 60 * 60); if (reportAgeHours > 48 && !rep.adminPermissionGranted) { return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن من الإدارة لإعادة الفتح."); } } openFillSurvey(null, rep); }
     function requestAdminEditPermission(reportId) { alert("✓ تم إرسال إشعار وطلب فتح صلاحية التعديل لهذا التقرير إلى مدير الإشراف وإدارة التخطيط بنجاح."); }
+    function grantEditPermission(index) { responses[index].adminPermissionGranted = true; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses)); pushToCloud(); alert("✓ تم منح المشرف الميداني إذن تعديل إضافي لهذا التقرير ومفتوح الصلاحية الآن!"); renderRecords(); }
+    function setReportStatus(index, status, reason = "") { responses[index].status = status; responses[index].rejectionReason = reason; responses[index].approvedBy = currentUser.fullName; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses)); pushToCloud(); alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وحفظ الملاحظة التوجيهية للمشرف لتعديله."); updateKPIs(); renderRecords(); }
+    function promptRejectReport(index) { const reason = prompt("إجراء تنظيمي: يرجى كتابة سبب التعديل أو الرفض ليظهر بشكل واضح في شاشة المشرف:"); if (reason !== null && reason.trim() !== "") { setReportStatus(index, 'rejected', reason.trim()); } }
 
-    function grantEditPermission(index) {
-      responses[index].adminPermissionGranted = true;
-      localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
-      pushToCloud();
-      alert("✓ تم منح المشرف الميداني إذن تعديل إضافي لهذا التقرير ومفتوح الصلاحية الآن!");
-      renderRecords();
-    }
-
-    function setReportStatus(index, status, reason = "") {
-      responses[index].status = status;
-      responses[index].rejectionReason = reason;
-      responses[index].approvedBy = currentUser.fullName;
-      localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
-      pushToCloud();
-      alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح!" : "تم رفض التقرير وحفظ الملاحظة التوجيهية للمشرف لتعديله.");
-      updateKPIs();
-      renderRecords();
-    }
-
-    function promptRejectReport(index) {
-      const reason = prompt("إجراء تنظيمي: يرجى كتابة سبب التعديل أو الرفض ليظهر بشكل واضح في شاشة المشرف:");
-      if (reason !== null && reason.trim() !== "") { setReportStatus(index, 'rejected', reason.trim()); }
-    }
-
-    // ================= Print PDF Logic =================
     function printSinglePDF(idx) {
-      const r = responses[idx];
-      if (!r) return;
-      const w = window.open('', '_blank');
-      let rows = '', imgs = '';
-
-      for (const [q, a] of Object.entries(r.answers)) {
-        if (a && String(a).startsWith('data:image')) {
-          imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#fafafa; break-inside:avoid;"><img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div></div>`;
-        } else {
-          rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`;
-        }
-      }
-
-      w.document.write(`
-        <html dir="rtl">
-        <head>
-          <title>تقرير حصر - ${r.school}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-          <style>
-            * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
-            body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.6; }
-            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 20px; }
-            .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; }
-            @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } }
-          </style>
-        </head>
-        <body>
-          <div class="no-print" style="margin-bottom:15px; text-align:left;">
-            <button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير أو حفظ كملف PDF</button>
-          </div>
-          <div class="header">
-            <div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="badge-tbc">TBC</span>
-                <span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span>
-              </div>
-              <div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">بوابة الحصر الشامل للمكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div>
-            </div>
-            <div style="text-align:left;">
-              <div style="font-weight:900; font-size:15px; color:#276270;">${r.surveyTitle}</div>
-              <div style="font-size:12px; font-weight:700; color:#5e7782;">وقت الاعتماد المبدئي: ${r.date}</div>
-            </div>
-          </div>
-          <div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:8px; padding:14px 18px; margin-bottom:16px;">
-            <div style="font-size:15px; font-weight:900; margin-bottom:6px;">🏫 المنشأة: ${r.school}</div>
-            <div style="font-size:13px;"><b>المشرف الميداني:</b> ${r.collectedBy} &nbsp;|&nbsp; <b>المكتب:</b> ${r.branch || 'الشرقية'} &nbsp;|&nbsp; <b>📍 الإحداثيات (GPS):</b> ${r.gps || 'غير مسجل'}</div>
-          </div>
-          <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">${rows}</table>
-          ${imgs ? `<div style="font-weight:900; color:#276270; margin-bottom:10px; font-size:14px;">التوثيق المصور الميداني:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px;">${imgs}</div>` : ''}
-          <div style="margin-top:40px; border-top:2px solid #cbd5e1; padding-top:20px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;">
-            <div><b>اسم المُعِد:</b> ${r.collectedBy}<br><span style="font-size:11px; color:#64748b;">(مشرف التوثيق الميداني)</span></div>
-            <div style="border:2px dashed #eebb43; padding:10px 20px; text-align:center; color:#276270; font-weight:bold; border-radius:8px; font-size:12px; background:#fef8eb;">
-              TBC - الختم الرقمي لإدارة التخطيط<br><span style="color:${r.status==='approved'?'#10b981':'#f59e0b'}; font-size:14px;">${r.status==='approved'?'معتمد رسمياً':'تحت المراجعة'}</span>
-            </div>
-            <div style="text-align:left;"><b>الدعم الفني:</b><br>ERPMO@tbc.sa</div>
-          </div>
-        </body></html>
-      `);
-      w.document.close();
+      const r = responses[idx]; if (!r) return; const w = window.open('', '_blank'); let rows = '', imgs = '';
+      for (const [q, a] of Object.entries(r.answers)) { if (a && String(a).startsWith('data:image')) { imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#fafafa; break-inside:avoid;"><img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div></div>`; } else { rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`; } }
+      w.document.write(`<html dir="rtl"><head><title>تقرير حصر - ${r.school}</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet"><style>* { font-family: 'Tajawal', sans-serif; box-sizing: border-box; } body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.6; } .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 20px; } .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; } @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } }</style></head><body><div class="no-print" style="margin-bottom:15px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 22px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير أو حفظ كملف PDF</button></div><div class="header"><div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">بوابة الحصر الشامل للمكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div></div><div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">${r.surveyTitle}</div><div style="font-size:12px; font-weight:700; color:#5e7782;">وقت الاعتماد المبدئي: ${r.date}</div></div></div><div style="background:#edf6f8; border:1px solid #dbe7ec; border-radius:8px; padding:14px 18px; margin-bottom:16px;"><div style="font-size:15px; font-weight:900; margin-bottom:6px;">🏫 المنشأة: ${r.school}</div><div style="font-size:13px;"><b>المشرف الميداني:</b> ${r.collectedBy} &nbsp;|&nbsp; <b>المكتب:</b> ${r.branch || 'الشرقية'} &nbsp;|&nbsp; <b>📍 الإحداثيات (GPS):</b> ${r.gps || 'غير مسجل'}</div></div><table style="width:100%; border-collapse:collapse; margin-bottom:18px;">${rows}</table>${imgs ? `<div style="font-weight:900; color:#276270; margin-bottom:10px; font-size:14px;">التوثيق المصور الميداني:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px;">${imgs}</div>` : ''}<div style="margin-top:40px; border-top:2px solid #cbd5e1; padding-top:20px; display:flex; justify-content:space-between; align-items:center; break-inside:avoid;"><div><b>اسم المُعِد:</b> ${r.collectedBy}<br><span style="font-size:11px; color:#64748b;">(مشرف التوثيق الميداني)</span></div><div style="border:2px dashed #eebb43; padding:10px 20px; text-align:center; color:#276270; font-weight:bold; border-radius:8px; font-size:12px; background:#fef8eb;">TBC - الختم الرقمي لإدارة التخطيط<br><span style="color:${r.status==='approved'?'#10b981':'#f59e0b'}; font-size:14px;">${r.status==='approved'?'معتمد رسمياً':'تحت المراجعة'}</span></div><div style="text-align:left;"><b>الدعم الفني:</b><br>ERPMO@tbc.sa</div></div></body></html>`); w.document.close();
     }
 
-    function printConsolidatedSchoolPDF() {
-      const selectedSchool = document.getElementById('schoolSelectFilter').value;
-      if (!selectedSchool) return alert("يرجى تحديد واختيار مدرسة من القائمة أولاً لتوليد الملف.");
+    // ================= Users & Bulk Import Management =================
+    function importSchoolsFromExcel() {
+      const data = document.getElementById('bulkExcelData').value.trim();
+      if(!data) return alert('خطأ إدخال: الرجاء لصق البيانات من الإكسيل في المربع أولاً.');
 
-      const scoped = getScopedResponses();
-      const schoolSurveys = scoped.filter(r => r.school === selectedSchool);
-      if (schoolSurveys.length === 0) return alert("لا توجد سجلات محفوظة لهذه المدرسة.");
-
-      const w = window.open('', '_blank');
-      const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل (لا يوجد إحداثيات)';
-      const branchName = schoolSurveys[0]?.branch || 'المنطقة الشرقية';
-
-      let sectionsHtml = '';
-      schoolSurveys.forEach((entry, sIdx) => {
-        let rows = '', imgs = '';
-
-        for (const [q, a] of Object.entries(entry.answers)) {
-          if (a && String(a).startsWith('data:image')) {
-            imgs += `
-              <div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;">
-                <img src="${a}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;">
-                <div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${q}</div>
-              </div>`;
-          } else {
-            rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${q}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${a || '-'}</td></tr>`;
+      const rows = data.split('\n'); let added = 0;
+      rows.forEach(row => {
+        const cols = row.split('\t');
+        if(cols.length >= 3) {
+          const name = cols[0].trim(); const branch = cols[1].trim(); const inspector = cols[2].trim();
+          if(name && inspector) {
+            const idx = schoolsList.findIndex(s => s.name === name);
+            if(idx > -1) { schoolsList[idx] = {name, branch, inspector}; } else { schoolsList.push({name, branch, inspector}); }
+            added++;
           }
         }
-
-        sectionsHtml += `
-          <div style="margin-top:24px; border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; background:#fff; break-inside:avoid; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eebb43; padding-bottom:8px; margin-bottom:12px;">
-              <h4 style="margin:0; font-size:15px; color:#276270; font-weight:900;">الزيارة #${sIdx + 1}: ${entry.surveyTitle} (${entry.status === 'approved' ? 'معتمد' : 'قيد الاعتماد'})</h4>
-              <span style="font-size:12px; font-weight:700; color:#5e7782;">التاريخ: ${entry.date} | بواسطة: ${entry.collectedBy}</span>
-            </div>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:13px;"><tbody>${rows}</tbody></table>
-            ${imgs ? `<div style="font-weight:900; color:#276270; font-size:13px; margin-bottom:8px;">التوثيق المصور:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">${imgs}</div>` : ''}
-          </div>
-        `;
       });
-
-      w.document.write(`
-        <html dir="rtl">
-        <head>
-          <title>الملف الفني الشامل - ${selectedSchool}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-          <style>
-            * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
-            body { margin: 0; padding: 25px; color: #1f333a; background: #f4f7f9; font-size: 13px; line-height: 1.6; }
-            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 16px; }
-            .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; }
-            @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } body { background: #fff; } }
-          </style>
-        </head>
-        <body>
-          <div class="no-print" style="margin-bottom:20px; text-align:left;">
-            <button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);">🖨️ طباعة الملف الموحد / حفظ PDF</button>
-          </div>
-          <div class="header">
-            <div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="badge-tbc">TBC</span>
-                <span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span>
-              </div>
-              <div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">بوابة الحصر الشامل للمكتب الإقليمي بالشرقية • إدارة التخطيط والتحكم</div>
-            </div>
-            <div style="text-align:left;">
-              <div style="font-weight:900; font-size:15px; color:#276270;">الملف الرقابي والتاريخي الموحد للمدرسة</div>
-              <div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج للتقرير: ${new Date().toLocaleDateString('ar-SA')}</div>
-            </div>
-          </div>
-          <div style="background:#ffffff; border:1px solid #d0dfe5; border-radius:10px; padding:16px 20px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-            <div style="font-size:16px; font-weight:900; color:#276270; margin-bottom:6px;">🏫 المنشأة التعليمية: ${selectedSchool}</div>
-            <div style="font-size:13px; font-weight:700; color:#536e7a;">المكتب التابع له: ${branchName} &nbsp;|&nbsp; إجمالي الزيارات الرقابية: ${schoolSurveys.length} زيارات &nbsp;|&nbsp; 📍 البصمة المكانية (GPS): ${schoolGps}</div>
-          </div>
-          ${sectionsHtml}
-        </body></html>
-      `);
-      w.document.close();
+      localStorage.setItem(MASTER_SCHOOLS_KEY, JSON.stringify(schoolsList));
+      pushToCloud();
+      document.getElementById('bulkExcelData').value = '';
+      alert(`✓ العملية ناجحة: تم استيراد وربط [ ${added} ] مدرسة بنجاح!`);
     }
 
-    // ================= Users Management =================
     function renderUsersManagement() {
-      const tbody = document.querySelector('#usersListTable tbody');
-      if (!tbody) return;
-      
+      const tbody = document.querySelector('#usersListTable tbody'); if (!tbody) return;
       try { usersList = JSON.parse(localStorage.getItem(MASTER_USERS_KEY)) || usersList; } catch(e){}
-      tbody.innerHTML = '';
-      document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم نشط ومسجل`;
-
+      tbody.innerHTML = ''; document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم نشط ومسجل`;
       usersList.forEach((u, idx) => {
         const roleLabel = ROLE_LABELS[u.role] || u.role;
-        const statusBadge = u.active !== false 
-          ? '<span class="badge-status approved" style="padding:4px 10px; font-size:0.8rem;">نشط ومفعل</span>' 
-          : '<span class="badge-status rejected" style="padding:4px 10px; font-size:0.8rem;">معطل وموقوف</span>';
-
-        tbody.innerHTML += `
-          <tr>
-            <td style="font-weight:800; font-size:1rem; color:var(--tbc-petrol-dark);">${u.fullName}</td>
-            <td><code style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.9rem; font-weight:bold;">${u.username}</code></td>
-            <td><a href="mailto:${u.email || ''}" style="color:var(--tbc-petrol); text-decoration:none; font-weight:700;">${u.email || 'غير متوفر'}</a></td>
-            <td style="color:var(--tbc-gold-hover); font-weight:800;">${roleLabel}</td>
-            <td style="font-weight:600;">${u.branch || 'المنطقة (كامل)'}</td>
-            <td>${statusBadge}</td>
-            <td>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem;" onclick="editUserPrompt(${idx})">⚙️ تعديل كامل</button>
-                <button class="btn btn-gold" style="padding:6px 10px; font-size:0.8rem;" onclick="adminResetPasswordPrompt(${idx})">🔑 تغيير السر</button>
-                <button class="btn ${u.active !== false ? 'btn-reject' : 'btn-approve'}" style="padding:6px 10px; font-size:0.8rem;" onclick="toggleUserStatus(${idx})">
-                  ${u.active !== false ? 'إيقاف الحساب' : 'إعادة التفعيل'}
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
+        const statusBadge = u.active !== false ? '<span class="badge-status approved" style="padding:4px 10px; font-size:0.8rem;">نشط ومفعل</span>' : '<span class="badge-status rejected" style="padding:4px 10px; font-size:0.8rem;">معطل وموقوف</span>';
+        tbody.innerHTML += `<tr><td style="font-weight:800; font-size:1rem; color:var(--tbc-petrol-dark);">${u.fullName}</td><td><code style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:0.9rem; font-weight:bold;">${u.username}</code></td><td><a href="mailto:${u.email || ''}" style="color:var(--tbc-petrol); text-decoration:none; font-weight:700;">${u.email || 'غير متوفر'}</a></td><td style="color:var(--tbc-gold-hover); font-weight:800;">${roleLabel}</td><td style="font-weight:600;">${u.branch || 'المنطقة (كامل)'}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem;" onclick="editUserPrompt(${idx})">⚙️ تعديل كامل</button><button class="btn btn-gold" style="padding:6px 10px; font-size:0.8rem;" onclick="adminResetPasswordPrompt(${idx})">🔑 تغيير السر</button><button class="btn ${u.active !== false ? 'btn-reject' : 'btn-approve'}" style="padding:6px 10px; font-size:0.8rem;" onclick="toggleUserStatus(${idx})">${u.active !== false ? 'إيقاف الحساب' : 'إعادة التفعيل'}</button></div></td></tr>`;
       });
     }
 
     function saveUserRecord() {
-      const fullName = document.getElementById('usrFullName').value.trim();
-      const username = document.getElementById('usrUsername').value.trim();
-      const email = document.getElementById('usrEmail').value.trim();
-      const password = document.getElementById('usrPassword').value.trim();
-      const role = document.getElementById('usrRole').value;
-      const branch = document.getElementById('usrBranch').value;
-
-      if (!fullName || !username || !password || !email) {
-        return alert("خطأ إدخال: يرجى التأكد من تعبئة الاسم الكامل، اسم الدخول، الإيميل الرسمي، وكلمة المرور.");
-      }
-
-      const permissions = {
-        allowEdit: document.getElementById('permAllowEdit').checked,
-        requireGps: document.getElementById('permRequireGps').checked,
-        requirePhoto: document.getElementById('permRequirePhoto').checked,
-        allowPdf: document.getElementById('permAllowPdf').checked
-      };
-
+      const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
+      if (!fullName || !username || !password || !email) { return alert("خطأ إدخال: يرجى التأكد من تعبئة الاسم الكامل، اسم الدخول، الإيميل الرسمي، وكلمة المرور."); }
+      const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
       try { usersList = JSON.parse(localStorage.getItem(MASTER_USERS_KEY)) || usersList; } catch(e){}
-
-      if (editingUserIndex >= 0) {
-        usersList[editingUserIndex].fullName = fullName;
-        usersList[editingUserIndex].username = username;
-        usersList[editingUserIndex].email = email;
-        usersList[editingUserIndex].password = password;
-        usersList[editingUserIndex].role = role;
-        usersList[editingUserIndex].branch = branch;
-        usersList[editingUserIndex].permissions = permissions;
-        alert("✓ تمت العملية بنجاح: تم تحديث وتعديل بيانات المستخدم وربط الإيميل الجديد بالمحفوظات.");
-      } else {
-        if (usersList.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-          return alert("اسم الدخول موجود بالفعل! يرجى اختيار رمز وظيفي فريد.");
-        }
-        usersList.push({ fullName, username, email, password, role, branch, active: true, permissions });
-        alert("✓ تمت العملية بنجاح: تم إضافة المستخدم وربط البريد الإلكتروني بنظام الإشعارات الآلي!");
-      }
-
-      localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
-      pushToCloud();
-      resetUserForm();
-      renderUsersManagement();
+      if (editingUserIndex >= 0) { usersList[editingUserIndex].fullName = fullName; usersList[editingUserIndex].username = username; usersList[editingUserIndex].email = email; usersList[editingUserIndex].password = password; usersList[editingUserIndex].role = role; usersList[editingUserIndex].branch = branch; usersList[editingUserIndex].permissions = permissions; alert("✓ تمت العملية بنجاح: تم تحديث وتعديل بيانات المستخدم وربط الإيميل الجديد بالمحفوظات."); } 
+      else { if (usersList.some(u => u.username.toLowerCase() === username.toLowerCase())) { return alert("اسم الدخول موجود بالفعل! يرجى اختيار رمز وظيفي فريد."); } usersList.push({ fullName, username, email, password, role, branch, active: true, permissions }); alert("✓ تمت العملية بنجاح: تم إضافة المستخدم وربط البريد الإلكتروني بنظام الإشعارات الآلي!"); }
+      localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); resetUserForm(); renderUsersManagement();
     }
 
     function editUserPrompt(idx) {
-      editingUserIndex = idx;
-      const u = usersList[idx];
-      document.getElementById('usrFullName').value = u.fullName;
-      document.getElementById('usrUsername').value = u.username;
-      document.getElementById('usrEmail').value = u.email || '';
-      document.getElementById('usrPassword').value = u.password;
-      document.getElementById('usrRole').value = u.role;
-      document.getElementById('usrBranch').value = u.branch || 'الكل';
-
+      editingUserIndex = idx; const u = usersList[idx];
+      document.getElementById('usrFullName').value = u.fullName; document.getElementById('usrUsername').value = u.username; document.getElementById('usrEmail').value = u.email || ''; document.getElementById('usrPassword').value = u.password; document.getElementById('usrRole').value = u.role; document.getElementById('usrBranch').value = u.branch || 'الكل';
       const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
-      document.getElementById('permAllowEdit').checked = p.allowEdit !== false;
-      document.getElementById('permRequireGps').checked = p.requireGps !== false;
-      document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false;
-      document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
-
-      document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل بيانات الحساب: ${u.fullName}`;
-      document.getElementById('cancelUserEditBtn').style.display = 'inline-flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('permAllowEdit').checked = p.allowEdit !== false; document.getElementById('permRequireGps').checked = p.requireGps !== false; document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false; document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
+      document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل بيانات الحساب: ${u.fullName}`; document.getElementById('cancelUserEditBtn').style.display = 'inline-flex'; window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function resetUserForm() {
-      editingUserIndex = -1;
-      document.getElementById('usrFullName').value = '';
-      document.getElementById('usrUsername').value = '';
-      document.getElementById('usrEmail').value = '';
-      document.getElementById('usrPassword').value = '';
-      document.getElementById('usrRole').value = 'ROLE_INSPECTOR';
-      document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
-      document.getElementById('permAllowEdit').checked = true;
-      document.getElementById('permRequireGps').checked = true;
-      document.getElementById('permRequirePhoto').checked = true;
-      document.getElementById('permAllowPdf').checked = true;
-      document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات';
-      document.getElementById('cancelUserEditBtn').style.display = 'none';
-    }
+    function resetUserForm() { editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrEmail').value = ''; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات'; document.getElementById('cancelUserEditBtn').style.display = 'none'; }
+    function adminResetPasswordPrompt(idx) { const u = usersList[idx]; const newPass = prompt(`إجراء أمني: تعيين كلمة مرور جديدة وقسرية للمستخدم (${u.fullName}):`, "123"); if (newPass !== null && newPass.trim() !== "") { usersList[idx].password = newPass.trim(); localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); alert(`✓ تم تعيين وتفعيل كلمة المرور الجديدة بنجاح`); renderUsersManagement(); } }
+    function toggleUserStatus(idx) { usersList[idx].active = !(usersList[idx].active !== false); localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); renderUsersManagement(); }
 
-    function adminResetPasswordPrompt(idx) {
-      const u = usersList[idx];
-      const newPass = prompt(`إجراء أمني: تعيين كلمة مرور جديدة وقسرية للمستخدم (${u.fullName}):`, "123");
-      if (newPass !== null && newPass.trim() !== "") {
-        usersList[idx].password = newPass.trim();
-        localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
-        pushToCloud();
-        alert(`✓ تم تعيين وتفعيل كلمة المرور الجديدة: (${newPass.trim()}) بنجاح`);
-        renderUsersManagement();
-      }
-    }
-
-    function toggleUserStatus(idx) {
-      usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
-      pushToCloud();
-      renderUsersManagement();
-    }
-
-    // Execute application sequence safely
     initApp();
-
   </script>
 </body>
 </html>
