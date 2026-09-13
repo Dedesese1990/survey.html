@@ -596,7 +596,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 0.15s ease-out;
     }
     .chat-header {
       background: var(--tbc-petrol);
@@ -794,6 +794,7 @@
 
   <!-- التطبيق الرئيسي -->
   <div id="appView" class="hidden">
+    <!-- شريط التبويبات العلوي المتصل بدالة showTab -->
     <div class="tabs-bar">
       <div class="container-fluid">
         <div class="tabs-inner">
@@ -817,7 +818,7 @@
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
               <select id="analyticsSurveyFilter" style="width:auto; font-size:0.88rem; padding:8px 14px;" onchange="refreshAnalyticsDashboard()">
-                <option value="ALL">-- كل عمليات الحصر المنشورة --</option>
+                <option value="ALL">-- كل عمليات الحصر المنشورة (إجمالي عام) --</option>
               </select>
               <button class="btn btn-outline" style="font-size:0.82rem; padding:8px 14px;" onclick="refreshAnalyticsDashboard()">تحديث البيانات ↺</button>
             </div>
@@ -1181,7 +1182,7 @@
       ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v24')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v25')) || [
       {
         username: "admin",
         password: "123",
@@ -1254,7 +1255,7 @@
       }
     ];
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v24')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v25')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -1286,7 +1287,7 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v24')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v25')) || [];
     let chatMessages = JSON.parse(localStorage.getItem('tbc_chat_messages_v2')) || [
       {
         sender: "إدارة التخطيط والتحكم",
@@ -1328,7 +1329,7 @@
       if (tab === 'analytics') refreshAnalyticsDashboard();
       if (tab === 'surveys') renderSurveys();
       if (tab === 'records') {
-        updateKPIs(); // عرض دائم لإجمالي بطاقات المؤشرات الملونة
+        updateKPIs();
         if (currentUser && currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
         renderRecords();
       }
@@ -1443,7 +1444,7 @@
       }
 
       usersList[foundIdx].password = np;
-      localStorage.setItem('tbc_users_v24', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
       alert("✓ تم تعيين كلمة المرور الجديدة بنجاح! يمكنك الآن تسجيل الدخول مباشرة.");
       closeForgotPasswordModal();
     }
@@ -1501,7 +1502,7 @@
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
       if (!select) return;
-      select.innerHTML = '<option value="ALL">-- كل عمليات الحصر المنشورة --</option>';
+      select.innerHTML = '<option value="ALL">-- كل عمليات الحصر المنشورة (إجمالي عام) --</option>';
       surveys.forEach(s => {
         select.innerHTML += `<option value="${s.title}">${s.title}</option>`;
       });
@@ -1745,6 +1746,7 @@
 
     function openNewSurveyModal() {
       editingSurveyId = null;
+      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
@@ -1761,6 +1763,7 @@
       if (!s) return;
       editingSurveyId = s.id;
 
+      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
@@ -1786,7 +1789,7 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v24', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v25', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
@@ -1917,12 +1920,11 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      localStorage.setItem('tbc_surveys_v24', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v25', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
-      updateNotifications();
-      renderSurveys();
+      showTab('surveys'); // الانتقال التلقائي لعرض قائمة الحصورات المنشورة
     }
 
     // ================= تعبئة الحصر الميداني =================
@@ -2103,7 +2105,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v24', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -2126,7 +2128,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v24', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -2398,7 +2400,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v24', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -2407,7 +2409,7 @@
       responses[index].status = status;
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName;
-      localStorage.setItem('tbc_responses_v24', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v25', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
       updateNotifications();
@@ -2633,7 +2635,7 @@
         alert("✓ تم إضافة المستخدم وربط البريد الإلكتروني بالإشعارات!");
       }
 
-      localStorage.setItem('tbc_users_v24', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -2680,7 +2682,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v24', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -2688,7 +2690,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v24', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -2729,7 +2731,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v24', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v25', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
