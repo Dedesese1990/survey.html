@@ -321,6 +321,32 @@
             </div>
           </div>
 
+          <!-- إحصائيات المدارس المعتمدة بالمنطقة (جديد) -->
+          <div class="card" style="margin-bottom:24px; border-top: 5px solid var(--tbc-gold);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; font-weight:900;">🏫 إحصائيات المدارس المعتمدة بالمنطقة</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">توزيع المدارس المحملة على النظام حسب المكاتب الفرعية</p>
+              </div>
+              <span class="badge-status pending" id="totalSchoolsBadge">0 مدرسة إجمالاً</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+              <div style="background:var(--bg-canvas); padding:16px; border-radius:8px; border:1px solid var(--border-subtle); text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--tbc-petrol-dark);" id="statTotalSchools">0</div>
+                <div style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">إجمالي المدارس بالنظام</div>
+              </div>
+              <div style="background:var(--bg-canvas); padding:16px; border-radius:8px; border:1px solid var(--border-subtle); text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--status-approved);" id="statEastSchools">0</div>
+                <div style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">المكتب الفرعي بالشرقية</div>
+              </div>
+              <div style="background:var(--bg-canvas); padding:16px; border-radius:8px; border:1px solid var(--border-subtle); text-align:center;">
+                <div style="font-size:2rem; font-weight:900; color:var(--status-pending);" id="statAhsaSchools">0</div>
+                <div style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">المكتب الفرعي بالأحساء</div>
+              </div>
+            </div>
+          </div>
+
           <div class="bi-charts-split">
             <div class="card" style="margin-bottom:0;"><canvas id="sCurveChart" style="height: 300px; width:100%;"></canvas></div>
             <div class="card" style="margin-bottom:0;">
@@ -430,13 +456,13 @@
           <!-- Bulk Import Schools Block -->
           <div class="bulk-import-box card" style="border-top: 5px solid var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">🏢 استيراد المدارس وربطها بالمشرفين (من الإكسيل)</h4>
-            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:16px;">انسخ الأعمدة الثلاثة من ملف الإكسيل بالترتيب الموضح والصقها في المربع أدناه (نسخ ولصق مباشر).</p>
+            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:16px;">افتح ملف الإكسيل المرفق، انسخ الأعمدة الثلاثة بالترتيب التالي والصقها هنا مباشرة (نسخ ولصق):</p>
             <div style="display:flex; gap:10px; margin-bottom:10px;">
               <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">1. اسم المدرسة</span>
-              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">2. المكتب الفرعي (بالشرقية/بالأحساء)</span>
-              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">3. الرمز الوظيفي للمشرف الميداني</span>
+              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">2. الإدارة المعنية</span>
+              <span class="badge-status pending" style="background:#fff; border:1px solid #cbd5e1; color:#475569;">3. المشرف لاستشاري</span>
             </div>
-            <textarea id="bulkExcelData" rows="6" placeholder="مدرسة طارق بن زياد    المكتب الفرعي بالشرقية    user1&#10;مدرسة الملك فهد    المكتب الفرعي بالأحساء    user2"></textarea>
+            <textarea id="bulkExcelData" rows="6" placeholder="مدرسة طارق بن زياد    المكتب الفرعي بالشرقية    نجوى&#10;مدرسة الملك فهد    المكتب الفرعي بالأحساء    فواز"></textarea>
             <button class="btn btn-gold" style="width:100%; margin-top:16px; padding:14px; font-size:1.05rem;" onclick="importSchoolsFromExcel()">استيراد البيانات وتحديث القواعد الميدانية ✓</button>
           </div>
 
@@ -695,6 +721,18 @@
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
+      
+      // Update School Stats
+      try { schoolsList = JSON.parse(localStorage.getItem(MASTER_SCHOOLS_KEY)) || schoolsList; } catch(e){}
+      const totalSch = schoolsList.length;
+      const eastSch = schoolsList.filter(s => s.branch && s.branch.includes('الشرقية')).length;
+      const ahsaSch = schoolsList.filter(s => s.branch && s.branch.includes('الأحساء')).length;
+      
+      const elTotalSch = document.getElementById('statTotalSchools'); if(elTotalSch && elTotalSch.innerText !== String(totalSch)) elTotalSch.innerText = totalSch;
+      const elEastSch = document.getElementById('statEastSchools'); if(elEastSch && elEastSch.innerText !== String(eastSch)) elEastSch.innerText = eastSch;
+      const elAhsaSch = document.getElementById('statAhsaSchools'); if(elAhsaSch && elAhsaSch.innerText !== String(ahsaSch)) elAhsaSch.innerText = ahsaSch;
+      const elTotalBadge = document.getElementById('totalSchoolsBadge'); if(elTotalBadge) elTotalBadge.innerText = `${totalSch} مدرسة إجمالاً`;
+
       let scoped = getScopedResponses();
       const approvedCount = scoped.filter(r => r.status === 'approved').length;
       const pendingCount = scoped.filter(r => r.status === 'pending').length;
@@ -753,11 +791,18 @@
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer'); if(!container) return; container.innerHTML = '';
       if (!surveys || surveys.length === 0) { container.innerHTML = `<div class="empty-state"><h4>لا توجد نماذج حصر نشطة حالياً</h4></div>`; return; }
+      const todayStr = new Date().toISOString().split('T')[0];
       surveys.forEach(s => {
         const div = document.createElement('div'); div.className = 'card';
+        let overdueBadge = '';
+        if (s.dueDate) {
+          if (s.dueDate < todayStr) { overdueBadge = `<span class="badge-status overdue">⚠️ متأخر (${s.dueDate})</span>`; }
+          else { overdueBadge = `<span class="badge-status pending">📅 موعد: ${s.dueDate}</span>`; }
+        }
         let adminActionButtons = '';
         if (currentUser && currentUser.role === 'ROLE_PLANNING') { adminActionButtons = `<div style="display:flex; gap:8px; margin-top:14px; border-top:1px dashed var(--border-subtle); padding-top:12px;"><button class="btn btn-outline" style="font-size:0.85rem; padding:6px 16px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button><button class="btn btn-reject" style="font-size:0.85rem; padding:6px 16px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button></div>`; }
-        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;"><div><div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><span>${s.title || 'استمارة حصر'}</span><span class="badge-status pending">📅 موعد: ${s.dueDate || 'غير محدد'}</span></div><div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${s.desc || ''}</div><div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${s.fields ? s.fields.length : 0} بنود فحص معتمدة</div></div><button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button></div>${adminActionButtons}`;
+        const safeFieldsCount = s.fields ? s.fields.length : 0; const safeTitle = s.title || 'استمارة حصر غير معنونة'; const safeDesc = s.desc || 'لا توجد تعليمات إضافية لهذا الحصر.';
+        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;"><div><div style="font-weight:900; font-size:1.2rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:12px; flex-wrap:wrap;"><span>${safeTitle}</span>${overdueBadge}</div><div style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-top:6px;">${safeDesc}</div><div style="font-size:0.88rem; color:var(--tbc-petrol); font-weight:800; margin-top:8px;">📊 ${safeFieldsCount} بنود فحص معتمدة</div></div><button class="btn btn-petrol" style="font-size:1.05rem; padding:12px 28px;" onclick="openFillSurvey('${s.id}')">بدء عملية الحصر الميداني</button></div>${adminActionButtons}`;
         container.appendChild(div);
       });
     }
@@ -775,8 +820,19 @@
       c.appendChild(d);
     }
 
-    function handleTypeChange(selectElem) { const area = selectElem.closest('.q-row').querySelector('.radio-builder-area'); if (selectElem.value === 'radio') { area.classList.remove('hidden'); const container = area.querySelector('.options-container'); if (container.children.length === 0) { container.innerHTML = `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div><div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`; } } else { area.classList.add('hidden'); } }
-    function addOptionToField(btn) { const container = btn.previousElementSibling; const count = container.querySelectorAll('.option-row').length + 1; const div = document.createElement('div'); div.className = 'option-row'; div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;'; div.innerHTML = `<span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>`; container.appendChild(div); }
+    function handleTypeChange(selectElem) {
+      const area = selectElem.closest('.q-row').querySelector('.radio-builder-area');
+      if (selectElem.value === 'radio') {
+        area.classList.remove('hidden'); const container = area.querySelector('.options-container');
+        if (container.children.length === 0) { container.innerHTML = `<div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="مطابق للمواصفات" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div><div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="غير مطابق" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button></div>`; }
+      } else { area.classList.add('hidden'); }
+    }
+
+    function addOptionToField(btn) {
+      const container = btn.previousElementSibling; const count = container.querySelectorAll('.option-row').length + 1; const div = document.createElement('div'); div.className = 'option-row'; div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;';
+      div.innerHTML = `<span style="color:var(--text-muted); font-size:1.2rem;">🔘</span><input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;"><button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(div);
+    }
 
     function saveLocalSurvey() {
       const title = document.getElementById('srvTitle').value.trim(); const dueDate = document.getElementById('srvDueDate').value; const desc = document.getElementById('srvDesc').value.trim();
@@ -815,7 +871,7 @@
       const schoolSelect = document.getElementById('fillSchool');
       schoolSelect.innerHTML = '<option value="">-- اختر المدرسة من القائمة المخصصة لك --</option>';
       let mySchools = schoolsList;
-      if(currentUser.role === 'ROLE_INSPECTOR') { mySchools = schoolsList.filter(s => s.inspector === currentUser.username || s.inspector === currentUser.email); }
+      if(currentUser.role === 'ROLE_INSPECTOR') { mySchools = schoolsList.filter(s => s.inspector === currentUser.username || s.inspector === currentUser.email || s.inspector === currentUser.fullName); }
       mySchools.forEach(sch => { const selected = (existingData && existingData.school === sch.name) ? 'selected' : ''; schoolSelect.innerHTML += `<option value="${sch.name}" ${selected}>${sch.name} (${sch.branch})</option>`; });
       if(existingData && existingData.school && !mySchools.some(s => s.name === existingData.school)) { schoolSelect.innerHTML += `<option value="${existingData.school}" selected>${existingData.school} (سجل سابق)</option>`; }
 
@@ -843,7 +899,7 @@
       }
     }
 
-    function backToSurveysList() { editingResponseId = null; showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records'); }
+    function backToSurveysList() { editingResponseId = null; document.getElementById('secFillSurvey').classList.add('hidden'); showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records'); }
 
     function captureGps() {
       const status = document.getElementById('gpsStatus'); const input = document.getElementById('fillGps');
@@ -857,8 +913,18 @@
     }
 
     function encodeImg(input) {
-      const file = input.files[0]; const preview = input.nextElementSibling; if (!file) return; const reader = new FileReader();
-      reader.onload = e => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height; if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; } cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h); input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65); preview.src = input.dataset.base64; preview.style.display = "block"; }; }; reader.readAsDataURL(file);
+      const file = input.files[0]; const preview = input.nextElementSibling;
+      if (!file) return; const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image(); img.src = e.target.result;
+        img.onload = () => {
+          const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height;
+          if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
+          cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+          input.dataset.base64 = cvs.toDataURL('image/jpeg', 0.65); preview.src = input.dataset.base64; preview.style.display = "block";
+        };
+      };
+      reader.readAsDataURL(file);
     }
 
     function submitLocalResponse() {
@@ -877,7 +943,10 @@
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
           const old = responses[idx]; const isPlanning = currentUser.role === "ROLE_PLANNING";
-          if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") { const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60); if (reportAgeHours > 48 && !old.adminPermissionGranted) { return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة."); } }
+          if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") {
+            const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60);
+            if (reportAgeHours > 48 && !old.adminPermissionGranted) { return alert("عذراً، تجاوز هذا التقرير مهلة الـ 48 ساعة."); }
+          }
           responses[idx] = { ...old, school, branch, gps, answers: dataObj, lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'), status: "pending", rejectionReason: "" }; lastSavedIndex = idx; localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
         }
       } else {
@@ -897,7 +966,7 @@
       const c = document.getElementById('kpiContainer'); if (!c) return; const scoped = getScopedResponses(); let filtered = scoped;
       if (selectedSurveyFilter !== "ALL") filtered = filtered.filter(r => r.surveyTitle === selectedSurveyFilter); if (selectedInspectorFilter !== "ALL") filtered = filtered.filter(r => r.collectedBy === selectedInspectorFilter);
       const total = filtered.length; const pending = filtered.filter(r => r.status === 'pending').length; const approved = filtered.filter(r => r.status === 'approved').length; const rejected = filtered.filter(r => r.status === 'rejected').length;
-      c.innerHTML = `<div class="kpi-box total ${selectedKpiStatusFilter === 'ALL' ? 'active-filter' : ''}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي"><div class="kpi-num">${total}</div><div class="kpi-title">📊 إجمالي التقارير המرفوعة</div></div><div class="kpi-box pending ${selectedKpiStatusFilter === 'pending' ? 'active-filter' : ''}" onclick="filterByKpi('pending')" title="انقر لعرض المعلقة فقط"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ بانتظار الاعتماد والمراجعة</div></div><div class="kpi-box approved ${selectedKpiStatusFilter === 'approved' ? 'active-filter' : ''}" onclick="filterByKpi('approved')" title="انقر لعرض المعتمدة فقط"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ تقارير معتمدة رسمياً</div></div><div class="kpi-box rejected ${selectedKpiStatusFilter === 'rejected' ? 'active-filter' : ''}" onclick="filterByKpi('rejected')" title="انقر لعرض المرفوضة فقط"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ تقارير مرفوضة (تحتاج تعديل)</div></div>`;
+      c.innerHTML = `<div class="kpi-box total ${selectedKpiStatusFilter === 'ALL' ? 'active-filter' : ''}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي"><div class="kpi-num">${total}</div><div class="kpi-title">📊 إجمالي التقارير المرفوعة</div></div><div class="kpi-box pending ${selectedKpiStatusFilter === 'pending' ? 'active-filter' : ''}" onclick="filterByKpi('pending')" title="انقر لعرض المعلقة فقط"><div class="kpi-num" style="color:var(--status-pending);">${pending}</div><div class="kpi-title">⏳ بانتظار الاعتماد والمراجعة</div></div><div class="kpi-box approved ${selectedKpiStatusFilter === 'approved' ? 'active-filter' : ''}" onclick="filterByKpi('approved')" title="انقر لعرض المعتمدة فقط"><div class="kpi-num" style="color:var(--status-approved);">${approved}</div><div class="kpi-title">✅ تقارير معتمدة رسمياً</div></div><div class="kpi-box rejected ${selectedKpiStatusFilter === 'rejected' ? 'active-filter' : ''}" onclick="filterByKpi('rejected')" title="انقر لعرض المرفوضة فقط"><div class="kpi-num" style="color:var(--status-rejected);">${rejected}</div><div class="kpi-title">❌ تقارير مرفوضة (تحتاج تعديل)</div></div>`;
     }
 
     function renderRecords() {
@@ -987,8 +1056,15 @@
       document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل بيانات الحساب: ${u.fullName}`; document.getElementById('cancelUserEditBtn').style.display = 'inline-flex'; window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function resetUserForm() { editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrEmail').value = ''; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات'; document.getElementById('cancelUserEditBtn').style.display = 'none'; }
-    function adminResetPasswordPrompt(idx) { const u = usersList[idx]; const newPass = prompt(`إجراء أمني: تعيين كلمة مرور جديدة وقسرية للمستخدم (${u.fullName}):`, "123"); if (newPass !== null && newPass.trim() !== "") { usersList[idx].password = newPass.trim(); localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); alert(`✓ تم تعيين وتفعيل كلمة المرور الجديدة بنجاح`); renderUsersManagement(); } }
+    function resetUserForm() {
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrEmail').value = ''; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات'; document.getElementById('cancelUserEditBtn').style.display = 'none';
+    }
+
+    function adminResetPasswordPrompt(idx) {
+      const u = usersList[idx]; const newPass = prompt(`إجراء أمني: تعيين كلمة مرور جديدة وقسرية للمستخدم (${u.fullName}):`, "123");
+      if (newPass !== null && newPass.trim() !== "") { usersList[idx].password = newPass.trim(); localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); alert(`✓ تم تعيين وتفعيل كلمة المرور الجديدة: (${newPass.trim()}) بنجاح`); renderUsersManagement(); }
+    }
+
     function toggleUserStatus(idx) { usersList[idx].active = !(usersList[idx].active !== false); localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList)); pushToCloud(); renderUsersManagement(); }
 
     initApp();
