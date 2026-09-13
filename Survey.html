@@ -16,11 +16,11 @@
       --tbc-gold-hover: #d8a531;
       --tbc-gold-light: #fef8eb;
       
-      --bg-canvas: #f5f8fa;
+      --bg-canvas: #f4f7f9;
       --surface-card: #ffffff;
-      --border-subtle: #dbe7ec;
+      --border-subtle: #d0dfe5;
       --text-main: #1f333a;
-      --text-muted: #5e7782;
+      --text-muted: #536e7a;
       
       --status-pending: #f59e0b;
       --status-pending-bg: #fffbeb;
@@ -29,24 +29,36 @@
       --status-rejected: #ef4444;
       --status-rejected-bg: #fef2f2;
       
-      --shadow-sm: 0 1px 3px rgba(39,98,112,0.06);
-      --shadow-md: 0 4px 14px rgba(39,98,112,0.09);
+      --shadow-sm: 0 2px 5px rgba(39,98,112,0.06);
+      --shadow-md: 0 4px 16px rgba(39,98,112,0.1);
       --radius-sm: 8px;
       --radius-md: 12px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     
-    /* حاوية العرض المتجاوبة */
+    html {
+      font-size: 16px; /* خط الأساس القياسي للكمبيوتر */
+    }
+    
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    /* حاوية العرض المريحة للابتوب */
     .container-fluid {
-      width: 100%;
-      max-width: 1400px;
+      width: 95%;
+      max-width: 1350px;
       margin: 0 auto;
-      padding: 0 20px;
     }
 
-    /* الترويسة الرئيسية المتوازنة */
+    /* الترويسة */
     header {
       background: #ffffff;
       border-bottom: 3px solid var(--tbc-petrol);
@@ -61,7 +73,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
+      padding: 12px 0;
       gap: 15px;
       flex-wrap: wrap;
     }
@@ -69,31 +81,30 @@
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 14px;
-      min-width: 0;
+      gap: 16px;
     }
 
     .tbc-logo-svg {
-      height: 44px;
+      height: 48px;
       width: auto;
-      max-width: 130px;
+      max-width: 140px;
       flex-shrink: 0;
       display: block;
     }
 
     .brand-text-box {
-      border-right: 2.5px solid var(--border-subtle);
+      border-right: 3px solid var(--tbc-petrol);
       padding-right: 14px;
       text-align: right;
     }
     .brand-title {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--tbc-petrol-dark);
-      line-height: 1.3;
+      line-height: 1.35;
     }
     .brand-subtitle {
-      font-size: 0.78rem;
+      font-size: 0.9rem;
       color: var(--tbc-petrol);
       font-weight: 700;
       margin-top: 3px;
@@ -102,8 +113,7 @@
     .header-user-section {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
+      gap: 12px;
       position: relative;
     }
 
@@ -111,8 +121,8 @@
       background: var(--tbc-petrol-light);
       border: 1px solid var(--border-subtle);
       border-radius: 30px;
-      padding: 6px 14px;
-      font-size: 0.82rem;
+      padding: 8px 16px;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--tbc-petrol-dark);
       display: flex;
@@ -124,14 +134,14 @@
       background: #ffffff;
       border: 1px solid var(--border-subtle);
       border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.78rem;
+      padding: 8px 14px;
+      font-size: 0.9rem;
       font-weight: 700;
       color: var(--tbc-petrol-dark);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       text-decoration: none;
       transition: all 0.2s;
     }
@@ -139,19 +149,19 @@
     .btn-logout { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
     .btn-logout:hover { background: #fecaca; }
 
-    /* جرس التنبيهات */
+    /* جرس الإشعارات */
     .notif-bell-btn {
       position: relative;
       background: var(--tbc-petrol-light);
       border: 1px solid var(--border-subtle);
-      width: 36px;
-      height: 36px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.25rem;
       user-select: none;
     }
     .notif-bell-badge {
@@ -160,19 +170,19 @@
       right: -3px;
       background: var(--status-rejected);
       color: #fff;
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       font-weight: 900;
-      padding: 2px 5px;
+      padding: 2px 6px;
       border-radius: 10px;
       line-height: 1;
-      border: 1.5px solid #fff;
+      border: 2px solid #fff;
     }
 
     .notif-dropdown {
       position: absolute;
-      top: 48px;
+      top: 52px;
       left: 0;
-      width: 320px;
+      width: 340px;
       background: #ffffff;
       border: 1.5px solid var(--border-subtle);
       border-radius: var(--radius-md);
@@ -183,52 +193,52 @@
     .notif-header {
       background: var(--tbc-petrol);
       color: #fff;
-      padding: 10px 14px;
-      font-size: 0.85rem;
+      padding: 12px 16px;
+      font-size: 0.95rem;
       font-weight: 800;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .notif-list { max-height: 280px; overflow-y: auto; padding: 6px; }
+    .notif-list { max-height: 300px; overflow-y: auto; padding: 8px; }
     .notif-item {
-      padding: 9px 12px;
+      padding: 10px 12px;
       border-bottom: 1px solid #f1f5f9;
-      font-size: 0.78rem;
+      font-size: 0.88rem;
       cursor: pointer;
       border-radius: 6px;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       transition: background 0.15s;
     }
     .notif-item:hover { background: #f8fafc; }
-    .notif-item.danger { background: var(--status-rejected-bg); border-right: 3px solid var(--status-rejected); color: #991b1b; }
-    .notif-item.warning { background: var(--status-pending-bg); border-right: 3px solid var(--status-pending); color: #92400e; }
-    .notif-item.success { background: var(--status-approved-bg); border-right: 3px solid var(--status-approved); color: #065f46; }
+    .notif-item.danger { background: var(--status-rejected-bg); border-right: 4px solid var(--status-rejected); color: #991b1b; }
+    .notif-item.warning { background: var(--status-pending-bg); border-right: 4px solid var(--status-pending); color: #92400e; }
+    .notif-item.success { background: var(--status-approved-bg); border-right: 4px solid var(--status-approved); color: #065f46; }
 
     /* شريط التبويبات */
     .tabs-bar {
       background: #ffffff;
       border-bottom: 1px solid var(--border-subtle);
-      padding: 10px 0;
+      padding: 12px 0;
     }
     .tabs-inner {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 10px 20px;
+      padding: 11px 24px;
       border-radius: var(--radius-sm);
       border: 1.5px solid transparent;
       background: #f8fafc;
       color: var(--text-muted);
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 1rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s;
     }
     .tab-btn.active {
@@ -241,33 +251,30 @@
     /* المحتوى الرئيسي */
     main {
       flex: 1;
-      padding: 22px 0;
+      padding: 26px 0;
     }
 
     .card {
       background: var(--surface-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 24px;
-      margin-bottom: 18px;
+      padding: 28px;
+      margin-bottom: 22px;
       box-shadow: var(--shadow-md);
     }
 
-    /* شبكة المؤشرات KPIs */
+    /* شبكة المؤشرات */
     .kpi-grid { 
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
-      gap: 14px; 
-      margin-bottom: 20px; 
-    }
-    @media (max-width: 800px) { 
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } 
+      gap: 16px; 
+      margin-bottom: 24px; 
     }
     
     .kpi-box {
       background: #fff;
       border-radius: var(--radius-sm);
-      padding: 16px 14px;
+      padding: 18px 14px;
       border: 1.5px solid var(--border-subtle);
       text-align: center;
       box-shadow: var(--shadow-sm);
@@ -275,26 +282,26 @@
       transition: all 0.2s ease;
       user-select: none;
     }
-    .kpi-box:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kpi-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
     .kpi-box:active { transform: scale(0.98); }
     
-    .kpi-box.active-filter { outline: 2.5px solid var(--tbc-petrol); }
-    .kpi-box.pending { border-top: 4px solid var(--status-pending); background: var(--status-pending-bg); }
-    .kpi-box.rejected { border-top: 4px solid var(--status-rejected); background: var(--status-rejected-bg); }
-    .kpi-box.approved { border-top: 4px solid var(--status-approved); background: var(--status-approved-bg); }
-    .kpi-box.total { border-top: 4px solid var(--tbc-petrol); }
+    .kpi-box.active-filter { outline: 3px solid var(--tbc-petrol); }
+    .kpi-box.pending { border-top: 5px solid var(--status-pending); background: var(--status-pending-bg); }
+    .kpi-box.rejected { border-top: 5px solid var(--status-rejected); background: var(--status-rejected-bg); }
+    .kpi-box.approved { border-top: 5px solid var(--status-approved); background: var(--status-approved-bg); }
+    .kpi-box.total { border-top: 5px solid var(--tbc-petrol); }
     
-    .kpi-num { font-size: 1.8rem; font-weight: 900; line-height: 1.2; }
-    .kpi-title { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+    .kpi-num { font-size: 2.2rem; font-weight: 900; line-height: 1.2; }
+    .kpi-title { font-size: 0.95rem; font-weight: 700; color: var(--text-muted); margin-top: 6px; }
 
-    .badge-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; }
+    .badge-status { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 0.88rem; font-weight: 800; }
     .badge-status.pending { background: var(--status-pending-bg); color: #b45309; border: 1px solid #fde68a; }
     .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
     .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
     .badge-status.overdue { background: #fef2f2; color: #dc2626; border: 1px solid #f87171; font-weight: 900; }
 
     .btn {
-      padding: 10px 18px;
+      padding: 11px 22px;
       border-radius: var(--radius-sm);
       font-weight: 700;
       cursor: pointer;
@@ -302,8 +309,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      font-size: 0.9rem;
+      gap: 8px;
+      font-size: 0.95rem;
       transition: all 0.2s ease;
     }
     .btn-petrol { background: var(--tbc-petrol); color: #fff; }
@@ -314,14 +321,14 @@
     .btn-approve { background: #10b981; color: #fff; }
     .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-    .form-group { margin-bottom: 14px; text-align: right; }
-    label { display: block; margin-bottom: 6px; font-size: 0.88rem; font-weight: 700; color: var(--tbc-petrol-dark); }
+    .form-group { margin-bottom: 18px; text-align: right; }
+    label { display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 700; color: var(--tbc-petrol-dark); }
     input, select, textarea {
       width: 100%;
-      padding: 10px 13px;
+      padding: 12px 14px;
       border-radius: 8px;
       border: 1.5px solid var(--border-subtle);
-      font-size: 0.92rem;
+      font-size: 1rem;
       outline: none;
       background: #ffffff;
       color: var(--text-main);
@@ -329,35 +336,33 @@
     input:focus, select:focus, textarea:focus { border-color: var(--tbc-petrol); }
 
     .hidden { display: none !important; }
-    .q-row { background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px dashed var(--border-subtle); margin-bottom: 12px; }
-    .img-preview-box { max-width: 160px; max-height: 160px; border-radius: var(--radius-sm); margin-top: 10px; object-fit: cover; display: none; border: 1px solid var(--border-subtle); }
+    .q-row { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px dashed var(--border-subtle); margin-bottom: 14px; }
+    .img-preview-box { max-width: 180px; max-height: 180px; border-radius: var(--radius-sm); margin-top: 10px; object-fit: cover; display: none; border: 1px solid var(--border-subtle); }
 
-    table.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 10px; }
-    table.data-table th, table.data-table td { padding: 11px 12px; border: 1px solid var(--border-subtle); text-align: right; }
+    table.data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 12px; }
+    table.data-table th, table.data-table td { padding: 12px 15px; border: 1px solid var(--border-subtle); text-align: right; }
     table.data-table th { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); font-weight: 800; }
 
     .filter-bar-card {
       background: #ffffff;
       border: 1.5px solid var(--tbc-petrol);
       border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 18px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
     }
-    .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: flex-end; }
-    @media (max-width: 700px) { .filter-grid { grid-template-columns: 1fr; } }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; align-items: flex-end; }
 
     .perm-checkbox-group {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
       background: #f8fafc;
-      padding: 12px;
+      padding: 16px;
       border-radius: 8px;
       border: 1px dashed var(--border-subtle);
     }
-    @media (max-width: 600px) { .perm-checkbox-group { grid-template-columns: 1fr; } }
-    .perm-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--tbc-petrol-dark); cursor: pointer; }
-    .perm-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--tbc-petrol); }
+    .perm-item { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; font-weight: 600; color: var(--tbc-petrol-dark); cursor: pointer; }
+    .perm-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tbc-petrol); }
 
     .modal-overlay {
       position: fixed;
@@ -367,22 +372,22 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      padding: 16px;
+      padding: 20px;
     }
     .modal-content {
       background: #ffffff;
       border-radius: var(--radius-md);
-      max-width: 460px;
+      max-width: 500px;
       width: 100%;
-      padding: 24px;
+      padding: 28px;
       box-shadow: var(--shadow-md);
-      border-top: 4px solid var(--tbc-gold);
+      border-top: 5px solid var(--tbc-gold);
     }
 
     .support-footer {
       text-align: center;
-      padding: 16px;
-      font-size: 0.85rem;
+      padding: 18px;
+      font-size: 0.9rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-subtle);
       margin-top: auto;
@@ -390,15 +395,18 @@
     }
     .support-link { color: var(--tbc-petrol); font-weight: 800; text-decoration: none; direction: ltr; display: inline-block; }
 
-    /* تعديل مخصص للجوال */
+    /* التجاوب للهواتف */
     @media (max-width: 768px) {
-      .header-content { flex-direction: column; align-items: stretch; gap: 8px; }
+      html { font-size: 14px; }
+      .header-content { flex-direction: column; align-items: stretch; gap: 10px; }
       .brand-section { justify-content: space-between; }
       .brand-text-box { border-right: none; padding-right: 0; }
-      .brand-title { font-size: 0.88rem; }
+      .brand-title { font-size: 0.95rem; }
       .header-user-section { justify-content: space-between; width: 100%; }
-      .container-fluid { padding: 0 12px; }
-      .card { padding: 16px 14px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .card { padding: 18px 14px; }
+      .filter-grid { grid-template-columns: 1fr; }
+      .perm-checkbox-group { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -424,7 +432,7 @@
           </div>
         </div>
 
-        <!-- قسم المستخدم والإجراءات السريعة -->
+        <!-- قسم المستخدم والإجراءات -->
         <div class="header-user-section" id="headerUserActions">
           <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="toggleNotifPanel(event)">
             <span>🔔</span>
@@ -451,11 +459,11 @@
   </header>
 
   <!-- نافذة تسجيل الدخول -->
-  <div id="loginView" style="max-width: 440px; margin: 40px auto; width: 92%;">
-    <div class="card" style="text-align: center; border-top: 4px solid var(--tbc-petrol);">
-      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.2rem;">تسجيل الدخول للمنظومة</h3>
-      <p style="color:var(--tbc-petrol); font-weight:800; font-size:0.88rem; margin-bottom:4px;">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية</p>
-      <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:18px;">شركة تطوير للمباني - إدارة التخطيط والتحكم</p>
+  <div id="loginView" style="max-width: 480px; margin: 50px auto; width: 92%;">
+    <div class="card" style="text-align: center; border-top: 5px solid var(--tbc-petrol);">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.35rem;">تسجيل الدخول للمنظومة</h3>
+      <p style="color:var(--tbc-petrol); font-weight:800; font-size:1rem; margin-bottom:4px;">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية</p>
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:22px;">شركة تطوير للمباني - إدارة التخطيط والتحكم</p>
       
       <div class="form-group">
         <label>اسم المستخدم / الرمز الوظيفي</label>
@@ -465,9 +473,9 @@
         <label>كلمة المرور</label>
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
-      <button class="btn btn-petrol" style="width: 100%; padding: 12px;" onclick="handleLogin()">دخول المنظومة 🔒</button>
+      <button class="btn btn-petrol" style="width: 100%; padding: 14px; font-size: 1.05rem;" onclick="handleLogin()">دخول المنظومة 🔒</button>
       
-      <div style="margin-top:16px; font-size:0.78rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:12px; border-radius:8px; line-height:1.6;">
+      <div style="margin-top:18px; font-size:0.85rem; color:var(--text-muted); text-align:right; background:#f8fafc; padding:14px; border-radius:8px; line-height:1.7;">
         💡 <b>الهيكل الوظيفي المعتمد (كلمة السر 123 أو 123456):</b><br>
         • <b>admin:</b> إدارة التخطيط والتحكم.<br>
         • <b>reg_east:</b> إدارة المنطقة الشرقية.<br>
@@ -476,7 +484,7 @@
         • <b>user1 / user2:</b> مشرف ميداني.
       </div>
 
-      <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-subtle); font-size:0.8rem; color:var(--text-muted);">
+      <div style="margin-top:16px; padding-top:14px; border-top:1px dashed var(--border-subtle); font-size:0.88rem; color:var(--text-muted);">
         للدعم الفني والاستفسارات: <a class="support-link" href="mailto:ERPMO@tbc.sa">ERPMO@tbc.sa</a>
       </div>
     </div>
@@ -498,13 +506,13 @@
       <div class="container-fluid">
         <div id="kpiContainer" class="kpi-grid"></div>
 
-        <!-- ================= 1. تبويب نماذج الحصر ================= -->
+        <!-- تبويب نماذج الحصر -->
         <section id="secSurveys">
-          <div id="adminPanel" class="card hidden" style="border-right: 4px solid var(--tbc-gold);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div id="adminPanel" class="card hidden" style="border-right: 5px solid var(--tbc-gold);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
               <div>
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">إدارة عمليات الحصر الميداني</h4>
-                <p style="font-size:0.82rem; color:var(--text-muted);">إصدار نماذج حصر جديدة مع تاريخ الاستحقاق وتعميم الإشعارات</p>
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.15rem;">إدارة عمليات الحصر الميداني</h4>
+                <p style="font-size:0.9rem; color:var(--text-muted);">إصدار نماذج حصر جديدة مع تاريخ الاستحقاق وتعميم الإشعارات</p>
               </div>
               <button class="btn btn-gold" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
             </div>
@@ -516,9 +524,9 @@
         <!-- إنشاء أو تعديل حصر -->
         <section id="secNewSurvey" class="hidden">
           <div class="card">
-            <h3 style="color:var(--tbc-petrol-dark); margin-bottom:14px;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
+            <h3 style="color:var(--tbc-petrol-dark); margin-bottom:16px;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
             
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:12px;">
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:14px;">
               <div class="form-group">
                 <label>مسمى عملية الحصر *</label>
                 <input type="text" id="srvTitle" placeholder="مثال: حصر منظومة السلامة والإنذار">
@@ -534,11 +542,11 @@
               <input type="text" id="srvDesc" placeholder="تعليمات الزيارة الميدانية">
             </div>
             
-            <label style="margin-top: 14px;">عناصر وبنود الفحص:</label>
+            <label style="margin-top: 16px;">عناصر وبنود الفحص:</label>
             <div id="questionsBuilder"></div>
-            <button class="btn btn-outline" style="width:100%; margin-bottom:16px;" onclick="addQuestionField()">+ إضافة بند فحص</button>
+            <button class="btn btn-outline" style="width:100%; margin-bottom:18px;" onclick="addQuestionField()">+ إضافة بند فحص</button>
             
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:12px;">
               <button class="btn btn-petrol" style="flex:1;" id="saveSurveyBtn" onclick="saveLocalSurvey()">حفظ ونشر النموذج مع إرسال الإشعارات ✓</button>
               <button class="btn btn-outline" onclick="closeNewSurveyModal()">إلغاء</button>
             </div>
@@ -548,15 +556,15 @@
         <!-- تعبئة الحصر الميداني -->
         <section id="secFillSurvey" class="hidden">
           <div class="card">
-            <button class="btn btn-outline" style="font-size:0.82rem; margin-bottom:14px; padding:6px 12px;" onclick="backToSurveysList()">← رجوع</button>
+            <button class="btn btn-outline" style="font-size:0.88rem; margin-bottom:16px; padding:6px 14px;" onclick="backToSurveysList()">← رجوع</button>
             
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <h3 id="fillTitle" style="color:var(--tbc-petrol-dark);"></h3>
               <span id="editModeIndicator" class="badge-status pending hidden">وضع تعديل التقرير</span>
             </div>
-            <p id="fillDesc" style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;"></p>
+            <p id="fillDesc" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;"></p>
 
-            <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:12px;">
+            <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:14px;">
               <div class="form-group">
                 <label>المكتب الفرعي التابع له المنشأة *</label>
                 <select id="fillBranch">
@@ -570,18 +578,18 @@
               </div>
             </div>
 
-            <div class="form-group" style="background:var(--tbc-petrol-light); border:1px dashed var(--tbc-petrol); padding:14px; border-radius:8px;">
+            <div class="form-group" style="background:var(--tbc-petrol-light); border:1px dashed var(--tbc-petrol); padding:16px; border-radius:8px;">
               <label style="color:var(--tbc-petrol-dark);">📍 التوثيق المكاني (GPS)</label>
-              <div style="display:flex; gap:8px; margin-top:6px;">
+              <div style="display:flex; gap:10px; margin-top:8px;">
                 <input type="text" id="fillGps" placeholder="الإحداثيات المكانية" readonly style="background:#fff; flex:1;">
-                <button type="button" class="btn btn-petrol" style="font-size:0.85rem;" onclick="captureGps()">التقاط GPS</button>
+                <button type="button" class="btn btn-petrol" style="font-size:0.9rem;" onclick="captureGps()">التقاط GPS</button>
               </div>
-              <small id="gpsStatus" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; display:block;">اضغط لتسجيل الإحداثيات.</small>
+              <small id="gpsStatus" style="font-size:0.82rem; color:var(--text-muted); margin-top:6px; display:block;">اضغط لتسجيل الإحداثيات.</small>
             </div>
 
             <div id="dynamicFields"></div>
 
-            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:14px; font-size:1rem; margin-top:12px;" onclick="submitLocalResponse()">
+            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:15px; font-size:1.05rem; margin-top:14px;" onclick="submitLocalResponse()">
               رفع التقرير للاعتماد من مدير الإشراف ✓
             </button>
           </div>
@@ -589,55 +597,55 @@
 
         <!-- شاشة نجاح الحصر -->
         <section id="secSuccessModal" class="hidden">
-          <div class="card" style="text-align:center; padding:30px;">
-            <div style="font-size:3rem; margin-bottom:10px;">⏳</div>
+          <div class="card" style="text-align:center; padding:35px;">
+            <div style="font-size:3.5rem; margin-bottom:12px;">⏳</div>
             <h3 style="color:var(--tbc-petrol-dark);">تم رفع تقرير الحصر بنجاح!</h3>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:18px;">تم إرسال إشعار فوري لمدير الإشراف للقطاع بمراجعة واعتماد التقرير.</p>
-            <div style="display:flex; justify-content:center; gap:10px;">
+            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:20px;">تم إرسال إشعار فوري لمدير الإشراف للقطاع بمراجعة واعتماد التقرير.</p>
+            <div style="display:flex; justify-content:center; gap:12px;">
               <button class="btn btn-gold" id="printImmediateBtn" onclick="printLastSubmittedPDF()">🖨️ طباعة نسخة PDF</button>
               <button class="btn btn-outline" onclick="backToSurveysList()">العودة للرئيسية</button>
             </div>
           </div>
         </section>
 
-        <!-- ================= 2. تبويب السجلات والاعتمادات ================= -->
+        <!-- تبويب السجلات والاعتمادات -->
         <section id="secRecords" class="hidden">
-          <div id="filterBanner" class="card hidden" style="padding:10px 16px; background:#f8fafc; border:1px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.85rem; font-weight:bold; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
-            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="filterByKpi('ALL')">إلغاء الفلتر ✕</button>
+          <div id="filterBanner" class="card hidden" style="padding:12px 18px; background:#f8fafc; border:1px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.92rem; font-weight:bold; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
+            <button class="btn btn-outline" style="padding:5px 12px; font-size:0.82rem;" onclick="filterByKpi('ALL')">إلغاء الفلتر ✕</button>
           </div>
 
           <div id="adminFilterSection" class="filter-bar-card hidden">
-            <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:10px; font-size:0.95rem;">
+            <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:12px; font-size:1.05rem;">
               <span>🔍 تصفية وتحليل أداء الحصورات والمشرفين</span>
             </div>
             <div class="filter-grid">
               <div>
-                <label style="font-size:0.82rem; margin-bottom:4px;">تصفية بحسب عملية الحصر:</label>
+                <label style="font-size:0.88rem; margin-bottom:5px;">تصفية بحسب عملية الحصر:</label>
                 <select id="filterBySurveySelect" onchange="applyAdminFilters()">
                   <option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>
                 </select>
               </div>
               <div>
-                <label style="font-size:0.82rem; margin-bottom:4px;">تصفية بحسب المشرف الميداني:</label>
+                <label style="font-size:0.88rem; margin-bottom:5px;">تصفية بحسب المشرف الميداني:</label>
                 <select id="filterByInspectorSelect" onchange="applyAdminFilters()">
                   <option value="ALL">-- كل المشرفين --</option>
                 </select>
               </div>
               <div>
-                <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:10px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button>
+                <button class="btn btn-outline" style="width:100%; font-size:0.9rem; padding:11px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button>
               </div>
             </div>
           </div>
 
           <div id="adminSummarySection" class="hidden">
-            <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <div class="card" style="border-top: 4px solid var(--tbc-petrol);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
                 <div>
-                  <h4 style="color:var(--tbc-petrol-dark); display:inline-block; margin-left:6px; font-size:1rem;">📊 أداء المشرفين في الحصر</h4>
-                  <span class="badge-status pending" id="activeFilterBadge" style="font-size:0.75rem;">شامل الكل</span>
+                  <h4 style="color:var(--tbc-petrol-dark); display:inline-block; margin-left:8px; font-size:1.1rem;">📊 أداء المشرفين في الحصر</h4>
+                  <span class="badge-status pending" id="activeFilterBadge" style="font-size:0.82rem;">شامل الكل</span>
                 </div>
-                <button class="btn btn-gold" style="font-size:0.82rem; padding:6px 14px;" onclick="printInspectorsSummaryPDF()">
+                <button class="btn btn-gold" style="font-size:0.88rem; padding:8px 16px;" onclick="printInspectorsSummaryPDF()">
                   🖨️ تصدير تقرير المشرفين PDF
                 </button>
               </div>
@@ -660,9 +668,9 @@
           </div>
 
           <div class="card" style="background:var(--tbc-petrol-light); border:1.5px solid var(--tbc-petrol);">
-            <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:8px; font-size:0.92rem;">🏫 التقرير التاريخي الموحد للمدرسة:</div>
-            <div style="display:flex; gap:8px;">
-              <select id="schoolSelectFilter" style="flex:1; font-size:0.9rem;">
+            <div style="font-weight:800; color:var(--tbc-petrol-dark); margin-bottom:10px; font-size:1rem;">🏫 التقرير التاريخي الموحد للمدرسة:</div>
+            <div style="display:flex; gap:10px;">
+              <select id="schoolSelectFilter" style="flex:1; font-size:0.95rem;">
                 <option value="">-- اختر مدرسة لاستخراج تقريرها --</option>
               </select>
               <button class="btn btn-gold" onclick="printConsolidatedSchoolPDF()">🖨️ طباعة الملف المجمع</button>
@@ -672,12 +680,12 @@
           <div id="recordsContainer"></div>
         </section>
 
-        <!-- ================= 3. تبويب إدارة المستخدمين والهيكل ================= -->
+        <!-- تبويب إدارة المستخدمين -->
         <section id="secUsers" class="hidden">
-          <div class="card" style="border-right: 4px solid var(--tbc-gold);">
-            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:12px; font-size:1.05rem;" id="userFormTitle">➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات</h4>
+          <div class="card" style="border-right: 5px solid var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:14px; font-size:1.15rem;" id="userFormTitle">➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات</h4>
             
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
               <div class="form-group">
                 <label>الاسم الكامل *</label>
                 <input type="text" id="usrFullName" placeholder="مثال: م. فهد الخالدي">
@@ -692,7 +700,7 @@
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
               <div class="form-group">
                 <label>كلمة المرور *</label>
                 <input type="text" id="usrPassword" placeholder="••••••••">
@@ -718,8 +726,8 @@
               </div>
             </div>
 
-            <label style="margin-top:4px;">الصلاحيات والسماحيات الممنوحة:</label>
-            <div class="perm-checkbox-group" style="margin-bottom:16px;">
+            <label style="margin-top:6px;">الصلاحيات والسماحيات الممنوحة:</label>
+            <div class="perm-checkbox-group" style="margin-bottom:18px;">
               <label class="perm-item">
                 <input type="checkbox" id="permAllowEdit" checked>
                 <span>✏️ السماح بتعديل التقارير (مرتين للمشرف)</span>
@@ -738,15 +746,15 @@
               </label>
             </div>
 
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:12px;">
               <button class="btn btn-petrol" style="flex:1;" onclick="saveUserRecord()">حفظ وتفعيل المستخدم مع ربط الإيميل ✓</button>
               <button class="btn btn-outline" id="cancelUserEditBtn" style="display:none;" onclick="resetUserForm()">إلغاء التعديل</button>
             </div>
           </div>
 
-          <div class="card" style="border-top: 3px solid var(--tbc-petrol);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">👥 الهيكل الإداري وقائمة المشرفين والإيميلات</h4>
+          <div class="card" style="border-top: 4px solid var(--tbc-petrol);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.15rem;">👥 الهيكل الإداري وقائمة المشرفين والإيميلات</h4>
               <span class="badge-status approved" id="totalUsersBadge"></span>
             </div>
             <div style="overflow-x:auto;">
@@ -781,8 +789,8 @@
   <!-- نافذة تعديل كلمة المرور -->
   <div id="changePasswordModal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.1rem;">🔑 تغيير كلمة المرور</h3>
-      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px;">يرجى إدخال كلمة المرور الحالية ثم تعيين كلمة المرور الجديدة.</p>
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:8px; font-size:1.2rem;">🔑 تغيير كلمة المرور</h3>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">يرجى إدخال كلمة المرور الحالية ثم تعيين كلمة المرور الجديدة.</p>
       
       <div class="form-group">
         <label>كلمة المرور الحالية</label>
@@ -797,7 +805,7 @@
         <input type="password" id="cpConfirmPass" placeholder="••••••••">
       </div>
 
-      <div style="display:flex; gap:10px; margin-top:20px;">
+      <div style="display:flex; gap:10px; margin-top:22px;">
         <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordChange()">تحديث كلمة المرور ✓</button>
         <button class="btn btn-outline" onclick="closeChangePasswordModal()">إلغاء</button>
       </div>
@@ -814,7 +822,7 @@
       ROLE_INSPECTOR: "٦- المشرف الميداني"
     };
 
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v13')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v14')) || [
       {
         username: "admin",
         password: "123",
@@ -890,7 +898,7 @@
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v13')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v14')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -920,7 +928,7 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v13')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v14')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
     let editingSurveyId = null;
@@ -1074,15 +1082,15 @@
           const item = document.createElement('div');
           item.className = `notif-item ${n.type}`;
           item.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:2px;">${n.title}</div>
-            <div style="font-size:0.75rem;">${n.desc}</div>
+            <div style="font-weight:bold; margin-bottom:3px;">${n.title}</div>
+            <div style="font-size:0.82rem;">${n.desc}</div>
           `;
           item.onclick = n.onClick;
           container.appendChild(item);
         });
       } else {
         badge.classList.add('hidden');
-        container.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.8rem;">لا توجد تنبيهات جديدة حالياً ✓</div>';
+        container.innerHTML = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:0.88rem;">لا توجد تنبيهات جديدة حالياً ✓</div>';
       }
     }
 
@@ -1192,9 +1200,9 @@
         let overdueBadge = '';
         if (s.dueDate) {
           if (s.dueDate < todayStr) {
-            overdueBadge = `<span class="badge-status overdue" style="font-size:0.75rem;">⚠️ متأخر (${s.dueDate})</span>`;
+            overdueBadge = `<span class="badge-status overdue">⚠️ متأخر (${s.dueDate})</span>`;
           } else {
-            overdueBadge = `<span class="badge-status pending" style="font-size:0.75rem;">📅 موعد: ${s.dueDate}</span>`;
+            overdueBadge = `<span class="badge-status pending">📅 موعد: ${s.dueDate}</span>`;
           }
         }
 
@@ -1202,21 +1210,21 @@
         if (currentUser && currentUser.role === 'ROLE_PLANNING') {
           adminActionButtons = `
             <div style="display:flex; gap:8px; margin-top:10px; border-top:1px dashed var(--border-subtle); padding-top:8px;">
-              <button class="btn btn-outline" style="font-size:0.78rem; padding:4px 10px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button>
-              <button class="btn btn-reject" style="font-size:0.78rem; padding:4px 10px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button>
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:5px 12px;" onclick="openEditSurveyTemplate('${s.id}')">✏️ تعديل الحصر</button>
+              <button class="btn btn-reject" style="font-size:0.85rem; padding:5px 12px;" onclick="deleteSurveyTemplate('${s.id}')">🗑️ حذف الحصر</button>
             </div>
           `;
         }
 
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-              <div style="font-weight:800; font-size:1.05rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div style="font-weight:800; font-size:1.15rem; color:var(--tbc-petrol-dark); display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span>${s.title}</span>
                 ${overdueBadge}
               </div>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-top:3px;">${s.desc || ''}</div>
-              <div style="font-size:0.75rem; color:var(--tbc-petrol); font-weight:bold; margin-top:4px;">📊 ${s.fields.length} بنود فحص معتمدة</div>
+              <div style="font-size:0.92rem; color:var(--text-muted); margin-top:4px;">${s.desc || ''}</div>
+              <div style="font-size:0.85rem; color:var(--tbc-petrol); font-weight:bold; margin-top:5px;">📊 ${s.fields.length} بنود فحص معتمدة</div>
             </div>
             <button class="btn btn-petrol" onclick="openFillSurvey('${s.id}')">بدء الحصر</button>
           </div>
@@ -1270,13 +1278,13 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v13', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v14', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       renderSurveys();
     }
 
-    // بناء أسئلة وخيارات Google Forms
+    // بناء أسئلة وخيارات Google Forms التفاعلية
     function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
       const c = document.getElementById('questionsBuilder');
       const idx = c.children.length + 1;
@@ -1290,15 +1298,15 @@
       }
 
       const optionsHtml = initialOptions.map(opt => `
-        <div class="option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <span style="color:var(--text-muted); font-size:1.1rem;">🔘</span>
-          <input type="text" class="opt-input" value="${opt}" placeholder="اكتب الخيار هنا" style="flex:1; padding:8px 12px; font-size:0.88rem;">
-          <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px; font-size:0.78rem;" onclick="this.parentElement.remove()">✕</button>
+        <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
+          <input type="text" class="opt-input" value="${opt}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
+          <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
         </div>
       `).join('');
 
       d.innerHTML = `
-        <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
           <input type="text" placeholder="بند الفحص #${idx}" class="q-label" style="flex:2;" value="${labelVal}">
           <select class="q-type" style="flex:1;" onchange="handleTypeChange(this)">
             <option value="text" ${typeVal==='text'?'selected':''}>نص قصير</option>
@@ -1308,12 +1316,12 @@
             <option value="textarea" ${typeVal==='textarea'?'selected':''}>ملاحظات فنية</option>
             <option value="image" ${typeVal==='image'?'selected':''}>📷 صورة توثيقية</option>
           </select>
-          <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.closest('.q-row').remove()">✕</button>
+          <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 14px;" onclick="this.closest('.q-row').remove()">✕</button>
         </div>
 
-        <div class="radio-builder-area ${isRadio ? '' : 'hidden'}" style="background:#fff; border:1px dashed var(--border-subtle); padding:12px 14px; border-radius:8px; margin-top:8px;">
+        <div class="radio-builder-area ${isRadio ? '' : 'hidden'}" style="background:#fff; border:1px dashed var(--border-subtle); padding:16px; border-radius:8px; margin-top:10px;">
           <div class="options-container">${optionsHtml}</div>
-          <button type="button" class="btn btn-outline" style="font-size:0.8rem; padding:5px 12px; margin-top:4px; border-style:dashed;" onclick="addOptionToField(this)">
+          <button type="button" class="btn btn-outline" style="font-size:0.88rem; padding:6px 14px; margin-top:6px; border-style:dashed;" onclick="addOptionToField(this)">
             + إضافة خيار
           </button>
         </div>
@@ -1328,15 +1336,15 @@
         const container = area.querySelector('.options-container');
         if (container.children.length === 0) {
           container.innerHTML = `
-            <div class="option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-              <span style="color:var(--text-muted); font-size:1.1rem;">🔘</span>
-              <input type="text" class="opt-input" value="خيار 1" placeholder="اكتب الخيار هنا" style="flex:1; padding:8px 12px; font-size:0.88rem;">
-              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.remove()">✕</button>
+            <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
+              <input type="text" class="opt-input" value="خيار 1" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
+              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
             </div>
-            <div class="option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-              <span style="color:var(--text-muted); font-size:1.1rem;">🔘</span>
-              <input type="text" class="opt-input" value="خيار 2" placeholder="اكتب الخيار هنا" style="flex:1; padding:8px 12px; font-size:0.88rem;">
-              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.remove()">✕</button>
+            <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
+              <input type="text" class="opt-input" value="خيار 2" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
+              <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
             </div>
           `;
         }
@@ -1350,11 +1358,11 @@
       const count = container.querySelectorAll('.option-row').length + 1;
       const div = document.createElement('div');
       div.className = 'option-row';
-      div.style = 'display:flex; align-items:center; gap:8px; margin-bottom:8px;';
+      div.style = 'display:flex; align-items:center; gap:10px; margin-bottom:10px;';
       div.innerHTML = `
-        <span style="color:var(--text-muted); font-size:1.1rem;">🔘</span>
-        <input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:8px 12px; font-size:0.88rem;">
-        <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:4px 10px;" onclick="this.parentElement.remove()">✕</button>
+        <span style="color:var(--text-muted); font-size:1.2rem;">🔘</span>
+        <input type="text" class="opt-input" value="خيار ${count}" placeholder="اكتب الخيار هنا" style="flex:1; padding:10px 14px; font-size:0.95rem;">
+        <button type="button" class="btn" style="background:#fee2e2; color:var(--danger); padding:6px 12px; font-size:0.85rem;" onclick="this.parentElement.remove()">✕</button>
       `;
       container.appendChild(div);
     }
@@ -1407,7 +1415,7 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      localStorage.setItem('tbc_surveys_v13', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v14', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       updateNotifications();
@@ -1466,7 +1474,7 @@
           inputHtml = `<input type="date" class="dyn-field" data-type="date" data-label="${f.label}" value="${existingVal || ''}">`;
         } else if (f.type === 'radio') {
           const opts = (f.options && f.options.length ? f.options : ["مطابق", "غير مطابق"]).map(opt => `
-            <label class="radio-card-label" style="display:flex; align-items:center; gap:8px; padding:9px 14px; border:1.5px solid var(--border-subtle); border-radius:var(--radius-sm); cursor:pointer; background:#fff; font-weight:600; font-size:0.9rem; margin-bottom:6px;">
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 16px; border:1.5px solid var(--border-subtle); border-radius:var(--radius-sm); cursor:pointer; background:#fff; font-weight:600; font-size:0.95rem; margin-bottom:8px;">
               <input type="radio" name="r_${fIdx}" value="${opt}" ${existingVal === opt ? 'checked' : ''}>
               <span>${opt}</span>
             </label>
@@ -1592,7 +1600,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v13', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -1615,7 +1623,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v13', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -1637,7 +1645,7 @@
       if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
-    // عرض السجلات والاعتمادات
+    // عرض السجلات
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
@@ -1669,7 +1677,7 @@
       });
 
       if (visible.length === 0) {
-        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); padding:26px;">لا توجد أي سجلات مطابقة للفلتر المحدد.</div>';
+        container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); padding:30px;">لا توجد أي سجلات مطابقة للفلتر المحدد.</div>';
         return;
       }
 
@@ -1686,7 +1694,7 @@
         let rejectionBox = '';
         if (r.status === 'rejected' && r.rejectionReason) {
           rejectionBox = `
-            <div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:10px 14px; border-radius:6px; margin:10px 0; font-size:0.85rem; color:#b91c1c;">
+            <div style="background:var(--status-rejected-bg); border:1px solid #fecaca; padding:10px 14px; border-radius:6px; margin:10px 0; font-size:0.9rem; color:#b91c1c;">
               <b>⚠️ ملاحظة الرفض:</b> ${r.rejectionReason}
             </div>
           `;
@@ -1699,7 +1707,7 @@
 
         if (isPlanning) {
           editButtonHtml = `
-            <button class="btn btn-outline" style="font-size:0.8rem; padding:5px 10px;" onclick="triggerEditReport(${r.id})">
+            <button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">
               ✏️ تعديل (إدارة)
             </button>
           `;
@@ -1707,16 +1715,16 @@
           const canEdit = (editsUsed < 2) || (r.adminPermissionGranted === true);
           if (canEdit) {
             editButtonHtml = `
-              <button class="btn btn-outline" style="font-size:0.8rem; padding:5px 10px;" onclick="triggerEditReport(${r.id})">
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">
                 ✏️ تعديل (${editsUsed}/2)
               </button>
             `;
           } else {
             editButtonHtml = `
-              <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.78rem; padding:5px 8px; cursor:not-allowed;">
+              <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;">
                 🔒 مقفل (${editsUsed}/2)
               </button>
-              <button class="btn btn-gold" style="font-size:0.75rem; padding:5px 8px;" onclick="requestAdminEditPermission(${r.id})">
+              <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 10px;" onclick="requestAdminEditPermission(${r.id})">
                 📩 طلب إذن
               </button>
             `;
@@ -1724,22 +1732,22 @@
         }
 
         const pdfButton = (currentUser.permissions && currentUser.permissions.allowPdf !== false)
-          ? `<button class="btn btn-outline" style="padding:5px 10px; font-size:0.8rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF</button>`
+          ? `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="printSinglePDF(${originalIdx})">🖨️ PDF</button>`
           : '';
 
         let approvalActionButtons = '';
         const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
         if (canApprove) {
           const grantPermissionBtn = (editsUsed >= 2 && !r.adminPermissionGranted) ? `
-            <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="grantEditPermission(${originalIdx})">
+            <button class="btn btn-gold" style="font-size:0.85rem; padding:6px 14px;" onclick="grantEditPermission(${originalIdx})">
               🔓 إذن تعديل إضافي للمشرف
             </button>
           ` : '';
 
           approvalActionButtons = `
-            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; border-top:1px dashed var(--border-subtle); padding-top:10px;">
-              <button class="btn btn-approve" style="font-size:0.82rem; padding:6px 14px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير (مدير الإشراف)</button>
-              <button class="btn btn-reject" style="font-size:0.82rem; padding:6px 14px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع ملاحظة</button>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; border-top:1px dashed var(--border-subtle); padding-top:12px;">
+              <button class="btn btn-approve" style="font-size:0.88rem; padding:7px 16px;" onclick="setReportStatus(${originalIdx}, 'approved')">✓ اعتماد التقرير (مدير الإشراف)</button>
+              <button class="btn btn-reject" style="font-size:0.88rem; padding:7px 16px;" onclick="promptRejectReport(${originalIdx})">✕ رفض مع ملاحظة</button>
               ${grantPermissionBtn}
             </div>
           `;
@@ -1748,27 +1756,27 @@
         let detailsHtml = '';
         for (const [q, a] of Object.entries(r.answers)) {
           if (a && a.startsWith('data:image')) {
-            detailsHtml += `<li style="font-size:0.85rem; margin-bottom:8px;"><b>${q}:</b><br><img src="${a}" style="max-width:140px; border-radius:6px; margin-top:4px;"></li>`;
+            detailsHtml += `<li style="font-size:0.9rem; margin-bottom:8px;"><b>${q}:</b><br><img src="${a}" style="max-width:160px; border-radius:6px; margin-top:4px;"></li>`;
           } else {
-            detailsHtml += `<li style="font-size:0.85rem; margin-bottom:4px; border-bottom:1px dashed #edf2f7; padding-bottom:4px;"><b>${q}:</b> ${a || '-'}</li>`;
+            detailsHtml += `<li style="font-size:0.9rem; margin-bottom:5px; border-bottom:1px dashed #edf2f7; padding-bottom:5px;"><b>${q}:</b> ${a || '-'}</li>`;
           }
         }
 
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
             <div>
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem;">🏫 ${r.school}</h4>
-              <span style="font-size:0.78rem; color:var(--text-muted);">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem;">🏫 ${r.school}</h4>
+              <span style="font-size:0.82rem; color:var(--text-muted);">
                 المشرف: ${r.collectedBy} | ${r.branch || 'المكتب الفرعي بالشرقية'} | ${r.date}
               </span>
             </div>
-            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
               ${statusBadge}
               ${editButtonHtml}
               ${pdfButton}
             </div>
           </div>
-          <div style="font-size:0.85rem; color:var(--tbc-gold-hover); font-weight:800; margin-bottom:6px;">📋 ${r.surveyTitle}</div>
+          <div style="font-size:0.9rem; color:var(--tbc-gold-hover); font-weight:800; margin-bottom:8px;">📋 ${r.surveyTitle}</div>
           ${rejectionBox}
           <ul style="list-style:none; padding:0;">${detailsHtml}</ul>
           ${approvalActionButtons}
@@ -1792,7 +1800,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v13', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -1836,7 +1844,7 @@
       responses[index].status = status;
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName + " (" + ROLE_LABELS[currentUser.role] + ")";
-      localStorage.setItem('tbc_responses_v13', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
       updateNotifications();
@@ -2181,7 +2189,7 @@
         alert("✓ تم إضافة المستخدم وربط البريد الإلكتروني بالإشعارات!");
       }
 
-      localStorage.setItem('tbc_users_v13', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -2228,7 +2236,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v13', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -2236,7 +2244,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v13', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -2300,7 +2308,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v13', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
