@@ -1068,7 +1068,7 @@
             <div class="perm-checkbox-group" style="margin-bottom:18px;">
               <label class="perm-item">
                 <input type="checkbox" id="permAllowEdit" checked>
-                <span>✏️ السماح بتعديل التقارير (مرتين للمشرف)</span>
+                <span>✏️ السماح بتعديل التقارير (خلال 48 ساعة من إنشائها)</span>
               </label>
               <label class="perm-item">
                 <input type="checkbox" id="permRequireGps" checked>
@@ -1181,7 +1181,6 @@
       ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    // توحيد مفتاح التخزين لضمان بقاء الحصورات المنشورة وعدم فقدانها
     let usersList = JSON.parse(localStorage.getItem('tbc_users_store_v1')) || [
       {
         username: "admin",
@@ -1255,6 +1254,7 @@
       }
     ];
 
+    // توحيد مفتاح التخزين الموحد لجميع الحصورات
     let surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || [
       {
         id: "SRV-101",
@@ -1498,7 +1498,7 @@
       renderChatMessages();
     }
 
-    // ================= لوحة التحليلات والمؤشرات (تبدأ بالإجمالي العام افتراضياً) =================
+    // ================= لوحة التحليلات والمؤشرات (تبدأ بالإجمالي العام تلقائياً) =================
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
       if (!select) return;
@@ -1692,10 +1692,14 @@
       });
     }
 
-    // ================= إدارة عمليات الحصر (مع الحفظ الفوري وظهورها للجميع) =================
+    // ================= إدارة عمليات الحصر (مشاركة فورية) =================
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
+      
+      // جلب أحدث بيانات الحصورات مباشرة من التخزين المشترك
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
+
       if (surveys.length === 0) {
         container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد استمارات حصر نشطة حالياً.</div>';
         return;
@@ -1921,6 +1925,7 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
+      // حفظ في المفتاح الموحد والمشترك
       localStorage.setItem('tbc_surveys_store_v1', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
@@ -1931,6 +1936,7 @@
     // ================= تعبئة الحصر الميداني =================
     let activeSrv = null;
     function openFillSurvey(id, existingData = null) {
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
       if (!activeSrv) return alert("تعذر العثور على نموذج الحصر المعتمد لهذا التقرير");
 
@@ -2007,6 +2013,7 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
       document.getElementById('secSurveys').classList.remove('hidden');
+      renderSurveys();
     }
 
     function captureGps() {
@@ -2085,12 +2092,20 @@
         dataObj[label] = checked ? checked.value : 'غير محدد';
       });
 
+      responses = JSON.parse(localStorage.getItem('tbc_responses_store_v1')) || responses;
+
       if (editingResponseId) {
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
           const old = responses[idx];
           const isPlanning = currentUser.role === "ROLE_PLANNING";
-          const newEditCount = isPlanning ? (old.editCount || 0) : ((old.editCount || 0) + 1);
+          
+          if (!isPlanning && currentUser.role === "ROLE_INSPECTOR") {
+            const reportAgeHours = (Date.now() - old.id) / (1000 * 60 * 60);
+            if (reportAgeHours > 48 && !old.adminPermissionGranted) {
+              return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن خاص من الإدارة.");
+            }
+          }
 
           responses[idx] = {
             ...old,
@@ -2098,7 +2113,6 @@
             branch,
             gps,
             answers: dataObj,
-            editCount: newEditCount,
             lastEditedBy: currentUser.fullName,
             lastEditedAt: new Date().toLocaleString('ar-SA'),
             status: "pending",
@@ -2107,7 +2121,7 @@
 
           lastSavedIndex = idx;
           localStorage.setItem('tbc_responses_store_v1', JSON.stringify(responses));
-          alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
+          alert("✓ تم تحديث التقرير بنجاح وإعادة إرسال للاعتماد.");
         }
       } else {
         const entry = {
@@ -2122,7 +2136,6 @@
           username: currentUser.username,
           status: "pending",
           rejectionReason: "",
-          editCount: 0,
           adminPermissionGranted: false,
           answers: dataObj
         };
@@ -2143,7 +2156,6 @@
       }
 
       document.getElementById('secSuccessModal').classList.remove('hidden');
-      updateNotifications();
     }
 
     function printLastSubmittedPDF() {
@@ -2158,6 +2170,7 @@
 
     function getScopedResponses() {
       if (!currentUser) return [];
+      responses = JSON.parse(localStorage.getItem('tbc_responses_store_v1')) || responses;
       let list = responses;
       if (currentUser.role === "ROLE_SUB_EAST") {
         list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية");
@@ -2218,6 +2231,7 @@
       const iSelect = document.getElementById('filterByInspectorSelect');
       if (!sSelect || !iSelect) return;
 
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
       sSelect.innerHTML = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
       surveys.forEach(s => {
         sSelect.innerHTML += `<option value="${s.title}">${s.title}</option>`;
@@ -2301,7 +2315,6 @@
           `;
         }
 
-        const editsUsed = r.editCount || 0;
         let editButtonHtml = '';
         const isPlanning = currentUser.role === "ROLE_PLANNING";
         const isInspector = currentUser.role === "ROLE_INSPECTOR";
@@ -2313,17 +2326,19 @@
             </button>
           `;
         } else if (isInspector) {
-          const canEdit = (editsUsed < 2) || (r.adminPermissionGranted === true);
-          if (canEdit) {
+          const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
+          const canEditWithin48 = (reportAgeHours <= 48) || (r.adminPermissionGranted === true);
+          
+          if (canEditWithin48) {
             editButtonHtml = `
               <button class="btn btn-outline" style="font-size:0.85rem; padding:6px 12px;" onclick="triggerEditReport(${r.id})">
-                ✏️ تعديل (${editsUsed}/2)
+                ✏️ تعديل (خلال 48 ساعة)
               </button>
             `;
           } else {
             editButtonHtml = `
               <button class="btn" style="background:#f1f5f9; color:#94a3b8; font-size:0.82rem; padding:6px 10px; cursor:not-allowed;">
-                🔒 مقفل (${editsUsed}/2)
+                🔒 انتهت مهلة 48 ساعة
               </button>
               <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 10px;" onclick="requestAdminEditPermission(${r.id})">
                 📩 طلب إذن
@@ -2339,7 +2354,8 @@
         let approvalActionButtons = '';
         const canApprove = (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING");
         if (canApprove) {
-          const grantPermissionBtn = (editsUsed >= 2 && !r.adminPermissionGranted) ? `
+          const reportAgeHours = (Date.now() - r.id) / (1000 * 60 * 60);
+          const grantPermissionBtn = (reportAgeHours > 48 && !r.adminPermissionGranted) ? `
             <button class="btn btn-gold" style="font-size:0.85rem; padding:6px 14px;" onclick="grantEditPermission(${originalIdx})">
               🔓 إذن تعديل إضافي للمشرف
             </button>
@@ -2389,8 +2405,11 @@
     function triggerEditReport(reportId) {
       const rep = responses.find(r => r.id === reportId);
       if (!rep) return;
-      if (currentUser.role === "ROLE_INSPECTOR" && (rep.editCount >= 2) && !rep.adminPermissionGranted) {
-        return alert("عذراً، استنفذت الحد الأقصى للتعديل (مرتان). يرجى طلب إذن من الإدارة.");
+      if (currentUser.role === "ROLE_INSPECTOR") {
+        const reportAgeHours = (Date.now() - rep.id) / (1000 * 60 * 60);
+        if (reportAgeHours > 48 && !rep.adminPermissionGranted) {
+          return alert("عذراً، تجاوز التقرير مهلة الـ 48 ساعة المسموحة للتعديل الحر. يرجى طلب إذن من الإدارة.");
+        }
       }
       openFillSurvey(null, rep);
     }
@@ -2413,7 +2432,6 @@
       localStorage.setItem('tbc_responses_store_v1', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
-      updateNotifications();
       renderRecords();
     }
 
