@@ -11,7 +11,8 @@
   <style>
     :root {
       --tbc-petrol: #37889b;
-      --tbc-petrol-dark: #1f333a; /* لون داكن احترافي للقائمة الجانبية */
+      --tbc-petrol-dark: #1f333a; 
+      --tbc-petrol-sidebar: #2b5460; /* لون جديد أخف وأهدأ للقائمة الجانبية */
       --tbc-petrol-mid: #276270;
       --tbc-petrol-light: #edf6f8;
       --tbc-gold: #eebb43;
@@ -119,15 +120,15 @@
     /* App Layout (Sidebar + Main) */
     .app-layout {
       display: flex;
-      flex-direction: row; /* Sidebar on the right due to RTL */
+      flex-direction: row; 
       min-height: calc(100vh - 75px);
     }
 
-    /* Professional Dark Sidebar */
+    /* Professional Softer Sidebar */
     .sidebar {
       width: 260px;
-      background-color: var(--tbc-petrol-dark);
-      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      background-color: var(--tbc-petrol-sidebar);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.05);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
@@ -135,9 +136,9 @@
     }
     
     .sidebar-title {
-      color: #94a3b8;
-      font-size: 0.8rem;
-      font-weight: 800;
+      color: #b0c4de;
+      font-size: 0.85rem;
+      font-weight: 500; /* خط عادي بدلاً من البولد */
       padding: 24px 24px 10px;
       letter-spacing: 0.5px;
     }
@@ -154,8 +155,8 @@
       align-items: center;
       gap: 12px;
       padding: 14px 16px;
-      color: #cbd5e1;
-      font-weight: 700;
+      color: #e2e8f0;
+      font-weight: 500; /* خط عادي للتبويبات غير النشطة */
       font-size: 0.95rem;
       border-radius: 8px;
       cursor: pointer;
@@ -164,15 +165,15 @@
     }
 
     .sidebar-item:hover {
-      background-color: rgba(255,255,255,0.05);
+      background-color: rgba(255,255,255,0.08);
       color: #ffffff;
     }
 
     .sidebar-item.active {
-      background-color: rgba(255,255,255,0.1);
+      background-color: rgba(255,255,255,0.15);
       color: var(--tbc-gold);
       border-right-color: var(--tbc-gold);
-      font-weight: 900;
+      font-weight: 800; /* بولد للعنصر المفتوح فقط */
     }
 
     /* Main Content Area */
@@ -292,13 +293,6 @@
     table.data-table th, table.data-table td { padding: 14px; border: 1px solid var(--border-subtle); text-align: right; }
     table.data-table th { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); font-weight: 900; }
 
-    .filter-bar-card { background: #ffffff; border: 1.5px solid var(--tbc-petrol); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 20px; }
-    .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: flex-end; }
-
-    .perm-checkbox-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px dashed var(--border-subtle); }
-    .perm-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; color: var(--tbc-petrol-dark); cursor: pointer; }
-    .perm-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tbc-petrol); }
-
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,28,45,0.7); display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 20px; backdrop-filter: blur(4px); }
     .modal-content { background: #ffffff; border-radius: var(--radius-md); max-width: 500px; width: 100%; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-top: 6px solid var(--tbc-gold); }
 
@@ -310,7 +304,7 @@
       position: fixed; bottom: 30px; left: 30px; background: var(--tbc-petrol); color: #ffffff;
       padding: 14px 24px; border-radius: 30px; box-shadow: 0 10px 25px rgba(39,98,112,0.4);
       cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1rem;
-      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s;
+      z-index: 900; border: 2px solid #ffffff; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .chat-floating-btn:hover { background: var(--tbc-petrol-dark); transform: scale(1.05); }
 
@@ -328,11 +322,11 @@
     .chat-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: block; text-align: left; }
     .chat-footer { padding: 12px; background: #ffffff; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; }
 
-    /* Professional Empty States */
+    /* Empty States */
     .empty-state { text-align: center; padding: 50px 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed var(--border-subtle); color: var(--text-muted); }
     .empty-state h4 { color: var(--tbc-petrol-dark); font-size: 1.2rem; margin-bottom: 8px; font-weight: 900; }
 
-    /* Responsive adjustments for Sidebar layout */
+    /* Responsive Sidebar */
     @media (max-width: 992px) {
       .app-layout { flex-direction: column; }
       .sidebar { 
@@ -491,21 +485,21 @@
   <div id="appView" class="hidden">
     <div class="app-layout">
       
-      <!-- Professional Sidebar instead of Top Tabs -->
+      <!-- Professional Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-title">القائمة الرئيسية للمنظومة</div>
         <div class="sidebar-menu">
           <div class="sidebar-item active" id="tabAnalytics" onclick="showTab('analytics')">
-            <span class="sidebar-icon">📊</span> <span>لوحة المؤشرات والتحليلات</span>
+            <span style="font-size:1.1rem;">📊</span> <span>لوحة المؤشرات والتحليلات</span>
           </div>
           <div class="sidebar-item" id="tabSurveys" onclick="showTab('surveys')">
-            <span class="sidebar-icon">📋</span> <span>نماذج وعمليات الحصر</span>
+            <span style="font-size:1.1rem;">📋</span> <span>نماذج وعمليات الحصر</span>
           </div>
           <div class="sidebar-item" id="tabRecords" onclick="showTab('records')">
-            <span class="sidebar-icon">📑</span> <span>السجلات والاعتمادات</span>
+            <span style="font-size:1.1rem;">📑</span> <span>السجلات والاعتمادات</span>
           </div>
           <div class="sidebar-item hidden" id="tabUsers" onclick="showTab('users')">
-            <span class="sidebar-icon">👥</span> <span>إدارة الهيكل والمستخدمين</span>
+            <span style="font-size:1.1rem;">👥</span> <span>إدارة الهيكل والمستخدمين</span>
           </div>
         </div>
       </aside>
@@ -536,7 +530,7 @@
             </div>
             <div class="bi-kpi-card">
               <div class="bi-title">المخطط التراكمي (مبنى)</div>
-              <div class="bi-num" style="color:#0f172a;" id="biPlannedCount">0</div>
+              <div class="bi-num" id="biPlannedCount">0</div>
               <div class="bi-sub" style="color:#059669;">100% مستهدف الحصر</div>
             </div>
             <div class="bi-kpi-card">
@@ -560,7 +554,7 @@
             <div class="card" style="margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني التراكمي (Actual vs Planned)</h4>
-                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي</span>
+                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي مباشر</span>
               </div>
               <div style="height: 300px; position: relative; width:100%;">
                 <canvas id="sCurveChart"></canvas>
@@ -687,7 +681,6 @@
 
         <!-- ================= 3. Records Tab ================= -->
         <section id="secRecords" class="hidden">
-          <!-- البطاقات الملونة (تظهر بشكل دائم) -->
           <div id="kpiContainer" class="kpi-grid"></div>
 
           <div id="filterBanner" class="card hidden" style="padding:14px 20px; background:#f8fafc; border:2px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
@@ -827,9 +820,7 @@
           </div>
         </section>
 
-      </div>
-    </main>
-
+      </main>
     </div>
   </div>
 
@@ -964,13 +955,14 @@
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
-      // 3. Responses & Chat
+      // 3. Responses
       try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)); } catch(e){}
       if (!responses || !Array.isArray(responses)) {
         responses = getLegacy(['tbc_responses_master_v2', 'tbc_responses_store_v1', 'tbc_responses_v26', 'tbc_responses_v25']) || [];
         localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
       }
 
+      // 4. Chat
       try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
       if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
         chatMessages = getLegacy(['tbc_chat_messages_master_v2', 'tbc_chat_messages_v1']) || [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
@@ -1049,7 +1041,7 @@
     function showTab(tab) {
       if(!currentUser) return;
       
-      // Update Tab Button Styles (Horizontal tabs in mobile, vertical in desktop)
+      // Update Tab Button Styles
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
@@ -1085,8 +1077,8 @@
         else if(tab === 'records') {
           document.getElementById('secRecords').classList.remove('hidden');
           if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
-          updateKPIs(); // Display permanent color cards
-          renderRecords(); // Force Table render
+          updateKPIs(); 
+          renderRecords(); 
         }
         else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
           document.getElementById('secUsers').classList.remove('hidden');
@@ -1142,9 +1134,6 @@
       document.getElementById('tabUsers').classList.toggle('hidden', !isPlanning);
       document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
-      if (isManagement) populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      
       renderChatMessages();
       
       // Default initial tab
@@ -1191,13 +1180,12 @@
     }
 
     // ================= Analytics Live Engine =================
-    // Updates dashboard dynamically
     setInterval(() => {
       if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) {
-         refreshAnalyticsDashboard(true); // silent refresh
+         refreshAnalyticsDashboard(true);
       }
       if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) {
-         updateKPIs(); // silent refresh
+         updateKPIs();
       }
     }, 3000);
 
@@ -1224,7 +1212,6 @@
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
       
-      // Pull fresh data
       try {
         surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
         responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
@@ -1260,7 +1247,6 @@
       const remainingCount = Math.max(0, plannedTarget - approvedCount);
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
 
-      // Update cards without DOM flicker
       const elRate = document.getElementById('biActualRate');
       if(elRate && elRate.innerText !== `${actualRate}%`) elRate.innerText = `${actualRate}%`;
       
@@ -1309,7 +1295,6 @@
         ];
 
         if (sCurveChartInstance) {
-          // Live update without flicker
           sCurveChartInstance.data.datasets[0].data = plannedPoints;
           sCurveChartInstance.data.datasets[1].data = actualPoints;
           sCurveChartInstance.update('none');
@@ -1503,7 +1488,7 @@
     function closeNewSurveyModal() {
       editingSurveyId = null;
       document.getElementById('secNewSurvey').classList.add('hidden');
-      showTab('surveys'); // الرجوع النظيف باستخدام الدالة المركزية
+      showTab('surveys');
     }
 
     function deleteSurveyTemplate(id) {
@@ -1611,10 +1596,7 @@
           let optionsList = [];
           if (t === 'radio') {
             const optInputs = node.querySelectorAll('.opt-input');
-            optInputs.forEach(input => {
-              const val = input.value.trim();
-              if (val) optionsList.push(val);
-            });
+            optInputs.forEach(input => { const val = input.value.trim(); if(val) optionsList.push(val); });
             if (optionsList.length === 0) optionsList = ["مطابق", "غير مطابق"];
           }
           fields.push({ label: l, type: t, options: optionsList });
@@ -1622,6 +1604,8 @@
       });
 
       if (fields.length === 0) return alert("الرجاء إضافة بند فحص واحد على الأقل ليتمكن المشرف من الإجابة عليه.");
+
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
 
       if (editingSurveyId) {
         const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
@@ -1641,11 +1625,12 @@
       closeNewSurveyModal();
       populateFilterDropdowns();
       populateAnalyticsSurveyDropdown();
-      showTab('surveys'); // يعود للقائمة ويعرضها مباشرة
+      showTab('surveys'); 
     }
 
-    // ================= تعبئة الحصر الميداني =================
+    // ================= Fill Survey =================
     function openFillSurvey(id, existingData = null) {
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
       if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير. قد يكون قد تم حذفه من قبل الإدارة.");
 
@@ -1714,6 +1699,7 @@
 
     function backToSurveysList() {
       editingResponseId = null;
+      document.getElementById('secFillSurvey').classList.add('hidden');
       showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records');
     }
 
@@ -1957,7 +1943,6 @@
         if (selectedInspectorFilter !== "ALL") visible = visible.filter(r => r.collectedBy === selectedInspectorFilter);
       }
 
-      // تعبئة قائمة استخراج تقرير المدرسة التاريخي
       if(schoolSelect) {
         let schHtml = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
         const uniqueSchools = [...new Set(visible.map(r => r.school))];
@@ -2221,7 +2206,7 @@
           <style>
             * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
             body { margin: 0; padding: 25px; color: #1f333a; background: #f4f7f9; font-size: 13px; line-height: 1.6; }
-            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 16px; margin-bottom: 20px; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 16px; }
             .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; }
             @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } body { background: #fff; } }
           </style>
