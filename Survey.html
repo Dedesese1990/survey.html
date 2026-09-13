@@ -37,10 +37,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     
-    html {
-      font-size: 16px; /* خط الأساس القياسي للكمبيوتر */
-    }
-    
+    html { font-size: 16px; }
     body {
       background-color: var(--bg-canvas);
       color: var(--text-main);
@@ -51,14 +48,12 @@
       line-height: 1.6;
     }
     
-    /* حاوية العرض المريحة للابتوب */
     .container-fluid {
       width: 95%;
       max-width: 1350px;
       margin: 0 auto;
     }
 
-    /* الترويسة */
     header {
       background: #ffffff;
       border-bottom: 3px solid var(--tbc-petrol);
@@ -149,7 +144,6 @@
     .btn-logout { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
     .btn-logout:hover { background: #fecaca; }
 
-    /* جرس الإشعارات */
     .notif-bell-btn {
       position: relative;
       background: var(--tbc-petrol-light);
@@ -215,7 +209,6 @@
     .notif-item.warning { background: var(--status-pending-bg); border-right: 4px solid var(--status-pending); color: #92400e; }
     .notif-item.success { background: var(--status-approved-bg); border-right: 4px solid var(--status-approved); color: #065f46; }
 
-    /* شريط التبويبات */
     .tabs-bar {
       background: #ffffff;
       border-bottom: 1px solid var(--border-subtle);
@@ -248,7 +241,6 @@
       box-shadow: var(--shadow-sm);
     }
 
-    /* المحتوى الرئيسي */
     main {
       flex: 1;
       padding: 26px 0;
@@ -263,7 +255,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* شبكة المؤشرات */
     .kpi-grid { 
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
@@ -339,6 +330,15 @@
     .q-row { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px dashed var(--border-subtle); margin-bottom: 14px; }
     .img-preview-box { max-width: 180px; max-height: 180px; border-radius: var(--radius-sm); margin-top: 10px; object-fit: cover; display: none; border: 1px solid var(--border-subtle); }
 
+    /* بطاقة الراديو المخصصة التي تحل المشكلة */
+    .custom-radio-card {
+      transition: all 0.2s ease;
+    }
+    .custom-radio-card:hover {
+      background: var(--tbc-petrol-light) !important;
+      border-color: var(--tbc-petrol) !important;
+    }
+
     table.data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-top: 12px; }
     table.data-table th, table.data-table td { padding: 12px 15px; border: 1px solid var(--border-subtle); text-align: right; }
     table.data-table th { background: var(--tbc-petrol-light); color: var(--tbc-petrol-dark); font-weight: 800; }
@@ -395,7 +395,6 @@
     }
     .support-link { color: var(--tbc-petrol); font-weight: 800; text-decoration: none; direction: ltr; display: inline-block; }
 
-    /* التجاوب للهواتف */
     @media (max-width: 768px) {
       html { font-size: 14px; }
       .header-content { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -412,11 +411,9 @@
 </head>
 <body>
 
-  <!-- ترويسة الموقع المتجاوبة -->
   <header>
     <div class="container-fluid">
       <div class="header-content">
-        <!-- قسم الشعار والعنوان -->
         <div class="brand-section">
           <svg class="tbc-logo-svg" viewBox="0 0 400 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M20 30 H110 V58 H80 V130 H49 V58 H20 Z" fill="#37889b" />
@@ -432,7 +429,6 @@
           </div>
         </div>
 
-        <!-- قسم المستخدم والإجراءات -->
         <div class="header-user-section" id="headerUserActions">
           <div id="notifBellBtn" class="notif-bell-btn hidden" onclick="toggleNotifPanel(event)">
             <span>🔔</span>
@@ -506,7 +502,7 @@
       <div class="container-fluid">
         <div id="kpiContainer" class="kpi-grid"></div>
 
-        <!-- تبويب نماذج الحصر -->
+        <!-- ================= 1. تبويب نماذج الحصر ================= -->
         <section id="secSurveys">
           <div id="adminPanel" class="card hidden" style="border-right: 5px solid var(--tbc-gold);">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -608,7 +604,7 @@
           </div>
         </section>
 
-        <!-- تبويب السجلات والاعتمادات -->
+        <!-- ================= 2. تبويب السجلات والاعتمادات ================= -->
         <section id="secRecords" class="hidden">
           <div id="filterBanner" class="card hidden" style="padding:12px 18px; background:#f8fafc; border:1px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:0.92rem; font-weight:bold; color:var(--tbc-petrol-dark);" id="filterBannerText"></span>
@@ -680,7 +676,7 @@
           <div id="recordsContainer"></div>
         </section>
 
-        <!-- تبويب إدارة المستخدمين -->
+        <!-- ================= 3. تبويب إدارة المستخدمين والهيكل ================= -->
         <section id="secUsers" class="hidden">
           <div class="card" style="border-right: 5px solid var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); margin-bottom:14px; font-size:1.15rem;" id="userFormTitle">➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات</h4>
@@ -822,7 +818,7 @@
       ROLE_INSPECTOR: "٦- المشرف الميداني"
     };
 
-    let usersList = JSON.parse(localStorage.getItem('tbc_users_v14')) || [
+    let usersList = JSON.parse(localStorage.getItem('tbc_users_v15')) || [
       {
         username: "admin",
         password: "123",
@@ -898,7 +894,7 @@
     let currentUser = null;
     let editingUserIndex = -1;
 
-    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v14')) || [
+    let surveys = JSON.parse(localStorage.getItem('tbc_surveys_v15')) || [
       {
         id: "SRV-101",
         title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية",
@@ -928,7 +924,7 @@
       }
     ];
 
-    let responses = JSON.parse(localStorage.getItem('tbc_responses_v14')) || [];
+    let responses = JSON.parse(localStorage.getItem('tbc_responses_v15')) || [];
     let lastSavedIndex = -1;
     let editingResponseId = null;
     let editingSurveyId = null;
@@ -1278,7 +1274,7 @@
     function deleteSurveyTemplate(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الحصر نهائياً؟")) return;
       surveys = surveys.filter(s => String(s.id) !== String(id));
-      localStorage.setItem('tbc_surveys_v14', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v15', JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
       populateFilterDropdowns();
       renderSurveys();
@@ -1415,14 +1411,14 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      localStorage.setItem('tbc_surveys_v14', JSON.stringify(surveys));
+      localStorage.setItem('tbc_surveys_v15', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
       updateNotifications();
       renderSurveys();
     }
 
-    // تعبئة الحصر الميداني
+    // تعبئة الحصر الميداني (تم تعديل أسلوب الراديو هنا لمنع التداخل)
     let activeSrv = null;
     function openFillSurvey(id, existingData = null) {
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
@@ -1474,12 +1470,12 @@
           inputHtml = `<input type="date" class="dyn-field" data-type="date" data-label="${f.label}" value="${existingVal || ''}">`;
         } else if (f.type === 'radio') {
           const opts = (f.options && f.options.length ? f.options : ["مطابق", "غير مطابق"]).map(opt => `
-            <label style="display:flex; align-items:center; gap:10px; padding:10px 16px; border:1.5px solid var(--border-subtle); border-radius:var(--radius-sm); cursor:pointer; background:#fff; font-weight:600; font-size:0.95rem; margin-bottom:8px;">
-              <input type="radio" name="r_${fIdx}" value="${opt}" ${existingVal === opt ? 'checked' : ''}>
-              <span>${opt}</span>
+            <label class="custom-radio-card" style="display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:12px; padding:12px 16px; border:1.5px solid var(--border-subtle); border-radius:8px; cursor:pointer; background:#ffffff; margin-bottom:8px; text-align:right; width:100%; box-sizing:border-box;">
+              <input type="radio" name="r_${fIdx}" value="${opt}" ${existingVal === opt ? 'checked' : ''} style="width:20px; height:20px; min-width:20px; accent-color:var(--tbc-petrol); cursor:pointer; margin:0;">
+              <span style="font-size:0.95rem; font-weight:600; color:var(--text-main); white-space:normal; line-height:1.4; word-break:break-word;">${opt}</span>
             </label>
           `).join('');
-          inputHtml = `<div class="radio-group" data-label="${f.label}">${opts}</div>`;
+          inputHtml = `<div class="radio-group" data-label="${f.label}" style="display:flex; flex-direction:column; width:100%;">${opts}</div>`;
         } else if (f.type === 'textarea') {
           inputHtml = `<textarea class="dyn-field" data-type="textarea" rows="3" data-label="${f.label}">${existingVal || ''}</textarea>`;
         } else if (f.type === 'image') {
@@ -1600,7 +1596,7 @@
           };
 
           lastSavedIndex = idx;
-          localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
+          localStorage.setItem('tbc_responses_v15', JSON.stringify(responses));
           alert(isPlanning ? "✓ تم تحديث التقرير بنجاح." : `✓ تم حفظ التعديل بنجاح (${newEditCount}/2) وأعيد للاعتماد.`);
         }
       } else {
@@ -1623,7 +1619,7 @@
 
         responses.push(entry);
         lastSavedIndex = responses.length - 1;
-        localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
+        localStorage.setItem('tbc_responses_v15', JSON.stringify(responses));
       }
 
       editingResponseId = null;
@@ -1645,7 +1641,7 @@
       if (lastSavedIndex >= 0) printSinglePDF(lastSavedIndex);
     }
 
-    // عرض السجلات
+    // عرض السجلات والاعتمادات
     function renderRecords() {
       const container = document.getElementById('recordsContainer');
       const schoolSelect = document.getElementById('schoolSelectFilter');
@@ -1800,7 +1796,7 @@
 
     function grantEditPermission(index) {
       responses[index].adminPermissionGranted = true;
-      localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v15', JSON.stringify(responses));
       alert("✓ تم منح المشرف إذن تعديل إضافي لهذا التقرير!");
       renderRecords();
     }
@@ -1844,7 +1840,7 @@
       responses[index].status = status;
       responses[index].rejectionReason = reason;
       responses[index].approvedBy = currentUser.fullName + " (" + ROLE_LABELS[currentUser.role] + ")";
-      localStorage.setItem('tbc_responses_v14', JSON.stringify(responses));
+      localStorage.setItem('tbc_responses_v15', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
       updateNotifications();
@@ -1904,7 +1900,7 @@
           <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
           <style>
             * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
-            body { margin: 0; padding: 25px; color: #1f333a; background: #fff; font-size: 13px; line-height: 1.5; }
+            body { margin: 0; padding: 20px; color: #1f333a; background: #fff; font-size: 12px; line-height: 1.5; }
             .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 12px; margin-bottom: 15px; }
             .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 18px; padding: 5px 12px; border-radius: 6px; }
             @media print { .no-print { display: none !important; } @page { size: A4 landscape; margin: 10mm; } }
@@ -1950,7 +1946,7 @@
                 <td style="padding:11px; border:1px solid #cbd5e1; text-align:center; color:#047857;">${appAll}</td>
                 <td style="padding:11px; border:1px solid #cbd5e1; text-align:center; color:#b45309;">${pendAll}</td>
                 <td style="padding:11px; border:1px solid #cbd5e1; text-align:center; color:#b91c1c;">${rejAll}</td>
-                <td style="padding:11px; border:1px solid #cbd5e1; text-align:center; color:#37889b;">${totalAll > 0 ? Math.round((appAll/totalAll)*100) : 0}%</td>
+                <td style="padding:10px; border:1px solid #cbd5e1; text-align:center; color:#37889b;">${totalAll > 0 ? Math.round((appAll/totalAll)*100) : 0}%</td>
               </tr>
             </tbody>
           </table>
@@ -2189,7 +2185,7 @@
         alert("✓ تم إضافة المستخدم وربط البريد الإلكتروني بالإشعارات!");
       }
 
-      localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v15', JSON.stringify(usersList));
       resetUserForm();
       renderUsersManagement();
     }
@@ -2236,7 +2232,7 @@
       const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم: ${u.fullName}`, "123");
       if (newPass !== null && newPass.trim() !== "") {
         usersList[idx].password = newPass.trim();
-        localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v15', JSON.stringify(usersList));
         alert(`✓ تم تعيين كلمة المرور الجديدة: (${newPass.trim()})`);
         renderUsersManagement();
       }
@@ -2244,7 +2240,7 @@
 
     function toggleUserStatus(idx) {
       usersList[idx].active = !(usersList[idx].active !== false);
-      localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
+      localStorage.setItem('tbc_users_v15', JSON.stringify(usersList));
       renderUsersManagement();
     }
 
@@ -2308,7 +2304,7 @@
       if (idx !== -1) {
         usersList[idx].password = n1;
         currentUser.password = n1;
-        localStorage.setItem('tbc_users_v14', JSON.stringify(usersList));
+        localStorage.setItem('tbc_users_v15', JSON.stringify(usersList));
         alert("✓ تم تحديث كلمة المرور الخاصة بك بنجاح!");
         closeChangePasswordModal();
       }
