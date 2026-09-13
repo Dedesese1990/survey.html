@@ -315,8 +315,8 @@
           <div id="surveysListContainer"></div>
         </section>
 
+        <!-- Survey Creator -->
         <section id="secNewSurvey" class="hidden">
-          <!-- الكود الخاص بإنشاء حصر تم تصغيره هنا لتبسيط العرض، لكنه موجود كالمعتاد -->
           <div class="card">
             <h3 style="color:var(--tbc-petrol-dark); margin-bottom:20px; font-size:1.3rem;" id="surveyFormHeader">إعداد استمارة حصر ميداني</h3>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;" class="action-buttons-mobile">
@@ -324,8 +324,13 @@
               <div class="form-group"><label>تاريخ الاستحقاق 📅</label><input type="date" id="srvDueDate"></div>
             </div>
             <div class="form-group"><label>التوجيهات الفنية للمشرفين</label><input type="text" id="srvDesc"></div>
-            <div id="questionsBuilder"></div>
-            <button class="btn btn-outline" style="width:100%; margin-bottom:24px; border-style:dashed;" onclick="addQuestionField()">+ إضافة بند فحص جديد</button>
+            
+            <div style="margin-top: 24px; padding-top:16px; border-top:2px solid var(--border-subtle);">
+              <label style="font-size:1.1rem; color:var(--tbc-petrol-dark); margin-bottom:12px;">عناصر وبنود الفحص المطلوبة:</label>
+              <div id="questionsBuilder"></div>
+              <button class="btn btn-outline" style="width:100%; margin-bottom:24px; border-style:dashed; border-width:2px; font-size:1rem;" onclick="addQuestionField()">+ إضافة بند فحص جديد</button>
+            </div>
+            
             <div style="display:flex; gap:14px;" class="action-buttons-mobile">
               <button class="btn btn-petrol" style="flex:1;" id="saveSurveyBtn" onclick="saveLocalSurvey()">حفظ ونشر النموذج ✓</button>
               <button class="btn btn-outline" onclick="closeNewSurveyModal()">إلغاء الرجوع</button>
@@ -337,18 +342,33 @@
         <section id="secFillSurvey" class="hidden">
           <div class="card">
             <button class="btn btn-outline" style="font-size:0.9rem; margin-bottom:20px;" onclick="backToSurveysList()">← رجوع للقائمة</button>
-            <h3 id="fillTitle" style="color:var(--tbc-petrol-dark); font-size:1.3rem;"></h3>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 id="fillTitle" style="color:var(--tbc-petrol-dark); font-size:1.3rem;"></h3>
+              <span id="editModeIndicator" class="badge-status pending hidden" style="font-size:0.9rem;">وضع تعديل التقرير</span>
+            </div>
             <p id="fillDesc" style="color:var(--text-muted); font-size:0.95rem; font-weight:600; margin-bottom:24px;"></p>
+            
             <div class="action-buttons-mobile" style="display:flex; gap:16px; margin-bottom:8px;">
-              <div class="form-group" style="flex:1;"><label>المدرسة *</label><select id="fillSchool" onchange="window.autoSelectBranch()"></select></div>
-              <div class="form-group" style="flex:1;"><label>المكتب الفرعي</label><input type="text" id="fillBranch" readonly style="background:#f1f5f9;"></div>
+              <div class="form-group" style="flex:1;">
+                <label>اسم المنشأة التعليمية / المدرسة *</label>
+                <select id="fillSchool" style="font-weight:800; color:var(--tbc-petrol-dark);" onchange="window.autoSelectBranch()"></select>
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label>المكتب الفرعي التابع له المنشأة *</label>
+                <input type="text" id="fillBranch" readonly style="background:#f1f5f9;">
+              </div>
             </div>
-            <div class="form-group" style="background:var(--tbc-petrol-light); padding:20px; border-radius:10px; margin-bottom:24px;">
-              <label>📍 التوثيق المكاني (GPS)</label>
-              <div style="display:flex; gap:12px; margin-top:10px;" class="action-buttons-mobile"><input type="text" id="fillGps" readonly style="background:#fff; flex:1;"><button type="button" class="btn btn-petrol" onclick="captureGps()">التقاط</button></div>
+            
+            <div class="form-group" style="background:var(--tbc-petrol-light); border:2px dashed var(--tbc-petrol); padding:20px; border-radius:10px; margin-bottom:24px;">
+              <label style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📍 التوثيق المكاني (GPS)</label>
+              <div style="display:flex; gap:12px; margin-top:10px;" class="action-buttons-mobile">
+                <input type="text" id="fillGps" placeholder="الإحداثيات المكانية ستظهر هنا" readonly style="background:#fff; flex:1; font-weight:800; color:var(--tbc-petrol-dark);">
+                <button type="button" class="btn btn-petrol" style="font-size:0.95rem; padding:0 24px;" onclick="captureGps()">التقاط GPS</button>
+              </div>
             </div>
+            
             <div id="dynamicFields" style="margin-bottom:24px; padding-top:16px; border-top:1px solid var(--border-subtle);"></div>
-            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:16px; font-size:1.15rem;" onclick="submitLocalResponse()">رفع التقرير ✓</button>
+            <button class="btn btn-petrol" id="submitSurveyBtn" style="width:100%; padding:16px; font-size:1.15rem;" onclick="submitLocalResponse()">رفع التقرير للاعتماد ✓</button>
           </div>
         </section>
 
@@ -362,9 +382,21 @@
               🔍 تصفية وتحليل أداء الحصورات والمشرفين
             </div>
             <div class="filter-grid">
-              <div><label style="font-size:0.9rem; margin-bottom:6px;">بحسب عملية الحصر:</label><select id="filterBySurveySelect" onchange="applyAdminFilters()"><option value="ALL">-- الكل --</option></select></div>
-              <div><label style="font-size:0.9rem; margin-bottom:6px;">بحسب المشرف الميداني:</label><select id="filterByInspectorSelect" onchange="applyAdminFilters()"><option value="ALL">-- الكل --</option></select></div>
-              <div><button class="btn btn-outline" style="width:100%; padding:11px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button></div>
+              <div>
+                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب عملية الحصر:</label>
+                <select id="filterBySurveySelect" style="font-weight:700;" onchange="applyAdminFilters()">
+                  <option value="ALL">-- الكل --</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب المشرف الميداني:</label>
+                <select id="filterByInspectorSelect" style="font-weight:700;" onchange="applyAdminFilters()">
+                  <option value="ALL">-- الكل --</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-outline" style="width:100%; font-size:0.95rem; padding:11px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button>
+              </div>
             </div>
           </div>
 
@@ -412,20 +444,109 @@
 
         <!-- ================= 4. Schools Tab ================= -->
         <section id="secSchools" class="hidden">
-           <!-- المحتوى القديم موجود ولن نحذفه، تم اختصاره في الـ view فقط -->
-           <div class="card" id="schoolsAdminView1" style="border-right: 6px solid var(--tbc-petrol); padding:24px 30px;">
+          
+          <div class="card" id="schoolsAdminView1" style="border-right: 6px solid var(--tbc-petrol); padding:24px 30px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
-              <div><h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900; margin-bottom:8px;">إدارة المدارس</h4></div>
-              <div style="background:#f8fafc; padding:12px 20px; border-radius:8px; text-align:center;"><div style="font-size:1.5rem; font-weight:900; color:var(--tbc-petrol-dark);" id="totalSchoolsCounter">0</div></div>
+              <div>
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900; margin-bottom:8px;">إدارة قاعدة بيانات المدارس</h4>
+                <p style="font-size:0.95rem; font-weight:600; color:var(--text-muted);">تحكم في إضافة/حذف المدارس، وإسنادها للمشرفين.</p>
+              </div>
+              <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px 20px; border-radius:8px; text-align:center;">
+                <div style="font-size:1.5rem; font-weight:900; color:var(--tbc-petrol-dark);" id="totalSchoolsCounter">0</div>
+                <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">مدرسة مسجلة</div>
+              </div>
             </div>
-            <div style="margin-top:20px;"><input type="checkbox" id="toggleInspectorEdit" onchange="toggleSchoolEditPermission()"><label for="toggleInspectorEdit" style="display:inline; margin-right:10px;">فتح تحديث البيانات للمشرفين</label></div>
+            <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0; display:flex; align-items:center; gap:12px;">
+              <input type="checkbox" id="toggleInspectorEdit" onchange="toggleSchoolEditPermission()" style="width:20px; height:20px; accent-color:var(--tbc-petrol); cursor:pointer;">
+              <label for="toggleInspectorEdit" style="font-size:1.05rem; font-weight:800; cursor:pointer; margin:0;">فتح صلاحية تحديث بيانات المدارس للمشرفين</label>
+            </div>
           </div>
-          <!-- الاستيراد والإضافة اليدوية مخفية عن العرض لتوفير السطور ولكنها تعمل عبر JS -->
+
+          <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
+            <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:20px;">
+              <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
+              <label for="excelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع القالب المعبأ</label>
+              <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
+            </div>
+          </div>
+
+          <div class="card" id="schoolsAdminView3" style="border-top: 5px solid var(--tbc-petrol);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.15rem; font-weight:900; margin-bottom:16px;">➕ إضافة مدرسة يدوياً</h4>
+            <div style="display:grid; grid-template-columns: 1fr 2fr 1.5fr 1.5fr; gap:12px;" class="action-buttons-mobile">
+              <div class="form-group"><label>الرقم الوزاري</label><input type="number" id="singleSchoolMinNo"></div>
+              <div class="form-group"><label>اسم المدرسة</label><input type="text" id="singleSchoolName"></div>
+              <div class="form-group"><label>المكتب الفرعي</label><select id="singleSchoolBranch"><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option></select></div>
+              <div class="form-group"><label>المشرف المُسند</label><select id="singleSchoolInspector"></select></div>
+            </div>
+            <button class="btn btn-gold" style="width:100%; margin-top:8px;" onclick="addSingleSchool()">إضافة المدرسة للنظام ✓</button>
+          </div>
+
+          <div class="card" id="schoolsAdminView4">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.15rem; font-weight:900; margin-bottom:16px;">📊 نصيب المشرفين من المدارس</h4>
+            <div class="table-responsive">
+              <table class="data-table" id="inspectorQuotaTable"><thead><tr><th>المشرف الميداني</th><th>المكتب التابع له</th><th>عدد المدارس المُسندة</th></tr></thead><tbody></tbody></table>
+            </div>
+          </div>
+
+          <div class="card hidden" id="schoolsInspectorView">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900; margin-bottom:8px;">🏫 المدارس المسندة في عهدتك</h4>
+            <p style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-bottom:20px;">يمكنك تحديث بيانات التواصل الخاصة بالمدارس في حال فتحت الإدارة الصلاحية.</p>
+            <div class="table-responsive">
+              <table class="data-table" id="inspectorSchoolsTable">
+                <thead><tr><th>الرقم الوزاري</th><th>اسم المدرسة</th><th>المكتب</th><th>رقم جوال التواصل</th><th>اسم المدير</th><th>إجراء</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
         <!-- ================= 5. Users Tab ================= -->
         <section id="secUsers" class="hidden">
-           <div class="card"><h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">إدارة المستخدمين</h4></div>
+          <div class="card" style="border-right: 6px solid var(--tbc-gold); padding:24px 30px;">
+            <h4 style="color:var(--tbc-petrol-dark); margin-bottom:20px; font-size:1.25rem; font-weight:900;" id="userFormTitle">إضافة / تعديل حساب مستخدم</h4>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;" class="action-buttons-mobile">
+              <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="usrFullName"></div>
+              <div class="form-group"><label>الرمز الوظيفي *</label><input type="text" id="usrUsername" placeholder="بدون مسافات"></div>
+              <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" id="usrEmail"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px;" class="action-buttons-mobile">
+              <div class="form-group"><label>رقم الجوال 📱</label><input type="text" id="usrPhone" placeholder="05XXXXXXXX"></div>
+              <div class="form-group" id="usrPasswordGroup">
+                <label>كلمة المرور המبدئية *</label>
+                <div style="display:flex; gap:8px;">
+                  <input type="text" id="usrPassword" style="flex:1;">
+                  <button type="button" class="btn btn-outline" style="padding:0 14px; font-size:0.85rem; white-space:nowrap;" onclick="generateInitialPassword()">توليد 🎲</button>
+                </div>
+              </div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option></select></div>
+            </div>
+            <label style="margin-top:10px; font-size:1.05rem;">الصلاحيات:</label>
+            <div class="perm-checkbox-group" style="margin-bottom:24px;">
+              <label class="perm-item"><input type="checkbox" id="permAllowEdit" checked><span>✏️ السماح بتعديل التقارير</span></label>
+              <label class="perm-item"><input type="checkbox" id="permRequireGps" checked><span>📍 إلزامية التقاط الموقع</span></label>
+              <label class="perm-item"><input type="checkbox" id="permRequirePhoto" checked><span>📷 إلزامية التقاط الصور</span></label>
+              <label class="perm-item"><input type="checkbox" id="permAllowPdf" checked><span>🖨️ السماح بطباعة PDF</span></label>
+            </div>
+            <div style="display:flex; gap:16px;" class="action-buttons-mobile">
+              <button class="btn btn-petrol" style="flex:1;" onclick="saveUserRecord()">حفظ الحساب ✓</button>
+              <button class="btn btn-outline" id="cancelUserEditBtn" style="display:none;" onclick="resetUserForm()">إلغاء</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">👥 قائمة المستخدمين المسجلين</h4>
+              <span class="badge-status approved" id="totalUsersBadge" style="font-size:1rem; padding:8px 16px;"></span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="usersListTable">
+                <thead><tr><th>الاسم الكامل</th><th>الرمز الوظيفي</th><th>رقم الجوال</th><th>المسمى الوظيفي</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
       </main>
@@ -446,7 +567,32 @@
     </div>
   </div>
 
-  <!-- نافذة الإجبار على تغيير كلمة المرور -->
+  <div id="updateSchoolModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔄 تحديث بيانات المدرسة</h3>
+      <p id="updateSchoolNameLabel" style="font-size:1rem; font-weight:800; color:var(--tbc-petrol); margin-bottom:20px;"></p>
+      <div class="form-group"><label>رقم جوال التواصل بالمدرسة</label><input type="text" id="updSchoolPhone" placeholder="05XXXXXXXX"></div>
+      <div class="form-group"><label>المدير المباشر (اسم المدير)</label><input type="text" id="updSchoolManager" placeholder="اسم المدير الثلاثي"></div>
+      <div style="display:flex; gap:12px; margin-top:24px;" class="action-buttons-mobile">
+        <button class="btn btn-petrol" style="flex:1;" onclick="saveSchoolUpdate()">حفظ البيانات ✓</button>
+        <button class="btn btn-outline" onclick="closeUpdateSchoolModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="changePasswordModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:8px; font-size:1.3rem;">🔑 تغيير كلمة المرور</h3>
+      <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="cpCurrentPass"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="cpNewPass"></div>
+      <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="cpConfirmPass"></div>
+      <div style="display:flex; gap:12px; margin-top:26px;" class="action-buttons-mobile">
+        <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordChange()">تحديث ✓</button>
+        <button class="btn btn-outline" onclick="closeChangePasswordModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <div id="forceChangePasswordModal" class="modal-overlay hidden" style="background: rgba(15,28,45,0.95); z-index:9999;">
     <div class="modal-content" style="border-top-color:#ef4444;">
       <h3 style="color:#ef4444; margin-bottom:8px; font-size:1.3rem;">⚠️ إجراء أمني مطلوب</h3>
@@ -456,6 +602,16 @@
       <button class="btn btn-reject" style="width:100%; margin-top:16px;" onclick="submitForcedPasswordChange()">تغيير واعتماد كلمة المرور ✓</button>
     </div>
   </div>
+
+  <section id="secSuccessModal" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align:center;">
+      <div style="font-size:4rem; margin-bottom:16px;">✅</div>
+      <h3 style="color:var(--tbc-petrol-dark); font-size:1.6rem; margin-bottom:10px;">تم التنفيذ بنجاح!</h3>
+      <div style="display:flex; justify-content:center; gap:16px; margin-top:20px;">
+        <button class="btn btn-outline" style="font-size:1.05rem; padding:12px 24px;" onclick="document.getElementById('secSuccessModal').classList.add('hidden'); showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records');">العودة للرئيسية</button>
+      </div>
+    </div>
+  </section>
 
   <!-- ================= Application Logic ================= -->
   <script>
@@ -472,6 +628,7 @@
     // Globals
     let sCurveChartInstance = null; let compliancePieChartInstance = null;
     let activeSrv = null; let selectedSurveyFilter = "ALL"; let selectedInspectorFilter = "ALL"; let selectedKpiStatusFilter = "ALL";
+    let editingUserIndex = -1; let editingSurveyId = null; let editingResponseId = null;
 
     function updateSyncStatus(status) {
       const s = document.getElementById('cloudSyncStatus'); if (!s) return;
@@ -565,7 +722,7 @@
       renderCompliancePieChart(scoped);
     }
 
-    // رسم الدونات (Pie) لتحليل نسبة المطابقة - بناءً على طلبك كمحلل بيانات
+    // رسم الدونات (Pie) لتحليل نسبة المطابقة
     function renderCompliancePieChart(scopedResponses) {
       try {
         if (typeof Chart === 'undefined') return;
@@ -581,12 +738,11 @@
            }
         });
         
-        // لو مفيش بيانات، نحط بيانات وهمية توضيحية
         if(matchCount === 0 && failCount === 0) { matchCount = 1; failCount = 0; }
 
         if (compliancePieChartInstance) {
           compliancePieChartInstance.data.datasets[0].data = [matchCount, failCount];
-          compliancePieChartInstance.update();
+          compliancePieChartInstance.update('none');
         } else {
           const canvas = document.getElementById('compliancePieChart'); if(!canvas) return;
           compliancePieChartInstance = new Chart(canvas.getContext('2d'), { 
@@ -597,6 +753,19 @@
             }, 
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 12 } } } } } 
           });
+        }
+      } catch(e) {}
+    }
+
+    function renderSCurveChart(plannedTotal, approvedTotal) {
+      try {
+        if (typeof Chart === 'undefined') return;
+        const plannedPoints = [ Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58), Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal ];
+        const currentPoint = Math.min(approvedTotal, plannedTotal); const actualPoints = [ Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75), currentPoint, null, null ];
+        if (sCurveChartInstance) { sCurveChartInstance.data.datasets[0].data = plannedPoints; sCurveChartInstance.data.datasets[1].data = actualPoints; sCurveChartInstance.update('none'); } 
+        else {
+          const canvas = document.getElementById('sCurveChart'); if(!canvas) return;
+          sCurveChartInstance = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'], datasets: [ { label: 'المستهدف المخطط', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 }, { label: 'الإنجاز الفعلي', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
         }
       } catch(e) {}
     }
@@ -683,10 +852,10 @@
 
        let actions = '';
        if (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING") {
-          actions = `<div style="display:flex; gap:10px; margin-top:20px; border-top:2px solid #cbd5e1; padding-top:16px;">
-             <button class="btn btn-approve" onclick="setReportStatus(${rep.id}, 'approved')">✓ اعتماد التقرير</button>
-             <button class="btn btn-reject" onclick="promptRejectReport(${rep.id})">✕ رفض بملاحظة</button>
-             <button class="btn btn-gold" onclick="grantEditPermission(${responses.findIndex(x => x.id === rep.id)})">🔓 إذن تعديل للمشرف</button>
+          actions = `<div style="display:flex; gap:10px; margin-top:20px; border-top:2px solid #cbd5e1; padding-top:16px;" class="action-buttons-mobile">
+             <button class="btn btn-approve" style="flex:1;" onclick="setReportStatus(${rep.id}, 'approved')">✓ اعتماد التقرير</button>
+             <button class="btn btn-reject" style="flex:1;" onclick="promptRejectReport(${rep.id})">✕ رفض بملاحظة</button>
+             <button class="btn btn-gold" style="flex:1;" onclick="grantEditPermission(${responses.findIndex(x => x.id === rep.id)})">🔓 إذن تعديل للمشرف</button>
           </div>`;
        }
        if (currentUser.role === "ROLE_INSPECTOR") {
@@ -718,7 +887,7 @@
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
       const scoped = getScopedResponses(); 
       
-      // تقرير شامل للإحصائيات إذا لم يتم اختيار مدرسة (حل للمشكلة رقم 1)
+      // تقرير شامل للإحصائيات إذا لم يتم اختيار مدرسة
       if (!selectedSchool) {
          if (scoped.length === 0) return alert("لا توجد أي تقارير مسجلة في النظام لتصديرها.");
          const total = scoped.length; const app = scoped.filter(r=>r.status==='approved').length; const rej = scoped.filter(r=>r.status==='rejected').length; const pen = scoped.filter(r=>r.status==='pending').length;
@@ -728,7 +897,7 @@
          return;
       }
 
-      // التقرير المخصص لمدرسة محددة (كما كان يعمل سابقاً)
+      // التقرير المخصص لمدرسة محددة
       const schoolSurveys = scoped.filter(r => r.school === selectedSchool);
       if (schoolSurveys.length === 0) return alert("لا توجد سجلات لهذه المدرسة.");
       const w = window.open('', '_blank'); const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل'; const branchName = schoolSurveys[0]?.branch || 'المنطقة الشرقية';
@@ -774,6 +943,176 @@
       XLSX.utils.book_append_sheet(wb, ws, "البيانات");
       XLSX.writeFile(wb, fileName);
     }
+
+    // ================= Logic: Schools Management =================
+    function renderSchoolsManagement() {
+      if(!currentUser) return;
+      const isPlanning = currentUser.role === "ROLE_PLANNING";
+      
+      const views = ['schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4'];
+      views.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isPlanning); });
+      
+      const vInsp = document.getElementById('schoolsInspectorView'); if(vInsp) vInsp.classList.toggle('hidden', isPlanning);
+
+      if(isPlanning) {
+        document.getElementById('toggleInspectorEdit').checked = schoolDataWrapper.settings?.allowInspectorEdit;
+
+        const sel = document.getElementById('singleSchoolInspector');
+        sel.innerHTML = '<option value="">-- اختر المشرف --</option>';
+        usersList.filter(u => u.role === 'ROLE_INSPECTOR').forEach(u => { sel.innerHTML += `<option value="${esc(u.fullName)}">${esc(u.fullName)}</option>`; });
+
+        const qBody = document.querySelector('#inspectorQuotaTable tbody'); if(qBody) { qBody.innerHTML = '';
+          usersList.filter(u => u.role === 'ROLE_INSPECTOR').forEach(u => {
+             const count = (schoolDataWrapper.list || []).filter(s => s.inspector === u.username || s.inspector === u.fullName).length;
+             qBody.innerHTML += `<tr><td><b>${esc(u.fullName)}</b></td><td>${esc(u.branch) || '-'}</td><td style="color:var(--tbc-petrol); font-weight:900; font-size:1.1rem;">${count}</td></tr>`;
+          });
+        }
+      } else {
+        const tbody = document.querySelector('#inspectorSchoolsTable tbody'); if(tbody) { tbody.innerHTML = '';
+          const mySchools = (schoolDataWrapper.list || []).filter(s => s.inspector === currentUser.username || s.inspector === currentUser.fullName);
+          if(mySchools.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">لا توجد مدارس مسندة إليك حالياً.</td></tr>`; } 
+          else {
+            mySchools.forEach((sch) => {
+              let updateBtn = `<span style="color:var(--text-muted); font-size:0.85rem;">مغلق من الإدارة</span>`;
+              if(schoolDataWrapper.settings?.allowInspectorEdit) { updateBtn = `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="openUpdateSchoolModal('${esc(sch.name)}')">✏️ تحديث البيانات</button>`; }
+              tbody.innerHTML += `<tr><td><code style="font-size:0.95rem; font-weight:bold;">${esc(sch.minNo) || '-'}</code></td><td style="font-weight:900; color:var(--tbc-petrol-dark);">${esc(sch.name)}</td><td>${esc(sch.branch)}</td><td>${esc(sch.phone) || '-'}</td><td>${esc(sch.manager) || '-'}</td><td>${updateBtn}</td></tr>`;
+            });
+          }
+        }
+      }
+    }
+
+    async function toggleSchoolEditPermission() {
+      schoolDataWrapper.settings.allowInspectorEdit = document.getElementById('toggleInspectorEdit').checked;
+      const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+      if(res.status === "success") pullFromCloud(); else alert(esc(res.message));
+    }
+
+    async function addSingleSchool() {
+      const minNo = document.getElementById('singleSchoolMinNo').value.trim(); const name = document.getElementById('singleSchoolName').value.trim(); const branch = document.getElementById('singleSchoolBranch').value; const inspector = document.getElementById('singleSchoolInspector').value;
+      if(!name || !inspector) return alert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
+      if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
+      const exists = schoolDataWrapper.list.findIndex(s => s.name === name);
+      if(exists > -1) { schoolDataWrapper.list[exists] = { minNo, name, branch, inspector, phone: schoolDataWrapper.list[exists].phone, manager: schoolDataWrapper.list[exists].manager }; } 
+      else { schoolDataWrapper.list.push({ minNo, name, branch, inspector, phone: "", manager: "" }); }
+      
+      document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = '';
+      const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+      if(res.status === "success") { alert('✓ تم الحفظ بنجاح!'); pullFromCloud(); } else alert(esc(res.message));
+    }
+
+    function downloadSchoolsTemplate() {
+      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      const ws_data = [ ["الرقم الوزاري", "اسم المدرسة", "الإدارة المعنية", "المشرف لاستشاري"], ["55608", "ابتدائية المنذر بن الزبير بالدمام", "المكتب الفرعي بالشرقية", "الهنوف"] ];
+      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
+    }
+
+    function handleExcelUpload(event) {
+      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+          let added = 0;
+          if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
+          for(let i = 1; i < json.length; i++) {
+            const row = json[i]; if (!row || row.length === 0) continue;
+            const minNo = row[0] ? String(row[0]).trim() : ''; const name = row[1] ? String(row[1]).trim() : '';
+            let branchRaw = row[2] ? String(row[2]).trim() : 'المكتب الفرعي بالشرقية'; const inspector = row[3] ? String(row[3]).trim() : '';
+            if (name && inspector) {
+              let branch = "المكتب الفرعي بالشرقية"; if (branchRaw.includes("أحساء") || branchRaw.includes("الاحساء")) branch = "المكتب الفرعي بالأحساء";
+              const idx = schoolDataWrapper.list.findIndex(s => s.name === name);
+              if(idx > -1) { schoolDataWrapper.list[idx].minNo = minNo; schoolDataWrapper.list[idx].branch = branch; schoolDataWrapper.list[idx].inspector = inspector; } 
+              else { schoolDataWrapper.list.push({minNo, name, branch, inspector, phone:"", manager:""}); }
+              added++;
+            }
+          }
+          const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+          if(res.status === "success") { alert(`✓ تمت العملية بنجاح! تم استيراد وربط [ ${added} ] مدرسة.`); pullFromCloud(); } else alert(esc(res.message));
+        } catch(err) { alert("حدث خطأ. تأكد من استخدام القالب المعتمد."); }
+        event.target.value = ''; 
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function openUpdateSchoolModal(schoolName) {
+       const sch = schoolDataWrapper.list.find(s => s.name === schoolName); if(!sch) return;
+       document.getElementById('updateSchoolNameLabel').innerText = sch.name; document.getElementById('updSchoolPhone').value = sch.phone || ''; document.getElementById('updSchoolManager').value = sch.manager || '';
+       document.getElementById('updateSchoolModal').classList.remove('hidden');
+    }
+    function closeUpdateSchoolModal() { document.getElementById('updateSchoolModal').classList.add('hidden'); }
+
+    async function saveSchoolUpdate() {
+       const schoolName = document.getElementById('updateSchoolNameLabel').innerText;
+       const phone = document.getElementById('updSchoolPhone').value.trim(); const manager = document.getElementById('updSchoolManager').value.trim();
+       const idx = schoolDataWrapper.list.findIndex(s => s.name === schoolName);
+       if(idx > -1) {
+          schoolDataWrapper.list[idx].phone = phone; schoolDataWrapper.list[idx].manager = manager;
+          const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+          if(res.status === "success") { alert("✓ تم تحديث بيانات المدرسة بنجاح!"); closeUpdateSchoolModal(); pullFromCloud(); } else alert(esc(res.message));
+       }
+    }
+
+    // ================= Logic: Users =================
+    function generateInitialPassword() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; let pass = "";
+      for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      document.getElementById('usrPassword').value = pass;
+    }
+
+    function renderUsersManagement() {
+      const tbody = document.querySelector('#usersListTable tbody'); if (!tbody) return; tbody.innerHTML = '';
+      const badge = document.getElementById('totalUsersBadge'); if(badge) badge.innerText = `${usersList.length} مستخدم`;
+      usersList.forEach((u, idx) => {
+        const roleLabel = ROLE_LABELS[u.role] || u.role;
+        const statusBadge = u.active !== false ? '<span class="badge-status approved">نشط</span>' : '<span class="badge-status rejected">موقوف</span>';
+        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td>${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${statusBadge}</td><td><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button></td></tr>`;
+      });
+    }
+
+    async function saveUserRecord() {
+      const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const phone = document.getElementById('usrPhone').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
+      if (!fullName || !username || !email) return alert("خطأ إدخال: يرجى التأكد من تعبئة كافة الحقول.");
+      const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
+      
+      let res;
+      if (editingUserIndex >= 0) { 
+        res = await apiCall("UPDATE_USER", { username: username, fullName: fullName, email: email, phone: phone, role: role, branch: branch, permissions: permissions });
+      } else { 
+        if(!password || password.length < 8) return alert("يجب إدخال كلمة مرور مبدئية من 8 خانات على الأقل للمستخدم الجديد.");
+        res = await apiCall("CREATE_USER", { username: username, fullName: fullName, email: email, phone: phone, password: password, role: role, branch: branch, permissions: permissions });
+      }
+
+      if(res.status === "success") { alert("✓ تمت العملية بنجاح!"); usersList = res.users; resetUserForm(); renderUsersManagement(); } else alert(esc(res.message));
+    }
+
+    function editUserPrompt(idx) {
+      editingUserIndex = idx; const u = usersList[idx];
+      document.getElementById('usrFullName').value = u.fullName; document.getElementById('usrUsername').value = u.username; document.getElementById('usrEmail').value = u.email || ''; document.getElementById('usrPhone').value = u.phone || ''; document.getElementById('usrPasswordGroup').style.display = 'none'; document.getElementById('usrRole').value = u.role; document.getElementById('usrBranch').value = u.branch || 'الكل';
+      const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
+      document.getElementById('permAllowEdit').checked = p.allowEdit !== false; document.getElementById('permRequireGps').checked = p.requireGps !== false; document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false; document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
+      document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل الحساب: ${esc(u.fullName)}`; document.getElementById('cancelUserEditBtn').style.display = 'inline-flex'; document.getElementById('usrUsername').disabled = true; window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetUserForm() {
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
+    }
+
+    async function adminResetPasswordPrompt(username) { 
+      const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم (${username}):\n(8 أحرف على الأقل)`); 
+      if (newPass !== null && newPass.trim() !== "") { 
+        if(newPass.length < 8) return alert("كلمة المرور قصيرة جداً.");
+        const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: username, newPassword: newPass.trim() });
+        if(res.status==="success") { usersList = res.users; renderUsersManagement(); alert("تم إعادة تعيين كلمة المرور بنجاح."); } else alert(esc(res.message));
+      } 
+    }
+
+    // Init App Check
+    window.onload = () => {
+      if(currentSessionToken) {
+        try { currentUser = JSON.parse(localStorage.getItem('tbc_current_user')); if(currentUser) loginSuccess(); } catch(e){}
+      }
+    };
   </script>
 </body>
 </html>
