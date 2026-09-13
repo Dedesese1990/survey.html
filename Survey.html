@@ -57,9 +57,7 @@
       top: 0;
       z-index: 1000;
     }
-    .header-content {
-      display: flex; align-items: center; justify-content: space-between; padding: 12px 0; gap: 15px;
-    }
+    .header-content { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; gap: 15px; }
     .brand-section { display: flex; align-items: center; gap: 16px; }
     .tbc-logo-svg { height: 48px; width: auto; max-width: 140px; display: block; }
     .brand-text-box { border-right: 3px solid var(--tbc-petrol); padding-right: 14px; text-align: right; }
@@ -430,10 +428,10 @@
               <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="analyticsScopeNote">متابعة الأداء الحي لعمليات الحصر الميداني</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.9rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard()">
+              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.9rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
                 <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
               </select>
-              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard()">تحديث البيانات ↺</button>
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
             </div>
           </div>
 
@@ -469,7 +467,7 @@
             <div class="card" style="margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني التراكمي (Actual vs Planned)</h4>
-                <span class="badge-status approved" style="font-size:0.75rem;">تحديث فوري</span>
+                <span class="badge-status approved" style="font-size:0.75rem;">تحديث حي</span>
               </div>
               <div style="height: 300px; position: relative; width:100%;">
                 <canvas id="sCurveChart"></canvas>
@@ -795,7 +793,7 @@
 
   <!-- ================= Application Logic ================= -->
   <script>
-    // Constants
+    // Constants & Master Keys
     const ROLE_LABELS = {
       ROLE_PLANNING: "إدارة التخطيط والتحكم",
       ROLE_REGION_EAST: "إدارة المنطقة الشرقية",
@@ -805,12 +803,12 @@
       ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    const MASTER_USERS_KEY = 'tbc_users_master_v1';
-    const MASTER_SURVEYS_KEY = 'tbc_surveys_master_v1';
-    const MASTER_RECORDS_KEY = 'tbc_responses_master_v1';
-    const MASTER_CHAT_KEY = 'tbc_chat_messages_master_v1';
+    const MASTER_USERS_KEY = 'tbc_users_master_v2';
+    const MASTER_SURVEYS_KEY = 'tbc_surveys_master_v2';
+    const MASTER_RECORDS_KEY = 'tbc_responses_master_v2';
+    const MASTER_CHAT_KEY = 'tbc_chat_messages_master_v2';
 
-    // Data Stores
+    // Global Data Stores
     let usersList = [];
     let surveys = [];
     let responses = [];
@@ -827,15 +825,15 @@
     let selectedInspectorFilter = "ALL";
     let selectedKpiStatusFilter = "ALL";
 
-    // Initialize App & Load Data Safely
+    // ================= App Initialization (Bulletproof Data Loading) =================
     function initApp() {
-      // 1. Users
+      // Load Users
       try {
-        let storedUsers = localStorage.getItem(MASTER_USERS_KEY);
-        if (storedUsers) { usersList = JSON.parse(storedUsers); }
+        const u = localStorage.getItem(MASTER_USERS_KEY);
+        if(u) usersList = JSON.parse(u);
       } catch(e) {}
       
-      if (!usersList || usersList.length === 0 || !Array.isArray(usersList)) {
+      if (!usersList || !Array.isArray(usersList) || usersList.length === 0) {
         usersList = [
           { username: "admin", password: "123", fullName: "إدارة التخطيط والتحكم", email: "ERPMO@tbc.sa", role: "ROLE_PLANNING", branch: "الكل", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
           { username: "reg_east", password: "123", fullName: "م. عبد العزيز", email: "east.reg@tbc.sa", role: "ROLE_REGION_EAST", branch: "الكل", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
@@ -848,13 +846,13 @@
         localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
       }
 
-      // 2. Surveys
+      // Load Surveys
       try {
-        let storedSurveys = localStorage.getItem(MASTER_SURVEYS_KEY);
-        if (storedSurveys) { surveys = JSON.parse(storedSurveys); }
+        const s = localStorage.getItem(MASTER_SURVEYS_KEY);
+        if(s) surveys = JSON.parse(s);
       } catch(e) {}
 
-      if (!surveys || surveys.length === 0 || !Array.isArray(surveys)) {
+      if (!surveys || !Array.isArray(surveys) || surveys.length === 0) {
         surveys = [
           {
             id: "SRV-101", title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية", desc: "فحص شامل لمخارج الطوارئ ومضخات الحريق والإنارة الداخلية", dueDate: "2026-09-30", targetSchoolsCount: 15,
@@ -876,24 +874,25 @@
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
-      // 3. Responses & Chat
+      // Load Responses
       try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){ responses = []; }
       if(!Array.isArray(responses)) responses = [];
 
+      // Load Chat
       try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
       if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
         chatMessages = [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
         localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
       }
 
-      // Check Auto-login
+      // Check Auto-Login
       const savedUser = localStorage.getItem('tbc_remembered_user');
       if (savedUser) {
         try {
           const userObj = JSON.parse(savedUser);
           const found = usersList.find(x => x.username.toLowerCase() === userObj.username.toLowerCase() && x.password === userObj.password);
           if (found && found.active !== false) {
-            loginSuccess(found, true);
+            loginSuccess(found);
           }
         } catch (e) {}
       }
@@ -903,14 +902,14 @@
     function showTab(tab) {
       if(!currentUser) return;
       
-      // Sync Buttons
+      // Update Tab Button Styles
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
       const tu = document.getElementById('tabUsers');
       if (tu) tu.classList.toggle('active', tab === 'users');
 
-      // Hide all sections
+      // Hide all main sections
       document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
@@ -919,10 +918,17 @@
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSuccessModal').classList.add('hidden');
 
-      // Show requested section
+      // Refresh Data from Storage Always before showing
+      try {
+        surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
+        responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
+      } catch(e){}
+
+      // Show specific tab & render its components
       if(tab === 'analytics') {
         document.getElementById('secAnalytics').classList.remove('hidden');
-        refreshAnalyticsDashboard();
+        populateAnalyticsSurveyDropdown();
+        refreshAnalyticsDashboard(true);
       } 
       else if(tab === 'surveys') {
         document.getElementById('secSurveys').classList.remove('hidden');
@@ -930,9 +936,9 @@
       }
       else if(tab === 'records') {
         document.getElementById('secRecords').classList.remove('hidden');
-        updateKPIs(); // Display permanent color cards
         if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
-        renderRecords();
+        updateKPIs(); // Force KPI render
+        renderRecords(); // Force Table render
       }
       else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
         document.getElementById('secUsers').classList.remove('hidden');
@@ -988,13 +994,8 @@
       document.getElementById('tabUsers').classList.toggle('hidden', !isPlanning);
       document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
-      if (isManagement) populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      
       renderChatMessages();
-      
-      // Default initial tab
-      showTab('analytics');
+      showTab('analytics'); // Go to default tab
     }
 
     function logout() {
@@ -1009,7 +1010,7 @@
       document.getElementById('chatFloatingBtn').classList.add('hidden');
       document.getElementById('chatWindow').classList.add('hidden');
       closeProfileMenu();
-      document.getElementById('headerSubTitle').innerText = "إدارة التخطيط والتحكم";
+      
       document.getElementById('loginUsername').value = '';
       document.getElementById('loginPassword').value = '';
       document.getElementById('rememberMeCheckbox').checked = false;
@@ -1036,28 +1037,54 @@
       closeForgotPasswordModal();
     }
 
-    // ================= Analytics =================
+    // ================= Analytics Live Engine =================
+    // Updates dashboard dynamically
+    setInterval(() => {
+      if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) {
+         refreshAnalyticsDashboard(true); // silent refresh
+      }
+      if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) {
+         updateKPIs(); // silent refresh
+      }
+    }, 2000);
+
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
       if (!select) return;
-      select.innerHTML = '<option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>';
-      surveys.forEach(s => { select.innerHTML += `<option value="${s.title}">${s.title}</option>`; });
+      const currentVal = select.value;
+      
+      let html = '<option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>';
+      if(surveys && surveys.length > 0) {
+        surveys.forEach(s => { html += `<option value="${s.title}">${s.title}</option>`; });
+      }
+      
+      if(select.innerHTML !== html) {
+        select.innerHTML = html;
+        if(currentVal && currentVal !== "") select.value = currentVal;
+      }
     }
 
-    function refreshAnalyticsDashboard() {
+    function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
       
-      const selectedSurvey = document.getElementById('analyticsSurveyFilter').value;
+      // Pull fresh data
+      try {
+        surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
+        responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
+      } catch(e) {}
+
+      const select = document.getElementById('analyticsSurveyFilter');
+      if(select && select.options.length <= 1) populateAnalyticsSurveyDropdown();
+      const selectedSurvey = select ? select.value : "ALL";
+
       let scoped = getScopedResponses();
       if (selectedSurvey !== "ALL") scoped = scoped.filter(r => r.surveyTitle === selectedSurvey);
 
       const noteElem = document.getElementById('analyticsScopeNote');
-      if (currentUser.role === 'ROLE_INSPECTOR') {
-        noteElem.innerText = `عرض خاص بالمشرف: ${currentUser.fullName} • متابعة أدائك الشخصي ونسبة اعتمادك`;
-      } else if (currentUser.branch && currentUser.branch !== 'الكل') {
-        noteElem.innerText = `نطاق العرض: ${currentUser.branch} • الإحصائيات التراكمية للمكتب`;
-      } else {
-        noteElem.innerText = `عرض قيادي شامل: المكتب الإقليمي بالشرقية وإدارة التخطيط والتحكم`;
+      if(noteElem && !isSilent) {
+        if (currentUser.role === 'ROLE_INSPECTOR') noteElem.innerText = `عرض خاص بالمشرف: ${currentUser.fullName} • متابعة أدائك الشخصي ونسبة اعتمادك`;
+        else if (currentUser.branch && currentUser.branch !== 'الكل') noteElem.innerText = `نطاق العرض: ${currentUser.branch} • الإحصائيات التراكمية للمكتب`;
+        else noteElem.innerText = `عرض قيادي شامل: المكتب الإقليمي بالشرقية وإدارة التخطيط والتحكم`;
       }
 
       const approvedCount = scoped.filter(r => r.status === 'approved').length;
@@ -1076,19 +1103,31 @@
       const remainingCount = Math.max(0, plannedTarget - approvedCount);
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
 
-      document.getElementById('biActualRate').innerText = `${actualRate}%`;
-      document.getElementById('biPlannedCount').innerText = plannedTarget;
-      document.getElementById('biApprovedCount').innerText = approvedCount;
-      document.getElementById('biPendingCount').innerText = pendingCount;
-      document.getElementById('biRemainingCount').innerText = remainingCount;
+      // Update cards without DOM flicker
+      const elRate = document.getElementById('biActualRate');
+      if(elRate && elRate.innerText !== `${actualRate}%`) elRate.innerText = `${actualRate}%`;
+      
+      const elPlan = document.getElementById('biPlannedCount');
+      if(elPlan && elPlan.innerText !== String(plannedTarget)) elPlan.innerText = plannedTarget;
+      
+      const elApprv = document.getElementById('biApprovedCount');
+      if(elApprv && elApprv.innerText !== String(approvedCount)) elApprv.innerText = approvedCount;
+      
+      const elPend = document.getElementById('biPendingCount');
+      if(elPend && elPend.innerText !== String(pendingCount)) elPend.innerText = pendingCount;
+      
+      const elRem = document.getElementById('biRemainingCount');
+      if(elRem && elRem.innerText !== String(remainingCount)) elRem.innerText = remainingCount;
 
       const statusElem = document.getElementById('biActualStatus');
-      if (parseFloat(actualRate) >= 80) {
-        statusElem.innerText = "✓ أداء ممتاز ومطابق للمخطط المستهدف"; statusElem.style.color = "#38bdf8";
-      } else if (parseFloat(actualRate) >= 50) {
-        statusElem.innerText = "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية"; statusElem.style.color = "#fef08a";
-      } else {
-        statusElem.innerText = "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية"; statusElem.style.color = "#fca5a5";
+      if (statusElem) {
+        if (parseFloat(actualRate) >= 80) {
+          if(statusElem.innerText !== "✓ أداء ممتاز ومطابق للمخطط المستهدف") { statusElem.innerText = "✓ أداء ممتاز ومطابق للمخطط المستهدف"; statusElem.style.color = "#38bdf8"; }
+        } else if (parseFloat(actualRate) >= 50) {
+          if(statusElem.innerText !== "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية") { statusElem.innerText = "⚠️ تقدم متوسط - يتطلب تكثيف الزيارات الميدانية"; statusElem.style.color = "#fef08a"; }
+        } else {
+          if(statusElem.innerText !== "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية") { statusElem.innerText = "❌ انحراف عن المخطط - يتطلب تدخل المكاتب الفرعية"; statusElem.style.color = "#fca5a5"; }
+        }
       }
 
       renderSCurveChart(plannedTarget, approvedCount);
@@ -1097,52 +1136,61 @@
     }
 
     function renderSCurveChart(plannedTotal, approvedTotal) {
-      const ctx = document.getElementById('sCurveChart').getContext('2d');
-      if (sCurveChartInstance) sCurveChartInstance.destroy();
+      try {
+        if (typeof Chart === 'undefined') return;
+        
+        const labels = ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'];
+        const plannedPoints = [
+          Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58),
+          Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal
+        ];
 
-      const labels = ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'];
-      const plannedPoints = [
-        Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58),
-        Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal
-      ];
+        const currentPoint = Math.min(approvedTotal, plannedTotal);
+        const actualPoints = [
+          Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75),
+          currentPoint, null, null
+        ];
 
-      const currentPoint = Math.min(approvedTotal, plannedTotal);
-      const actualPoints = [
-        Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75),
-        currentPoint, null, null
-      ];
-
-      sCurveChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'المستهدف المخطط التراكمي (Planned S-Curve)', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 },
-            { label: 'الإنجاز الفعلي المعتمد (Actual Verified)', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#276270' }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } },
-          scales: {
-            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Tajawal' } } },
-            x: { grid: { display: false }, ticks: { font: { family: 'Tajawal' } } }
-          }
+        if (sCurveChartInstance) {
+          // Live update without flicker
+          sCurveChartInstance.data.datasets[0].data = plannedPoints;
+          sCurveChartInstance.data.datasets[1].data = actualPoints;
+          sCurveChartInstance.update('none');
+        } else {
+          const canvas = document.getElementById('sCurveChart');
+          if(!canvas) return;
+          const ctx = canvas.getContext('2d');
+          sCurveChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: 'المستهدف المخطط التراكمي (Planned S-Curve)', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 },
+                { label: 'الإنجاز الفعلي المعتمد (Actual Verified)', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#276270' }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } },
+              scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Tajawal' } } }, x: { grid: { display: false }, ticks: { font: { family: 'Tajawal' } } } }
+            }
+          });
         }
-      });
+      } catch(e) { console.error("Chart load error:", e); }
     }
 
     function renderBranchProgressBars(scopedResponses) {
       const container = document.getElementById('branchProgressBarsContainer');
-      container.innerHTML = '';
+      if(!container) return;
+      
       const branches = [ { name: "المكتب الفرعي بالشرقية", target: 35 }, { name: "المكتب الفرعي بالأحساء", target: 25 } ];
+      let html = '';
 
       branches.forEach(b => {
         const bReports = scopedResponses.filter(r => r.branch === b.name && r.status === 'approved');
         const done = bReports.length;
         const rate = Math.min(100, Math.round((done / b.target) * 100));
-
-        container.innerHTML += `
+        html += `
           <div class="region-prog-item">
             <div class="region-prog-label">
               <span>🏢 ${b.name}</span>
@@ -1152,15 +1200,17 @@
           </div>
         `;
       });
+      if(container.innerHTML !== html) container.innerHTML = html;
     }
 
     function renderLeaderboard(scopedResponses) {
       const container = document.getElementById('leaderboardContainer');
       const countBadge = document.getElementById('activeInspectorsCountBadge');
-      container.innerHTML = '';
+      if(!container || !countBadge) return;
 
       const inspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR');
-      countBadge.innerText = `${inspectors.length} مشرفين معتمدين`;
+      const badgeText = `${inspectors.length} مشرفين مسجلين`;
+      if(countBadge.innerText !== badgeText) countBadge.innerText = badgeText;
 
       const stats = inspectors.map(ins => {
         const myReports = scopedResponses.filter(r => r.username === ins.username);
@@ -1171,14 +1221,16 @@
       });
 
       stats.sort((a, b) => b.approved - a.approved || b.rate - a.rate);
+      let html = '';
 
       stats.forEach((item, idx) => {
         const rank = idx + 1;
         const isFirst = rank === 1 && item.approved > 0;
         const crown = isFirst ? '👑 ' : '';
-        const initials = item.name.split(' ').slice(0, 2).map(n => n[0]).join('');
+        let initials = '?';
+        if(item.name) initials = item.name.split(' ').slice(0, 2).map(n => n[0]).join('');
 
-        container.innerHTML += `
+        html += `
           <div class="leader-card ${isFirst ? 'rank-1' : ''}">
             <div class="leader-badge-num">${rank}</div>
             <div class="leader-avatar">${initials}</div>
@@ -1188,20 +1240,23 @@
           </div>
         `;
       });
+      if(container.innerHTML !== html) container.innerHTML = html;
     }
 
     // ================= Surveys Management =================
     function renderSurveys() {
       const container = document.getElementById('surveysListContainer');
+      if(!container) return;
       container.innerHTML = '';
       
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
+
       if (!surveys || surveys.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             <h4>لا توجد نماذج حصر نشطة حالياً</h4>
             <p>عندما تقوم إدارة التخطيط والتحكم بنشر استمارة حصر جديدة، ستظهر هنا مباشرة.</p>
-          </div>
-        `;
+          </div>`;
         return;
       }
 
@@ -1251,7 +1306,6 @@
 
     function openNewSurveyModal() {
       editingSurveyId = null;
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
@@ -1264,11 +1318,11 @@
     }
 
     function openEditSurveyTemplate(id) {
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
       const s = surveys.find(x => String(x.id) === String(id));
       if (!s) return;
       editingSurveyId = s.id;
 
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
@@ -1290,7 +1344,7 @@
     function closeNewSurveyModal() {
       editingSurveyId = null;
       document.getElementById('secNewSurvey').classList.add('hidden');
-      showTab('surveys'); // الرجوع النظيف باستخدام الدالة المركزية
+      showTab('surveys');
     }
 
     function deleteSurveyTemplate(id) {
@@ -1298,9 +1352,7 @@
       surveys = surveys.filter(s => String(s.id) !== String(id));
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
-      populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      renderSurveys();
+      showTab('surveys');
     }
 
     function addQuestionField(labelVal = "", typeVal = "text", optVal = "") {
@@ -1311,7 +1363,8 @@
       const isRadio = typeVal === 'radio';
 
       let initialOptions = ["خيار 1", "خيار 2"];
-      if (optVal) { initialOptions = Array.isArray(optVal) ? optVal : optVal.split(',').map(s => s.trim()).filter(Boolean); }
+      if (optVal && Array.isArray(optVal)) initialOptions = optVal;
+      else if (optVal) initialOptions = optVal.split(',').map(s => s.trim()).filter(Boolean);
 
       const optionsHtml = initialOptions.map(opt => `
         <div class="option-row" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
@@ -1397,10 +1450,7 @@
           let optionsList = [];
           if (t === 'radio') {
             const optInputs = node.querySelectorAll('.opt-input');
-            optInputs.forEach(input => {
-              const val = input.value.trim();
-              if (val) optionsList.push(val);
-            });
+            optInputs.forEach(input => { const val = input.value.trim(); if(val) optionsList.push(val); });
             if (optionsList.length === 0) optionsList = ["مطابق", "غير مطابق"];
           }
           fields.push({ label: l, type: t, options: optionsList });
@@ -1424,22 +1474,18 @@
       }
 
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
-      
-      populateFilterDropdowns();
-      populateAnalyticsSurveyDropdown();
-      showTab('surveys'); // يعود للقائمة ويعرضها مباشرة
+      showTab('surveys'); 
     }
 
-    // ================= تعبئة الحصر המيداني =================
+    // ================= Fill Survey =================
     function openFillSurvey(id, existingData = null) {
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
       if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير. قد يكون قد تم حذفه من قبل الإدارة.");
 
-      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
       document.getElementById('secFillSurvey').classList.remove('hidden');
-      document.getElementById('secSuccessModal').classList.add('hidden');
 
       const editBadge = document.getElementById('editModeIndicator');
       const submitBtn = document.getElementById('submitSurveyBtn');
@@ -1486,7 +1532,7 @@
           } 
           else if (f.type === 'textarea') { inputHtml = `<textarea class="dyn-field" data-type="textarea" rows="3" data-label="${f.label}">${existingVal || ''}</textarea>`; } 
           else if (f.type === 'image') {
-            const hasImg = existingVal && existingVal.startsWith('data:image');
+            const hasImg = existingVal && String(existingVal).startsWith('data:image');
             inputHtml = `
               <input type="file" accept="image/*" capture="environment" class="dyn-field dyn-img" data-type="image" data-label="${f.label}" data-base64="${hasImg ? existingVal : ''}" onchange="encodeImg(this)">
               <img class="img-preview-box" src="${hasImg ? existingVal : ''}" style="${hasImg ? 'display:block;' : ''}" />
@@ -1500,7 +1546,8 @@
 
     function backToSurveysList() {
       editingResponseId = null;
-      showTab('surveys');
+      document.getElementById('secFillSurvey').classList.add('hidden');
+      showTab(currentUser.role === 'ROLE_INSPECTOR' ? 'surveys' : 'records');
     }
 
     function captureGps() {
@@ -1577,6 +1624,8 @@
         dataObj[label] = checked ? checked.value : 'غير محدد';
       });
 
+      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses; } catch(e){}
+
       if (editingResponseId) {
         const idx = responses.findIndex(r => r.id === editingResponseId);
         if (idx !== -1) {
@@ -1592,8 +1641,7 @@
 
           responses[idx] = {
             ...old, school, branch, gps, answers: dataObj,
-            lastEditedBy: currentUser.fullName,
-            lastEditedAt: new Date().toLocaleString('ar-SA'),
+            lastEditedBy: currentUser.fullName, lastEditedAt: new Date().toLocaleString('ar-SA'),
             status: "pending", rejectionReason: ""
           };
           lastSavedIndex = idx;
@@ -1623,11 +1671,12 @@
     // ================= KPI, Filters & Records =================
     function filterByKpi(status) {
       selectedKpiStatusFilter = status;
-      renderRecords();
+      renderRecords(); // direct update
     }
 
     function getScopedResponses() {
       if (!currentUser) return [];
+      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){}
       let list = responses;
       if (currentUser.role === "ROLE_SUB_EAST") { list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية"); } 
       else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } 
@@ -1658,7 +1707,7 @@
       const approvedActive = selectedKpiStatusFilter === 'approved' ? 'active-filter' : '';
       const rejectedActive = selectedKpiStatusFilter === 'rejected' ? 'active-filter' : '';
 
-      c.innerHTML = `
+      const html = `
         <div class="kpi-box total ${totalActive}" onclick="filterByKpi('ALL')" title="انقر لعرض الإجمالي">
           <div class="kpi-num" style="color:var(--tbc-petrol);">${total}</div>
           <div class="kpi-title">📊 إجمالي التقارير المرفوعة</div>
@@ -1676,6 +1725,7 @@
           <div class="kpi-title">❌ تقارير مرفوضة (تحتاج تعديل)</div>
         </div>
       `;
+      if(c.innerHTML !== html) c.innerHTML = html;
     }
 
     function populateFilterDropdowns() {
@@ -1683,17 +1733,19 @@
       const iSelect = document.getElementById('filterByInspectorSelect');
       if (!sSelect || !iSelect) return;
 
-      sSelect.innerHTML = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
+      let sHtml = '<option value="ALL">-- كل عمليات الحصر (إجمالي عام) --</option>';
       if(surveys && surveys.length > 0) {
-         surveys.forEach(s => { sSelect.innerHTML += `<option value="${s.title}">${s.title}</option>`; });
+         surveys.forEach(s => { sHtml += `<option value="${s.title}">${s.title}</option>`; });
       }
+      if(sSelect.innerHTML !== sHtml) sSelect.innerHTML = sHtml;
 
-      iSelect.innerHTML = '<option value="ALL">-- كل المشرفين --</option>';
+      let iHtml = '<option value="ALL">-- كل المشرفين --</option>';
       const scoped = getScopedResponses();
       if(scoped && scoped.length > 0) {
          const inspectors = [...new Set(scoped.map(r => r.collectedBy))];
-         inspectors.forEach(ins => { iSelect.innerHTML += `<option value="${ins}">${ins}</option>`; });
+         inspectors.forEach(ins => { iHtml += `<option value="${ins}">${ins}</option>`; });
       }
+      if(iSelect.innerHTML !== iHtml) iSelect.innerHTML = iHtml;
     }
 
     function applyAdminFilters() {
@@ -1718,11 +1770,12 @@
       const schoolSelect = document.getElementById('schoolSelectFilter');
       const banner = document.getElementById('filterBanner');
       const bannerText = document.getElementById('filterBannerText');
+      if(!container) return;
       container.innerHTML = '';
 
       let visible = getScopedResponses();
 
-      // تطبيق فلتر الحالة (مقبول، مرفوض، قيد الاعتماد)
+      // تطبيق فلتر الحالة (مقبول، مرفوض، قيد الاعتماد) من البطاقات الملونة
       if (selectedKpiStatusFilter !== "ALL") {
         visible = visible.filter(r => r.status === selectedKpiStatusFilter);
         banner.classList.remove('hidden');
@@ -1739,9 +1792,12 @@
       }
 
       // تعبئة قائمة استخراج تقرير المدرسة التاريخي
-      schoolSelect.innerHTML = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
-      const uniqueSchools = [...new Set(visible.map(r => r.school))];
-      uniqueSchools.forEach(sch => { schoolSelect.innerHTML += `<option value="${sch}">${sch}</option>`; });
+      if(schoolSelect) {
+        let schHtml = '<option value="">-- اختر مدرسة لاستخراج تقريرها الشامل --</option>';
+        const uniqueSchools = [...new Set(visible.map(r => r.school))];
+        uniqueSchools.forEach(sch => { schHtml += `<option value="${sch}">${sch}</option>`; });
+        if(schoolSelect.innerHTML !== schHtml) schoolSelect.innerHTML = schHtml;
+      }
 
       if (visible.length === 0) {
         container.innerHTML = `
@@ -2033,6 +2089,7 @@
       const tbody = document.querySelector('#usersListTable tbody');
       if (!tbody) return;
       
+      try { usersList = JSON.parse(localStorage.getItem(MASTER_USERS_KEY)) || usersList; } catch(e){}
       tbody.innerHTML = '';
       document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم نشط ومسجل`;
 
@@ -2082,6 +2139,8 @@
         requirePhoto: document.getElementById('permRequirePhoto').checked,
         allowPdf: document.getElementById('permAllowPdf').checked
       };
+
+      try { usersList = JSON.parse(localStorage.getItem(MASTER_USERS_KEY)) || usersList; } catch(e){}
 
       if (editingUserIndex >= 0) {
         usersList[editingUserIndex].fullName = fullName;
@@ -2159,7 +2218,7 @@
       renderUsersManagement();
     }
 
-    // Call initApp on startup
+    // Call initApp on startup to robustly load ALL data
     initApp();
 
   </script>
