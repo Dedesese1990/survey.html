@@ -803,10 +803,10 @@
       ROLE_INSPECTOR: "مشرف ميداني"
     };
 
-    const MASTER_USERS_KEY = 'tbc_users_master_v2';
-    const MASTER_SURVEYS_KEY = 'tbc_surveys_master_v2';
-    const MASTER_RECORDS_KEY = 'tbc_responses_master_v2';
-    const MASTER_CHAT_KEY = 'tbc_chat_messages_master_v2';
+    const MASTER_USERS_KEY = 'tbc_users_master_v3';
+    const MASTER_SURVEYS_KEY = 'tbc_surveys_master_v3';
+    const MASTER_RECORDS_KEY = 'tbc_responses_master_v3';
+    const MASTER_CHAT_KEY = 'tbc_chat_messages_master_v3';
 
     // Global Data Stores
     let usersList = [];
@@ -827,14 +827,21 @@
 
     // ================= App Initialization (Bulletproof Data Loading) =================
     function initApp() {
-      // Load Users
-      try {
-        const u = localStorage.getItem(MASTER_USERS_KEY);
-        if(u) usersList = JSON.parse(u);
-      } catch(e) {}
-      
+      // Helper to migrate legacy data safely without breaking JSON
+      const getLegacy = (keys) => {
+        for(let k of keys) {
+          const d = localStorage.getItem(k);
+          if(d) {
+            try { const p = JSON.parse(d); if(Array.isArray(p) && p.length > 0) return p; } catch(e){}
+          }
+        }
+        return null;
+      };
+
+      // 1. Users
+      try { const u = localStorage.getItem(MASTER_USERS_KEY); if(u) usersList = JSON.parse(u); } catch(e) {}
       if (!usersList || !Array.isArray(usersList) || usersList.length === 0) {
-        usersList = [
+        usersList = getLegacy(['tbc_users_master_v2', 'tbc_users_store_v1', 'tbc_users_v26', 'tbc_users_v25']) || [
           { username: "admin", password: "123", fullName: "إدارة التخطيط والتحكم", email: "ERPMO@tbc.sa", role: "ROLE_PLANNING", branch: "الكل", active: true, permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true } },
           { username: "reg_east", password: "123", fullName: "م. عبد العزيز", email: "east.reg@tbc.sa", role: "ROLE_REGION_EAST", branch: "الكل", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
           { username: "sub_east", password: "123", fullName: "مكتب الشرقية", email: "east.sub@tbc.sa", role: "ROLE_SUB_EAST", branch: "المكتب الفرعي بالشرقية", active: true, permissions: { allowEdit: false, requireGps: true, requirePhoto: true, allowPdf: true } },
@@ -846,14 +853,10 @@
         localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(usersList));
       }
 
-      // Load Surveys
-      try {
-        const s = localStorage.getItem(MASTER_SURVEYS_KEY);
-        if(s) surveys = JSON.parse(s);
-      } catch(e) {}
-
+      // 2. Surveys
+      try { const s = localStorage.getItem(MASTER_SURVEYS_KEY); if(s) surveys = JSON.parse(s); } catch(e) {}
       if (!surveys || !Array.isArray(surveys) || surveys.length === 0) {
-        surveys = [
+        surveys = getLegacy(['tbc_surveys_master_v2', 'tbc_surveys_store_v1', 'tbc_surveys_v26', 'tbc_surveys_v25']) || [
           {
             id: "SRV-101", title: "حصر ومطابقة وسائل السلامة والإنارة المدرسية", desc: "فحص شامل لمخارج الطوارئ ومضخات الحريق والإنارة الداخلية", dueDate: "2026-09-30", targetSchoolsCount: 15,
             fields: [
@@ -874,14 +877,16 @@
         localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       }
 
-      // Load Responses
-      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || []; } catch(e){ responses = []; }
-      if(!Array.isArray(responses)) responses = [];
+      // 3. Responses & Chat
+      try { responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)); } catch(e){}
+      if (!responses || !Array.isArray(responses)) {
+        responses = getLegacy(['tbc_responses_master_v2', 'tbc_responses_store_v1', 'tbc_responses_v26', 'tbc_responses_v25']) || [];
+        localStorage.setItem(MASTER_RECORDS_KEY, JSON.stringify(responses));
+      }
 
-      // Load Chat
       try { chatMessages = JSON.parse(localStorage.getItem(MASTER_CHAT_KEY)); } catch(e){}
       if (!chatMessages || !Array.isArray(chatMessages) || chatMessages.length === 0) {
-        chatMessages = [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
+        chatMessages = getLegacy(['tbc_chat_messages_master_v2', 'tbc_chat_messages_v1']) || [{ sender: "إدارة التخطيط والتحكم", role: "ROLE_PLANNING", text: "مرحباً بكم في منصة الدعم الفني والمتابعة الميدانية المباشرة.", time: "08:00 ص" }];
         localStorage.setItem(MASTER_CHAT_KEY, JSON.stringify(chatMessages));
       }
 
@@ -902,14 +907,14 @@
     function showTab(tab) {
       if(!currentUser) return;
       
-      // Update Tab Button Styles
+      // Sync Buttons
       document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
       document.getElementById('tabSurveys').classList.toggle('active', tab === 'surveys');
       document.getElementById('tabRecords').classList.toggle('active', tab === 'records');
       const tu = document.getElementById('tabUsers');
       if (tu) tu.classList.toggle('active', tab === 'users');
 
-      // Hide all main sections
+      // Hide all sections initially
       document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
@@ -924,28 +929,29 @@
         responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
       } catch(e){}
 
-      // Show specific tab & render its components
-      if(tab === 'analytics') {
-        document.getElementById('secAnalytics').classList.remove('hidden');
-        populateAnalyticsSurveyDropdown();
-        refreshAnalyticsDashboard(true);
-      } 
-      else if(tab === 'surveys') {
-        document.getElementById('secSurveys').classList.remove('hidden');
-        renderSurveys();
-      }
-      else if(tab === 'records') {
-        document.getElementById('secRecords').classList.remove('hidden');
-        if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
-        updateKPIs(); // Force KPI render
-        renderRecords(); // Force Table render
-      }
-      else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
-        document.getElementById('secUsers').classList.remove('hidden');
-        renderUsersManagement();
-      }
-
-      updateNotifications();
+      // Show specific tab & render its components securely via Timeout to prevent DOM reflow issues
+      setTimeout(() => {
+        if(tab === 'analytics') {
+          document.getElementById('secAnalytics').classList.remove('hidden');
+          populateAnalyticsSurveyDropdown();
+          refreshAnalyticsDashboard(true);
+        } 
+        else if(tab === 'surveys') {
+          document.getElementById('secSurveys').classList.remove('hidden');
+          renderSurveys();
+        }
+        else if(tab === 'records') {
+          document.getElementById('secRecords').classList.remove('hidden');
+          if (currentUser.role !== "ROLE_INSPECTOR") populateFilterDropdowns();
+          updateKPIs(); // Display permanent color cards
+          renderRecords();
+        }
+        else if(tab === 'users' && currentUser.role === "ROLE_PLANNING") {
+          document.getElementById('secUsers').classList.remove('hidden');
+          renderUsersManagement();
+        }
+        updateNotifications();
+      }, 50);
     }
 
     // ================= Auth =================
@@ -995,7 +1001,11 @@
       document.getElementById('adminFilterSection').classList.toggle('hidden', !isManagement);
 
       renderChatMessages();
-      showTab('analytics'); // Go to default tab
+      
+      // Important: Allow the DOM to render the block containers before initializing charts
+      setTimeout(() => {
+         showTab('analytics');
+      }, 100);
     }
 
     function logout() {
@@ -1038,7 +1048,7 @@
     }
 
     // ================= Analytics Live Engine =================
-    // Updates dashboard dynamically
+    // Background sync without refreshing the whole DOM, avoiding flash
     setInterval(() => {
       if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) {
          refreshAnalyticsDashboard(true); // silent refresh
@@ -1046,7 +1056,7 @@
       if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) {
          updateKPIs(); // silent refresh
       }
-    }, 2000);
+    }, 3000);
 
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
@@ -1060,14 +1070,17 @@
       
       if(select.innerHTML !== html) {
         select.innerHTML = html;
-        if(currentVal && currentVal !== "") select.value = currentVal;
+        if(currentVal && currentVal !== "" && html.includes(`value="${currentVal}"`)) {
+           select.value = currentVal;
+        } else {
+           select.value = "ALL";
+        }
       }
     }
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser) return;
       
-      // Pull fresh data
       try {
         surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys;
         responses = JSON.parse(localStorage.getItem(MASTER_RECORDS_KEY)) || responses;
@@ -1103,7 +1116,6 @@
       const remainingCount = Math.max(0, plannedTarget - approvedCount);
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
 
-      // Update cards without DOM flicker
       const elRate = document.getElementById('biActualRate');
       if(elRate && elRate.innerText !== `${actualRate}%`) elRate.innerText = `${actualRate}%`;
       
@@ -1152,10 +1164,9 @@
         ];
 
         if (sCurveChartInstance) {
-          // Live update without flicker
           sCurveChartInstance.data.datasets[0].data = plannedPoints;
           sCurveChartInstance.data.datasets[1].data = actualPoints;
-          sCurveChartInstance.update('none');
+          sCurveChartInstance.update('none'); // Update without animation flicker
         } else {
           const canvas = document.getElementById('sCurveChart');
           if(!canvas) return;
@@ -1306,6 +1317,7 @@
 
     function openNewSurveyModal() {
       editingSurveyId = null;
+      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = "إعداد استمارة حصر ميداني جديدة";
@@ -1323,6 +1335,7 @@
       if (!s) return;
       editingSurveyId = s.id;
 
+      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
       document.getElementById('surveyFormHeader').innerText = `✏️ تعديل الحصر: ${s.title}`;
@@ -1352,6 +1365,8 @@
       surveys = surveys.filter(s => String(s.id) !== String(id));
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
       alert("✓ تم حذف نموذج الحصر بنجاح.");
+      populateFilterDropdowns();
+      populateAnalyticsSurveyDropdown();
       showTab('surveys');
     }
 
@@ -1459,6 +1474,8 @@
 
       if (fields.length === 0) return alert("الرجاء إضافة بند فحص واحد على الأقل ليتمكن المشرف من الإجابة عليه.");
 
+      try { surveys = JSON.parse(localStorage.getItem(MASTER_SURVEYS_KEY)) || surveys; } catch(e){}
+
       if (editingSurveyId) {
         const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
         if (idx !== -1) {
@@ -1474,6 +1491,9 @@
       }
 
       localStorage.setItem(MASTER_SURVEYS_KEY, JSON.stringify(surveys));
+      closeNewSurveyModal();
+      populateFilterDropdowns();
+      populateAnalyticsSurveyDropdown();
       showTab('surveys'); 
     }
 
@@ -1483,9 +1503,11 @@
       activeSrv = surveys.find(s => String(s.id) === String(id)) || surveys.find(s => s.title === (existingData && existingData.surveyTitle));
       if (!activeSrv) return alert("عذراً، تعذر العثور على نموذج الحصر الأساسي لهذا التقرير. قد يكون قد تم حذفه من قبل الإدارة.");
 
+      document.getElementById('secAnalytics').classList.add('hidden');
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secRecords').classList.add('hidden');
       document.getElementById('secFillSurvey').classList.remove('hidden');
+      document.getElementById('secSuccessModal').classList.add('hidden');
 
       const editBadge = document.getElementById('editModeIndicator');
       const submitBtn = document.getElementById('submitSurveyBtn');
