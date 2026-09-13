@@ -11,6 +11,8 @@
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
   <style>
     :root {
@@ -169,6 +171,9 @@
                 <button class="profile-menu-item" onclick="openChangePasswordModal(); window.closeProfileMenu();">
                   <span>🔑</span> <span>تغيير كلمة المرور</span>
                 </button>
+                <button class="profile-menu-item hidden" id="delegateMenuItem" onclick="openDelegateModal(); window.closeProfileMenu();">
+                  <span>🔄</span> <span>تفويض صلاحية الاعتماد</span>
+                </button>
                 <button class="profile-menu-item logout-item" onclick="logout(); window.closeProfileMenu();">
                   <span>🚪</span> <span>تسجيل الخروج من المنظومة</span>
                 </button>
@@ -225,6 +230,9 @@
           <div class="sidebar-item hidden" id="tabUsers" onclick="showTab('users')">
             <span style="font-size:1.1rem;">👥</span> <span>إدارة الهيكل والمستخدمين</span>
           </div>
+          <div class="sidebar-item hidden" id="tabAuditLog" onclick="showTab('auditLog')">
+            <span style="font-size:1.1rem;">🧾</span> <span>سجل التدقيق</span>
+          </div>
         </div>
       </aside>
 
@@ -268,13 +276,22 @@
               <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
               <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
               <p style="font-size:0.75rem; color:#b91c1c; margin-top:5px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
+              <button class="btn btn-reject" style="margin-top:8px; font-size:0.75rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
+              <div class="bi-num" style="font-size:1.6rem;" id="biAvgTurnaround">-</div>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">الالتزام بالمواعيد</div>
+              <div class="bi-num" id="biOnTimeRate">-</div>
             </div>
           </div>
 
           <div class="dashboard-grid">
             <div class="card" style="margin-bottom:0;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني (Actual vs Planned)</h4>
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</h4>
               </div>
               <div style="height: 300px; position: relative; width:100%;">
                 <canvas id="sCurveChart"></canvas>
@@ -289,6 +306,54 @@
               <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:10px; font-weight:600;">يقيس هذا المؤشر نسبة الإجابات "مطابق" مقابل المشاكل والعيوب المسجلة في كل بنود الفحص للمدارس.</p>
             </div>
           </div>
+
+          <div class="dashboard-grid">
+            <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🏫 تغطية المدارس (لم تتم زيارتها بعد)</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">مدارس مسجلة في قاعدة البيانات ولم يُرفع لها أي تقرير حصر حتى الآن ضمن النطاق الحالي.</p>
+              <div id="coverageGapContainer"></div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🚩 أكثر بنود الفحص التي تحتاج معالجة</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">ترتيب بنود الفحص الأكثر تسجيلاً كـ "غير مطابق" عبر جميع الزيارات — مؤشر أولويات الصيانة.</p>
+              <div id="topFailingItemsContainer"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🔁 مشاكل متكررة لم تُحل</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
+              <div id="recurringIssuesContainer"></div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📊 مقارنة الأداء بين فترتين</h4>
+              <div class="action-buttons-mobile" style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من</label><input type="date" id="cmpPeriodStart"></div>
+                <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">إلى</label><input type="date" id="cmpPeriodEnd"></div>
+                <button class="btn btn-outline" style="align-self:flex-end; padding:11px 16px;" onclick="renderPeriodComparison()">قارن ↺</button>
+              </div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
+              <div id="periodComparisonContainer"></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ الخريطة الميدانية (آخر حالة مسجّلة لكل مدرسة)</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة — الموقع مأخوذ من آخر إحداثيات GPS مسجّلة لكل مدرسة.</p>
+            <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
+          </div>
+          <div style="height:24px;"></div>
+
+          <div class="card" id="inspectorPerfCard">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين</h4>
+            <div class="table-responsive">
+              <table class="data-table" id="inspectorPerfTable">
+                <thead><tr><th>المشرف</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
         <!-- ================= 2. Surveys Tab ================= -->
@@ -301,6 +366,13 @@
               </div>
               <button class="btn btn-gold action-buttons-mobile" style="font-size:1rem; padding:12px 20px;" onclick="openNewSurveyModal()">+ إنشاء حصر جديد</button>
             </div>
+          </div>
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem;">📅 التقويم الميداني (مواعيد الاستحقاق والزيارات)</h4>
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:8px 14px;" onclick="toggleSurveyCalendar()">عرض/إخفاء التقويم</button>
+            </div>
+            <div id="surveyCalendarContainer" class="hidden" style="margin-top:16px;"></div>
           </div>
           <div id="surveysListContainer"></div>
         </section>
@@ -531,6 +603,18 @@
             </div>
           </div>
 
+          <div class="bulk-import-box card" id="usersBulkImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
+            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:16px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
+            <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
+              <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="downloadUsersTemplate()">📥 تنزيل القالب</button>
+              <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="exportUsersExcel()">📤 تصدير القائمة الحالية</button>
+              <label for="usersExcelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1rem; cursor:pointer; text-align:center;">📤 رفع ملف مستخدمين</label>
+              <input type="file" id="usersExcelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleUsersExcelUpload(event)">
+            </div>
+            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً.</small>
+          </div>
+
           <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">👥 قائمة المستخدمين المسجلين</h4>
@@ -539,6 +623,23 @@
             <div class="table-responsive">
               <table class="data-table" id="usersListTable">
                 <thead><tr><th>الاسم الكامل</th><th>الرمز الوظيفي</th><th>رقم الجوال</th><th>المسمى الوظيفي</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 6. Audit Log Tab ================= -->
+        <section id="secAuditLog" class="hidden">
+          <div class="card" style="border-top:5px solid var(--tbc-petrol);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:10px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900;">🧾 سجل التدقيق (آخر 500 عملية)</h4>
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:8px 14px;" onclick="renderAuditLog()">تحديث ↺</button>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">سجل بكل عمليات تسجيل الدخول، رفع/تعديل التقارير، الاعتماد والرفض، وإدارة المدارس والمستخدمين — لأغراض المساءلة والمراجعة.</p>
+            <div class="table-responsive">
+              <table class="data-table" id="auditLogTable">
+                <thead><tr><th>الوقت</th><th>المستخدم</th><th>الإجراء</th><th>التفاصيل</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -587,6 +688,21 @@
     </div>
   </div>
 
+  <div id="delegateApprovalModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔄 تفويض صلاحية الاعتماد مؤقتاً</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">استخدمها لو ستكون غير متاح لفترة، حتى يقدر شخص آخر (بنفس صلاحياتك الإدارية) اعتماد أو رفض التقارير نيابةً عنك مؤقتاً.</p>
+      <div id="currentDelegationNote" style="margin-bottom:14px;"></div>
+      <div class="form-group"><label>فوّض الصلاحية إلى</label><select id="delegateToUser"><option value="">-- بدون تفويض --</option></select></div>
+      <div class="form-group"><label>حتى تاريخ (شاملاً)</label><input type="date" id="delegateUntilDate"></div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-petrol" style="flex:1;" onclick="saveDelegation()">حفظ التفويض ✓</button>
+        <button class="btn btn-reject" onclick="clearDelegation()">إلغاء التفويض الحالي</button>
+        <button class="btn btn-outline" onclick="closeDelegateModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <div id="forceChangePasswordModal" class="modal-overlay hidden" style="background: rgba(15,28,45,0.95); z-index:9999;">
     <div class="modal-content" style="border-top-color:#ef4444;">
       <h3 style="color:#ef4444; margin-bottom:8px; font-size:1.3rem;">⚠️ إجراء أمني مطلوب</h3>
@@ -617,6 +733,24 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
     const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
+
+    // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
+    function resolveInspectorUser(text) {
+      if (!text) return null;
+      const t = String(text).trim();
+      if (!t) return null;
+      let u = usersList.find(x => x.username === t);
+      if (!u) u = usersList.find(x => (x.fullName || '').trim().toLowerCase() === t.toLowerCase());
+      return u || null;
+    }
+    // هل هذه المدرسة تابعة لهذا المستخدم؟ يعتمد أولاً على الرمز الوظيفي الثابت (inspectorUsername)،
+    // ويرجع لمطابقة الاسم كحل احتياطي فقط للسجلات القديمة التي لم تُربط بعد بالرمز الوظيفي.
+    function schoolBelongsToUser(sch, user) {
+      if (!sch || !user) return false;
+      if (sch.inspectorUsername) return sch.inspectorUsername === user.username;
+      return sch.inspector === user.username || sch.inspector === user.fullName;
+    }
 
     let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} };
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
@@ -632,48 +766,97 @@
       else if (status === 'connected') { s.className = 'sync-status'; s.innerHTML = '☁️ متصل سحابياً'; }
     }
 
+    // مزامنة موحّدة مع الخادم مع إعادة محاولة تلقائية ومهلة زمنية.
+    // ملاحظة: خوادم Google Apps Script أحياناً تُبطئ أول طلب (Cold Start) أو يفشل الطلب الأول
+    // بسبب مشاكل CORS/إعادة التوجيه الشائعة معها، رغم أن الطلب قد يكون نُفّذ بالفعل على الخادم.
+    // لذلك بدل إظهار خطأ فوري للمستخدم، نعيد المحاولة تلقائياً قبل اعتبارها فشلاً حقيقياً.
+    async function callBackend(payload, { retries = 2, timeoutMs = 20000 } = {}) {
+      let lastErr = null;
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), signal: controller.signal });
+          clearTimeout(timer);
+          return await response.json();
+        } catch (err) {
+          clearTimeout(timer);
+          lastErr = err;
+          if (attempt < retries) { await new Promise(r => setTimeout(r, 900 * (attempt + 1))); continue; }
+        }
+      }
+      throw lastErr;
+    }
+
     async function apiCall(actionName, payloadData = {}) {
       updateSyncStatus('syncing');
       try {
-        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData }) });
-        const data = await response.json();
+        const data = await callBackend({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData });
         if(data.message && data.message.includes("Unauthorized")) forceLogout();
         updateSyncStatus('connected'); return data;
-      } catch(e) { updateSyncStatus('connected'); return { status: "error", message: "فشل الاتصال." }; }
+      } catch(e) { updateSyncStatus('connected'); return { status: "error", message: "تعذر الاتصال بالخادم. يرجى التأكد من الإنترنت والمحاولة مجدداً." }; }
+    }
+
+    // ---- سجل التدقيق (Audit Log) ----
+    // يُسجَّل كل حدث عبر LOG_AUDIT_EVENT، وهو إجراء متاح لكل الأدوار (بخلاف SYNC_GENERAL_DATA المقصور على
+    // إدارة التخطيط) ويضيف السطر مباشرة على الخادم من نسخة طازجة، فلا حاجة لإدارة النسخة المحلية هنا.
+    async function logAudit(action, details) {
+      try { await apiCall("LOG_AUDIT_EVENT", { action, details }); } catch (e) { /* لا نوقف أي عملية أساسية بسبب فشل تسجيل التدقيق */ }
+    }
+
+    // ---- تفويض صلاحية الاعتماد المؤقت (بين إدارة التخطيط ومديري الإشراف فقط) ----
+    function getActiveIncomingDelegators() {
+      if (!currentUser) return [];
+      const today = new Date().toISOString().slice(0, 10);
+      return usersList.filter(u => u.delegateApprovalTo === currentUser.username && u.delegateUntil && u.delegateUntil >= today);
+    }
+    function currentUserHasApprovalAuthority() {
+      if (!currentUser) return false;
+      if (currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD') return true;
+      return getActiveIncomingDelegators().length > 0;
     }
 
     // Auth logic
+    let loginInProgress = false;
     async function handleLogin() {
+      if (loginInProgress) return;
       const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value.trim();
       const rememberMe = document.getElementById('rememberMeCheckbox').checked;
       if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
-      const btn = document.getElementById('loginBtnElem'); btn.innerText = "⏳ جاري التحقق..."; btn.disabled = true;
+      loginInProgress = true;
+      const btn = document.getElementById('loginBtnElem'); btn.innerText = "⏳ جاري التحقق (قد يستغرق بضع ثوانٍ)..."; btn.disabled = true;
       try {
-        const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ token: SECURE_API_TOKEN, action: "LOGIN", username: u, password: p }) });
-        const resData = await response.json();
+        const resData = await callBackend({ token: SECURE_API_TOKEN, action: "LOGIN", payload: { username: u, password: p } });
         if (resData.status === "success") {
           currentSessionToken = resData.token; currentUser = resData.user;
           if (rememberMe) { localStorage.setItem('tbc_session_token', currentSessionToken); localStorage.setItem('tbc_current_user', JSON.stringify(currentUser)); }
           if(resData.mustChangePassword) { document.getElementById('loginView').classList.add('hidden'); document.getElementById('forceChangePasswordModal').classList.remove('hidden'); } else { loginSuccess(); }
         } else { alert(esc(resData.message)); }
-      } catch (err) { alert("فشل الاتصال."); }
-      btn.innerText = "دخول المنظومة 🔒"; btn.disabled = false;
+      } catch (err) { alert("تعذر الاتصال بالخادم بعد عدة محاولات. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."); }
+      btn.innerText = "دخول المنظومة 🔒"; btn.disabled = false; loginInProgress = false;
     }
 
     async function submitForcedPasswordChange() {
       const cur = document.getElementById('fcpCurrentPass').value; const newP = document.getElementById('fcpNewPass').value;
       if (!cur || !newP || newP.length < 8) return alert("كلمة المرور يجب أن تكون 8 أحرف على الأقل.");
-      const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ token: SECURE_API_TOKEN, action: "CHANGE_PASSWORD", sessionToken: currentSessionToken, oldPassword: cur, newPassword: newP }) });
-      const resData = await res.json();
-      if (resData.status === "success") { document.getElementById('forceChangePasswordModal').classList.add('hidden'); alert("تم التأمين بنجاح!"); loginSuccess(); } else { alert(esc(resData.message)); }
+      try {
+        const resData = await callBackend({ token: SECURE_API_TOKEN, action: "CHANGE_PASSWORD", sessionToken: currentSessionToken, payload: { oldPassword: cur, newPassword: newP } });
+        if (resData.status === "success") { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الإجباري عند أول دخول'); document.getElementById('forceChangePasswordModal').classList.add('hidden'); alert("تم التأمين بنجاح!"); loginSuccess(); } else { alert(esc(resData.message)); }
+      } catch (err) { alert("تعذر الاتصال بالخادم. يرجى المحاولة مجدداً."); }
     }
 
     function loginSuccess() {
       document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.remove('hidden');
       document.getElementById('activeUserName').innerText = esc(currentUser.fullName);
+      document.getElementById('menuUserFullName').innerText = esc(currentUser.fullName);
+      document.getElementById('menuUserRole').innerText = esc(ROLE_LABELS[currentUser.role] || currentUser.role);
       const isPlanning = currentUser.role === "ROLE_PLANNING";
-      document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden'); 
+      const canDelegate = currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD';
+      document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden');
+      document.getElementById('tabAuditLog')?.classList.toggle('hidden', !isPlanning);
+      document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
       pullFromCloud(); showTab('analytics');
+      logAudit('LOGIN', `تسجيل دخول`);
     }
 
     async function pullFromCloud() {
@@ -683,15 +866,17 @@
         if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users;
         if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
         if (!schoolDataWrapper.settings) schoolDataWrapper.settings = {};
+        if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
         populateAnalyticsSurveyFilter();
         if (!document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true);
         if (!document.getElementById('secRecords').classList.contains('hidden')) renderRecords();
         if (!document.getElementById('secSchools').classList.contains('hidden')) renderSchoolsManagement();
         if (!document.getElementById('secUsers').classList.contains('hidden')) renderUsersManagement();
+        if (!document.getElementById('secAuditLog')?.classList.contains('hidden')) renderAuditLog();
       }
     }
 
-    function logout() { currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); }
+    function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); }
     function forceLogout() { alert("انتهت الجلسة."); logout(); }
 
     window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); };
@@ -700,12 +885,12 @@
 
     function showTab(tab) {
       if(!currentUser) return;
-      ['analytics', 'surveys', 'records', 'schools', 'users'].forEach(t => {
+      ['analytics', 'surveys', 'records', 'schools', 'users', 'auditLog'].forEach(t => {
         const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)); if (btn) btn.classList.toggle('active', tab === t);
         const sec = document.getElementById('sec' + t.charAt(0).toUpperCase() + t.slice(1)); if (sec) sec.classList.toggle('hidden', tab !== t);
       });
       ['secNewSurvey', 'secFillSurvey'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-      if(tab === 'analytics') { refreshAnalyticsDashboard(true); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'users') { renderUsersManagement(); }
+      if(tab === 'analytics') { refreshAnalyticsDashboard(true); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); }
     }
 
     // ================= Logic: Surveys Management (النماذج) =================
@@ -732,6 +917,51 @@
           </div>
         </div>`;
       });
+      container.innerHTML = html;
+    }
+
+    // ---- التقويم الميداني: يعرض تواريخ استحقاق النماذج وعدد الزيارات الفعلية يوماً بيوم ----
+    let calendarMonthOffset = 0;
+    function toggleSurveyCalendar() {
+      const el = document.getElementById('surveyCalendarContainer'); if (!el) return;
+      el.classList.toggle('hidden');
+      if (!el.classList.contains('hidden')) { calendarMonthOffset = 0; renderSurveyCalendar(); }
+    }
+    function shiftCalendarMonth(delta) { calendarMonthOffset += delta; renderSurveyCalendar(); }
+    function renderSurveyCalendar() {
+      const container = document.getElementById('surveyCalendarContainer'); if (!container) return;
+      const base = new Date(); base.setDate(1); base.setMonth(base.getMonth() + calendarMonthOffset);
+      const year = base.getFullYear(); const month = base.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const startWeekday = firstDay.getDay(); // 0 = الأحد
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthLabel = firstDay.toLocaleDateString('ar-SA-u-ca-gregory', { month: 'long', year: 'numeric' });
+      const scoped = getScopedResponses();
+      const todayD = new Date();
+
+      let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <button class="btn btn-outline" style="padding:6px 14px;" onclick="shiftCalendarMonth(-1)">‹ السابق</button>
+        <strong style="font-size:1.05rem; color:var(--tbc-petrol-dark);">${esc(monthLabel)}</strong>
+        <button class="btn btn-outline" style="padding:6px 14px;" onclick="shiftCalendarMonth(1)">التالي ›</button>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; font-size:0.72rem; font-weight:900; text-align:center; color:var(--tbc-petrol); margin-bottom:6px;">
+        ${['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'].map(d => `<div>${d}</div>`).join('')}
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px;">`;
+
+      for (let i = 0; i < startWeekday; i++) html += `<div></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dueSurveys = surveys.filter(s => s.dueDate === dateStr);
+        const visitsCount = scoped.filter(r => { const dt = new Date(r.id); return dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === d; }).length;
+        const isToday = todayD.getFullYear() === year && todayD.getMonth() === month && todayD.getDate() === d;
+        html += `<div style="border:1px solid var(--border-subtle); border-radius:6px; min-height:66px; padding:4px; font-size:0.72rem; ${isToday ? 'background:var(--tbc-petrol-light); border-color:var(--tbc-petrol);' : ''}">
+          <div style="font-weight:900; color:var(--tbc-petrol-dark);">${d}</div>
+          ${dueSurveys.map(s => `<div title="${esc(s.title)}" style="background:#fef3c7; color:#92400e; border-radius:4px; padding:1px 3px; margin-top:2px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">📌 ${esc(s.title)}</div>`).join('')}
+          ${visitsCount > 0 ? `<div style="background:#dcfce7; color:#166534; border-radius:4px; padding:1px 3px; margin-top:2px;">✅ ${visitsCount}</div>` : ''}
+        </div>`;
+      }
+      html += `</div>`;
       container.innerHTML = html;
     }
 
@@ -814,15 +1044,17 @@
 
       const btn = document.getElementById('saveSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الحفظ...';
       const surveyPayload = { id: editingSurveyId || ('SRV_' + Date.now()), title, dueDate, desc, questions, targetSchoolsCount: 15 };
-      const res = await apiCall(editingSurveyId ? 'UPDATE_SURVEY' : 'CREATE_SURVEY', { survey: surveyPayload });
+      // SYNC_GENERAL_DATA يستبدل كامل محتوى شيت النماذج بما يُرسل، لذلك يجب دمج التعديل في القائمة كاملة قبل الإرسال
+      const mergedSurveys = surveys.slice();
+      const mergeIdx = mergedSurveys.findIndex(s => String(s.id) === String(surveyPayload.id));
+      if (mergeIdx > -1) mergedSurveys[mergeIdx] = surveyPayload; else mergedSurveys.push(surveyPayload);
+      const res = await apiCall('SYNC_GENERAL_DATA', { surveys: mergedSurveys });
       btn.disabled = false; btn.innerText = 'حفظ ونشر النموذج ✓';
 
       if (res.status === 'success') {
+        logAudit('SURVEY_SAVE', `${editingSurveyId ? 'تعديل' : 'إنشاء'} نموذج حصر: ${title}`);
         alert('✓ تم حفظ النموذج بنجاح!');
-        if (res.surveys) { surveys = res.surveys; } else {
-          const idx = surveys.findIndex(s => String(s.id) === String(surveyPayload.id));
-          if (idx > -1) surveys[idx] = surveyPayload; else surveys.push(surveyPayload);
-        }
+        surveys = mergedSurveys;
         closeNewSurveyModal();
         populateAnalyticsSurveyFilter();
       } else alert(esc(res.message || 'حدث خطأ أثناء الحفظ.'));
@@ -849,7 +1081,7 @@
       let schoolHtml = '<option value="">-- اختر المنشأة --</option>';
       const myBranch = currentUser.branch;
       const scopedSchools = (schoolDataWrapper.list || []).filter(sch => {
-        if (currentUser.role === 'ROLE_INSPECTOR') return sch.inspector === currentUser.username || sch.inspector === currentUser.fullName;
+        if (currentUser.role === 'ROLE_INSPECTOR') return schoolBelongsToUser(sch, currentUser);
         if (currentUser.role === 'ROLE_SUPERVISION_LEAD' && myBranch && myBranch !== 'الكل') return sch.branch === myBranch;
         return true;
       });
@@ -921,6 +1153,13 @@
       if (!school) return alert('يرجى اختيار المنشأة التعليمية.');
       if (currentUser.permissions?.requireGps !== false && !gps) return alert('التقاط الموقع (GPS) إلزامي قبل رفع التقرير.');
 
+      // تحقق من ازدواج الزيارة: نفس المدرسة + نفس النموذج + نفس المستخدم خلال آخر 24 ساعة
+      const duplicate = responses.find(r => r.school === school && r.surveyTitle === activeSrv.title && r.username === currentUser.username && r.id !== editingResponseId && (Date.now() - r.id) < (24 * 60 * 60 * 1000));
+      if (duplicate) {
+        const proceed = confirm(`⚠️ يوجد بالفعل تقرير مرفوع لنفس المدرسة ونفس نموذج الحصر خلال آخر 24 ساعة (بتاريخ ${esc(shortDate(duplicate))}).\nهل أنت متأكد من رفع تقرير آخر؟`);
+        if (!proceed) return;
+      }
+
       const dyn = document.getElementById('dynamicFields');
       const inputs = dyn.querySelectorAll('[data-qtext]');
       const answers = {};
@@ -951,6 +1190,10 @@
 
       const btn = document.getElementById('submitSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الرفع...';
 
+      // تتبع "إعادة الرفع بعد رفض": لو كنا نعدّل تقريراً كان مرفوضاً، نحتفظ بسبب الرفض السابق كسجل تاريخي
+      const existingRec = editingResponseId ? responses.find(r => r.id === editingResponseId) : null;
+      const wasRejectedBefore = existingRec && existingRec.rejectionReason;
+
       const now = new Date();
       const responsePayload = {
         id: editingResponseId || Date.now(),
@@ -963,13 +1206,18 @@
         status: 'pending',
         rejectionReason: '',
         adminPermissionGranted: false,
+        wasEverRejected: wasRejectedBefore ? true : (existingRec?.wasEverRejected === true),
+        resubmittedAfterRejection: !!wasRejectedBefore,
+        previousRejectionReason: wasRejectedBefore ? existingRec.rejectionReason : (existingRec?.previousRejectionReason || ''),
         answers
       };
 
-      const res = await apiCall(editingResponseId ? 'UPDATE_RESPONSE' : 'SUBMIT_RESPONSE', { response: responsePayload });
+      const isEditSubmission = !!editingResponseId;
+      const res = await apiCall(isEditSubmission ? 'UPDATE_REPORT' : 'ADD_REPORT', responsePayload);
       btn.disabled = false; btn.innerText = 'رفع التقرير للاعتماد ✓';
 
       if (res.status === 'success') {
+        logAudit('RESPONSE_SUBMIT', `${isEditSubmission ? 'تعديل' : 'رفع'} تقرير: ${school} - ${activeSrv.title}`);
         editingResponseId = null;
         document.getElementById('secFillSurvey').classList.add('hidden');
         document.getElementById('secSuccessModal').classList.remove('hidden');
@@ -982,7 +1230,10 @@
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser || !schoolDataWrapper.list) return;
-      const scoped = getScopedResponses();
+      let scoped = getScopedResponses();
+      const surveyFilterVal = document.getElementById('analyticsSurveyFilter')?.value || 'ALL';
+      if (surveyFilterVal !== 'ALL') scoped = scoped.filter(r => r.surveyTitle === surveyFilterVal);
+
       const approvedCount = scoped.filter(r => r.status === 'approved').length; const pendingCount = scoped.filter(r => r.status === 'pending').length;
       let plannedTarget = surveys.reduce((acc, s) => acc + (s.targetSchoolsCount || 15), 0); if (plannedTarget < scoped.length) plannedTarget = scoped.length + 5;
       const actualRate = plannedTarget > 0 ? ((approvedCount / plannedTarget) * 100).toFixed(1) : "0.0";
@@ -990,6 +1241,21 @@
       // حساب التقارير المتأخرة لأكثر من 48 ساعة
       const now = Date.now();
       const stuckCount = scoped.filter(r => r.status === 'pending' && (now - r.id) > (48 * 60 * 60 * 1000)).length;
+
+      // متوسط زمن الاعتماد (يحتاج الخادم أن يعيد حقل decidedAt المُرسل عند الاعتماد/الرفض؛ يظهر "-" لو غير متوفر بعد)
+      const decidedWithTs = scoped.filter(r => r.status !== 'pending' && typeof r.decidedAt === 'number');
+      if (decidedWithTs.length > 0) {
+        const avgMs = decidedWithTs.reduce((sum, r) => sum + (r.decidedAt - r.id), 0) / decidedWithTs.length;
+        const avgHours = avgMs / (1000 * 60 * 60);
+        document.getElementById('biAvgTurnaround').innerText = avgHours < 48 ? `${avgHours.toFixed(1)} ساعة` : `${(avgHours / 24).toFixed(1)} يوم`;
+      } else { document.getElementById('biAvgTurnaround').innerText = '-'; }
+
+      // الالتزام بالمواعيد: نسبة التقارير المرفوعة في أو قبل تاريخ استحقاق نموذجها (لِمن له تاريخ استحقاق محدد)
+      const withDeadline = scoped.filter(r => { const s = surveys.find(x => x.title === r.surveyTitle); return s && s.dueDate; });
+      if (withDeadline.length > 0) {
+        const onTime = withDeadline.filter(r => { const s = surveys.find(x => x.title === r.surveyTitle); return r.id <= new Date(s.dueDate + 'T23:59:59').getTime(); }).length;
+        document.getElementById('biOnTimeRate').innerText = `${Math.round((onTime / withDeadline.length) * 100)}%`;
+      } else { document.getElementById('biOnTimeRate').innerText = '-'; }
       
       document.getElementById('biActualRate').innerText = `${actualRate}%`;
       document.getElementById('biPlannedCount').innerText = plannedTarget;
@@ -997,8 +1263,14 @@
       document.getElementById('biPendingCount').innerText = pendingCount;
       document.getElementById('biAgingCount').innerText = stuckCount;
       
-      renderSCurveChart(plannedTarget, approvedCount);
+      renderSCurveChart(scoped);
       renderCompliancePieChart(scoped);
+      renderCoverageGap(scoped);
+      renderTopFailingItems(scoped);
+      renderRecurringIssues(scoped);
+      renderInspectorPerformance(scoped);
+      renderFieldMap(scoped);
+      renderPeriodComparison();
     }
 
     function renderCompliancePieChart(scopedResponses) {
@@ -1031,17 +1303,223 @@
       } catch(e) {}
     }
 
-    function renderSCurveChart(plannedTotal, approvedTotal) {
+    // يبني منحنى تراكمي أسبوعي حقيقي من تواريخ الرفع الفعلية (بدل نسب افتراضية وهمية)
+    function buildWeeklyBuckets(scopedResponses, weeksCount = 6) {
+      const now = Date.now(); const weekMs = 7 * 24 * 60 * 60 * 1000;
+      const startOfWindow = now - (weeksCount - 1) * weekMs;
+      const submittedPerWeek = new Array(weeksCount).fill(0);
+      const approvedPerWeek = new Array(weeksCount).fill(0);
+      scopedResponses.forEach(r => {
+        const ts = typeof r.id === 'number' ? r.id : Date.parse(r.date || '');
+        if (!ts || isNaN(ts)) return;
+        const weekIdx = Math.floor((ts - startOfWindow) / weekMs);
+        if (weekIdx < 0 || weekIdx >= weeksCount) return;
+        submittedPerWeek[weekIdx]++;
+        if (r.status === 'approved') approvedPerWeek[weekIdx]++;
+      });
+      // تحويل لأرقام تراكمية
+      const cumulative = (arr) => { let sum = 0; return arr.map(v => (sum += v)); };
+      return { submittedCum: cumulative(submittedPerWeek), approvedCum: cumulative(approvedPerWeek) };
+    }
+
+    function renderSCurveChart(scopedResponses) {
       try {
         if (typeof Chart === 'undefined') return;
-        const plannedPoints = [ Math.round(plannedTotal * 0.10), Math.round(plannedTotal * 0.28), Math.round(plannedTotal * 0.58), Math.round(plannedTotal * 0.82), Math.round(plannedTotal * 0.95), plannedTotal ];
-        const currentPoint = Math.min(approvedTotal, plannedTotal); const actualPoints = [ Math.round(currentPoint * 0.18), Math.round(currentPoint * 0.45), Math.round(currentPoint * 0.75), currentPoint, null, null ];
-        if (sCurveChartInstance) { sCurveChartInstance.data.datasets[0].data = plannedPoints; sCurveChartInstance.data.datasets[1].data = actualPoints; sCurveChartInstance.update('none'); } 
+        const weeksCount = 6;
+        const { submittedCum, approvedCum } = buildWeeklyBuckets(scopedResponses, weeksCount);
+        const labels = Array.from({length: weeksCount}, (_, i) => i === weeksCount - 1 ? 'الأسبوع الحالي' : `قبل ${weeksCount - 1 - i} أسبوع`);
+        if (sCurveChartInstance) { sCurveChartInstance.data.datasets[0].data = submittedCum; sCurveChartInstance.data.datasets[1].data = approvedCum; sCurveChartInstance.update('none'); } 
         else {
           const canvas = document.getElementById('sCurveChart'); if(!canvas) return;
-          sCurveChartInstance = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'], datasets: [ { label: 'المستهدف المخطط', data: plannedPoints, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.35, pointRadius: 4 }, { label: 'الإنجاز الفعلي', data: actualPoints, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
+          sCurveChartInstance = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels, datasets: [ { label: 'إجمالي التقارير المرفوعة (تراكمي)', data: submittedCum, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4 }, { label: 'التقارير المعتمدة (تراكمي)', data: approvedCum, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
         }
       } catch(e) {}
+    }
+
+    // مدارس ضمن النطاق الحالي لم يُرفع لها أي تقرير حصر بعد
+    function renderCoverageGap(scopedResponses) {
+      const container = document.getElementById('coverageGapContainer'); if (!container) return;
+      const visitedSchoolNames = new Set(scopedResponses.map(r => r.school));
+      let scopeSchools = schoolDataWrapper.list || [];
+      if (currentUser.role === 'ROLE_INSPECTOR') scopeSchools = scopeSchools.filter(s => schoolBelongsToUser(s, currentUser));
+      else if (currentUser.role === 'ROLE_SUPERVISION_LEAD' && currentUser.branch && currentUser.branch !== 'الكل') scopeSchools = scopeSchools.filter(s => s.branch === currentUser.branch);
+      const gap = scopeSchools.filter(s => !visitedSchoolNames.has(s.name));
+      if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
+      if (gap.length === 0) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#10b981; font-weight:800;">✅ تم رفع تقرير واحد على الأقل لكل مدرسة ضمن النطاق الحالي.</div>`; return; }
+      let html = `<p style="font-weight:900; color:#b91c1c; margin-bottom:10px;">${gap.length} من أصل ${scopeSchools.length} مدرسة لم تُزر بعد:</p><div style="max-height:220px; overflow-y:auto;">`;
+      gap.slice(0, 30).forEach(s => { html += `<div style="padding:8px 10px; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between;"><span style="font-weight:700;">${esc(s.name)}</span><span style="color:var(--text-muted); font-size:0.85rem;">${esc(s.inspector) || '-'}</span></div>`; });
+      if (gap.length > 30) html += `<div style="text-align:center; padding:8px; color:var(--text-muted); font-size:0.85rem;">+ ${gap.length - 30} مدرسة أخرى...</div>`;
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // أكثر بنود الفحص تكراراً كـ "غير مطابق" عبر كل الزيارات ضمن النطاق الحالي
+    function renderTopFailingItems(scopedResponses) {
+      const container = document.getElementById('topFailingItemsContainer'); if (!container) return;
+      const counts = {};
+      scopedResponses.forEach(r => {
+        if (!r.answers) return;
+        for (const [q, a] of Object.entries(r.answers)) {
+          if (typeof a === 'string' && a.includes('غير مطابق')) counts[q] = (counts[q] || 0) + 1;
+        }
+      });
+      const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      if (ranked.length === 0) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#10b981; font-weight:800;">✅ لا توجد بنود غير مطابقة مسجلة ضمن النطاق الحالي.</div>`; return; }
+      const maxCount = ranked[0][1];
+      let html = '';
+      ranked.forEach(([q, c]) => {
+        const pct = Math.round((c / maxCount) * 100);
+        html += `<div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(q)}</span><span style="color:#ef4444;">${c}</span></div>
+          <div style="background:#fee2e2; border-radius:6px; height:8px; overflow:hidden;"><div style="background:#ef4444; height:100%; width:${pct}%;"></div></div>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    // لوحة أداء المشرفين الميدانيين — مرئية فقط لإدارة التخطيط ومدير الإشراف
+    function renderInspectorPerformance(scopedResponses) {
+      const card = document.getElementById('inspectorPerfCard'); if (!card) return;
+      const canSeeThis = currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD';
+      card.classList.toggle('hidden', !canSeeThis);
+      if (!canSeeThis) return;
+      const tbody = document.querySelector('#inspectorPerfTable tbody'); if (!tbody) return;
+      const byInspector = {};
+      scopedResponses.forEach(r => {
+        const key = r.collectedBy || r.username || 'غير معروف';
+        if (!byInspector[key]) byInspector[key] = { total: 0, approved: 0, rejected: 0, pending: 0, approvedFirstTime: 0 };
+        byInspector[key].total++;
+        if (r.status === 'approved') { byInspector[key].approved++; if (r.wasEverRejected !== true) byInspector[key].approvedFirstTime++; }
+        else if (r.status === 'rejected') byInspector[key].rejected++;
+        else byInspector[key].pending++;
+      });
+      const rows = Object.entries(byInspector).sort((a, b) => b[1].total - a[1].total);
+      if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">لا توجد بيانات ضمن النطاق الحالي.</td></tr>`; return; }
+      tbody.innerHTML = rows.map(([name, s]) => {
+        const decided = s.approved + s.rejected;
+        const rate = decided > 0 ? Math.round((s.approved / decided) * 100) : 0;
+        const rateColor = rate >= 80 ? '#10b981' : (rate >= 50 ? '#f59e0b' : '#ef4444');
+        const firstTimeRate = decided > 0 ? Math.round((s.approvedFirstTime / decided) * 100) : 0;
+        return `<tr><td style="font-weight:800;">${esc(name)}</td><td>${s.total}</td><td style="color:#10b981; font-weight:800;">${s.approved}</td><td style="color:#ef4444; font-weight:800;">${s.rejected}</td><td style="color:#f59e0b; font-weight:800;">${s.pending}</td><td style="color:${rateColor}; font-weight:900;">${decided > 0 ? rate + '%' : '-'}</td><td style="font-weight:800;">${decided > 0 ? firstTimeRate + '%' : '-'}</td></tr>`;
+      }).join('');
+    }
+
+    // مشاكل متكررة: نفس بند الفحص "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة
+    function renderRecurringIssues(scopedResponses) {
+      const container = document.getElementById('recurringIssuesContainer'); if (!container) return;
+      const counts = {}; // key: school||question -> {count, school, question}
+      scopedResponses.forEach(r => {
+        if (!r.answers) return;
+        for (const [q, a] of Object.entries(r.answers)) {
+          if (typeof a === 'string' && a.includes('غير مطابق')) {
+            const key = `${r.school}||${q}`;
+            if (!counts[key]) counts[key] = { school: r.school, question: q, count: 0 };
+            counts[key].count++;
+          }
+        }
+      });
+      const ranked = Object.values(counts).filter(x => x.count >= 2).sort((a, b) => b.count - a.count).slice(0, 8);
+      if (ranked.length === 0) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#10b981; font-weight:800;">✅ لا توجد مشاكل متكررة حالياً — كل الملاحظات جديدة أو تم حلها.</div>`; return; }
+      container.innerHTML = ranked.map(x => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid #fecaca; background:#fff5f5; border-radius:8px; margin-bottom:8px;">
+          <div><div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:0.9rem;">${esc(x.school)}</div><div style="font-size:0.82rem; color:#b91c1c; font-weight:700;">${esc(x.question)}</div></div>
+          <span class="badge-status rejected" style="white-space:nowrap;">${x.count} مرات</span>
+        </div>`).join('');
+    }
+
+    // خريطة ميدانية بآخر حالة معروفة لكل مدرسة (تعتمد على GPS المُلتقط مع كل زيارة)
+    let fieldMapInstance = null; let fieldMapMarkersLayer = null;
+    function renderFieldMap(scopedResponses) {
+      const el = document.getElementById('fieldMapContainer'); if (!el) return;
+      if (typeof L === 'undefined') { el.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">تعذر تحميل مكتبة الخرائط. تأكد من الاتصال بالإنترنت.</div>`; return; }
+      try {
+        if (!fieldMapInstance) {
+          fieldMapInstance = L.map(el).setView([26.42, 50.10], 9); // مركز افتراضي: المنطقة الشرقية
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(fieldMapInstance);
+          fieldMapMarkersLayer = L.layerGroup().addTo(fieldMapInstance);
+        }
+        fieldMapMarkersLayer.clearLayers();
+
+        // آخر رد (الأحدث id) لكل مدرسة ضمن النطاق الحالي
+        const latestBySchool = {};
+        scopedResponses.forEach(r => { if (!latestBySchool[r.school] || r.id > latestBySchool[r.school].id) latestBySchool[r.school] = r; });
+
+        const points = [];
+        Object.values(latestBySchool).forEach(r => {
+          if (!r.gps) return;
+          const parts = String(r.gps).split(',').map(v => parseFloat(v.trim()));
+          if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
+          const [lat, lng] = parts;
+          const hasIssue = r.answers && Object.values(r.answers).some(a => typeof a === 'string' && a.includes('غير مطابق'));
+          let color = '#10b981';
+          if (r.status === 'rejected' || hasIssue) color = '#ef4444';
+          else if (r.status === 'pending') color = '#f59e0b';
+          const marker = L.circleMarker([lat, lng], { radius: 9, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.9 });
+          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(r.school)}</b><br>${esc(r.surveyTitle)}<br>المشرف: ${esc(r.collectedBy)}<br>التاريخ: ${esc(shortDate(r))}</div>`);
+          marker.addTo(fieldMapMarkersLayer);
+          points.push([lat, lng]);
+        });
+
+        if (points.length > 0) { fieldMapInstance.fitBounds(points, { padding: [30, 30], maxZoom: 13 }); }
+        setTimeout(() => fieldMapInstance.invalidateSize(), 200);
+      } catch (e) {}
+    }
+
+    // مقارنة أداء فترتين (أساس لمقارنة سنوية Year-over-Year عند توفر بيانات لسنوات سابقة)
+    function renderPeriodComparison() {
+      const container = document.getElementById('periodComparisonContainer'); if (!container) return;
+      const startInput = document.getElementById('cmpPeriodStart'); const endInput = document.getElementById('cmpPeriodEnd');
+      if (!startInput || !endInput) return;
+      if (!startInput.value || !endInput.value) {
+        const today = new Date(); const monthAgo = new Date(); monthAgo.setDate(today.getDate() - 29);
+        endInput.value = today.toISOString().slice(0, 10); startInput.value = monthAgo.toISOString().slice(0, 10);
+      }
+      const startA = new Date(startInput.value + 'T00:00:00').getTime();
+      const endA = new Date(endInput.value + 'T23:59:59').getTime();
+      if (isNaN(startA) || isNaN(endA) || startA > endA) { container.innerHTML = `<div style="color:#ef4444; font-weight:700;">نطاق تاريخ غير صالح.</div>`; return; }
+      const lengthMs = endA - startA;
+      const endB = startA - 1; const startB = endB - lengthMs;
+
+      const scoped = getScopedResponses();
+      const periodA = scoped.filter(r => r.id >= startA && r.id <= endA);
+      const periodB = scoped.filter(r => r.id >= startB && r.id <= endB);
+
+      const statsOf = (arr) => ({ total: arr.length, approved: arr.filter(r => r.status === 'approved').length });
+      const a = statsOf(periodA); const b = statsOf(periodB);
+      const delta = (curr, prev) => { if (prev === 0) return curr > 0 ? '+100%' : '—'; const pct = Math.round(((curr - prev) / prev) * 100); return (pct >= 0 ? '+' : '') + pct + '%'; };
+      const deltaColor = (curr, prev) => curr >= prev ? '#10b981' : '#ef4444';
+
+      container.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div style="background:var(--tbc-petrol-light); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">الفترة المحددة</div>
+            <div style="font-size:1.5rem; font-weight:900; color:var(--tbc-petrol-dark);">${a.total}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">تقرير مرفوع (${a.approved} معتمد)</div>
+          </div>
+          <div style="background:#f8fafc; border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">الفترة السابقة لها مباشرة</div>
+            <div style="font-size:1.5rem; font-weight:900; color:var(--tbc-petrol-dark);">${b.total}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">تقرير مرفوع (${b.approved} معتمد)</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; text-align:center; font-weight:900; color:${deltaColor(a.total, b.total)};">التغير في عدد التقارير: ${delta(a.total, b.total)}</div>
+      `;
+    }
+
+    // بناء نص تنبيه بالتقارير المتأخرة ومشاركته عبر واتساب (بديل عملي لعدم توفر إرسال تلقائي من الخادم حالياً)
+    function shareAgingAlert() {
+      const scoped = getScopedResponses();
+      const now = Date.now();
+      const aging = scoped.filter(r => r.status === 'pending' && (now - r.id) > (48 * 60 * 60 * 1000));
+      if (aging.length === 0) return alert('لا توجد تقارير متأخرة عن 48 ساعة حالياً ضمن نطاقك. 👍');
+      let text = `🚨 تنبيه: يوجد ${aging.length} تقرير متأخر عن الاعتماد لأكثر من 48 ساعة:\n\n`;
+      aging.slice(0, 15).forEach(r => {
+        const days = Math.floor((now - r.id) / (24 * 60 * 60 * 1000));
+        text += `• ${r.school} (${r.surveyTitle}) — بواسطة ${r.collectedBy} — متأخر ${days} يوم\n`;
+      });
+      if (aging.length > 15) text += `... و ${aging.length - 15} تقرير آخر.\n`;
+      text += `\nيرجى مراجعة قسم "السجلات والاعتمادات" في بوابة الحصر الشامل.`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     // ================= Logic: Records & Filtering =================
@@ -1052,6 +1530,16 @@
       else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } 
       else if (currentUser.role === "ROLE_SUPERVISION_LEAD") { if (currentUser.branch && currentUser.branch !== "الكل") list = list.filter(r => r.branch === currentUser.branch); } 
       else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); }
+
+      // دمج نطاق أي مُفوِّض نشط (تفويض صلاحية الاعتماد مؤقتاً بين إدارة التخطيط/مديري الإشراف)
+      if (currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD') {
+        const delegators = getActiveIncomingDelegators();
+        if (delegators.length > 0) {
+          const extra = responses.filter(r => delegators.some(d => !d.branch || d.branch === 'الكل' || r.branch === d.branch));
+          const seen = new Set(list.map(r => r.id));
+          extra.forEach(r => { if (!seen.has(r.id)) { list = list.concat([r]); seen.add(r.id); } });
+        }
+      }
       return list;
     }
 
@@ -1123,7 +1611,7 @@
        }
 
        let actions = '';
-       if (currentUser.role === "ROLE_SUPERVISION_LEAD" || currentUser.role === "ROLE_PLANNING") {
+       if (currentUserHasApprovalAuthority()) {
           actions = `<div style="display:flex; gap:10px; margin-top:20px; border-top:2px solid #cbd5e1; padding-top:16px;" class="action-buttons-mobile">
              <button class="btn btn-approve" style="flex:1;" onclick="setReportStatus(${rep.id}, 'approved')">✓ اعتماد التقرير</button>
              <button class="btn btn-reject" style="flex:1;" onclick="promptRejectReport(${rep.id})">✕ رفض بملاحظة</button>
@@ -1137,10 +1625,12 @@
        }
        
        let rejectBox = rep.rejectionReason ? `<div style="background:#fef2f2; color:#b91c1c; padding:12px; border:1px solid #fecaca; border-radius:8px; margin-bottom:16px;"><b>⚠️ ملاحظات الرفض:</b> ${esc(rep.rejectionReason)}</div>` : '';
+       let resubmitBox = rep.resubmittedAfterRejection ? `<div style="background:#fffbeb; color:#92400e; padding:12px; border:1px solid #fde68a; border-radius:8px; margin-bottom:16px;"><b>🔁 مُعاد رفعه بعد رفض سابق</b>${rep.previousRejectionReason ? `<br><span style="font-size:0.85rem;">السبب السابق: ${esc(rep.previousRejectionReason)}</span>` : ''}</div>` : '';
 
        document.getElementById('vrModalBody').innerHTML = `
           <h4 style="color:var(--tbc-petrol-dark); font-size:1.3rem; margin-bottom:10px;">🏫 ${esc(rep.school)}${minNoTxt}</h4>
           <p style="font-size:0.9rem; color:var(--text-muted); font-weight:700; margin-bottom:16px;">تاريخ الرفع: ${esc(rep.date)} | بواسطة: ${esc(rep.collectedBy)}</p>
+          ${resubmitBox}
           ${rejectBox}
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">${detailsHtml}</div>
           ${actions}
@@ -1150,8 +1640,16 @@
 
     function closeViewReportModal() { document.getElementById('viewReportModal').classList.add('hidden'); }
     function triggerEditReport(reportId) { const rep = responses.find(r => r.id === reportId); if (!rep) return; document.getElementById('secRecords').classList.add('hidden'); openFillSurvey(null, rep); }
-    async function grantEditPermission(index) { const rep = responses[index]; const res = await apiCall("APPROVE_REPORT", { reportId: rep.id, status: rep.status, grantEdit: true }); if(res.status==="success") { closeViewReportModal(); pullFromCloud(); } else alert(esc(res.message)); }
-    async function setReportStatus(id, status, reason = "") { const res = await apiCall("APPROVE_REPORT", { reportId: id, status: status, reason: reason }); if(res.status==="success") { closeViewReportModal(); pullFromCloud(); } else alert(esc(res.message)); }
+    async function grantEditPermission(index) { const rep = responses[index]; const res = await apiCall("APPROVE_REPORT", { reportId: rep.id, grantEdit: true }); if(res.status==="success") { logAudit('GRANT_EDIT', `منح إذن تعديل لتقرير: ${rep.school} - ${rep.surveyTitle}`); closeViewReportModal(); pullFromCloud(); } else alert(esc(res.message)); }
+    async function setReportStatus(id, status, reason = "") {
+      const rep = responses.find(r => r.id === id);
+      const wasEverRejected = status === 'rejected' ? true : (rep?.wasEverRejected === true);
+      const res = await apiCall("APPROVE_REPORT", { reportId: id, status: status, reason: reason, decidedAt: Date.now(), wasEverRejected });
+      if(res.status==="success") {
+        logAudit('REPORT_DECISION', `${status === 'approved' ? 'اعتماد' : 'رفض'} تقرير: ${rep ? rep.school + ' - ' + rep.surveyTitle : id}${reason ? ' (السبب: ' + reason + ')' : ''}`);
+        closeViewReportModal(); pullFromCloud();
+      } else alert(esc(res.message));
+    }
     function promptRejectReport(id) { const reason = prompt("يرجى كتابة سبب التعديل أو الرفض ليظهر للمشرف:"); if (reason !== null && reason.trim() !== "") { setReportStatus(id, 'rejected', reason.trim()); } }
 
     // ================= Export & Global Reports =================
@@ -1229,17 +1727,17 @@
 
         const sel = document.getElementById('singleSchoolInspector');
         sel.innerHTML = '<option value="">-- اختر المشرف --</option>';
-        usersList.filter(u => u.role === 'ROLE_INSPECTOR').forEach(u => { sel.innerHTML += `<option value="${esc(u.fullName)}">${esc(u.fullName)}</option>`; });
+        usersList.filter(u => u.role === 'ROLE_INSPECTOR').forEach(u => { sel.innerHTML += `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`; });
 
         const qBody = document.querySelector('#inspectorQuotaTable tbody'); if(qBody) { qBody.innerHTML = '';
           usersList.filter(u => u.role === 'ROLE_INSPECTOR').forEach(u => {
-             const count = (schoolDataWrapper.list || []).filter(s => s.inspector === u.username || s.inspector === u.fullName).length;
+             const count = (schoolDataWrapper.list || []).filter(s => schoolBelongsToUser(s, u)).length;
              qBody.innerHTML += `<tr><td><b>${esc(u.fullName)}</b></td><td>${esc(u.branch) || '-'}</td><td style="color:var(--tbc-petrol); font-weight:900; font-size:1.1rem;">${count}</td></tr>`;
           });
         }
       } else {
         const tbody = document.querySelector('#inspectorSchoolsTable tbody'); if(tbody) { tbody.innerHTML = '';
-          const mySchools = (schoolDataWrapper.list || []).filter(s => s.inspector === currentUser.username || s.inspector === currentUser.fullName);
+          const mySchools = (schoolDataWrapper.list || []).filter(s => schoolBelongsToUser(s, currentUser));
           if(mySchools.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">لا توجد مدارس مسندة إليك حالياً.</td></tr>`; } 
           else {
             mySchools.forEach((sch) => {
@@ -1255,25 +1753,27 @@
     async function toggleSchoolEditPermission() {
       schoolDataWrapper.settings.allowInspectorEdit = document.getElementById('toggleInspectorEdit').checked;
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-      if(res.status === "success") pullFromCloud(); else alert(esc(res.message));
+      if(res.status === "success") { logAudit('SETTINGS_CHANGE', `تغيير صلاحية تحديث المدارس للمشرفين إلى: ${schoolDataWrapper.settings.allowInspectorEdit ? 'مفعّلة' : 'معطّلة'}`); pullFromCloud(); } else alert(esc(res.message));
     }
 
     async function addSingleSchool() {
-      const minNo = document.getElementById('singleSchoolMinNo').value.trim(); const name = document.getElementById('singleSchoolName').value.trim(); const branch = document.getElementById('singleSchoolBranch').value; const inspector = document.getElementById('singleSchoolInspector').value;
-      if(!name || !inspector) return alert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
+      const minNo = document.getElementById('singleSchoolMinNo').value.trim(); const name = document.getElementById('singleSchoolName').value.trim(); const branch = document.getElementById('singleSchoolBranch').value; const inspectorUsername = document.getElementById('singleSchoolInspector').value;
+      if(!name || !inspectorUsername) return alert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
+      const inspUser = usersList.find(u => u.username === inspectorUsername);
+      const inspectorDisplay = inspUser ? inspUser.fullName : inspectorUsername;
       if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
       const exists = schoolDataWrapper.list.findIndex(s => s.name === name);
-      if(exists > -1) { schoolDataWrapper.list[exists] = { minNo, name, branch, inspector, phone: schoolDataWrapper.list[exists].phone, manager: schoolDataWrapper.list[exists].manager }; } 
-      else { schoolDataWrapper.list.push({ minNo, name, branch, inspector, phone: "", manager: "" }); }
+      if(exists > -1) { schoolDataWrapper.list[exists] = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone: schoolDataWrapper.list[exists].phone, manager: schoolDataWrapper.list[exists].manager }; } 
+      else { schoolDataWrapper.list.push({ minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone: "", manager: "" }); }
       
       document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = '';
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-      if(res.status === "success") { alert('✓ تم الحفظ بنجاح!'); pullFromCloud(); } else alert(esc(res.message));
+      if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); alert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else alert(esc(res.message));
     }
 
     function downloadSchoolsTemplate() {
       if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
-      const ws_data = [ ["الرقم الوزاري", "اسم المدرسة", "الإدارة المعنية", "المشرف لاستشاري"], ["55608", "ابتدائية المنذر بن الزبير بالدمام", "المكتب الفرعي بالشرقية", "الهنوف"] ];
+      const ws_data = [ ["الرقم الوزاري", "اسم المدرسة", "الإدارة المعنية", "الرمز الوظيفي أو الاسم الكامل للمشرف"], ["55608", "ابتدائية المنذر بن الزبير بالدمام", "المكتب الفرعي بالشرقية", "inspector01"] ];
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
     }
 
@@ -1283,22 +1783,32 @@
         try {
           const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
           const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-          let added = 0;
+          let added = 0; let unresolved = 0;
           if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
           for(let i = 1; i < json.length; i++) {
             const row = json[i]; if (!row || row.length === 0) continue;
             const minNo = row[0] ? String(row[0]).trim() : ''; const name = row[1] ? String(row[1]).trim() : '';
-            let branchRaw = row[2] ? String(row[2]).trim() : 'المكتب الفرعي بالشرقية'; const inspector = row[3] ? String(row[3]).trim() : '';
-            if (name && inspector) {
+            let branchRaw = row[2] ? String(row[2]).trim() : 'المكتب الفرعي بالشرقية'; const inspectorText = row[3] ? String(row[3]).trim() : '';
+            if (name && inspectorText) {
               let branch = "المكتب الفرعي بالشرقية"; if (branchRaw.includes("أحساء") || branchRaw.includes("الاحساء")) branch = "المكتب الفرعي بالأحساء";
+              const inspUser = resolveInspectorUser(inspectorText);
+              if (!inspUser) unresolved++;
+              const inspectorUsername = inspUser ? inspUser.username : '';
+              const inspectorDisplay = inspUser ? inspUser.fullName : inspectorText;
               const idx = schoolDataWrapper.list.findIndex(s => s.name === name);
-              if(idx > -1) { schoolDataWrapper.list[idx].minNo = minNo; schoolDataWrapper.list[idx].branch = branch; schoolDataWrapper.list[idx].inspector = inspector; } 
-              else { schoolDataWrapper.list.push({minNo, name, branch, inspector, phone:"", manager:""}); }
+              if(idx > -1) { schoolDataWrapper.list[idx].minNo = minNo; schoolDataWrapper.list[idx].branch = branch; schoolDataWrapper.list[idx].inspector = inspectorDisplay; schoolDataWrapper.list[idx].inspectorUsername = inspectorUsername; } 
+              else { schoolDataWrapper.list.push({minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone:"", manager:""}); }
               added++;
             }
           }
           const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-          if(res.status === "success") { alert(`✓ تمت العملية بنجاح! تم استيراد وربط [ ${added} ] مدرسة.`); pullFromCloud(); } else alert(esc(res.message));
+          if(res.status === "success") {
+            let msg = `✓ تمت العملية بنجاح! تم استيراد وربط [ ${added} ] مدرسة.`;
+            if (unresolved > 0) msg += `\n⚠️ تنبيه: تعذر التعرف على المشرف المطابق لـ [ ${unresolved} ] مدرسة (تأكد من كتابة الرمز الوظيفي أو الاسم الكامل تماماً كما هو مسجل بالنظام)، وتم حفظ الاسم كنص فقط دون ربط فعلي — يمكنك تصحيحه لاحقاً من نموذج الإضافة اليدوية بإدخال نفس اسم المدرسة مع اختيار المشرف الصحيح.`;
+            logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${unresolved} بدون ربط مشرف`);
+            alert(msg);
+            pullFromCloud();
+          } else alert(esc(res.message));
         } catch(err) { alert("حدث خطأ. تأكد من استخدام القالب المعتمد."); }
         event.target.value = ''; 
       };
@@ -1316,19 +1826,99 @@
     async function saveSchoolUpdate() {
        const schoolName = document.getElementById('updateSchoolNameLabel').innerText;
        const phone = document.getElementById('updSchoolPhone').value.trim(); const manager = document.getElementById('updSchoolManager').value.trim();
-       const idx = schoolDataWrapper.list.findIndex(s => s.name === schoolName);
-       if(idx > -1) {
-          schoolDataWrapper.list[idx].phone = phone; schoolDataWrapper.list[idx].manager = manager;
-          const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-          if(res.status === "success") { alert("✓ تم تحديث بيانات المدرسة بنجاح!"); closeUpdateSchoolModal(); pullFromCloud(); } else alert(esc(res.message));
-       }
+       const res = await apiCall("UPDATE_SCHOOL_CONTACT", { schoolName, phone, manager });
+       if(res.status === "success") {
+          logAudit('SCHOOL_CONTACT_UPDATE', `تحديث بيانات تواصل: ${schoolName}`);
+          alert("✓ تم تحديث بيانات المدرسة بنجاح!"); closeUpdateSchoolModal(); pullFromCloud();
+       } else alert(esc(res.message));
     }
 
     // ================= Logic: Users Management =================
-    function generateInitialPassword() {
+    function generateRandomPassword() {
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; let pass = "";
       for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
-      document.getElementById('usrPassword').value = pass;
+      return pass;
+    }
+    function generateInitialPassword() { document.getElementById('usrPassword').value = generateRandomPassword(); }
+
+    // ---- استيراد / تصدير جماعي للمستخدمين عبر Excel ----
+    function normalizeBranchLabel(text) {
+      const t = (text || '').trim();
+      if (t.includes('أحساء') || t.includes('احساء')) return 'المكتب الفرعي بالأحساء';
+      if (t.includes('شرقية')) return 'المكتب الفرعي بالشرقية';
+      if (t === 'الكل' || t === '') return 'الكل';
+      return t; // القيمة كما وردت لو كانت مطابقة تماماً لأحد الخيارات فعلاً
+    }
+    function normalizeRoleLabel(text) {
+      const t = (text || '').trim();
+      if (ROLE_LABELS_REVERSE[t]) return ROLE_LABELS_REVERSE[t];
+      if (Object.keys(ROLE_LABELS).includes(t)) return t; // قبول كود الدور مباشرة كذلك
+      return 'ROLE_INSPECTOR'; // افتراضي آمن عند عدم التعرف على القيمة
+    }
+
+    function downloadUsersTemplate() {
+      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      const ws_data = [
+        ["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي", "كلمة المرور (اختياري للجدد)"],
+        ["أحمد الهنوف", "ahmed.h", "ahmed@example.com", "0555555555", "مشرف ميداني", "الشرقية", ""]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المستخدمون"); XLSX.writeFile(wb, "قالب_استيراد_المستخدمين_TBC.xlsx");
+    }
+
+    function exportUsersExcel() {
+      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      if(!usersList || usersList.length === 0) return alert('لا يوجد مستخدمون لتصديرهم.');
+      const ws_data = [["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي"]];
+      usersList.forEach(u => { ws_data.push([u.fullName || '', u.username || '', u.email || '', u.phone || '', ROLE_LABELS[u.role] || u.role, u.branch || 'الكل']); });
+      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المستخدمون"); XLSX.writeFile(wb, "قائمة_المستخدمين_الحالية_TBC.xlsx");
+      // ملاحظة: لا يتم تصدير كلمات المرور لأسباب أمنية — عند الحاجة لإعادة استيراد نفس الملف لاحقاً بغرض التحديث فقط اترك عمود كلمة المرور فارغاً.
+    }
+
+    async function handleUsersExcelUpload(event) {
+      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+          const rows = [];
+          for (let i = 1; i < json.length; i++) {
+            const row = json[i]; if (!row || row.length === 0) continue;
+            const fullName = row[0] ? String(row[0]).trim() : '';
+            const username = row[1] ? String(row[1]).trim() : '';
+            const email = row[2] ? String(row[2]).trim() : '';
+            const phone = row[3] ? String(row[3]).trim() : '';
+            const roleLabel = row[4] ? String(row[4]).trim() : '';
+            const branchLabel = row[5] ? String(row[5]).trim() : '';
+            const password = row[6] ? String(row[6]).trim() : '';
+            if (fullName && username) rows.push({ fullName, username, email, phone, role: normalizeRoleLabel(roleLabel), branch: normalizeBranchLabel(branchLabel), password });
+          }
+          if (rows.length === 0) { alert('لم يتم العثور على صفوف صالحة في الملف. تأكد من استخدام القالب المعتمد.'); event.target.value = ''; return; }
+
+          let created = 0, updated = 0, failed = 0;
+          for (const row of rows) {
+            const existingUser = usersList.find(u => u.username === row.username);
+            const permissions = existingUser?.permissions || { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true };
+            let res;
+            if (existingUser) {
+              res = await apiCall("UPDATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, role: row.role, branch: row.branch, permissions });
+              if (res.status === 'success') { updated++; usersList = res.users; } else failed++;
+            } else {
+              const pass = row.password && row.password.length >= 8 ? row.password : generateRandomPassword();
+              res = await apiCall("CREATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, password: pass, role: row.role, branch: row.branch, permissions });
+              if (res.status === 'success') { created++; usersList = res.users; } else failed++;
+            }
+          }
+
+          let msg = `✓ اكتمل الاستيراد.\nتمت إضافة: ${created} مستخدم جديد.\nتم تحديث: ${updated} مستخدم موجود مسبقاً.`;
+          if (failed > 0) msg += `\n⚠️ فشل استيراد ${failed} صف — راجع البيانات (قد يكون الرمز الوظيفي مستخدماً بصيغة غير صالحة، أو نقص بيانات إلزامية).`;
+          logAudit('USER_BULK_IMPORT', `استيراد Excel: ${created} جديد، ${updated} محدَّث، ${failed} فشل`);
+          alert(msg);
+          renderUsersManagement();
+        } catch(err) { alert("حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد."); }
+        event.target.value = '';
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     function renderUsersManagement() {
@@ -1336,9 +1926,18 @@
       const badge = document.getElementById('totalUsersBadge'); if(badge) badge.innerText = `${usersList.length} مستخدم`;
       usersList.forEach((u, idx) => {
         const roleLabel = ROLE_LABELS[u.role] || u.role;
-        const statusBadge = u.active !== false ? '<span class="badge-status approved">نشط</span>' : '<span class="badge-status rejected">موقوف</span>';
-        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button></div></td></tr>`;
+        const isActive = u.active !== false;
+        const statusBadge = isActive ? '<span class="badge-status approved">نشط</span>' : '<span class="badge-status rejected">موقوف</span>';
+        const toggleBtn = u.username === currentUser.username ? '' : `<button class="btn ${isActive ? 'btn-reject' : 'btn-approve'}" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleUserActive('${esc(u.username)}', ${isActive})">${isActive ? 'إيقاف' : 'تفعيل'}</button>`;
+        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn}</div></td></tr>`;
       });
+    }
+
+    async function toggleUserActive(username, currentlyActive) {
+      const willActivate = !currentlyActive;
+      if (!confirm(willActivate ? `تفعيل حساب (${username}) مجدداً؟` : `إيقاف حساب (${username})؟ لن يتمكن من الدخول حتى تُعيد تفعيله.`)) return;
+      const res = await apiCall('TOGGLE_USER_STATUS', { usernameTarget: username, activeState: willActivate });
+      if (res.status === 'success') { logAudit('USER_STATUS_TOGGLE', `${willActivate ? 'تفعيل' : 'إيقاف'} حساب: ${username}`); usersList = res.users; renderUsersManagement(); } else alert(esc(res.message));
     }
 
     async function saveUserRecord() {
@@ -1354,7 +1953,10 @@
         res = await apiCall("CREATE_USER", { username: username, fullName: fullName, email: email, phone: phone, password: password, role: role, branch: branch, permissions: permissions });
       }
 
-      if(res.status === "success") { alert("✓ تمت العملية بنجاح!"); usersList = res.users; resetUserForm(); renderUsersManagement(); } else alert(esc(res.message));
+      if(res.status === "success") {
+        logAudit('USER_SYNC', `${editingUserIndex >= 0 ? 'تحديث' : 'إنشاء'} مستخدم: ${fullName} (${username})`);
+        alert("✓ تمت العملية بنجاح!"); usersList = res.users; resetUserForm(); renderUsersManagement();
+      } else alert(esc(res.message));
     }
 
     function editUserPrompt(idx) {
@@ -1374,7 +1976,7 @@
       if (newPass !== null && newPass.trim() !== "") { 
         if(newPass.length < 8) return alert("كلمة المرور قصيرة جداً.");
         const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: username, newPassword: newPass.trim() });
-        if(res.status==="success") { usersList = res.users; renderUsersManagement(); alert("تم إعادة تعيين كلمة المرور بنجاح."); } else alert(esc(res.message));
+        if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${username}`); usersList = res.users; renderUsersManagement(); alert("تم إعادة تعيين كلمة المرور بنجاح."); } else alert(esc(res.message));
       } 
     }
 
@@ -1395,7 +1997,65 @@
       if (newP.length < 8) return alert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
       if (newP !== confirmP) return alert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
       const res = await apiCall('CHANGE_PASSWORD', { oldPassword: cur, newPassword: newP });
-      if (res.status === 'success') { alert('✓ تم تحديث كلمة المرور بنجاح.'); closeChangePasswordModal(); } else alert(esc(res.message || 'تعذر تحديث كلمة المرور.'));
+      if (res.status === 'success') { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الذاتي'); alert('✓ تم تحديث كلمة المرور بنجاح.'); closeChangePasswordModal(); } else alert(esc(res.message || 'تعذر تحديث كلمة المرور.'));
+    }
+
+    // ================= Logic: تفويض صلاحية الاعتماد المؤقت =================
+    function openDelegateModal() {
+      const sel = document.getElementById('delegateToUser');
+      sel.innerHTML = '<option value="">-- بدون تفويض --</option>';
+      usersList.filter(u => (u.role === 'ROLE_PLANNING' || u.role === 'ROLE_SUPERVISION_LEAD') && u.username !== currentUser.username)
+        .forEach(u => { sel.innerHTML += `<option value="${esc(u.username)}">${esc(u.fullName)} (${esc(ROLE_LABELS[u.role] || u.role)})</option>`; });
+
+      const noteEl = document.getElementById('currentDelegationNote');
+      if (currentUser.delegateApprovalTo && currentUser.delegateUntil) {
+        const delegateUser = usersList.find(u => u.username === currentUser.delegateApprovalTo);
+        noteEl.innerHTML = `<div style="background:var(--tbc-petrol-light); border:1px solid var(--tbc-petrol); border-radius:8px; padding:10px; font-weight:700; font-size:0.9rem;">🔄 لديك حالياً تفويض نشط إلى: ${esc(delegateUser ? delegateUser.fullName : currentUser.delegateApprovalTo)} حتى ${esc(currentUser.delegateUntil)}</div>`;
+        sel.value = currentUser.delegateApprovalTo;
+        document.getElementById('delegateUntilDate').value = currentUser.delegateUntil;
+      } else {
+        noteEl.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem;">لا يوجد تفويض نشط حالياً.</div>`;
+        document.getElementById('delegateUntilDate').value = '';
+      }
+      document.getElementById('delegateApprovalModal').classList.remove('hidden');
+    }
+    function closeDelegateModal() { document.getElementById('delegateApprovalModal').classList.add('hidden'); }
+
+    async function persistDelegation(delegateApprovalTo, delegateUntil) {
+      const res = await apiCall('SET_DELEGATION', { delegateApprovalTo, delegateUntil });
+      if (res.status === 'success') {
+        currentUser.delegateApprovalTo = delegateApprovalTo; currentUser.delegateUntil = delegateUntil;
+        if (localStorage.getItem('tbc_session_token')) localStorage.setItem('tbc_current_user', JSON.stringify(currentUser));
+        if (res.users) usersList = res.users;
+        logAudit('DELEGATION_CHANGE', delegateApprovalTo ? `تفويض الاعتماد إلى ${delegateApprovalTo} حتى ${delegateUntil}` : 'إلغاء تفويض الاعتماد');
+        return true;
+      }
+      alert(esc(res.message || 'تعذر حفظ التفويض.'));
+      return false;
+    }
+    async function saveDelegation() {
+      const to = document.getElementById('delegateToUser').value;
+      const until = document.getElementById('delegateUntilDate').value;
+      if (to && !until) return alert('يرجى تحديد تاريخ نهاية التفويض.');
+      if (!to) return alert('يرجى اختيار الشخص المفوَّض، أو استخدم زر "إلغاء التفويض الحالي" لمسح أي تفويض قائم.');
+      const ok = await persistDelegation(to, until);
+      if (ok) { alert('✓ تم حفظ التفويض بنجاح.'); closeDelegateModal(); }
+    }
+    async function clearDelegation() {
+      const ok = await persistDelegation('', '');
+      if (ok) { alert('✓ تم إلغاء التفويض الحالي.'); closeDelegateModal(); }
+    }
+
+    // ================= Logic: سجل التدقيق =================
+    function renderAuditLog() {
+      const tbody = document.querySelector('#auditLogTable tbody'); if (!tbody) return;
+      const logs = (schoolDataWrapper.logs || []).slice().reverse().slice(0, 500);
+      if (logs.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا توجد أحداث مسجّلة بعد.</td></tr>`; return; }
+      tbody.innerHTML = logs.map(l => {
+        const dt = new Date(l.ts);
+        const timeTxt = isNaN(dt.getTime()) ? '-' : dt.toLocaleString('ar-SA-u-ca-gregory');
+        return `<tr><td style="white-space:nowrap; direction:ltr;">${esc(timeTxt)}</td><td style="font-weight:800;">${esc(l.userName || l.user)}</td><td>${esc(l.action)}</td><td>${esc(l.details)}</td></tr>`;
+      }).join('');
     }
 
     // Init App Check
