@@ -808,7 +808,7 @@
     <main>
       <div class="container-fluid">
 
-        <!-- ================= 1. تبويب التحليلات والمؤشرات ================= -->
+        <!-- ================= 1. تبويب التحليلات والمؤشرات (يعمل تلقائياً عند الفتح) ================= -->
         <section id="secAnalytics">
           <div class="card" style="padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:4px solid var(--tbc-petrol);">
             <div>
@@ -1018,7 +1018,7 @@
           <div id="recordsContainer"></div>
         </section>
 
-        <!-- ================= 4. تبويب إدارة المستخدمين ================= -->
+        <!-- ================= 4. تبويب إدارة المستخدمين (يظهر الهيكل تلقائياً) ================= -->
         <section id="secUsers" class="hidden">
           <div class="card" style="border-right: 5px solid var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); margin-bottom:14px; font-size:1.15rem;" id="userFormTitle">➕ إضافة مستخدم جديد وإدارة الإيميل للإشعارات</h4>
@@ -1254,7 +1254,6 @@
       }
     ];
 
-    // توحيد مفتاح التخزين الموحد لجميع الحصورات
     let surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || [
       {
         id: "SRV-101",
@@ -1498,10 +1497,11 @@
       renderChatMessages();
     }
 
-    // ================= لوحة التحليلات والمؤشرات (تبدأ بالإجمالي العام تلقائياً) =================
+    // ================= لوحة التحليلات والمؤشرات (تعمل تلقائياً عند الدخول) =================
     function populateAnalyticsSurveyDropdown() {
       const select = document.getElementById('analyticsSurveyFilter');
       if (!select) return;
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
       select.innerHTML = '<option value="ALL">-- كل عمليات الحصر المنشورة (إجمالي عام) --</option>';
       surveys.forEach(s => {
         select.innerHTML += `<option value="${s.title}">${s.title}</option>`;
@@ -1510,6 +1510,9 @@
 
     function refreshAnalyticsDashboard() {
       if (!currentUser) return;
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
+      responses = JSON.parse(localStorage.getItem('tbc_responses_store_v1')) || responses;
+
       const selectedSurvey = document.getElementById('analyticsSurveyFilter').value;
       let scoped = getScopedResponses();
       if (selectedSurvey !== "ALL") scoped = scoped.filter(r => r.surveyTitle === selectedSurvey);
@@ -1661,6 +1664,7 @@
       const countBadge = document.getElementById('activeInspectorsCountBadge');
       container.innerHTML = '';
 
+      usersList = JSON.parse(localStorage.getItem('tbc_users_store_v1')) || usersList;
       const inspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR');
       countBadge.innerText = `${inspectors.length} مشرفين معتمدين`;
 
@@ -1697,7 +1701,6 @@
       const container = document.getElementById('surveysListContainer');
       container.innerHTML = '';
       
-      // جلب أحدث بيانات الحصورات مباشرة من التخزين المشترك
       surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
 
       if (surveys.length === 0) {
@@ -1763,6 +1766,7 @@
     }
 
     function openEditSurveyTemplate(id) {
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
       const s = surveys.find(x => String(x.id) === String(id));
       if (!s) return;
       editingSurveyId = s.id;
@@ -1911,6 +1915,8 @@
 
       if (fields.length === 0) return alert("أضف بند فحص واحد على الأقل");
 
+      surveys = JSON.parse(localStorage.getItem('tbc_surveys_store_v1')) || surveys;
+
       if (editingSurveyId) {
         const idx = surveys.findIndex(s => String(s.id) === String(editingSurveyId));
         if (idx !== -1) {
@@ -1925,7 +1931,6 @@
         alert("✓ تم نشر نموذج الحصر وتوجيه إشعار إلى بريد المشرفين بنجاح!");
       }
 
-      // حفظ في المفتاح الموحد والمشترك
       localStorage.setItem('tbc_surveys_store_v1', JSON.stringify(surveys));
       closeNewSurveyModal();
       populateFilterDropdowns();
@@ -2432,6 +2437,7 @@
       localStorage.setItem('tbc_responses_store_v1', JSON.stringify(responses));
       alert(status === 'approved' ? "✓ تم اعتماد التقرير رسمياً بنجاح وإشعار المشرف!" : "تم رفض التقرير وإرسال إشعار بالملاحظة للمشرف.");
       updateKPIs();
+      updateNotifications();
       renderRecords();
     }
 
@@ -2583,10 +2589,12 @@
       w.document.close();
     }
 
-    // ================= إدارة المستخدمين =================
+    // ================= إدارة المستخدمين (عرض الهيكل وقائمة المشرفين تلقائياً) =================
     function renderUsersManagement() {
       const tbody = document.querySelector('#usersListTable tbody');
       if (!tbody) return;
+      
+      usersList = JSON.parse(localStorage.getItem('tbc_users_store_v1')) || usersList;
       tbody.innerHTML = '';
       document.getElementById('totalUsersBadge').innerText = `إجمالي: ${usersList.length} مستخدم`;
 
@@ -2636,6 +2644,8 @@
         requirePhoto: document.getElementById('permRequirePhoto').checked,
         allowPdf: document.getElementById('permAllowPdf').checked
       };
+
+      usersList = JSON.parse(localStorage.getItem('tbc_users_store_v1')) || usersList;
 
       if (editingUserIndex >= 0) {
         usersList[editingUserIndex].fullName = fullName;
