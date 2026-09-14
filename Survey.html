@@ -98,6 +98,15 @@
     .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
 
     .bi-kpi-card { background: #fff; border-radius: var(--radius-md); padding: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+
+    /* كروت مؤشرات السجلات (قابلة للنقر للتصفية) وشريط الفلاتر — كانا يُستخدَمان في الكود بدون أي تنسيق مُعرّف */
+    .kpi-box { background: #fff; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm); text-align: center; cursor: pointer; transition: all 0.2s ease; }
+    .kpi-box:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--tbc-petrol); }
+    .kpi-box .kpi-num { font-size: 2rem; font-weight: 900; line-height: 1; margin-bottom: 6px; color: var(--tbc-petrol-mid); }
+    .kpi-box .kpi-title { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); }
+    .kpi-box.active-filter { border-color: var(--tbc-petrol); box-shadow: 0 0 0 3px var(--tbc-petrol-light); background: var(--tbc-petrol-light); }
+
+    .filter-bar-card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-right: 5px solid var(--tbc-petrol); border-radius: var(--radius-md); padding: 20px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
     .bi-kpi-card.highlight { background: #1e293b; border: none; }
     .bi-title { font-size: 0.9rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
     .bi-num { font-size: 2.2rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); }
@@ -444,22 +453,22 @@
           
           <div id="adminFilterSection" class="filter-bar-card hidden">
             <div style="font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.1rem; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
-              🔍 تصفية وتحليل أداء الحصورات والمشرفين
+              🔍 عوامل التصفية — حسب النموذج أو المشرف الميداني
             </div>
             <div class="action-buttons-mobile" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;">
               <div style="flex:1; min-width:200px;">
-                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب عملية الحصر:</label>
+                <label style="font-size:0.9rem; margin-bottom:6px;">عملية الحصر:</label>
                 <select id="filterBySurveySelect" style="font-weight:700;" onchange="applyAdminFilters()">
-                  <option value="ALL">-- الكل --</option>
+                  <option value="ALL">-- كل النماذج --</option>
                 </select>
               </div>
               <div style="flex:1; min-width:200px;">
-                <label style="font-size:0.9rem; margin-bottom:6px;">تصفية بحسب المشرف الميداني:</label>
+                <label style="font-size:0.9rem; margin-bottom:6px;">المشرف الميداني:</label>
                 <select id="filterByInspectorSelect" style="font-weight:700;" onchange="applyAdminFilters()">
-                  <option value="ALL">-- الكل --</option>
+                  <option value="ALL">-- كل المشرفين --</option>
                 </select>
               </div>
-              <div>
+              <div style="min-width:150px;">
                 <button class="btn btn-outline" style="width:100%; font-size:0.95rem; padding:11px;" onclick="resetAdminFilters()">إعادة الضبط ↺</button>
               </div>
             </div>
@@ -925,6 +934,7 @@
       document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden');
       document.getElementById('tabAuditLog')?.classList.toggle('hidden', !isPlanning);
       document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
+      document.getElementById('adminFilterSection')?.classList.toggle('hidden', !canDelegate);
       pullFromCloud(); showTab('analytics');
       logAudit('LOGIN', `تسجيل دخول`);
     }
@@ -1624,8 +1634,8 @@
     
     function populateFilterDropdowns() {
       const sSelect = document.getElementById('filterBySurveySelect'); const iSelect = document.getElementById('filterByInspectorSelect'); if (!sSelect || !iSelect) return;
-      let sHtml = '<option value="ALL">-- الكل --</option>'; if(surveys && surveys.length > 0) { surveys.forEach(s => { sHtml += `<option value="${esc(s.title)}">${esc(s.title)}</option>`; }); } if(sSelect.innerHTML !== sHtml) sSelect.innerHTML = sHtml;
-      let iHtml = '<option value="ALL">-- الكل --</option>'; const scoped = getScopedResponses(); if(scoped && scoped.length > 0) { const inspectors = [...new Set(scoped.map(r => r.collectedBy))]; inspectors.forEach(ins => { iHtml += `<option value="${esc(ins)}">${esc(ins)}</option>`; }); } if(iSelect.innerHTML !== iHtml) iSelect.innerHTML = iHtml;
+      let sHtml = '<option value="ALL">-- كل النماذج --</option>'; if(surveys && surveys.length > 0) { surveys.forEach(s => { sHtml += `<option value="${esc(s.title)}">${esc(s.title)}</option>`; }); } if(sSelect.innerHTML !== sHtml) sSelect.innerHTML = sHtml;
+      let iHtml = '<option value="ALL">-- كل المشرفين --</option>'; const scoped = getScopedResponses(); if(scoped && scoped.length > 0) { const inspectors = [...new Set(scoped.map(r => r.collectedBy))]; inspectors.forEach(ins => { iHtml += `<option value="${esc(ins)}">${esc(ins)}</option>`; }); } if(iSelect.innerHTML !== iHtml) iSelect.innerHTML = iHtml;
     }
     function applyAdminFilters() { selectedSurveyFilter = document.getElementById('filterBySurveySelect').value; selectedInspectorFilter = document.getElementById('filterByInspectorSelect').value; updateKPIs(); renderRecords(); }
     function resetAdminFilters() { document.getElementById('filterBySurveySelect').value = "ALL"; document.getElementById('filterByInspectorSelect').value = "ALL"; selectedSurveyFilter = "ALL"; selectedInspectorFilter = "ALL"; selectedKpiStatusFilter = "ALL"; updateKPIs(); renderRecords(); }
