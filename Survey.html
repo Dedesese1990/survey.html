@@ -309,6 +309,10 @@
               <div class="bi-title">الالتزام بالمواعيد</div>
               <div class="bi-num" id="biOnTimeRate">-</div>
             </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🏫 إجمالي المدارس في نطاقك</div>
+              <div class="bi-num" id="biTotalSchoolsCount">0</div>
+            </div>
           </div>
 
           <div class="dashboard-grid">
@@ -345,6 +349,19 @@
 
           <div class="dashboard-grid">
             <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ توزيع المدارس حسب المنطقة</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد المدارس المسجّلة في كل فرع ضمن نطاقك.</p>
+              <div id="schoolsByRegionContainer"></div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🚻 توزيع المدارس حسب الجنس</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
+              <div id="schoolsByGenderContainer"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="card" style="margin-bottom:0;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🔁 مشاكل متكررة لم تُحل</h4>
               <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
               <div id="recurringIssuesContainer"></div>
@@ -362,17 +379,17 @@
           </div>
 
           <div class="card" style="margin-bottom:0;">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ الخريطة الميدانية (آخر حالة مسجّلة لكل مدرسة)</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة — الموقع مأخوذ من آخر إحداثيات GPS مسجّلة لكل مدرسة.</p>
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة &nbsp; ⚪ لم تُزر بعد — تُستخدم إحداثيات المدرسة الثابتة (إن وُجدت) وإلا فآخر GPS مسجّل من زيارة فعلية.</p>
             <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
           </div>
           <div style="height:24px;"></div>
 
           <div class="card" id="inspectorPerfCard">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين</h4>
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>
             <div class="table-responsive">
               <table class="data-table" id="inspectorPerfTable">
-                <thead><tr><th>المشرف</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th></tr></thead>
+                <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -551,7 +568,8 @@
 
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
-            <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:20px;">
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس" (اسم المشرف، المنطقة، اسم المدرسة، الرقم الوزاري، الجنس، خط الطول والعرض). أعمدة بيانات المشرف الشخصية (الجوال/الجنسية/الشهادة/الخبرة/الايميل) لا تُستورد حالياً لعدم وجود حقول لها في حسابات المستخدمين.</p>
+            <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
               <label for="excelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع القالب المعبأ</label>
               <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
@@ -565,6 +583,10 @@
               <div class="form-group"><label>اسم المدرسة</label><input type="text" id="singleSchoolName"></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="singleSchoolBranch"><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
               <div class="form-group"><label>المشرف المُسند</label><select id="singleSchoolInspector"></select></div>
+              <div class="form-group"><label>الجنس</label><select id="singleSchoolGender"><option value="">-- غير محدد --</option><option value="بنين">بنين</option><option value="بنات">بنات</option></select></div>
+              <div class="form-group"><label>إدارة التعليم</label><input type="text" id="singleSchoolEduAdmin" placeholder="اختياري"></div>
+              <div class="form-group"><label>خط الطول (Longitude)</label><input type="number" step="any" id="singleSchoolLng" placeholder="اختياري"></div>
+              <div class="form-group"><label>خط العرض (Latitude)</label><input type="number" step="any" id="singleSchoolLat" placeholder="اختياري"></div>
             </div>
             <button class="btn btn-gold" style="width:100%; margin-top:8px;" onclick="addSingleSchool()">إضافة المدرسة للنظام ✓</button>
           </div>
@@ -1673,6 +1695,7 @@
       const wrappers = document.querySelectorAll('#dynamicFields .dyn-field-wrapper');
       const answers = {};
       let hasPhoto = false;
+      let surveyHasPhotoQuestion = false;
       let validationError = '';
 
       for (const wrapper of wrappers) {
@@ -1686,6 +1709,7 @@
         else if (qtype === 'checkbox') { value = Array.from(wrapper.querySelectorAll('.dynq-checkbox:checked')).map(c => c.value).join('، '); }
         else if (qtype === 'rating') { const el = wrapper.querySelector('input[type=hidden]'); value = el ? el.value : '0'; }
         else if (qtype === 'photo') {
+          surveyHasPhotoQuestion = true;
           const fileInput = wrapper.querySelector('input[type=file]');
           if (fileInput.files && fileInput.files[0]) {
             hasPhoto = true;
@@ -1700,7 +1724,8 @@
       }
 
       if (validationError) return showAlert(`يرجى الإجابة على السؤال الإلزامي: "${validationError}"`);
-      if (currentUser.permissions?.requirePhoto !== false && !hasPhoto) return showAlert('التقاط صورة توثيقية واحدة على الأقل إلزامي قبل رفع التقرير.');
+      // "إلزامية الصور" سياسة على مستوى الحساب، لكنها لا معنى لها إلا لو النموذج نفسه فيه أصلاً سؤال من نوع "توثيق صورة"
+      if (surveyHasPhotoQuestion && currentUser.permissions?.requirePhoto !== false && !hasPhoto) return showAlert('التقاط صورة توثيقية واحدة على الأقل إلزامي قبل رفع التقرير.');
 
       const btn = document.getElementById('submitSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الرفع...';
 
@@ -1776,11 +1801,14 @@
       document.getElementById('biApprovedCount').innerText = approvedCount;
       document.getElementById('biPendingCount').innerText = pendingCount;
       document.getElementById('biAgingCount').innerText = stuckCount;
+      document.getElementById('biTotalSchoolsCount').innerText = getScopedSchools().length;
       
       renderSCurveChart(scoped);
       renderCompliancePieChart(scoped);
       renderCoverageGap(scoped);
       renderTopFailingItems(scoped);
+      renderSchoolsByRegion();
+      renderSchoolsByGender();
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped);
       renderFieldMap(scoped);
@@ -1851,12 +1879,18 @@
     }
 
     // مدارس ضمن النطاق الحالي لم يُرفع لها أي تقرير حصر بعد
-    function renderCoverageGap(scopedResponses) {
-      const container = document.getElementById('coverageGapContainer'); if (!container) return;
-      const visitedSchoolNames = new Set(scopedResponses.map(r => r.school));
+    // المدارس ضمن نطاق المستخدم الحالي (نفس منطق تصفية الاستجابات، لكن للمدارس)
+    function getScopedSchools() {
       let scopeSchools = schoolDataWrapper.list || [];
       if (currentUser.role === 'ROLE_INSPECTOR') scopeSchools = scopeSchools.filter(s => schoolBelongsToUser(s, currentUser));
       else if (MANAGER_ROLES.includes(currentUser.role) && currentUser.branch && currentUser.branch !== 'الكل') scopeSchools = scopeSchools.filter(s => s.branch === currentUser.branch);
+      return scopeSchools;
+    }
+
+    function renderCoverageGap(scopedResponses) {
+      const container = document.getElementById('coverageGapContainer'); if (!container) return;
+      const visitedSchoolNames = new Set(scopedResponses.map(r => r.school));
+      const scopeSchools = getScopedSchools();
       const gap = scopeSchools.filter(s => !visitedSchoolNames.has(s.name));
       if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
       if (gap.length === 0) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#10b981; font-weight:800;">✅ تم رفع تقرير واحد على الأقل لكل مدرسة ضمن النطاق الحالي.</div>`; return; }
@@ -1864,6 +1898,39 @@
       gap.slice(0, 30).forEach(s => { html += `<div style="padding:8px 10px; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between;"><span style="font-weight:700;">${esc(s.name)}</span><span style="color:var(--text-muted); font-size:0.85rem;">${esc(s.inspector) || '-'}</span></div>`; });
       if (gap.length > 30) html += `<div style="text-align:center; padding:8px; color:var(--text-muted); font-size:0.85rem;">+ ${gap.length - 30} مدرسة أخرى...</div>`;
       html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // توزيع المدارس ضمن النطاق الحالي حسب الفرع/المنطقة
+    function renderSchoolsByRegion() {
+      const container = document.getElementById('schoolsByRegionContainer'); if (!container) return;
+      const scopeSchools = getScopedSchools();
+      if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
+      const counts = {};
+      scopeSchools.forEach(s => { const b = s.branch || 'غير محدد'; counts[b] = (counts[b] || 0) + 1; });
+      const maxCount = Math.max(...Object.values(counts));
+      container.innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([branch, count]) => `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(branch)}</span><span style="color:var(--tbc-petrol);">${count}</span></div>
+          <div style="background:var(--tbc-petrol-light); border-radius:6px; height:8px; overflow:hidden;"><div style="background:var(--tbc-petrol); height:100%; width:${Math.round((count / maxCount) * 100)}%;"></div></div>
+        </div>`).join('');
+    }
+
+    // توزيع المدارس ضمن النطاق الحالي حسب الجنس (بنين/بنات) — يعتمد على بيانات مستوردة فعلياً
+    function renderSchoolsByGender() {
+      const container = document.getElementById('schoolsByGenderContainer'); if (!container) return;
+      const scopeSchools = getScopedSchools();
+      if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
+      const boys = scopeSchools.filter(s => s.gender === 'بنين').length;
+      const girls = scopeSchools.filter(s => s.gender === 'بنات').length;
+      const unknown = scopeSchools.length - boys - girls;
+      let html = `
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+          <div style="background:#eff6ff; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:#2563eb;">${boys}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنين</div></div>
+          <div style="background:#fdf2f8; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:#db2777;">${girls}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنات</div></div>
+          <div style="background:#f8fafc; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:var(--text-muted);">${unknown}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">غير محدد</div></div>
+        </div>`;
+      if (unknown > 0) html += `<p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px;">💡 المدارس "غير محدد" يمكن تحديد جنسها لاحقاً من نموذج إضافة/استيراد المدارس.</p>`;
       container.innerHTML = html;
     }
 
@@ -1908,13 +1975,15 @@
         else byInspector[key].pending++;
       });
       const rows = Object.entries(byInspector).sort((a, b) => b[1].total - a[1].total);
-      if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">لا توجد بيانات ضمن النطاق الحالي.</td></tr>`; return; }
+      if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">لا توجد بيانات ضمن النطاق الحالي.</td></tr>`; return; }
+      const scopeSchools = getScopedSchools();
       tbody.innerHTML = rows.map(([name, s]) => {
         const decided = s.approved + s.rejected;
         const rate = decided > 0 ? Math.round((s.approved / decided) * 100) : 0;
         const rateColor = rate >= 80 ? '#10b981' : (rate >= 50 ? '#f59e0b' : '#ef4444');
         const firstTimeRate = decided > 0 ? Math.round((s.approvedFirstTime / decided) * 100) : 0;
-        return `<tr><td style="font-weight:800;">${esc(name)}</td><td>${s.total}</td><td style="color:#10b981; font-weight:800;">${s.approved}</td><td style="color:#ef4444; font-weight:800;">${s.rejected}</td><td style="color:#f59e0b; font-weight:800;">${s.pending}</td><td style="color:${rateColor}; font-weight:900;">${decided > 0 ? rate + '%' : '-'}</td><td style="font-weight:800;">${decided > 0 ? firstTimeRate + '%' : '-'}</td></tr>`;
+        const quotaCount = scopeSchools.filter(sch => sch.inspector === name).length;
+        return `<tr><td style="font-weight:800;">${esc(name)}</td><td style="font-weight:800; color:var(--tbc-petrol);">${quotaCount}</td><td>${s.total}</td><td style="color:#10b981; font-weight:800;">${s.approved}</td><td style="color:#ef4444; font-weight:800;">${s.rejected}</td><td style="color:#f59e0b; font-weight:800;">${s.pending}</td><td style="color:${rateColor}; font-weight:900;">${decided > 0 ? rate + '%' : '-'}</td><td style="font-weight:800;">${decided > 0 ? firstTimeRate + '%' : '-'}</td></tr>`;
       }).join('');
     }
 
@@ -1958,18 +2027,30 @@
         const latestBySchool = {};
         scopedResponses.forEach(r => { if (!latestBySchool[r.school] || r.id > latestBySchool[r.school].id) latestBySchool[r.school] = r; });
 
+        const parseGps = (gpsStr) => {
+          if (!gpsStr) return null;
+          const parts = String(gpsStr).split(',').map(v => parseFloat(v.trim()));
+          return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? parts : null;
+        };
+
         const points = [];
-        Object.values(latestBySchool).forEach(r => {
-          if (!r.gps) return;
-          const parts = String(r.gps).split(',').map(v => parseFloat(v.trim()));
-          if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
-          const [lat, lng] = parts;
-          const hasIssue = r.answers && Object.values(r.answers).some(a => typeof a === 'string' && a.includes('غير مطابق'));
-          let color = '#10b981';
-          if (r.status === 'rejected' || hasIssue) color = '#ef4444';
-          else if (r.status === 'pending') color = '#f59e0b';
+        getScopedSchools().forEach(sch => {
+          const r = latestBySchool[sch.name];
+          // الأولوية لآخر GPS فعلي مسجّل من زيارة، وإلا نستخدم إحداثيات المدرسة الثابتة المستوردة
+          const coords = (r && parseGps(r.gps)) || (sch.lat != null && sch.lng != null ? [sch.lat, sch.lng] : null);
+          if (!coords) return;
+          const [lat, lng] = coords;
+
+          let color = '#9ca3af'; // لم تُزر بعد
+          let statusTxt = 'لم تُزر بعد';
+          if (r) {
+            const hasIssue = r.answers && Object.values(r.answers).some(a => typeof a === 'string' && a.includes('غير مطابق'));
+            if (r.status === 'rejected' || hasIssue) { color = '#ef4444'; statusTxt = 'بها ملاحظات'; }
+            else if (r.status === 'pending') { color = '#f59e0b'; statusTxt = 'قيد الاعتماد'; }
+            else { color = '#10b981'; statusTxt = 'معتمدة وسليمة'; }
+          }
           const marker = L.circleMarker([lat, lng], { radius: 9, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.9 });
-          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(r.school)}</b><br>${esc(r.surveyTitle)}<br>المشرف: ${esc(r.collectedBy)}<br>التاريخ: ${esc(shortDate(r))}</div>`);
+          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(sch.name)}</b><br>الحالة: ${esc(statusTxt)}${r ? `<br>${esc(r.surveyTitle)}<br>المشرف: ${esc(r.collectedBy)}<br>التاريخ: ${esc(shortDate(r))}` : `<br>المشرف: ${esc(sch.inspector) || '-'}`}</div>`);
           marker.addTo(fieldMapMarkersLayer);
           points.push([lat, lng]);
         });
@@ -2456,23 +2537,32 @@
 
     async function addSingleSchool() {
       const minNo = document.getElementById('singleSchoolMinNo').value.trim(); const name = document.getElementById('singleSchoolName').value.trim(); const branch = document.getElementById('singleSchoolBranch').value; const inspectorUsername = document.getElementById('singleSchoolInspector').value;
+      const gender = document.getElementById('singleSchoolGender').value; const eduAdmin = document.getElementById('singleSchoolEduAdmin').value.trim();
+      const lngRaw = document.getElementById('singleSchoolLng').value; const latRaw = document.getElementById('singleSchoolLat').value;
+      const lng = lngRaw !== '' && !isNaN(parseFloat(lngRaw)) ? parseFloat(lngRaw) : null;
+      const lat = latRaw !== '' && !isNaN(parseFloat(latRaw)) ? parseFloat(latRaw) : null;
       if(!name || !inspectorUsername) return showAlert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
       const inspUser = usersList.find(u => u.username === inspectorUsername);
       const inspectorDisplay = inspUser ? inspUser.fullName : inspectorUsername;
       if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
       const exists = schoolDataWrapper.list.findIndex(s => s.name === name);
-      if(exists > -1) { schoolDataWrapper.list[exists] = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone: schoolDataWrapper.list[exists].phone, manager: schoolDataWrapper.list[exists].manager }; } 
-      else { schoolDataWrapper.list.push({ minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone: "", manager: "" }); }
+      const schoolRecord = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, gender, eduAdmin, lng, lat,
+        phone: (exists > -1 ? schoolDataWrapper.list[exists].phone : '') || '', manager: (exists > -1 ? schoolDataWrapper.list[exists].manager : '') || '' };
+      if(exists > -1) { schoolDataWrapper.list[exists] = schoolRecord; } 
+      else { schoolDataWrapper.list.push(schoolRecord); }
       
-      document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = '';
+      document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = ''; document.getElementById('singleSchoolEduAdmin').value = ''; document.getElementById('singleSchoolLng').value = ''; document.getElementById('singleSchoolLat').value = ''; document.getElementById('singleSchoolGender').value = '';
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
       if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); showAlert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
     function downloadSchoolsTemplate() {
       if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
-      const ws_data = [ ["الرقم الوزاري", "اسم المدرسة", "الإدارة المعنية", "الرمز الوظيفي أو الاسم الكامل للمشرف"], ["55608", "ابتدائية المنذر بن الزبير بالدمام", "المكتب الفرعي بالشرقية", "inspector01"] ];
-      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
+      const ws_data = [
+        ["م", "اسم المشرف ", "رقم الجوال", "المدير المباشر ", "الجنسية", "الشهادة", "سنوات الخبرة", "تاريخ الالتحاق", "إدارة التعليم ", "المنطقة ", "أسماء المدارس ", "الرقم الوزاري ", "الايميل", "الجنس ( بنين - بنات )", "خط الطول", "خط العرض"],
+        [1, "أحمد الهنوف", "0555555555", "خالد العتيبي", "سعودي", "بكالوريوس", 5, "2021-01-01", "إدارة تعليم الدمام", "الشرقية", "ابتدائية المنذر بن الزبير بالدمام", "55608", "ahmed.h@example.com", "بنين", "50.0888", "26.4207"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "حصر المشرفين والمدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
     }
 
     function handleExcelUpload(event) {
@@ -2485,17 +2575,34 @@
           if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
           for(let i = 1; i < json.length; i++) {
             const row = json[i]; if (!row || row.length === 0) continue;
-            const minNo = row[0] ? String(row[0]).trim() : ''; const name = row[1] ? String(row[1]).trim() : '';
-            let branchRaw = row[2] ? String(row[2]).trim() : 'المكتب الفرعي بالشرقية'; const inspectorText = row[3] ? String(row[3]).trim() : '';
+            // ترتيب أعمدة قالب "حصر المشرفين والمدارس": م(0) اسم المشرف(1) جوال(2) مدير مباشر(3) جنسية(4) شهادة(5)
+            // خبرة(6) تاريخ التحاق(7) إدارة تعليم(8) منطقة(9) اسم المدرسة(10) رقم وزاري(11) ايميل(12) جنس(13) طول(14) عرض(15)
+            const inspectorText = row[1] ? String(row[1]).trim() : '';
+            const eduAdmin = row[8] ? String(row[8]).trim() : '';
+            const regionRaw = row[9] ? String(row[9]).trim() : '';
+            const name = row[10] ? String(row[10]).trim() : '';
+            const minNo = row[11] ? String(row[11]).trim() : '';
+            const genderRaw = row[13] ? String(row[13]).trim() : '';
+            const lngRaw = row[14]; const latRaw = row[15];
+
             if (name && inspectorText) {
-              let branch = "المكتب الفرعي بالشرقية"; if (branchRaw.includes("حفر الباطن") || branchRaw.includes("حفرالباطن") || branchRaw.includes("الباطن")) branch = "المكتب الفرعي بحفر الباطن"; else if (branchRaw.includes("أحساء") || branchRaw.includes("الاحساء")) branch = "المكتب الفرعي بالأحساء";
+              let branch = "المكتب الفرعي بالشرقية";
+              if (regionRaw.includes("حفر الباطن") || regionRaw.includes("حفرالباطن") || regionRaw.includes("الباطن")) branch = "المكتب الفرعي بحفر الباطن";
+              else if (regionRaw.includes("أحساء") || regionRaw.includes("احساء")) branch = "المكتب الفرعي بالأحساء";
+
+              let gender = ''; if (genderRaw.includes('بنين') || genderRaw.includes('اولاد') || genderRaw.includes('بنون')) gender = 'بنين'; else if (genderRaw.includes('بنات')) gender = 'بنات';
+              const lng = (lngRaw !== undefined && lngRaw !== '' && !isNaN(parseFloat(lngRaw))) ? parseFloat(lngRaw) : null;
+              const lat = (latRaw !== undefined && latRaw !== '' && !isNaN(parseFloat(latRaw))) ? parseFloat(latRaw) : null;
+
               const inspUser = resolveInspectorUser(inspectorText);
               if (!inspUser) unresolved++;
               const inspectorUsername = inspUser ? inspUser.username : '';
               const inspectorDisplay = inspUser ? inspUser.fullName : inspectorText;
+
               const idx = schoolDataWrapper.list.findIndex(s => s.name === name);
-              if(idx > -1) { schoolDataWrapper.list[idx].minNo = minNo; schoolDataWrapper.list[idx].branch = branch; schoolDataWrapper.list[idx].inspector = inspectorDisplay; schoolDataWrapper.list[idx].inspectorUsername = inspectorUsername; } 
-              else { schoolDataWrapper.list.push({minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, phone:"", manager:""}); }
+              const schoolRecord = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, gender, lng, lat, eduAdmin,
+                phone: (idx > -1 ? schoolDataWrapper.list[idx].phone : "") || "", manager: (idx > -1 ? schoolDataWrapper.list[idx].manager : "") || "" };
+              if (idx > -1) schoolDataWrapper.list[idx] = schoolRecord; else schoolDataWrapper.list.push(schoolRecord);
               added++;
             }
           }
