@@ -213,8 +213,9 @@
         </label>
       </div>
       <button id="loginBtnElem" class="btn btn-petrol" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="handleLogin()">دخول المنظومة 🔒</button>
-      <div style="text-align:center; margin-top:14px;">
+      <div style="display:flex; justify-content:center; gap:20px; margin-top:14px; flex-wrap:wrap;">
         <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="color:var(--tbc-petrol); font-weight:700; font-size:0.9rem; text-decoration:underline;">نسيت كلمة المرور؟</a>
+        <a href="javascript:void(0)" onclick="openRegisterModal()" style="color:var(--tbc-petrol); font-weight:700; font-size:0.9rem; text-decoration:underline;">تسجيل حساب جديد</a>
       </div>
     </div>
   </div>
@@ -579,6 +580,14 @@
 
         <!-- ================= 5. Users Tab ================= -->
         <section id="secUsers" class="hidden">
+          <div class="card hidden" id="pendingRegistrationsCard" style="border-right:6px solid #f59e0b; background:#fffbeb;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900;">🆕 طلبات تسجيل جديدة بانتظار الاعتماد</h4>
+              <span class="badge-status pending" id="pendingRegBadge" style="font-size:1rem; padding:8px 16px;"></span>
+            </div>
+            <div id="pendingRegistrationsContainer"></div>
+          </div>
+
           <div class="card" style="border-right: 6px solid var(--tbc-gold); padding:24px 30px;">
             <h4 style="color:var(--tbc-petrol-dark); margin-bottom:20px; font-size:1.25rem; font-weight:900;" id="userFormTitle">إضافة / تعديل حساب مستخدم</h4>
             
@@ -700,6 +709,25 @@
     </div>
   </div>
 
+  <div id="adminResetPasswordModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔑 تعيين كلمة مرور جديدة</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">للمستخدم: <b id="arpTargetUserLabel" style="color:var(--tbc-petrol-dark);"></b></p>
+      <div class="form-group">
+        <label>كلمة المرور الجديدة</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="arpNewPassword" style="flex:1; font-weight:800; direction:ltr; text-align:left;">
+          <button type="button" class="btn btn-outline" style="padding:0 14px; white-space:nowrap;" onclick="document.getElementById('arpNewPassword').value = generateRandomPassword();">توليد 🎲</button>
+        </div>
+      </div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-petrol" style="flex:1;" onclick="confirmAdminResetPassword()">تعيين وحفظ ✓</button>
+        <button class="btn btn-outline" onclick="closeAdminResetPasswordModal()">إلغاء</button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-top:14px;">💡 انسخ كلمة المرور دي وشاركها مع المستخدم يدوياً — بعد الحفظ لن تظهر مرة أخرى في أي مكان بالنظام لأنها تُخزَّن بشكل مُشفّر غير قابل للاسترجاع.</p>
+    </div>
+  </div>
+
   <div id="delegateApprovalModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔄 تفويض صلاحية الاعتماد مؤقتاً</h3>
@@ -748,6 +776,47 @@
     </div>
   </div>
 
+  <div id="registerModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:600px;">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">📝 تسجيل حساب جديد</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">سيُرسَل طلبك لإدارة التخطيط والتحكم للمراجعة والاعتماد، ولن تتمكن من الدخول إلا بعد الموافقة عليه.</p>
+
+      <div class="form-grid">
+        <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="regFullName"></div>
+        <div class="form-group"><label>الرمز الوظيفي المطلوب *</label><input type="text" id="regUsername" placeholder="بدون مسافات"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" id="regEmail"></div>
+        <div class="form-group"><label>رقم الجوال</label><input type="text" id="regPhone" placeholder="05XXXXXXXX"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>كلمة المرور *</label><input type="password" id="regPassword" placeholder="8 أحرف على الأقل"></div>
+        <div class="form-group"><label>تأكيد كلمة المرور *</label><input type="password" id="regConfirmPassword"></div>
+      </div>
+
+      <div class="form-group">
+        <label>المسمى الوظيفي المطلوب *</label>
+        <select id="regRoleChoice" onchange="onRegRoleChoiceChange()">
+          <option value="">-- اختر --</option>
+          <option value="INSPECTOR">مشرف ميداني</option>
+          <option value="SUPERVISION_ALL">مدير إشراف (يشرف على الفرعين)</option>
+          <option value="SUB_OFFICE">إدارة مكتب فرعي (فرع واحد)</option>
+          <option value="PLANNING">تابع لإدارة التخطيط والتحكم</option>
+        </select>
+      </div>
+      <div class="form-group" id="regBranchGroup">
+        <label>الفرع التابع له *</label>
+        <select id="regBranch">
+          <option value="المكتب الفرعي بالشرقية">الشرقية</option>
+          <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+        </select>
+      </div>
+
+      <button class="btn btn-petrol" style="width:100%; margin-top:8px;" id="regSubmitBtn" onclick="submitRegistration()">إرسال طلب التسجيل ✓</button>
+      <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeRegisterModal()">إغلاق</button>
+    </div>
+  </div>
+
   <section id="secSuccessModal" class="modal-overlay hidden">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:4rem; margin-bottom:16px;">✅</div>
@@ -787,7 +856,7 @@
       return sch.inspector === user.username || sch.inspector === user.fullName;
     }
 
-    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} };
+    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} }; let pendingRegistrations = [];
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
     
     // Globals
@@ -924,6 +993,77 @@
       } else alert(esc(res.message || 'تعذر إعادة تعيين كلمة المرور.'));
     }
 
+    // ================= Logic: تسجيل حساب جديد (بانتظار اعتماد إدارة التخطيط) =================
+    function openRegisterModal() {
+      ['regFullName','regUsername','regEmail','regPhone','regPassword','regConfirmPassword'].forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('regRoleChoice').value = '';
+      document.getElementById('regBranchGroup').classList.add('hidden');
+      document.getElementById('regBranch').innerHTML = `
+        <option value="المكتب الفرعي بالشرقية">الشرقية</option>
+        <option value="المكتب الفرعي بالأحساء">الأحساء</option>`;
+      document.getElementById('registerModal').classList.remove('hidden');
+    }
+    function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden'); }
+
+    function onRegRoleChoiceChange() {
+      const val = document.getElementById('regRoleChoice').value;
+      const branchGroup = document.getElementById('regBranchGroup');
+      const branchSelect = document.getElementById('regBranch');
+      // إدارة التخطيط نطاقها "الكل" دائماً فقط، فلا حاجة لاختيار فرع لها
+      branchGroup.classList.toggle('hidden', val === 'PLANNING' || val === '');
+
+      if (val === 'SUPERVISION_ALL') {
+        // مدير الإشراف قد يشرف على الفرعين معاً أو يُحدَّد لفرع واحد بالتحديد
+        branchSelect.innerHTML = `
+          <option value="الكل">الفرعين معاً (الشرقية والأحساء)</option>
+          <option value="المكتب الفرعي بالشرقية">الشرقية فقط</option>
+          <option value="المكتب الفرعي بالأحساء">الأحساء فقط</option>`;
+      } else {
+        branchSelect.innerHTML = `
+          <option value="المكتب الفرعي بالشرقية">الشرقية</option>
+          <option value="المكتب الفرعي بالأحساء">الأحساء</option>`;
+      }
+    }
+
+    // نحوّل اختيار المستخدم لنفس نظام الأدوار الثلاثة الموجود فعلياً (ROLE_INSPECTOR / ROLE_SUPERVISION_LEAD / ROLE_PLANNING)
+    // بدل استحداث دور رابع — "مدير إشراف" و"إدارة مكتب فرعي" كلاهما ROLE_SUPERVISION_LEAD، والفارق بينهما هو نطاق الفرع فقط،
+    // وهو نفس المفهوم المستخدم أصلاً في باقي النظام لتحديد الصلاحيات والتصفية.
+    function mapRegRoleChoice(choice, branchVal) {
+      if (choice === 'INSPECTOR') return { role: 'ROLE_INSPECTOR', branch: branchVal };
+      if (choice === 'SUPERVISION_ALL') return { role: 'ROLE_SUPERVISION_LEAD', branch: branchVal };
+      if (choice === 'SUB_OFFICE') return { role: 'ROLE_SUPERVISION_LEAD', branch: branchVal };
+      if (choice === 'PLANNING') return { role: 'ROLE_PLANNING', branch: 'الكل' };
+      return null;
+    }
+
+    async function submitRegistration() {
+      const fullName = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+      const roleChoice = document.getElementById('regRoleChoice').value;
+      const branchVal = document.getElementById('regBranch').value;
+
+      if (!fullName || !username || !email) return alert('يرجى تعبئة الاسم الكامل والرمز الوظيفي والبريد الإلكتروني.');
+      if (!roleChoice) return alert('يرجى اختيار المسمى الوظيفي المطلوب.');
+      if (!password || password.length < 8) return alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      if (password !== confirmPassword) return alert('كلمة المرور وتأكيدها غير متطابقين.');
+
+      const mapped = mapRegRoleChoice(roleChoice, branchVal);
+      if (!mapped) return alert('يرجى اختيار المسمى الوظيفي المطلوب.');
+
+      const btn = document.getElementById('regSubmitBtn'); btn.disabled = true; btn.innerText = 'جاري الإرسال...';
+      const res = await apiCall('REGISTER_REQUEST', { fullName, username, email, phone, password, role: mapped.role, branch: mapped.branch });
+      btn.disabled = false; btn.innerText = 'إرسال طلب التسجيل ✓';
+
+      if (res.status === 'success') {
+        alert('✓ ' + (res.message || 'تم إرسال طلبك بنجاح، بانتظار الاعتماد.'));
+        closeRegisterModal();
+      } else alert(esc(res.message || 'تعذر إرسال طلب التسجيل.'));
+    }
+
     function loginSuccess() {
       document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.remove('hidden');
       document.getElementById('activeUserName').innerText = esc(currentUser.fullName);
@@ -943,7 +1083,7 @@
       if(!currentSessionToken) return;
       const resData = await apiCall("PULL_DATA");
       if (resData.status === "success") {
-        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users;
+        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || [];
         if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
         if (!schoolDataWrapper.settings) schoolDataWrapper.settings = {};
         if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
@@ -2002,6 +2142,7 @@
     }
 
     function renderUsersManagement() {
+      renderPendingRegistrations();
       const tbody = document.querySelector('#usersListTable tbody'); if (!tbody) return; tbody.innerHTML = '';
       const badge = document.getElementById('totalUsersBadge'); if(badge) badge.innerText = `${usersList.length} مستخدم`;
       usersList.forEach((u, idx) => {
@@ -2013,8 +2154,45 @@
         const isSelf = u.username === currentUser.username;
         const toggleBtn = isSelf ? '' : `<button class="btn ${isActive ? 'btn-reject' : 'btn-approve'}" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleUserActive('${esc(u.username)}', ${isActive})">${isActive ? 'إيقاف' : 'تفعيل'}</button>`;
         const deleteBtn = isSelf ? '' : `<button class="btn btn-reject" style="font-size:0.8rem; padding:6px 12px;" onclick="deleteUserAccount('${esc(u.username)}', '${esc(u.fullName)}')">🗑️ حذف</button>`;
-        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.email) || '-'}</td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${editPermBadge}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn} ${deleteBtn}</div></td></tr>`;
+        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.email) || '-'}</td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${editPermBadge}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="openAdminResetPasswordModal('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn} ${deleteBtn}</div></td></tr>`;
       });
+    }
+
+    // ---- طلبات التسجيل الجديدة (تظهر لإدارة التخطيط والتحكم فقط، بما أن التاب نفسه مقصور عليها) ----
+    function renderPendingRegistrations() {
+      const card = document.getElementById('pendingRegistrationsCard'); if (!card) return;
+      const list = pendingRegistrations || [];
+      card.classList.toggle('hidden', list.length === 0);
+      const badge = document.getElementById('pendingRegBadge'); if (badge) badge.innerText = `${list.length} طلب`;
+      const container = document.getElementById('pendingRegistrationsContainer'); if (!container) return;
+      if (list.length === 0) { container.innerHTML = ''; return; }
+      container.innerHTML = list.map(p => {
+        const roleLabel = ROLE_LABELS[p.role] || p.role;
+        const branchTxt = p.branch && p.branch !== 'الكل' ? ` — ${esc(p.branch)}` : '';
+        return `<div style="background:#fff; border:1px solid #fde68a; border-radius:8px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:1.05rem;">${esc(p.fullName)} <code style="background:#f1f5f9; padding:2px 6px; font-size:0.85rem; margin-right:6px;">${esc(p.username)}</code></div>
+            <div style="font-size:0.85rem; color:var(--tbc-petrol); font-weight:700; margin-top:4px;">${esc(roleLabel)}${branchTxt}</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;" dir="ltr" style="text-align:right;">${esc(p.email)}${p.phone ? ' · ' + esc(p.phone) : ''}</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-approve" onclick="approveRegistration('${esc(p.username)}')">✓ قبول واعتماد</button>
+            <button class="btn btn-reject" onclick="rejectRegistration('${esc(p.username)}')">✕ رفض</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function approveRegistration(username) {
+      if (!confirm(`اعتماد طلب تسجيل (${username}) وتفعيل الحساب فوراً؟`)) return;
+      const res = await apiCall('APPROVE_REGISTRATION', { username });
+      if (res.status === 'success') { logAudit('REGISTRATION_APPROVE', `اعتماد تسجيل جديد: ${username}`); alert('✓ تم اعتماد الحساب وتفعيله.'); pullFromCloud(); } else alert(esc(res.message));
+    }
+    async function rejectRegistration(username) {
+      const reason = prompt('سبب الرفض (اختياري، سيصل للمتقدّم عبر البريد):');
+      if (reason === null) return;
+      const res = await apiCall('REJECT_REGISTRATION', { username, reason: reason.trim() });
+      if (res.status === 'success') { logAudit('REGISTRATION_REJECT', `رفض تسجيل: ${username}`); alert('تم رفض الطلب.'); pullFromCloud(); } else alert(esc(res.message));
     }
 
     async function toggleUserActive(username, currentlyActive) {
@@ -2062,13 +2240,20 @@
       editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
 
-    async function adminResetPasswordPrompt(username) { 
-      const newPass = prompt(`تعيين كلمة مرور جديدة للمستخدم (${username}):\n(8 أحرف على الأقل)`); 
-      if (newPass !== null && newPass.trim() !== "") { 
-        if(newPass.length < 8) return alert("كلمة المرور قصيرة جداً.");
-        const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: username, newPassword: newPass.trim() });
-        if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${username}`); usersList = res.users; renderUsersManagement(); alert("تم إعادة تعيين كلمة المرور بنجاح."); } else alert(esc(res.message));
-      } 
+    let arpTargetUsername = '';
+    function openAdminResetPasswordModal(username) {
+      arpTargetUsername = username;
+      document.getElementById('arpTargetUserLabel').innerText = username;
+      document.getElementById('arpNewPassword').value = generateRandomPassword();
+      document.getElementById('adminResetPasswordModal').classList.remove('hidden');
+    }
+    function closeAdminResetPasswordModal() { document.getElementById('adminResetPasswordModal').classList.add('hidden'); }
+
+    async function confirmAdminResetPassword() {
+      const newPass = document.getElementById('arpNewPassword').value.trim();
+      if (!newPass || newPass.length < 8) return alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: arpTargetUsername, newPassword: newPass });
+      if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${arpTargetUsername}`); usersList = res.users; renderUsersManagement(); alert("✓ تم تعيين كلمة المرور الجديدة. لا تنسَ مشاركتها مع المستخدم يدوياً."); closeAdminResetPasswordModal(); } else alert(esc(res.message));
     }
 
     // ================= Logic: Change Password (self-service) =================
