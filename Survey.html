@@ -204,6 +204,9 @@
         </label>
       </div>
       <button id="loginBtnElem" class="btn btn-petrol" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="handleLogin()">دخول المنظومة 🔒</button>
+      <div style="text-align:center; margin-top:14px;">
+        <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="color:var(--tbc-petrol); font-weight:700; font-size:0.9rem; text-decoration:underline;">نسيت كلمة المرور؟</a>
+      </div>
     </div>
   </div>
 
@@ -585,7 +588,7 @@
                   <button type="button" class="btn btn-outline" style="padding:0 14px; font-size:0.85rem; white-space:nowrap;" onclick="generateInitialPassword()">توليد 🎲</button>
                 </div>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option></select></div>
             </div>
             
@@ -622,7 +625,7 @@
             </div>
             <div class="table-responsive">
               <table class="data-table" id="usersListTable">
-                <thead><tr><th>الاسم الكامل</th><th>الرمز الوظيفي</th><th>رقم الجوال</th><th>المسمى الوظيفي</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead>
+                <thead><tr><th>الاسم الكامل</th><th>الرمز الوظيفي</th><th>البريد الإلكتروني</th><th>رقم الجوال</th><th>المسمى الوظيفي</th><th>التعديل</th><th>الحالة</th><th>إدارة الحساب</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -713,6 +716,29 @@
     </div>
   </div>
 
+  <div id="forgotPasswordModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔑 استعادة كلمة المرور</h3>
+
+      <div id="fpStep1">
+        <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">أدخل الرمز الوظيفي، وسنرسل رمز تحقق مكوّن من 6 أرقام إلى بريدك الإلكتروني المسجّل بالنظام.</p>
+        <div class="form-group"><label>الرمز الوظيفي</label><input type="text" id="fpUsername" onkeydown="if(event.key==='Enter') requestResetCode();"></div>
+        <button class="btn btn-petrol" style="width:100%;" id="fpRequestBtn" onclick="requestResetCode()">إرسال رمز التحقق ✉️</button>
+      </div>
+
+      <div id="fpStep2" class="hidden">
+        <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">إذا كان الحساب موجوداً، وصلك رمز تحقق على بريدك المسجّل. أدخله هنا مع كلمة المرور الجديدة (صالح 15 دقيقة).</p>
+        <div class="form-group"><label>رمز التحقق (6 أرقام)</label><input type="text" id="fpCode" maxlength="6" inputmode="numeric"></div>
+        <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fpNewPass"></div>
+        <div class="form-group"><label>تأكيد كلمة المرور</label><input type="password" id="fpConfirmPass"></div>
+        <button class="btn btn-petrol" style="width:100%;" id="fpResetBtn" onclick="submitResetWithCode()">تعيين كلمة المرور الجديدة ✓</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="backToFpStep1()">لم يصلني الرمز — إعادة المحاولة</button>
+      </div>
+
+      <button class="btn btn-outline" style="width:100%; margin-top:16px;" onclick="closeForgotPasswordModal()">إغلاق</button>
+    </div>
+  </div>
+
   <section id="secSuccessModal" class="modal-overlay hidden">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:4rem; margin-bottom:16px;">✅</div>
@@ -732,7 +758,7 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
@@ -843,6 +869,50 @@
         const resData = await callBackend({ token: SECURE_API_TOKEN, action: "CHANGE_PASSWORD", sessionToken: currentSessionToken, payload: { oldPassword: cur, newPassword: newP } });
         if (resData.status === "success") { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الإجباري عند أول دخول'); document.getElementById('forceChangePasswordModal').classList.add('hidden'); alert("تم التأمين بنجاح!"); loginSuccess(); } else { alert(esc(resData.message)); }
       } catch (err) { alert("تعذر الاتصال بالخادم. يرجى المحاولة مجدداً."); }
+    }
+
+    // ================= Logic: استعادة كلمة المرور عبر البريد الإلكتروني =================
+    let fpPendingUsername = '';
+    function openForgotPasswordModal() {
+      document.getElementById('fpUsername').value = '';
+      document.getElementById('fpCode').value = ''; document.getElementById('fpNewPass').value = ''; document.getElementById('fpConfirmPass').value = '';
+      document.getElementById('fpStep1').classList.remove('hidden');
+      document.getElementById('fpStep2').classList.add('hidden');
+      document.getElementById('forgotPasswordModal').classList.remove('hidden');
+    }
+    function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').classList.add('hidden'); }
+    function backToFpStep1() { document.getElementById('fpStep1').classList.remove('hidden'); document.getElementById('fpStep2').classList.add('hidden'); }
+
+    async function requestResetCode() {
+      const username = document.getElementById('fpUsername').value.trim();
+      if (!username) return alert('يرجى إدخال الرمز الوظيفي.');
+      const btn = document.getElementById('fpRequestBtn'); btn.disabled = true; btn.innerText = 'جاري الإرسال...';
+      const res = await apiCall('FORGOT_PASSWORD', { username });
+      btn.disabled = false; btn.innerText = 'إرسال رمز التحقق ✉️';
+      // الرد دائماً بنفس الصياغة العامة بغض النظر عن وجود الحساب فعلياً (حماية أمنية مقصودة من الخادم)
+      if (res.status === 'success') {
+        fpPendingUsername = username;
+        alert(res.message || 'إذا كان الحساب موجوداً، تم إرسال رمز التحقق إلى بريدك الإلكتروني.');
+        document.getElementById('fpStep1').classList.add('hidden');
+        document.getElementById('fpStep2').classList.remove('hidden');
+      } else alert(esc(res.message || 'تعذر إرسال الطلب، حاول مرة أخرى.'));
+    }
+
+    async function submitResetWithCode() {
+      const code = document.getElementById('fpCode').value.trim();
+      const newP = document.getElementById('fpNewPass').value;
+      const confirmP = document.getElementById('fpConfirmPass').value;
+      if (!/^\d{6}$/.test(code)) return alert('يرجى إدخال رمز التحقق المكوّن من 6 أرقام.');
+      if (!newP || newP.length < 8) return alert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
+      if (newP !== confirmP) return alert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
+      const btn = document.getElementById('fpResetBtn'); btn.disabled = true; btn.innerText = 'جاري التحقق...';
+      const res = await apiCall('RESET_PASSWORD_WITH_CODE', { username: fpPendingUsername, code, newPassword: newP });
+      btn.disabled = false; btn.innerText = 'تعيين كلمة المرور الجديدة ✓';
+      if (res.status === 'success') {
+        alert('✓ ' + (res.message || 'تم تعيين كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.'));
+        closeForgotPasswordModal();
+        document.getElementById('loginUsername').value = fpPendingUsername;
+      } else alert(esc(res.message || 'تعذر إعادة تعيين كلمة المرور.'));
     }
 
     function loginSuccess() {
@@ -1928,8 +1998,12 @@
         const roleLabel = ROLE_LABELS[u.role] || u.role;
         const isActive = u.active !== false;
         const statusBadge = isActive ? '<span class="badge-status approved">نشط</span>' : '<span class="badge-status rejected">موقوف</span>';
-        const toggleBtn = u.username === currentUser.username ? '' : `<button class="btn ${isActive ? 'btn-reject' : 'btn-approve'}" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleUserActive('${esc(u.username)}', ${isActive})">${isActive ? 'إيقاف' : 'تفعيل'}</button>`;
-        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn}</div></td></tr>`;
+        const canEdit = u.permissions ? u.permissions.allowEdit !== false : true;
+        const editPermBadge = canEdit ? '<span class="badge-status approved">مفتوح</span>' : '<span class="badge-status rejected">مغلق</span>';
+        const isSelf = u.username === currentUser.username;
+        const toggleBtn = isSelf ? '' : `<button class="btn ${isActive ? 'btn-reject' : 'btn-approve'}" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleUserActive('${esc(u.username)}', ${isActive})">${isActive ? 'إيقاف' : 'تفعيل'}</button>`;
+        const deleteBtn = isSelf ? '' : `<button class="btn btn-reject" style="font-size:0.8rem; padding:6px 12px;" onclick="deleteUserAccount('${esc(u.username)}', '${esc(u.fullName)}')">🗑️ حذف</button>`;
+        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.email) || '-'}</td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${editPermBadge}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="adminResetPasswordPrompt('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn} ${deleteBtn}</div></td></tr>`;
       });
     }
 
@@ -1938,6 +2012,13 @@
       if (!confirm(willActivate ? `تفعيل حساب (${username}) مجدداً؟` : `إيقاف حساب (${username})؟ لن يتمكن من الدخول حتى تُعيد تفعيله.`)) return;
       const res = await apiCall('TOGGLE_USER_STATUS', { usernameTarget: username, activeState: willActivate });
       if (res.status === 'success') { logAudit('USER_STATUS_TOGGLE', `${willActivate ? 'تفعيل' : 'إيقاف'} حساب: ${username}`); usersList = res.users; renderUsersManagement(); } else alert(esc(res.message));
+    }
+
+    async function deleteUserAccount(username, fullName) {
+      if (!confirm(`⚠️ هل أنت متأكد من حذف حساب (${fullName} - ${username}) نهائياً؟\nهذا الإجراء لا يمكن التراجع عنه، والتقارير السابقة المرتبطة به ستبقى مسجّلة باسمه لكنه لن يستطيع الدخول للنظام مرة أخرى.`)) return;
+      if (!confirm('تأكيد أخير: سيتم حذف الحساب نهائياً من النظام. هل تريد المتابعة؟')) return;
+      const res = await apiCall('DELETE_USER', { username });
+      if (res.status === 'success') { logAudit('USER_DELETE', `حذف حساب نهائياً: ${fullName} (${username})`); usersList = res.users; renderUsersManagement(); alert('✓ تم حذف الحساب.'); } else alert(esc(res.message));
     }
 
     async function saveUserRecord() {
