@@ -568,7 +568,7 @@
 
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس" (اسم المشرف، المنطقة، اسم المدرسة، الرقم الوزاري، الجنس، خط الطول والعرض). أعمدة بيانات المشرف الشخصية (الجوال/الجنسية/الشهادة/الخبرة/الايميل) لا تُستورد حالياً لعدم وجود حقول لها في حسابات المستخدمين.</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". أعمدة بيانات المشرف الشخصية (الجوال، المدير المباشر، الجنسية، الشهادة، الخبرة، الايميل) تُحدَّث تلقائياً على ملف المشرف الموجود بالنظام إذا تم التعرف عليه بالاسم أو الرمز الوظيفي — لا تُنشئ حساباً جديداً (لازم يكون له حساب مُسجَّل مسبقاً من تاب المستخدمين).</p>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
               <label for="excelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع القالب المعبأ</label>
@@ -612,6 +612,26 @@
 
         <!-- ================= 5. Users Tab ================= -->
         <section id="secUsers" class="hidden">
+          <div class="card" style="border-top:5px solid var(--tbc-petrol);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:16px;">📊 إحصائيات الموظفين</h4>
+            <div class="stats-grid" style="margin-bottom:20px;">
+              <div class="bi-kpi-card highlight"><div class="bi-title">إجمالي عدد الموظفين</div><div class="bi-num" id="staffTotalCount">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">مشرفون ميدانيون</div><div class="bi-num" id="staffInspectorCount">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">مدراء إشراف / مكتب فرعي</div><div class="bi-num" id="staffSupervisionCount">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">متوسط سنوات الخبرة</div><div class="bi-num" id="staffAvgExperience">-</div></div>
+            </div>
+            <div class="dashboard-grid" style="margin-bottom:0;">
+              <div class="card" style="margin-bottom:0; box-shadow:none; border:1px solid var(--border-subtle);">
+                <h5 style="font-size:0.95rem; font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:12px;">🌍 التوزيع حسب الجنسية</h5>
+                <div id="staffNationalityContainer"></div>
+              </div>
+              <div class="card" style="margin-bottom:0; box-shadow:none; border:1px solid var(--border-subtle);">
+                <h5 style="font-size:0.95rem; font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:12px;">🗺️ التوزيع حسب المكتب الفرعي</h5>
+                <div id="staffBranchContainer"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="card hidden" id="pendingRegistrationsCard" style="border-right:6px solid #f59e0b; background:#fffbeb;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900;">🆕 طلبات تسجيل جديدة بانتظار الاعتماد</h4>
@@ -641,6 +661,16 @@
               <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
+
+            <div class="form-grid">
+              <div class="form-group"><label>الجنسية</label><input type="text" id="usrNationality" placeholder="اختياري"></div>
+              <div class="form-group"><label>الشهادة / المؤهل</label><input type="text" id="usrCertificate" placeholder="اختياري"></div>
+              <div class="form-group"><label>سنوات الخبرة</label><input type="number" min="0" id="usrYearsExperience" placeholder="اختياري"></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label>تاريخ الالتحاق</label><input type="date" id="usrJoinDate"></div>
+              <div class="form-group"><label>المدير المباشر</label><input type="text" id="usrDirectManager" placeholder="اختياري"></div>
+            </div>
             
             <label style="margin-top:10px; font-size:1.05rem;">الصلاحيات:</label>
             <div class="perm-checkbox-group" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; background:#f8fafc; padding:16px; border-radius:8px; border:1px dashed var(--border-subtle); margin-bottom:24px;">
@@ -665,7 +695,7 @@
               <label for="usersExcelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1rem; cursor:pointer; text-align:center;">📤 رفع ملف مستخدمين</label>
               <input type="file" id="usersExcelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleUsersExcelUpload(event)">
             </div>
-            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً.</small>
+            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً. الأعمدة الإضافية (الجنسية، الشهادة، سنوات الخبرة، تاريخ الالتحاق، المدير المباشر) اختيارية بالكامل.</small>
           </div>
 
           <div class="card">
@@ -2565,23 +2595,47 @@
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "حصر المشرفين والمدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
     }
 
-    function handleExcelUpload(event) {
-      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+    // كلمة مرور مؤقتة موحّدة للحسابات التي يُنشئها استيراد المدارس تلقائياً (أرقام 1-9، 9 خانات) — يُطلب تغييرها فوراً عند أول دخول
+    const SCHOOL_IMPORT_TEMP_PASSWORD = '123456789';
+
+    function generateUsernameFromName(name, sessionMap) {
+      const base = name.trim().replace(/\s+/g, '_');
+      let candidate = base; let i = 1;
+      const isTaken = (u) => usersList.some(x => x.username === u) || Object.values(sessionMap).some(x => x.username === u);
+      while (isTaken(candidate)) { i++; candidate = base + '_' + i; }
+      return candidate;
+    }
+
+    async function handleExcelUpload(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const proceed = await showConfirm('أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً بكلمة مرور مؤقتة موحّدة (123456789)، وسيُطلب منه تغييرها فور أول دخول. لو كان بريده الإلكتروني موجوداً بالملف سيصله إيميل ببيانات الدخول تلقائياً.\n\nهل تريد المتابعة؟');
+      if (!proceed) { event.target.value = ''; return; }
+
+      const reader = new FileReader();
       reader.onload = async function(e) {
         try {
           const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
           const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-          let added = 0; let unresolved = 0;
+          let added = 0; let unresolved = 0; let accountsCreated = 0;
+          const supervisorUpdates = {}; // username -> {phone, email, nationality, certificate, yearsExperience, joinDate, directManager} (لمشرفين لهم حساب مسبقاً)
+          const newlyCreatedThisImport = {}; // نص اسم المشرف كما ورد بالملف -> كائن المستخدم المُنشأ حديثاً (لتفادي إنشاء حساب مكرر لنفس الشخص عبر صفوف مدارسه المتعددة)
           if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
           for(let i = 1; i < json.length; i++) {
             const row = json[i]; if (!row || row.length === 0) continue;
             // ترتيب أعمدة قالب "حصر المشرفين والمدارس": م(0) اسم المشرف(1) جوال(2) مدير مباشر(3) جنسية(4) شهادة(5)
             // خبرة(6) تاريخ التحاق(7) إدارة تعليم(8) منطقة(9) اسم المدرسة(10) رقم وزاري(11) ايميل(12) جنس(13) طول(14) عرض(15)
             const inspectorText = row[1] ? String(row[1]).trim() : '';
+            const supPhone = row[2] ? String(row[2]).trim() : '';
+            const supDirectManager = row[3] ? String(row[3]).trim() : '';
+            const supNationality = row[4] ? String(row[4]).trim() : '';
+            const supCertificate = row[5] ? String(row[5]).trim() : '';
+            const supYearsExperience = row[6] !== undefined && row[6] !== '' ? row[6] : '';
+            const supJoinDate = row[7] ? String(row[7]).trim() : '';
             const eduAdmin = row[8] ? String(row[8]).trim() : '';
             const regionRaw = row[9] ? String(row[9]).trim() : '';
             const name = row[10] ? String(row[10]).trim() : '';
             const minNo = row[11] ? String(row[11]).trim() : '';
+            const supEmail = row[12] ? String(row[12]).trim() : '';
             const genderRaw = row[13] ? String(row[13]).trim() : '';
             const lngRaw = row[14]; const latRaw = row[15];
 
@@ -2594,7 +2648,29 @@
               const lng = (lngRaw !== undefined && lngRaw !== '' && !isNaN(parseFloat(lngRaw))) ? parseFloat(lngRaw) : null;
               const lat = (latRaw !== undefined && latRaw !== '' && !isNaN(parseFloat(latRaw))) ? parseFloat(latRaw) : null;
 
-              const inspUser = resolveInspectorUser(inspectorText);
+              let inspUser = resolveInspectorUser(inspectorText);
+              if (inspUser) {
+                // مشرف له حساب مسبقاً: نجمّع بياناته الشخصية عشان نحدّث ملفه مرة واحدة بعد نجاح استيراد المدارس
+                supervisorUpdates[inspUser.username] = { phone: supPhone, email: supEmail, nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager };
+              } else if (newlyCreatedThisImport[inspectorText]) {
+                inspUser = newlyCreatedThisImport[inspectorText];
+              } else {
+                // مشرف بلا حساب: إنشاء حساب جديد تلقائياً بكلمة المرور المؤقتة الموحّدة
+                const newUsername = generateUsernameFromName(inspectorText, newlyCreatedThisImport);
+                const createRes = await apiCall('CREATE_USER', {
+                  username: newUsername, fullName: inspectorText, email: supEmail, phone: supPhone,
+                  password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch,
+                  permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
+                  nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager
+                });
+                if (createRes.status === 'success') {
+                  usersList = createRes.users;
+                  inspUser = usersList.find(u => u.username === newUsername);
+                  newlyCreatedThisImport[inspectorText] = inspUser;
+                  accountsCreated++;
+                }
+              }
+
               if (!inspUser) unresolved++;
               const inspectorUsername = inspUser ? inspUser.username : '';
               const inspectorDisplay = inspUser ? inspUser.fullName : inspectorText;
@@ -2608,9 +2684,26 @@
           }
           const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
           if(res.status === "success") {
-            let msg = `✓ تمت العملية بنجاح! تم استيراد وربط [ ${added} ] مدرسة.`;
-            if (unresolved > 0) msg += `\n⚠️ تنبيه: تعذر التعرف على المشرف المطابق لـ [ ${unresolved} ] مدرسة (تأكد من كتابة الرمز الوظيفي أو الاسم الكامل تماماً كما هو مسجل بالنظام)، وتم حفظ الاسم كنص فقط دون ربط فعلي — يمكنك تصحيحه لاحقاً من نموذج الإضافة اليدوية بإدخال نفس اسم المدرسة مع اختيار المشرف الصحيح.`;
-            logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${unresolved} بدون ربط مشرف`);
+            // تحديث ملفات المشرفين الذين كان لهم حساب من قبل (الجوال، الايميل، الجنسية، الشهادة، الخبرة، تاريخ الالتحاق، المدير المباشر)
+            let supervisorsUpdated = 0;
+            for (const username in supervisorUpdates) {
+              const existing = usersList.find(u => u.username === username); if (!existing) continue;
+              const hr = supervisorUpdates[username];
+              const payload = {
+                username: existing.username, fullName: existing.fullName, role: existing.role, branch: existing.branch, permissions: existing.permissions,
+                email: hr.email || existing.email || '', phone: hr.phone || existing.phone || '',
+                nationality: hr.nationality || existing.nationality || '', certificate: hr.certificate || existing.certificate || '',
+                yearsExperience: hr.yearsExperience !== '' ? hr.yearsExperience : (existing.yearsExperience || ''),
+                joinDate: hr.joinDate || existing.joinDate || '', directManager: hr.directManager || existing.directManager || ''
+              };
+              const uRes = await apiCall('UPDATE_USER', payload);
+              if (uRes.status === 'success') { supervisorsUpdated++; usersList = uRes.users; }
+            }
+
+            let msg = `✓ تمت العملية بنجاح!\nتم استيراد وربط [ ${added} ] مدرسة.\nتم تحديث بيانات [ ${supervisorsUpdated} ] مشرف كان له حساب مسبقاً.`;
+            if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: 123456789 (سيُطلب من كل واحد تغييرها فور أول دخول). وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.`;
+            if (unresolved > 0) msg += `\n⚠️ تعذر إنشاء أو ربط حساب لـ [ ${unresolved} ] مدرسة — تحقق من اسم المشرف في الملف، أو أكمل الربط يدوياً لاحقاً.`;
+            logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
             showAlert(msg);
             pullFromCloud();
           } else showAlert(esc(res.message));
@@ -2665,8 +2758,8 @@
     function downloadUsersTemplate() {
       if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       const ws_data = [
-        ["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي", "كلمة المرور (اختياري للجدد)"],
-        ["أحمد الهنوف", "ahmed.h", "ahmed@example.com", "0555555555", "مشرف ميداني", "الشرقية", ""]
+        ["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي", "كلمة المرور (اختياري للجدد)", "الجنسية", "الشهادة", "سنوات الخبرة", "تاريخ الالتحاق", "المدير المباشر"],
+        ["أحمد الهنوف", "ahmed.h", "ahmed@example.com", "0555555555", "مشرف ميداني", "الشرقية", "", "سعودي", "بكالوريوس", 5, "2021-01-01", "خالد العتيبي"]
       ];
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المستخدمون"); XLSX.writeFile(wb, "قالب_استيراد_المستخدمين_TBC.xlsx");
     }
@@ -2674,8 +2767,8 @@
     function exportUsersExcel() {
       if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       if(!usersList || usersList.length === 0) return showAlert('لا يوجد مستخدمون لتصديرهم.');
-      const ws_data = [["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي"]];
-      usersList.forEach(u => { ws_data.push([u.fullName || '', u.username || '', u.email || '', u.phone || '', ROLE_LABELS[u.role] || u.role, u.branch || 'الكل']); });
+      const ws_data = [["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي", "الجنسية", "الشهادة", "سنوات الخبرة", "تاريخ الالتحاق", "المدير المباشر"]];
+      usersList.forEach(u => { ws_data.push([u.fullName || '', u.username || '', u.email || '', u.phone || '', ROLE_LABELS[u.role] || u.role, u.branch || 'الكل', u.nationality || '', u.certificate || '', u.yearsExperience || '', u.joinDate || '', u.directManager || '']); });
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المستخدمون"); XLSX.writeFile(wb, "قائمة_المستخدمين_الحالية_TBC.xlsx");
       // ملاحظة: لا يتم تصدير كلمات المرور لأسباب أمنية — عند الحاجة لإعادة استيراد نفس الملف لاحقاً بغرض التحديث فقط اترك عمود كلمة المرور فارغاً.
     }
@@ -2697,7 +2790,12 @@
             const roleLabel = row[4] ? String(row[4]).trim() : '';
             const branchLabel = row[5] ? String(row[5]).trim() : '';
             const password = row[6] ? String(row[6]).trim() : '';
-            if (fullName && username) rows.push({ fullName, username, email, phone, role: normalizeRoleLabel(roleLabel), branch: normalizeBranchLabel(branchLabel), password });
+            const nationality = row[7] ? String(row[7]).trim() : '';
+            const certificate = row[8] ? String(row[8]).trim() : '';
+            const yearsExperience = row[9] !== undefined && row[9] !== '' ? row[9] : '';
+            const joinDate = row[10] ? String(row[10]).trim() : '';
+            const directManager = row[11] ? String(row[11]).trim() : '';
+            if (fullName && username) rows.push({ fullName, username, email, phone, role: normalizeRoleLabel(roleLabel), branch: normalizeBranchLabel(branchLabel), password, nationality, certificate, yearsExperience, joinDate, directManager });
           }
           if (rows.length === 0) { showAlert('لم يتم العثور على صفوف صالحة في الملف. تأكد من استخدام القالب المعتمد.'); event.target.value = ''; return; }
 
@@ -2705,13 +2803,14 @@
           for (const row of rows) {
             const existingUser = usersList.find(u => u.username === row.username);
             const permissions = existingUser?.permissions || { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true };
+            const hrFields = { nationality: row.nationality, certificate: row.certificate, yearsExperience: row.yearsExperience, joinDate: row.joinDate, directManager: row.directManager };
             let res;
             if (existingUser) {
-              res = await apiCall("UPDATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, role: row.role, branch: row.branch, permissions });
+              res = await apiCall("UPDATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, role: row.role, branch: row.branch, permissions, ...hrFields });
               if (res.status === 'success') { updated++; usersList = res.users; } else failed++;
             } else {
               const pass = row.password && row.password.length >= 8 ? row.password : generateRandomPassword();
-              res = await apiCall("CREATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, password: pass, role: row.role, branch: row.branch, permissions });
+              res = await apiCall("CREATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, password: pass, role: row.role, branch: row.branch, permissions, ...hrFields });
               if (res.status === 'success') { created++; usersList = res.users; } else failed++;
             }
           }
@@ -2727,8 +2826,35 @@
       reader.readAsArrayBuffer(file);
     }
 
+    // إحصائيات الموظفين: الإجمالي، التوزيع حسب الدور/الجنسية/الفرع، ومتوسط سنوات الخبرة
+    function renderStaffStatistics() {
+      const totalEl = document.getElementById('staffTotalCount'); if (!totalEl) return;
+      totalEl.innerText = usersList.length;
+      document.getElementById('staffInspectorCount').innerText = usersList.filter(u => u.role === 'ROLE_INSPECTOR').length;
+      document.getElementById('staffSupervisionCount').innerText = usersList.filter(u => MANAGER_ROLES.includes(u.role)).length;
+
+      const expValues = usersList.map(u => parseFloat(u.yearsExperience)).filter(v => !isNaN(v));
+      document.getElementById('staffAvgExperience').innerText = expValues.length > 0 ? (expValues.reduce((a, b) => a + b, 0) / expValues.length).toFixed(1) + ' سنة' : '-';
+
+      const renderBreakdown = (containerId, valueFn, emptyLabel) => {
+        const container = document.getElementById(containerId); if (!container) return;
+        const counts = {};
+        usersList.forEach(u => { const v = valueFn(u) || emptyLabel; counts[v] = (counts[v] || 0) + 1; });
+        if (Object.keys(counts).length === 0) { container.innerHTML = `<div class="empty-state" style="padding:16px;">لا توجد بيانات بعد.</div>`; return; }
+        const maxCount = Math.max(...Object.values(counts));
+        container.innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([label, count]) => `
+          <div style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:4px;"><span>${esc(label)}</span><span style="color:var(--tbc-petrol);">${count}</span></div>
+            <div style="background:var(--tbc-petrol-light); border-radius:6px; height:7px; overflow:hidden;"><div style="background:var(--tbc-petrol); height:100%; width:${Math.round((count / maxCount) * 100)}%;"></div></div>
+          </div>`).join('');
+      };
+      renderBreakdown('staffNationalityContainer', u => u.nationality, 'غير محدد');
+      renderBreakdown('staffBranchContainer', u => u.branch, 'الكل');
+    }
+
     function renderUsersManagement() {
       renderPendingRegistrations();
+      renderStaffStatistics();
       const tbody = document.querySelector('#usersListTable tbody'); if (!tbody) return; tbody.innerHTML = '';
       const badge = document.getElementById('totalUsersBadge'); if(badge) badge.innerText = `${usersList.length} مستخدم`;
       usersList.forEach((u, idx) => {
@@ -2797,15 +2923,17 @@
 
     async function saveUserRecord() {
       const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const phone = document.getElementById('usrPhone').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
+      const nationality = document.getElementById('usrNationality').value.trim(); const certificate = document.getElementById('usrCertificate').value.trim(); const yearsExperience = document.getElementById('usrYearsExperience').value; const joinDate = document.getElementById('usrJoinDate').value; const directManager = document.getElementById('usrDirectManager').value.trim();
       if (!fullName || !username || !email) return showAlert("خطأ إدخال: يرجى التأكد من تعبئة كافة الحقول (الاسم، الرمز، الإيميل).");
       const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
+      const hrFields = { nationality, certificate, yearsExperience, joinDate, directManager };
       
       let res;
       if (editingUserIndex >= 0) { 
-        res = await apiCall("UPDATE_USER", { username: username, fullName: fullName, email: email, phone: phone, role: role, branch: branch, permissions: permissions });
+        res = await apiCall("UPDATE_USER", { username, fullName, email, phone, role, branch, permissions, ...hrFields });
       } else { 
         if(!password || password.length < 8) return showAlert("يجب إدخال كلمة مرور مبدئية من 8 خانات على الأقل للمستخدم الجديد.");
-        res = await apiCall("CREATE_USER", { username: username, fullName: fullName, email: email, phone: phone, password: password, role: role, branch: branch, permissions: permissions });
+        res = await apiCall("CREATE_USER", { username, fullName, email, phone, password, role, branch, permissions, ...hrFields });
       }
 
       if(res.status === "success") {
@@ -2817,13 +2945,16 @@
     function editUserPrompt(idx) {
       editingUserIndex = idx; const u = usersList[idx];
       document.getElementById('usrFullName').value = u.fullName; document.getElementById('usrUsername').value = u.username; document.getElementById('usrEmail').value = u.email || ''; document.getElementById('usrPhone').value = u.phone || ''; document.getElementById('usrPasswordGroup').style.display = 'none'; document.getElementById('usrRole').value = u.role; document.getElementById('usrBranch').value = u.branch || 'الكل';
+      document.getElementById('usrNationality').value = u.nationality || ''; document.getElementById('usrCertificate').value = u.certificate || ''; document.getElementById('usrYearsExperience').value = u.yearsExperience || ''; document.getElementById('usrJoinDate').value = u.joinDate || ''; document.getElementById('usrDirectManager').value = u.directManager || '';
       const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
       document.getElementById('permAllowEdit').checked = p.allowEdit !== false; document.getElementById('permRequireGps').checked = p.requireGps !== false; document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false; document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
       document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل الحساب: ${esc(u.fullName)}`; document.getElementById('cancelUserEditBtn').style.display = 'inline-flex'; document.getElementById('usrUsername').disabled = true; window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetUserForm() {
-      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية'; document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
+      document.getElementById('usrNationality').value = ''; document.getElementById('usrCertificate').value = ''; document.getElementById('usrYearsExperience').value = ''; document.getElementById('usrJoinDate').value = ''; document.getElementById('usrDirectManager').value = '';
+      document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
 
     let arpTargetUsername = '';
