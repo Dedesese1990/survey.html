@@ -314,6 +314,10 @@
               <div class="bi-title">🏫 إجمالي المدارس في نطاقك</div>
               <div class="bi-num" id="biTotalSchoolsCount">0</div>
             </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
+              <div class="bi-num" style="font-size:1.4rem;" id="biAvgFillDuration">-</div>
+            </div>
           </div>
 
           <div class="dashboard-grid">
@@ -380,8 +384,25 @@
           </div>
 
           <div class="card" style="margin-bottom:0;">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة &nbsp; ⚪ لم تُزر بعد — تُستخدم إحداثيات المدرسة الثابتة (إن وُجدت) وإلا فآخر GPS مسجّل من زيارة فعلية.</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:6px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</h4>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <select id="mapBranchFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
+                  <option value="ALL">-- كل الفروع --</option>
+                  <option value="المكتب الفرعي بالشرقية">الشرقية</option>
+                  <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+                  <option value="المكتب الفرعي بحفر الباطن">حفر الباطن</option>
+                </select>
+                <select id="mapStatusFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
+                  <option value="ALL">-- كل الحالات --</option>
+                  <option value="APPROVED">🟢 معتمدة وسليمة</option>
+                  <option value="PENDING">🟠 قيد الاعتماد</option>
+                  <option value="ISSUES">🔴 بها ملاحظات</option>
+                  <option value="NOT_VISITED">⚪ لم تُزر بعد</option>
+                </select>
+              </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة &nbsp; ⚪ لم تُزر بعد — الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً، ولا تُستخدم إحداثيات الزيارة إلا لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً.</p>
             <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
           </div>
           <div style="height:24px;"></div>
@@ -397,7 +418,7 @@
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>
             <div class="table-responsive">
               <table class="data-table" id="inspectorPerfTable">
-                <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th></tr></thead>
+                <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th><th>⏱️ متوسط مدة الإنجاز</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
@@ -707,9 +728,13 @@
           </div>
 
           <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900;">👥 قائمة المستخدمين المسجلين</h4>
               <span class="badge-status approved" id="totalUsersBadge" style="font-size:1rem; padding:8px 16px;"></span>
+            </div>
+            <div class="search-wrapper" style="margin-bottom:16px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="usersTableSearch" placeholder="ابحث بالاسم، الرمز الوظيفي، الإيميل، أو الجوال..." onkeyup="filterUsersTable()" style="width:100%; font-weight:700;">
             </div>
             <div class="table-responsive">
               <table class="data-table" id="usersListTable">
@@ -722,6 +747,17 @@
 
         <!-- ================= 6. Audit Log Tab ================= -->
         <section id="secAuditLog" class="hidden">
+          <div class="card" style="border-top:5px solid var(--tbc-petrol);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">🟢 حالة اتصال المستخدمين الحالية</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">آخر حالة معروفة لكل حساب اعتماداً على آخر عملية دخول/خروج مسجّلة له. ⚠️ ملاحظة: "متصل" هنا يعني إنه دخل ولم يسجّل خروج صريح بعد — لو أغلق المتصفح من غير ما يدوس "تسجيل الخروج"، ممكن يفضل ظاهر "متصل" لحد ما جلسته تنتهي تلقائياً (٦ ساعات)، مش بالضرورة معناها إنه شغال بالفعل دلوقتي.</p>
+            <div class="table-responsive">
+              <table class="data-table" id="userSessionStatusTable">
+                <thead><tr><th>المستخدم</th><th>الحالة</th><th>آخر دخول</th><th>آخر خروج</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
           <div class="card" style="border-top:5px solid var(--tbc-petrol);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:10px;">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900;">🧾 سجل التدقيق (آخر 500 عملية)</h4>
@@ -985,6 +1021,15 @@
     const esc = (str) => { if (str === null || str === undefined) return ''; return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match])); };
     // يفصل التاريخ عن الوقت بأمان (النمط العربي يستخدم الفاصلة العربية "،" وليس ",")
     const shortDate = (r) => { if (!r) return ''; if (r.dateOnly) return r.dateOnly; if (!r.date) return ''; return String(r.date).split(/[,،]/)[0].trim(); };
+    // يحوّل عدد الثواني لصيغة مقروءة (ساعات/دقائق/ثواني)
+    function formatDuration(totalSeconds) {
+      const s = Math.round(totalSeconds);
+      if (s < 60) return `${s} ثانية`;
+      const m = Math.floor(s / 60); const remS = s % 60;
+      if (m < 60) return `${m} د ${remS} ث`;
+      const h = Math.floor(m / 60); const remM = m % 60;
+      return `${h} س ${remM} د`;
+    }
 
     // ---- نوافذ تنبيه/تأكيد/إدخال مُصمَّمة داخل النظام (بديل alert/confirm/prompt الأصلية بالمتصفح) ----
     function showAlert(message) {
@@ -1049,7 +1094,7 @@
     
     // Globals
     let sCurveChartInstance = null; let compliancePieChartInstance = null;
-    let activeSrv = null; let selectedSurveyFilter = "ALL"; let selectedInspectorFilter = "ALL"; let selectedKpiStatusFilter = "ALL";
+    let activeSrv = null; let fillStartTime = null; let selectedSurveyFilter = "ALL"; let selectedInspectorFilter = "ALL"; let selectedKpiStatusFilter = "ALL";
     let editingUserIndex = -1; let editingSurveyId = null; let editingResponseId = null;
 
     function updateSyncStatus(status) {
@@ -1597,6 +1642,7 @@
       if (!survey && existingResponse) survey = surveys.find(s => s.title === existingResponse.surveyTitle);
       if (!survey) return showAlert('تعذر العثور على نموذج الحصر المرتبط بهذا التقرير.');
       activeSrv = survey;
+      fillStartTime = Date.now();
       editingResponseId = existingResponse ? existingResponse.id : null;
 
       document.getElementById('fillTitle').innerText = survey.title;
@@ -1812,6 +1858,7 @@
       const wasRejectedBefore = existingRec && existingRec.rejectionReason;
 
       const now = new Date();
+      const fillDurationSeconds = fillStartTime ? Math.round((Date.now() - fillStartTime) / 1000) : null;
       const responsePayload = {
         id: editingResponseId || Date.now(),
         school, branch, gps,
@@ -1826,6 +1873,7 @@
         wasEverRejected: wasRejectedBefore ? true : (existingRec?.wasEverRejected === true),
         resubmittedAfterRejection: !!wasRejectedBefore,
         previousRejectionReason: wasRejectedBefore ? existingRec.rejectionReason : (existingRec?.previousRejectionReason || ''),
+        fillDurationSeconds,
         answers
       };
 
@@ -1836,6 +1884,7 @@
       if (res.status === 'success') {
         logAudit('RESPONSE_SUBMIT', `${isEditSubmission ? 'تعديل' : 'رفع'} تقرير: ${school} - ${activeSrv.title}`);
         editingResponseId = null;
+        fillStartTime = null;
         document.getElementById('secFillSurvey').classList.add('hidden');
         document.getElementById('secSuccessModal').classList.remove('hidden');
         pullFromCloud();
@@ -1880,6 +1929,11 @@
       document.getElementById('biPendingCount').innerText = pendingCount;
       document.getElementById('biAgingCount').innerText = stuckCount;
       document.getElementById('biTotalSchoolsCount').innerText = getScopedSchools().length;
+
+      const withDuration = scoped.filter(r => typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0);
+      document.getElementById('biAvgFillDuration').innerText = withDuration.length > 0
+        ? formatDuration(withDuration.reduce((sum, r) => sum + r.fillDurationSeconds, 0) / withDuration.length)
+        : '-';
       
       renderSCurveChart(scoped);
       renderCompliancePieChart(scoped);
@@ -1889,6 +1943,7 @@
       renderSchoolsByGender();
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped);
+      lastScopedResponsesForMap = scoped;
       renderFieldMap(scoped);
       renderLocationVerificationTable();
       renderPeriodComparison();
@@ -2047,14 +2102,15 @@
       const byInspector = {};
       scopedResponses.forEach(r => {
         const key = r.collectedBy || r.username || 'غير معروف';
-        if (!byInspector[key]) byInspector[key] = { total: 0, approved: 0, rejected: 0, pending: 0, approvedFirstTime: 0 };
+        if (!byInspector[key]) byInspector[key] = { total: 0, approved: 0, rejected: 0, pending: 0, approvedFirstTime: 0, durations: [] };
         byInspector[key].total++;
         if (r.status === 'approved') { byInspector[key].approved++; if (r.wasEverRejected !== true) byInspector[key].approvedFirstTime++; }
         else if (r.status === 'rejected') byInspector[key].rejected++;
         else byInspector[key].pending++;
+        if (typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0) byInspector[key].durations.push(r.fillDurationSeconds);
       });
       const rows = Object.entries(byInspector).sort((a, b) => b[1].total - a[1].total);
-      if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">لا توجد بيانات ضمن النطاق الحالي.</td></tr>`; return; }
+      if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">لا توجد بيانات ضمن النطاق الحالي.</td></tr>`; return; }
       const scopeSchools = getScopedSchools();
       tbody.innerHTML = rows.map(([name, s]) => {
         const decided = s.approved + s.rejected;
@@ -2062,7 +2118,8 @@
         const rateColor = rate >= 80 ? '#10b981' : (rate >= 50 ? '#f59e0b' : '#ef4444');
         const firstTimeRate = decided > 0 ? Math.round((s.approvedFirstTime / decided) * 100) : 0;
         const quotaCount = scopeSchools.filter(sch => sch.inspector === name).length;
-        return `<tr><td style="font-weight:800;">${esc(name)}</td><td style="font-weight:800; color:var(--tbc-petrol);">${quotaCount}</td><td>${s.total}</td><td style="color:#10b981; font-weight:800;">${s.approved}</td><td style="color:#ef4444; font-weight:800;">${s.rejected}</td><td style="color:#f59e0b; font-weight:800;">${s.pending}</td><td style="color:${rateColor}; font-weight:900;">${decided > 0 ? rate + '%' : '-'}</td><td style="font-weight:800;">${decided > 0 ? firstTimeRate + '%' : '-'}</td></tr>`;
+        const avgDuration = s.durations.length > 0 ? formatDuration(s.durations.reduce((a, b) => a + b, 0) / s.durations.length) : '-';
+        return `<tr><td style="font-weight:800;">${esc(name)}</td><td style="font-weight:800; color:var(--tbc-petrol);">${quotaCount}</td><td>${s.total}</td><td style="color:#10b981; font-weight:800;">${s.approved}</td><td style="color:#ef4444; font-weight:800;">${s.rejected}</td><td style="color:#f59e0b; font-weight:800;">${s.pending}</td><td style="color:${rateColor}; font-weight:900;">${decided > 0 ? rate + '%' : '-'}</td><td style="font-weight:800;">${decided > 0 ? firstTimeRate + '%' : '-'}</td><td style="font-weight:800;">${esc(avgDuration)}</td></tr>`;
       }).join('');
     }
 
@@ -2090,7 +2147,7 @@
     }
 
     // خريطة ميدانية بآخر حالة معروفة لكل مدرسة (تعتمد على GPS المُلتقط مع كل زيارة)
-    let fieldMapInstance = null; let fieldMapMarkersLayer = null;
+    let fieldMapInstance = null; let fieldMapMarkersLayer = null; let lastScopedResponsesForMap = [];
     function renderFieldMap(scopedResponses) {
       const el = document.getElementById('fieldMapContainer'); if (!el) return;
       if (typeof L === 'undefined') { el.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">تعذر تحميل مكتبة الخرائط. تأكد من الاتصال بالإنترنت.</div>`; return; }
@@ -2112,24 +2169,32 @@
           return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? parts : null;
         };
 
+        // فلاتر الخريطة (فرع + حالة) — اختيارية، موجودة فوق الخريطة
+        const branchFilterVal = document.getElementById('mapBranchFilter')?.value || 'ALL';
+        const statusFilterVal = document.getElementById('mapStatusFilter')?.value || 'ALL';
+
         const points = [];
         getScopedSchools().forEach(sch => {
+          if (branchFilterVal !== 'ALL' && sch.branch !== branchFilterVal) return;
           const r = latestBySchool[sch.name];
-          // الأولوية لآخر GPS فعلي مسجّل من زيارة، وإلا نستخدم إحداثيات المدرسة الثابتة المستوردة
-          const coords = (r && parseGps(r.gps)) || (sch.lat != null && sch.lng != null ? [sch.lat, sch.lng] : null);
+          // الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً؛ آخر GPS من زيارة فعلية يُستخدم فقط كحل احتياطي لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً
+          const coords = (sch.lat != null && sch.lng != null) ? [sch.lat, sch.lng] : (r ? parseGps(r.gps) : null);
           if (!coords) return;
           const [lat, lng] = coords;
 
           let color = '#9ca3af'; // لم تُزر بعد
-          let statusTxt = 'لم تُزر بعد';
+          let statusTxt = 'لم تُزر بعد'; let statusKey = 'NOT_VISITED';
           if (r) {
             const hasIssue = r.answers && Object.values(r.answers).some(a => typeof a === 'string' && a.includes('غير مطابق'));
-            if (r.status === 'rejected' || hasIssue) { color = '#ef4444'; statusTxt = 'بها ملاحظات'; }
-            else if (r.status === 'pending') { color = '#f59e0b'; statusTxt = 'قيد الاعتماد'; }
-            else { color = '#10b981'; statusTxt = 'معتمدة وسليمة'; }
+            if (r.status === 'rejected' || hasIssue) { color = '#ef4444'; statusTxt = 'بها ملاحظات'; statusKey = 'ISSUES'; }
+            else if (r.status === 'pending') { color = '#f59e0b'; statusTxt = 'قيد الاعتماد'; statusKey = 'PENDING'; }
+            else { color = '#10b981'; statusTxt = 'معتمدة وسليمة'; statusKey = 'APPROVED'; }
           }
+          if (statusFilterVal !== 'ALL' && statusFilterVal !== statusKey) return;
+
+          const usedRealLoc = sch.lat != null && sch.lng != null;
           const marker = L.circleMarker([lat, lng], { radius: 9, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.9 });
-          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(sch.name)}</b><br>الحالة: ${esc(statusTxt)}${r ? `<br>${esc(r.surveyTitle)}<br>المشرف: ${esc(r.collectedBy)}<br>التاريخ: ${esc(shortDate(r))}` : `<br>المشرف: ${esc(sch.inspector) || '-'}`}</div>`);
+          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(sch.name)}</b><br>الحالة: ${esc(statusTxt)}${r ? `<br>${esc(r.surveyTitle)}<br>المشرف: ${esc(r.collectedBy)}<br>التاريخ: ${esc(shortDate(r))}` : `<br>المشرف: ${esc(sch.inspector) || '-'}`}<br><span style="color:#94a3b8; font-size:11px;">${usedRealLoc ? 'الموقع: إحداثيات المدرسة المسجّلة' : 'الموقع: آخر GPS من زيارة (لا يوجد إحداثيات مسجّلة للمدرسة بعد)'}</span></div>`);
           marker.addTo(fieldMapMarkersLayer);
           points.push([lat, lng]);
         });
@@ -2650,6 +2715,20 @@
       w.document.close();
     }
 
+    // يبني عرض موقع المدرسة (رابط خرائط جوجل + صورة مصغّرة أفضل-جهد) من إحداثياتها الحقيقية المسجّلة — لا يستخدم إحداثيات الزيارة إطلاقاً
+    function buildSchoolLocationHtml(schInfo) {
+      if (!schInfo || schInfo.lat == null || schInfo.lng == null) {
+        return `<div style="font-size:12px; color:#94a3b8; font-weight:700; margin-top:8px;">📍 لا توجد إحداثيات مسجّلة لهذه المدرسة بعد.</div>`;
+      }
+      const lat = schInfo.lat, lng = schInfo.lng;
+      const gmapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+      const staticImgUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=16&size=280x160&maptype=mapnik&markers=${lat},${lng},red-pushpin`;
+      return `<div style="margin-top:10px; break-inside:avoid;">
+        <a href="${esc(gmapsUrl)}" target="_blank" style="font-size:12px; font-weight:800; color:#37889b; text-decoration:none;">📍 موقع المدرسة (${lat}, ${lng}) — افتح في خرائط جوجل ↗</a>
+        <div style="margin-top:6px;"><img src="${esc(staticImgUrl)}" style="max-width:280px; border-radius:8px; border:1px solid #cbd5e1;" onerror="this.style.display='none'"></div>
+      </div>`;
+    }
+
     function printSingleReportPDF(reportId) {
       const rep = responses.find(r => r.id === reportId); if (!rep) return showAlert('التقرير غير موجود.');
       const schInfo = schoolDataWrapper.list.find(s => s.name === rep.school);
@@ -2678,8 +2757,9 @@
           <div style="font-size:16px; font-weight:900; color:#276270; margin-bottom:6px;">🏫 ${esc(rep.school)}${minNoTxt}</div>
           <div style="font-size:13px; font-weight:700; color:#536e7a;">النموذج: ${esc(rep.surveyTitle)} &nbsp;|&nbsp; المكتب: ${esc((schInfo && schInfo.branch) || rep.branch) || '-'} &nbsp;|&nbsp; المشرف: ${esc(rep.collectedBy)} &nbsp;|&nbsp; التاريخ: ${esc(rep.date)}</div>
           <div style="font-size:13px; font-weight:700; color:#536e7a; margin-top:4px;">
-            ${schInfo && schInfo.gender ? `الجنس: ${esc(schInfo.gender)} &nbsp;|&nbsp; ` : ''}${schInfo && schInfo.eduAdmin ? `إدارة التعليم: ${esc(schInfo.eduAdmin)} &nbsp;|&nbsp; ` : ''}${schInfo && schInfo.lat != null && schInfo.lng != null ? `📍 موقع المدرسة المسجّل: ${schInfo.lat}, ${schInfo.lng} &nbsp;|&nbsp; ` : ''}📍 موقع الزيارة الفعلي: ${esc(rep.gps) || 'غير مسجل'}
+            ${schInfo && schInfo.gender ? `الجنس: ${esc(schInfo.gender)} &nbsp;|&nbsp; ` : ''}${schInfo && schInfo.eduAdmin ? `إدارة التعليم: ${esc(schInfo.eduAdmin)} &nbsp;|&nbsp; ` : ''}📍 موقع الزيارة الفعلي: ${esc(rep.gps) || 'غير مسجل'}
           </div>
+          ${buildSchoolLocationHtml(schInfo)}
           ${rep.approvedBy ? `<div style="font-size:13px; font-weight:700; color:#10b981; margin-top:6px;">✓ اعتمده: ${esc(rep.approvedBy)}${rep.approvedByRole ? ` — ${esc(ROLE_LABELS[rep.approvedByRole] || rep.approvedByRole)}` : ''}</div>` : ''}
         </div>
         <div style="border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; background:#fff;">
@@ -2762,15 +2842,23 @@
       const total = list.length; const app = list.filter(r => r.status === 'approved').length; const rej = list.filter(r => r.status === 'rejected').length; const pen = list.filter(r => r.status === 'pending').length;
       const bySchool = {}; list.forEach(r => { bySchool[r.school] = (bySchool[r.school] || 0) + 1; });
       const byInspector = {}; list.forEach(r => { byInspector[r.collectedBy] = (byInspector[r.collectedBy] || 0) + 1; });
+      const withDuration = list.filter(r => typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0);
+      const avgDurationTxt = withDuration.length > 0 ? formatDuration(withDuration.reduce((a, r) => a + r.fillDurationSeconds, 0) / withDuration.length) : 'غير متاح';
 
       const summaryBoxes = `
         <div class="box"><h3>إجمالي التقارير</h3><h1 style="color:#37889b;">${total}</h1></div>
         <div class="box"><h3>معتمدة</h3><h1 style="color:#10b981;">${app}</h1></div>
         <div class="box"><h3>بانتظار الاعتماد</h3><h1 style="color:#f59e0b;">${pen}</h1></div>
-        <div class="box"><h3>مرفوضة</h3><h1 style="color:#ef4444;">${rej}</h1></div>`;
+        <div class="box"><h3>مرفوضة</h3><h1 style="color:#ef4444;">${rej}</h1></div>
+        <div class="box"><h3>⏱️ متوسط مدة الإنجاز</h3><h1 style="color:#276270; font-size:22px;">${esc(avgDurationTxt)}</h1></div>`;
 
       const schoolBreakdownRows = Object.entries(bySchool).sort((a, b) => b[1] - a[1]).map(([s, c]) => `<tr><td>${esc(s)}</td><td>${c}</td></tr>`).join('');
       const inspectorBreakdownRows = Object.entries(byInspector).sort((a, b) => b[1] - a[1]).map(([s, c]) => `<tr><td>${esc(s)}</td><td>${c}</td></tr>`).join('');
+      const uniqueSchoolNames = [...new Set(list.map(r => r.school))];
+      const schoolLocationsHtml = uniqueSchoolNames.map(name => {
+        const schInfo = schoolDataWrapper.list.find(s => s.name === name);
+        return `<div style="margin-bottom:14px;"><b style="font-size:12px;">🏫 ${esc(name)}</b>${buildSchoolLocationHtml(schInfo)}</div>`;
+      }).join('');
 
       let sectionsHtml = '';
       list.slice().sort((a, b) => a.school.localeCompare(b.school, 'ar') || a.id - b.id).forEach((entry, sIdx) => {
@@ -2812,6 +2900,9 @@
           <div><h4 style="font-size:13px; color:#276270;">حسب المشرف</h4><table class="brk"><thead><tr><th>المشرف</th><th>العدد</th></tr></thead><tbody>${inspectorBreakdownRows}</tbody></table></div>
         </div>
 
+        <h3 style="color:#276270; font-size:15px; margin-bottom:8px;">📍 مواقع المدارس</h3>
+        <div style="background:#fff; border:1px solid #d0dfe5; border-radius:10px; padding:16px; margin-bottom:20px;">${schoolLocationsHtml}</div>
+
         <h3 style="color:#276270; font-size:15px; margin-bottom:8px;">📑 التقارير التفصيلية (${total})</h3>
         ${sectionsHtml}
         </body></html>`);
@@ -2827,10 +2918,12 @@
       const total = list.length; const app = list.filter(r => r.status === 'approved').length; const rej = list.filter(r => r.status === 'rejected').length; const pen = list.filter(r => r.status === 'pending').length;
       const bySchool = {}; list.forEach(r => { bySchool[r.school] = (bySchool[r.school] || 0) + 1; });
       const byInspector = {}; list.forEach(r => { byInspector[r.collectedBy] = (byInspector[r.collectedBy] || 0) + 1; });
+      const withDuration = list.filter(r => typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0);
+      const avgDurationTxt = withDuration.length > 0 ? formatDuration(withDuration.reduce((a, r) => a + r.fillDurationSeconds, 0) / withDuration.length) : 'غير متاح';
 
       const summarySheet = [
         ['ملخص التصدير المخصص'], ['الفلاتر المستخدمة', buildExportFilterSummaryText()], [],
-        ['إجمالي التقارير', total], ['معتمدة', app], ['بانتظار الاعتماد', pen], ['مرفوضة', rej], [],
+        ['إجمالي التقارير', total], ['معتمدة', app], ['بانتظار الاعتماد', pen], ['مرفوضة', rej], ['⏱️ متوسط مدة الإنجاز', avgDurationTxt], [],
         ['حسب المدرسة'], ['المدرسة', 'العدد'], ...Object.entries(bySchool).sort((a, b) => b[1] - a[1]), [],
         ['حسب المشرف'], ['المشرف', 'العدد'], ...Object.entries(byInspector).sort((a, b) => b[1] - a[1])
       ];
@@ -3196,7 +3289,18 @@
         const isSelf = u.username === currentUser.username;
         const toggleBtn = isSelf ? '' : `<button class="btn ${isActive ? 'btn-reject' : 'btn-approve'}" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleUserActive('${esc(u.username)}', ${isActive})">${isActive ? 'إيقاف' : 'تفعيل'}</button>`;
         const deleteBtn = isSelf ? '' : `<button class="btn btn-reject" style="font-size:0.8rem; padding:6px 12px;" onclick="deleteUserAccount('${esc(u.username)}', '${esc(u.fullName)}')">🗑️ حذف</button>`;
-        tbody.innerHTML += `<tr><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.email) || '-'}</td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${editPermBadge}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="openAdminResetPasswordModal('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn} ${deleteBtn}</div></td></tr>`;
+        const searchKey = [u.fullName, u.username, u.email, u.phone, roleLabel].filter(Boolean).join(' ').toLowerCase();
+        tbody.innerHTML += `<tr data-search="${esc(searchKey)}"><td style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(u.fullName)}</td><td><code style="background:#f1f5f9; padding:4px;">${esc(u.username)}</code></td><td style="direction:ltr;">${esc(u.email) || '-'}</td><td style="direction:ltr;">${esc(u.phone) || '-'}</td><td>${roleLabel}</td><td>${editPermBadge}</td><td>${statusBadge}</td><td><div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px;" onclick="editUserPrompt(${idx})">تعديل</button> <button class="btn btn-gold" style="font-size:0.8rem; padding:6px 12px;" onclick="openAdminResetPasswordModal('${esc(u.username)}')">كلمة المرور</button> ${toggleBtn} ${deleteBtn}</div></td></tr>`;
+      });
+      filterUsersTable();
+    }
+
+    // فلترة حيّة لجدول المستخدمين بحسب الاسم/الرمز الوظيفي/الإيميل/الجوال/المسمى الوظيفي
+    function filterUsersTable() {
+      const kw = (document.getElementById('usersTableSearch')?.value || '').trim().toLowerCase();
+      document.querySelectorAll('#usersListTable tbody tr').forEach(tr => {
+        const match = !kw || (tr.getAttribute('data-search') || '').includes(kw);
+        tr.classList.toggle('hidden', !match);
       });
     }
 
@@ -3370,7 +3474,34 @@
     }
 
     // ================= Logic: سجل التدقيق =================
+    // يحسب آخر حالة معروفة (متصل/غير متصل) لكل مستخدم من أحداث LOGIN/LOGOUT المسجّلة في سجل التدقيق
+    function renderUserSessionStatus() {
+      const tbody = document.querySelector('#userSessionStatusTable tbody'); if (!tbody) return;
+      const logs = schoolDataWrapper.logs || [];
+      const authEvents = logs.filter(l => l.action === 'LOGIN' || l.action === 'LOGOUT').sort((a, b) => a.ts - b.ts);
+      if (authEvents.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا توجد أحداث دخول/خروج مسجّلة بعد.</td></tr>`; return; }
+
+      const perUser = {}; // username -> {userName, lastLogin, lastLogout, currentlyOnline}
+      authEvents.forEach(l => {
+        const key = l.user;
+        if (!perUser[key]) perUser[key] = { userName: l.userName || l.user, lastLogin: null, lastLogout: null, currentlyOnline: false };
+        perUser[key].userName = l.userName || l.user;
+        if (l.action === 'LOGIN') { perUser[key].lastLogin = l.ts; perUser[key].currentlyOnline = true; }
+        else { perUser[key].lastLogout = l.ts; perUser[key].currentlyOnline = false; }
+      });
+
+      const fmt = (ts) => ts ? new Date(ts).toLocaleString('ar-SA-u-ca-gregory') : '-';
+      const rows = Object.values(perUser).sort((a, b) => (b.lastLogin || 0) - (a.lastLogin || 0));
+      tbody.innerHTML = rows.map(u => `<tr>
+        <td style="font-weight:800;">${esc(u.userName)}</td>
+        <td>${u.currentlyOnline ? '<span class="badge-status approved">🟢 متصل</span>' : '<span class="badge-status rejected">⚪ غير متصل</span>'}</td>
+        <td style="white-space:nowrap; direction:ltr; font-size:0.85rem;">${esc(fmt(u.lastLogin))}</td>
+        <td style="white-space:nowrap; direction:ltr; font-size:0.85rem;">${esc(fmt(u.lastLogout))}</td>
+      </tr>`).join('');
+    }
+
     function renderAuditLog() {
+      renderUserSessionStatus();
       const tbody = document.querySelector('#auditLogTable tbody'); if (!tbody) return;
       const logs = (schoolDataWrapper.logs || []).slice().reverse().slice(0, 500);
       if (logs.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا توجد أحداث مسجّلة بعد.</td></tr>`; return; }
