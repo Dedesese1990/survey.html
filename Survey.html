@@ -386,6 +386,13 @@
           </div>
           <div style="height:24px;"></div>
 
+          <div class="card">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📍 التحقق من مطابقة موقع الزيارة لموقع المدرسة</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">يقارن آخر GPS مسجّل عند رفع تقرير بموقع المدرسة الثابت المستورد (لو موجود)، لمعرفة هل المشرف كان فعلياً في موقع المدرسة وقت الرفع. المدارس بدون موقع ثابت مُسجَّل حالياً تظهر بحالة "لا يوجد موقع مسجّل" — أضف الإحداثيات لأي مدرسة من تاب إدارة المدارس ليظهر التحقق لها.</p>
+            <div id="locationVerificationContainer"></div>
+          </div>
+          <div style="height:24px;"></div>
+
           <div class="card" id="inspectorPerfCard">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>
             <div class="table-responsive">
@@ -1843,6 +1850,7 @@
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped);
       renderFieldMap(scoped);
+      renderLocationVerificationTable();
       renderPeriodComparison();
     }
 
@@ -2089,6 +2097,59 @@
         if (points.length > 0) { fieldMapInstance.fitBounds(points, { padding: [30, 30], maxZoom: 13 }); }
         setTimeout(() => fieldMapInstance.invalidateSize(), 200);
       } catch (e) {}
+    }
+
+    // المسافة بالمتر بين نقطتي إحداثيات (صيغة Haversine)
+    function haversineDistanceMeters(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const toRad = deg => deg * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1); const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+    const LOCATION_MATCH_THRESHOLD_METERS = 200; // هامش مقبول لفروقات دقة GPS الطبيعية
+
+    // يقارن آخر GPS مسجَّل لكل مدرسة (من زيارة فعلية) بموقعها الثابت المستورد، لمعرفة هل المشرف كان فعلاً هناك
+    function renderLocationVerificationTable() {
+      const container = document.getElementById('locationVerificationContainer'); if (!container) return;
+      const scopeSchools = getScopedSchools();
+      if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
+      const scoped = getScopedResponses();
+      const latestBySchool = {};
+      scoped.forEach(r => { if (!latestBySchool[r.school] || r.id > latestBySchool[r.school].id) latestBySchool[r.school] = r; });
+
+      let matchedCount = 0, mismatchCount = 0, noSchoolLocCount = 0, notVisitedCount = 0;
+      const rows = scopeSchools.map(sch => {
+        const r = latestBySchool[sch.name];
+        const hasSchoolLoc = sch.lat != null && sch.lng != null;
+        if (!r) { notVisitedCount++; return { sch, r: null, status: 'لم تُزر بعد', verdict: '—', color: '#9ca3af' }; }
+        let visitCoords = null;
+        if (r.gps) { const p = String(r.gps).split(',').map(v => parseFloat(v.trim())); if (p.length === 2 && !isNaN(p[0]) && !isNaN(p[1])) visitCoords = p; }
+        if (!hasSchoolLoc) { noSchoolLocCount++; return { sch, r, status: 'تم الرفع', verdict: 'لا يوجد موقع مسجّل للمدرسة', color: '#a855f7' }; }
+        if (!visitCoords) { return { sch, r, status: 'تم الرفع', verdict: 'لا يوجد GPS للزيارة', color: '#9ca3af' }; }
+        const dist = haversineDistanceMeters(sch.lat, sch.lng, visitCoords[0], visitCoords[1]);
+        if (dist <= LOCATION_MATCH_THRESHOLD_METERS) { matchedCount++; return { sch, r, status: 'تم الرفع', verdict: `✅ مطابق (${Math.round(dist)} م)`, color: '#10b981' }; }
+        mismatchCount++; return { sch, r, status: 'تم الرفع', verdict: `⚠️ غير مطابق (${Math.round(dist)} م)`, color: '#ef4444' };
+      });
+
+      const summaryHtml = `<div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px; font-size:0.85rem; font-weight:800;">
+        <span style="color:#10b981;">✅ ${matchedCount} مطابقة الموقع</span>
+        <span style="color:#ef4444;">⚠️ ${mismatchCount} غير مطابقة</span>
+        <span style="color:#a855f7;">🟣 ${noSchoolLocCount} بدون موقع مسجّل للمدرسة</span>
+        <span style="color:#9ca3af;">⚪ ${notVisitedCount} لم تُزر بعد</span>
+      </div>`;
+
+      const tableHtml = `<div class="table-responsive"><table class="data-table"><thead><tr><th>المدرسة</th><th>الحالة</th><th>الموقع المسجّل للمدرسة</th><th>موقع آخر زيارة</th><th>التطابق</th></tr></thead><tbody>
+        ${rows.map(x => `<tr>
+          <td style="font-weight:800;">${esc(x.sch.name)}</td>
+          <td>${esc(x.status)}</td>
+          <td style="direction:ltr; font-size:0.85rem;">${x.sch.lat != null && x.sch.lng != null ? `${x.sch.lat}, ${x.sch.lng}` : '-'}</td>
+          <td style="direction:ltr; font-size:0.85rem;">${x.r && x.r.gps ? esc(x.r.gps) : '-'}</td>
+          <td style="color:${x.color}; font-weight:800;">${esc(x.verdict)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+
+      container.innerHTML = summaryHtml + tableHtml;
     }
 
     // مقارنة أداء فترتين (أساس لمقارنة سنوية Year-over-Year عند توفر بيانات لسنوات سابقة)
@@ -2494,6 +2555,7 @@
       const regionHtml = document.getElementById('schoolsByRegionContainer')?.innerHTML || '';
       const genderHtml = document.getElementById('schoolsByGenderContainer')?.innerHTML || '';
       const recurringHtml = document.getElementById('recurringIssuesContainer')?.innerHTML || '';
+      const locationVerifyHtml = document.getElementById('locationVerificationContainer')?.innerHTML || '';
       const perfCardVisible = !document.getElementById('inspectorPerfCard')?.classList.contains('hidden');
       const perfTableHtml = perfCardVisible ? (document.getElementById('inspectorPerfTable')?.outerHTML || '') : '';
 
@@ -2542,6 +2604,7 @@
           <div class="sec"><h4>🚻 توزيع المدارس حسب الجنس</h4>${genderHtml}</div>
         </div>
         <div class="sec"><h4>🔁 مشاكل متكررة لم تُحل</h4>${recurringHtml}</div>
+        <div class="sec"><h4>📍 التحقق من مطابقة موقع الزيارة لموقع المدرسة</h4>${locationVerifyHtml}</div>
         ${perfTableHtml ? `<div class="sec"><h4>🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>${perfTableHtml}</div>` : ''}
         </body></html>`);
       w.document.close();
