@@ -728,6 +728,39 @@
     </div>
   </div>
 
+  <!-- نوافذ تنبيه/تأكيد/إدخال مُصمَّمة داخل النظام نفسه، بديلة عن alert/confirm/prompt الأصلية في المتصفح
+       (المتصفح يفرض عرض اسم النطاق تلقائياً فوق أي نافذة منها ولا يمكن تغيير ذلك برمجياً — هذا حل بديل كامل) -->
+  <div id="appAlertModal" class="modal-overlay hidden" style="z-index:99999;">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
+      <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:0.9rem; margin-bottom:14px;">🏢 بوابة الحصر الشامل — إدارة التخطيط والتحكم</div>
+      <p id="appAlertMessage" style="font-size:1rem; font-weight:700; color:var(--text-main); white-space:pre-line; margin-bottom:22px;"></p>
+      <button class="btn btn-petrol" style="width:100%;" onclick="closeAppAlert()">حسناً</button>
+    </div>
+  </div>
+
+  <div id="appConfirmModal" class="modal-overlay hidden" style="z-index:99999;">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
+      <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:0.9rem; margin-bottom:14px;">🏢 بوابة الحصر الشامل — إدارة التخطيط والتحكم</div>
+      <p id="appConfirmMessage" style="font-size:1rem; font-weight:700; color:var(--text-main); white-space:pre-line; margin-bottom:22px;"></p>
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="resolveAppConfirm(false)">إلغاء</button>
+        <button class="btn btn-petrol" style="flex:1;" onclick="resolveAppConfirm(true)">تأكيد</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="appPromptModal" class="modal-overlay hidden" style="z-index:99999;">
+    <div class="modal-content" style="max-width:420px;">
+      <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:0.9rem; margin-bottom:14px; text-align:center;">🏢 بوابة الحصر الشامل — إدارة التخطيط والتحكم</div>
+      <p id="appPromptMessage" style="font-size:0.95rem; font-weight:700; margin-bottom:10px;"></p>
+      <input type="text" id="appPromptInput" onkeydown="if(event.key==='Enter') resolveAppPrompt(true);">
+      <div style="display:flex; gap:12px; margin-top:18px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="resolveAppPrompt(false)">إلغاء</button>
+        <button class="btn btn-petrol" style="flex:1;" onclick="resolveAppPrompt(true)">تأكيد</button>
+      </div>
+    </div>
+  </div>
+
   <div id="delegateApprovalModal" class="modal-overlay hidden">
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔄 تفويض صلاحية الاعتماد مؤقتاً</h3>
@@ -834,6 +867,39 @@
     // يفصل التاريخ عن الوقت بأمان (النمط العربي يستخدم الفاصلة العربية "،" وليس ",")
     const shortDate = (r) => { if (!r) return ''; if (r.dateOnly) return r.dateOnly; if (!r.date) return ''; return String(r.date).split(/[,،]/)[0].trim(); };
 
+    // ---- نوافذ تنبيه/تأكيد/إدخال مُصمَّمة داخل النظام (بديل alert/confirm/prompt الأصلية بالمتصفح) ----
+    function showAlert(message) {
+      document.getElementById('appAlertMessage').innerText = message;
+      document.getElementById('appAlertModal').classList.remove('hidden');
+    }
+    function closeAppAlert() { document.getElementById('appAlertModal').classList.add('hidden'); }
+
+    let appConfirmResolver = null;
+    function showConfirm(message) {
+      document.getElementById('appConfirmMessage').innerText = message;
+      document.getElementById('appConfirmModal').classList.remove('hidden');
+      return new Promise(resolve => { appConfirmResolver = resolve; });
+    }
+    function resolveAppConfirm(result) {
+      document.getElementById('appConfirmModal').classList.add('hidden');
+      if (appConfirmResolver) { appConfirmResolver(result); appConfirmResolver = null; }
+    }
+
+    let appPromptResolver = null;
+    function showPrompt(message, defaultValue) {
+      document.getElementById('appPromptMessage').innerText = message;
+      document.getElementById('appPromptInput').value = defaultValue || '';
+      document.getElementById('appPromptModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('appPromptInput').focus(), 50);
+      return new Promise(resolve => { appPromptResolver = resolve; });
+    }
+    function resolveAppPrompt(confirmed) {
+      const val = document.getElementById('appPromptInput').value;
+      document.getElementById('appPromptModal').classList.add('hidden');
+      if (appPromptResolver) { appPromptResolver(confirmed ? val : null); appPromptResolver = null; }
+    }
+
+
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
     const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
@@ -926,7 +992,7 @@
       if (loginInProgress) return;
       const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value.trim();
       const rememberMe = document.getElementById('rememberMeCheckbox').checked;
-      if (!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة المرور");
+      if (!u || !p) return showAlert("يرجى إدخال اسم المستخدم وكلمة المرور");
       loginInProgress = true;
       const btn = document.getElementById('loginBtnElem'); btn.innerText = "⏳ جاري التحقق (قد يستغرق بضع ثوانٍ)..."; btn.disabled = true;
       try {
@@ -935,18 +1001,18 @@
           currentSessionToken = resData.token; currentUser = resData.user;
           if (rememberMe) { localStorage.setItem('tbc_session_token', currentSessionToken); localStorage.setItem('tbc_current_user', JSON.stringify(currentUser)); }
           if(resData.mustChangePassword) { document.getElementById('loginView').classList.add('hidden'); document.getElementById('forceChangePasswordModal').classList.remove('hidden'); } else { loginSuccess(); }
-        } else { alert(esc(resData.message)); }
-      } catch (err) { alert("تعذر الاتصال بالخادم بعد عدة محاولات. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."); }
+        } else { showAlert(esc(resData.message)); }
+      } catch (err) { showAlert("تعذر الاتصال بالخادم بعد عدة محاولات. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."); }
       btn.innerText = "دخول المنظومة 🔒"; btn.disabled = false; loginInProgress = false;
     }
 
     async function submitForcedPasswordChange() {
       const cur = document.getElementById('fcpCurrentPass').value; const newP = document.getElementById('fcpNewPass').value;
-      if (!cur || !newP || newP.length < 8) return alert("كلمة المرور يجب أن تكون 8 أحرف على الأقل.");
+      if (!cur || !newP || newP.length < 8) return showAlert("كلمة المرور يجب أن تكون 8 أحرف على الأقل.");
       try {
         const resData = await callBackend({ token: SECURE_API_TOKEN, action: "CHANGE_PASSWORD", sessionToken: currentSessionToken, payload: { oldPassword: cur, newPassword: newP } });
-        if (resData.status === "success") { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الإجباري عند أول دخول'); document.getElementById('forceChangePasswordModal').classList.add('hidden'); alert("تم التأمين بنجاح!"); loginSuccess(); } else { alert(esc(resData.message)); }
-      } catch (err) { alert("تعذر الاتصال بالخادم. يرجى المحاولة مجدداً."); }
+        if (resData.status === "success") { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الإجباري عند أول دخول'); document.getElementById('forceChangePasswordModal').classList.add('hidden'); showAlert("تم التأمين بنجاح!"); loginSuccess(); } else { showAlert(esc(resData.message)); }
+      } catch (err) { showAlert("تعذر الاتصال بالخادم. يرجى المحاولة مجدداً."); }
     }
 
     // ================= Logic: استعادة كلمة المرور عبر البريد الإلكتروني =================
@@ -963,34 +1029,34 @@
 
     async function requestResetCode() {
       const username = document.getElementById('fpUsername').value.trim();
-      if (!username) return alert('يرجى إدخال الرمز الوظيفي.');
+      if (!username) return showAlert('يرجى إدخال الرمز الوظيفي.');
       const btn = document.getElementById('fpRequestBtn'); btn.disabled = true; btn.innerText = 'جاري الإرسال...';
       const res = await apiCall('FORGOT_PASSWORD', { username });
       btn.disabled = false; btn.innerText = 'إرسال رمز التحقق ✉️';
       // الرد دائماً بنفس الصياغة العامة بغض النظر عن وجود الحساب فعلياً (حماية أمنية مقصودة من الخادم)
       if (res.status === 'success') {
         fpPendingUsername = username;
-        alert(res.message || 'إذا كان الحساب موجوداً، تم إرسال رمز التحقق إلى بريدك الإلكتروني.');
+        showAlert(res.message || 'إذا كان الحساب موجوداً، تم إرسال رمز التحقق إلى بريدك الإلكتروني.');
         document.getElementById('fpStep1').classList.add('hidden');
         document.getElementById('fpStep2').classList.remove('hidden');
-      } else alert(esc(res.message || 'تعذر إرسال الطلب، حاول مرة أخرى.'));
+      } else showAlert(esc(res.message || 'تعذر إرسال الطلب، حاول مرة أخرى.'));
     }
 
     async function submitResetWithCode() {
       const code = document.getElementById('fpCode').value.trim();
       const newP = document.getElementById('fpNewPass').value;
       const confirmP = document.getElementById('fpConfirmPass').value;
-      if (!/^\d{6}$/.test(code)) return alert('يرجى إدخال رمز التحقق المكوّن من 6 أرقام.');
-      if (!newP || newP.length < 8) return alert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
-      if (newP !== confirmP) return alert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
+      if (!/^\d{6}$/.test(code)) return showAlert('يرجى إدخال رمز التحقق المكوّن من 6 أرقام.');
+      if (!newP || newP.length < 8) return showAlert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
+      if (newP !== confirmP) return showAlert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
       const btn = document.getElementById('fpResetBtn'); btn.disabled = true; btn.innerText = 'جاري التحقق...';
       const res = await apiCall('RESET_PASSWORD_WITH_CODE', { username: fpPendingUsername, code, newPassword: newP });
       btn.disabled = false; btn.innerText = 'تعيين كلمة المرور الجديدة ✓';
       if (res.status === 'success') {
-        alert('✓ ' + (res.message || 'تم تعيين كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.'));
+        showAlert('✓ ' + (res.message || 'تم تعيين كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.'));
         closeForgotPasswordModal();
         document.getElementById('loginUsername').value = fpPendingUsername;
-      } else alert(esc(res.message || 'تعذر إعادة تعيين كلمة المرور.'));
+      } else showAlert(esc(res.message || 'تعذر إعادة تعيين كلمة المرور.'));
     }
 
     // ================= Logic: تسجيل حساب جديد (بانتظار اعتماد إدارة التخطيط) =================
@@ -1046,22 +1112,22 @@
       const roleChoice = document.getElementById('regRoleChoice').value;
       const branchVal = document.getElementById('regBranch').value;
 
-      if (!fullName || !username || !email) return alert('يرجى تعبئة الاسم الكامل والرمز الوظيفي والبريد الإلكتروني.');
-      if (!roleChoice) return alert('يرجى اختيار المسمى الوظيفي المطلوب.');
-      if (!password || password.length < 8) return alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
-      if (password !== confirmPassword) return alert('كلمة المرور وتأكيدها غير متطابقين.');
+      if (!fullName || !username || !email) return showAlert('يرجى تعبئة الاسم الكامل والرمز الوظيفي والبريد الإلكتروني.');
+      if (!roleChoice) return showAlert('يرجى اختيار المسمى الوظيفي المطلوب.');
+      if (!password || password.length < 8) return showAlert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      if (password !== confirmPassword) return showAlert('كلمة المرور وتأكيدها غير متطابقين.');
 
       const mapped = mapRegRoleChoice(roleChoice, branchVal);
-      if (!mapped) return alert('يرجى اختيار المسمى الوظيفي المطلوب.');
+      if (!mapped) return showAlert('يرجى اختيار المسمى الوظيفي المطلوب.');
 
       const btn = document.getElementById('regSubmitBtn'); btn.disabled = true; btn.innerText = 'جاري الإرسال...';
       const res = await apiCall('REGISTER_REQUEST', { fullName, username, email, phone, password, role: mapped.role, branch: mapped.branch });
       btn.disabled = false; btn.innerText = 'إرسال طلب التسجيل ✓';
 
       if (res.status === 'success') {
-        alert('✓ ' + (res.message || 'تم إرسال طلبك بنجاح، بانتظار الاعتماد.'));
+        showAlert('✓ ' + (res.message || 'تم إرسال طلبك بنجاح، بانتظار الاعتماد.'));
         closeRegisterModal();
-      } else alert(esc(res.message || 'تعذر إرسال طلب التسجيل.'));
+      } else showAlert(esc(res.message || 'تعذر إرسال طلب التسجيل.'));
     }
 
     function loginSuccess() {
@@ -1097,7 +1163,7 @@
     }
 
     function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); }
-    function forceLogout() { alert("انتهت الجلسة."); logout(); }
+    function forceLogout() { showAlert("انتهت الجلسة."); logout(); }
 
     window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); };
     window.closeProfileMenu = function() { document.getElementById('profileMenu')?.classList.add('hidden'); };
@@ -1344,16 +1410,16 @@
       const title = document.getElementById('srvTitle').value.trim();
       const dueDate = document.getElementById('srvDueDate').value;
       const desc = document.getElementById('srvDesc').value.trim();
-      if (!title) return alert('يرجى إدخال مسمى عملية الحصر.');
+      if (!title) return showAlert('يرجى إدخال مسمى عملية الحصر.');
 
       const cleanQuestions = builderQuestions.filter(q => q.text && q.text.trim() !== '');
-      if (cleanQuestions.length === 0) return alert('يرجى إضافة بند فحص واحد على الأقل بنص سؤال.');
+      if (cleanQuestions.length === 0) return showAlert('يرجى إضافة بند فحص واحد على الأقل بنص سؤال.');
       for (const q of cleanQuestions) {
         if (['radio', 'checkbox', 'dropdown'].includes(q.type) && (!q.options || q.options.filter(o => o && o.trim()).length < 2)) {
-          return alert(`السؤال "${q.text}" يحتاج خيارين على الأقل.`);
+          return showAlert(`السؤال "${q.text}" يحتاج خيارين على الأقل.`);
         }
         if (q.condition && (!q.condition.parentId || !q.condition.values || q.condition.values.length === 0)) {
-          return alert(`يرجى إكمال إعداد الشرط الخاص بالسؤال "${q.text}" (اختيار السؤال المرتبط والقيمة)، أو إلغاء تفعيل الشرط.`);
+          return showAlert(`يرجى إكمال إعداد الشرط الخاص بالسؤال "${q.text}" (اختيار السؤال المرتبط والقيمة)، أو إلغاء تفعيل الشرط.`);
         }
       }
 
@@ -1368,11 +1434,11 @@
 
       if (res.status === 'success') {
         logAudit('SURVEY_SAVE', `${editingSurveyId ? 'تعديل' : 'إنشاء'} نموذج حصر: ${title}`);
-        alert('✓ تم حفظ النموذج بنجاح!');
+        showAlert('✓ تم حفظ النموذج بنجاح!');
         surveys = mergedSurveys;
         closeNewSurveyModal();
         populateAnalyticsSurveyFilter();
-      } else alert(esc(res.message || 'حدث خطأ أثناء الحفظ.'));
+      } else showAlert(esc(res.message || 'حدث خطأ أثناء الحفظ.'));
     }
 
     function backToSurveysList() {
@@ -1384,7 +1450,7 @@
 
     function openFillSurvey(survey, existingResponse = null) {
       if (!survey && existingResponse) survey = surveys.find(s => s.title === existingResponse.surveyTitle);
-      if (!survey) return alert('تعذر العثور على نموذج الحصر المرتبط بهذا التقرير.');
+      if (!survey) return showAlert('تعذر العثور على نموذج الحصر المرتبط بهذا التقرير.');
       activeSrv = survey;
       editingResponseId = existingResponse ? existingResponse.id : null;
 
@@ -1489,10 +1555,10 @@
       onDynFieldChange();
     }
     function captureLocationForField(fieldId) {
-      if (!navigator.geolocation) return alert('المتصفح لا يدعم تحديد الموقع.');
+      if (!navigator.geolocation) return showAlert('المتصفح لا يدعم تحديد الموقع.');
       navigator.geolocation.getCurrentPosition(
         pos => { document.getElementById(fieldId).value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; onDynFieldChange(); },
-        () => alert('تعذر تحديد الموقع. يرجى التأكد من تفعيل صلاحية الوصول للموقع.'),
+        () => showAlert('تعذر تحديد الموقع. يرجى التأكد من تفعيل صلاحية الوصول للموقع.'),
         { enableHighAccuracy: true, timeout: 10000 }
       );
     }
@@ -1536,10 +1602,10 @@
     };
 
     function captureGps() {
-      if (!navigator.geolocation) return alert('المتصفح لا يدعم تحديد الموقع.');
+      if (!navigator.geolocation) return showAlert('المتصفح لا يدعم تحديد الموقع.');
       navigator.geolocation.getCurrentPosition(
         pos => { document.getElementById('fillGps').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; },
-        err => { alert('تعذر تحديد الموقع. يرجى التأكد من تفعيل صلاحية الوصول للموقع في المتصفح.'); },
+        err => { showAlert('تعذر تحديد الموقع. يرجى التأكد من تفعيل صلاحية الوصول للموقع في المتصفح.'); },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     }
@@ -1548,13 +1614,13 @@
       const school = document.getElementById('fillSchool').value;
       const branch = document.getElementById('fillBranch').value;
       const gps = document.getElementById('fillGps').value;
-      if (!school) return alert('يرجى اختيار المنشأة التعليمية.');
-      if (currentUser.permissions?.requireGps !== false && !gps) return alert('التقاط الموقع (GPS) إلزامي قبل رفع التقرير.');
+      if (!school) return showAlert('يرجى اختيار المنشأة التعليمية.');
+      if (currentUser.permissions?.requireGps !== false && !gps) return showAlert('التقاط الموقع (GPS) إلزامي قبل رفع التقرير.');
 
       // تحقق من ازدواج الزيارة: نفس المدرسة + نفس النموذج + نفس المستخدم خلال آخر 24 ساعة
       const duplicate = responses.find(r => r.school === school && r.surveyTitle === activeSrv.title && r.username === currentUser.username && r.id !== editingResponseId && (Date.now() - r.id) < (24 * 60 * 60 * 1000));
       if (duplicate) {
-        const proceed = confirm(`⚠️ يوجد بالفعل تقرير مرفوع لنفس المدرسة ونفس نموذج الحصر خلال آخر 24 ساعة (بتاريخ ${esc(shortDate(duplicate))}).\nهل أنت متأكد من رفع تقرير آخر؟`);
+        const proceed = await showConfirm(`⚠️ يوجد بالفعل تقرير مرفوع لنفس المدرسة ونفس نموذج الحصر خلال آخر 24 ساعة (بتاريخ ${esc(shortDate(duplicate))}).\nهل أنت متأكد من رفع تقرير آخر؟`);
         if (!proceed) return;
       }
 
@@ -1588,8 +1654,8 @@
         answers[qtext] = value;
       }
 
-      if (validationError) return alert(`يرجى الإجابة على السؤال الإلزامي: "${validationError}"`);
-      if (currentUser.permissions?.requirePhoto !== false && !hasPhoto) return alert('التقاط صورة توثيقية واحدة على الأقل إلزامي قبل رفع التقرير.');
+      if (validationError) return showAlert(`يرجى الإجابة على السؤال الإلزامي: "${validationError}"`);
+      if (currentUser.permissions?.requirePhoto !== false && !hasPhoto) return showAlert('التقاط صورة توثيقية واحدة على الأقل إلزامي قبل رفع التقرير.');
 
       const btn = document.getElementById('submitSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الرفع...';
 
@@ -1625,7 +1691,7 @@
         document.getElementById('secFillSurvey').classList.add('hidden');
         document.getElementById('secSuccessModal').classList.remove('hidden');
         pullFromCloud();
-      } else alert(esc(res.message || 'حدث خطأ أثناء رفع التقرير.'));
+      } else showAlert(esc(res.message || 'حدث خطأ أثناء رفع التقرير.'));
     }
 
     // ================= Analytics & Dashboard =================
@@ -1914,7 +1980,7 @@
       const scoped = getScopedResponses();
       const now = Date.now();
       const aging = scoped.filter(r => r.status === 'pending' && (now - r.id) > (48 * 60 * 60 * 1000));
-      if (aging.length === 0) return alert('لا توجد تقارير متأخرة عن 48 ساعة حالياً ضمن نطاقك. 👍');
+      if (aging.length === 0) return showAlert('لا توجد تقارير متأخرة عن 48 ساعة حالياً ضمن نطاقك. 👍');
       let text = `🚨 تنبيه: يوجد ${aging.length} تقرير متأخر عن الاعتماد لأكثر من 48 ساعة:\n\n`;
       aging.slice(0, 15).forEach(r => {
         const days = Math.floor((now - r.id) / (24 * 60 * 60 * 1000));
@@ -2043,7 +2109,7 @@
 
     function closeViewReportModal() { document.getElementById('viewReportModal').classList.add('hidden'); }
     function triggerEditReport(reportId) { const rep = responses.find(r => r.id === reportId); if (!rep) return; document.getElementById('secRecords').classList.add('hidden'); openFillSurvey(null, rep); }
-    async function grantEditPermission(index) { const rep = responses[index]; const res = await apiCall("APPROVE_REPORT", { reportId: rep.id, grantEdit: true }); if(res.status==="success") { logAudit('GRANT_EDIT', `منح إذن تعديل لتقرير: ${rep.school} - ${rep.surveyTitle}`); closeViewReportModal(); pullFromCloud(); } else alert(esc(res.message)); }
+    async function grantEditPermission(index) { const rep = responses[index]; const res = await apiCall("APPROVE_REPORT", { reportId: rep.id, grantEdit: true }); if(res.status==="success") { logAudit('GRANT_EDIT', `منح إذن تعديل لتقرير: ${rep.school} - ${rep.surveyTitle}`); closeViewReportModal(); pullFromCloud(); } else showAlert(esc(res.message)); }
     async function setReportStatus(id, status, reason = "") {
       const rep = responses.find(r => r.id === id);
       const wasEverRejected = status === 'rejected' ? true : (rep?.wasEverRejected === true);
@@ -2051,9 +2117,9 @@
       if(res.status==="success") {
         logAudit('REPORT_DECISION', `${status === 'approved' ? 'اعتماد' : 'رفض'} تقرير: ${rep ? rep.school + ' - ' + rep.surveyTitle : id}${reason ? ' (السبب: ' + reason + ')' : ''}`);
         closeViewReportModal(); pullFromCloud();
-      } else alert(esc(res.message));
+      } else showAlert(esc(res.message));
     }
-    function promptRejectReport(id) { const reason = prompt("يرجى كتابة سبب التعديل أو الرفض ليظهر للمشرف:"); if (reason !== null && reason.trim() !== "") { setReportStatus(id, 'rejected', reason.trim()); } }
+    async function promptRejectReport(id) { const reason = await showPrompt("يرجى كتابة سبب التعديل أو الرفض ليظهر للمشرف:"); if (reason !== null && reason.trim() !== "") { setReportStatus(id, 'rejected', reason.trim()); } }
 
     // ================= Export & Global Reports =================
     function printConsolidatedSchoolPDF() {
@@ -2061,7 +2127,7 @@
       const scoped = getScopedResponses(); 
       
       if (!selectedSchool) {
-         if (scoped.length === 0) return alert("لا توجد أي تقارير مسجلة في النظام لتصديرها.");
+         if (scoped.length === 0) return showAlert("لا توجد أي تقارير مسجلة في النظام لتصديرها.");
          const total = scoped.length; const app = scoped.filter(r=>r.status==='approved').length; const rej = scoped.filter(r=>r.status==='rejected').length; const pen = scoped.filter(r=>r.status==='pending').length;
          const w = window.open('', '_blank');
          w.document.write(`<html lang="ar" dir="rtl"><head><title>التقرير الإحصائي الشامل</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"><style>* { font-family: 'Tajawal', sans-serif; box-sizing: border-box; } body { padding: 25px; color: #1f333a; } .header { border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 20px; text-align:center; } .box { background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; display:inline-block; margin:10px; width:200px; text-align:center; } table { width:100%; border-collapse:collapse; margin-top:20px; } th, td { border:1px solid #cbd5e1; padding:10px; text-align:right; font-size:13px; } th { background:#37889b; color:#fff; } @media print { .no-print { display: none !important; } }</style></head><body><div class="no-print" style="margin-bottom:15px;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 22px; cursor:pointer;">🖨️ طباعة أو حفظ PDF</button></div><div class="header"><h2>التقرير الإحصائي الشامل - إدارة التخطيط والتحكم</h2><p>تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</p></div><div style="text-align:center;"><div class="box"><h3>إجمالي التقارير</h3><h1 style="color:#37889b;">${total}</h1></div><div class="box"><h3>معتمدة</h3><h1 style="color:#10b981;">${app}</h1></div><div class="box"><h3>بانتظار الاعتماد</h3><h1 style="color:#f59e0b;">${pen}</h1></div><div class="box"><h3>مرفوضة</h3><h1 style="color:#ef4444;">${rej}</h1></div></div><table><thead><tr><th>المدرسة</th><th>الحصر</th><th>تاريخ الزيارة</th><th>المشرف</th><th>الحالة</th></tr></thead><tbody>${scoped.map(r => `<tr><td>${esc(r.school)}</td><td>${esc(r.surveyTitle)}</td><td style="direction:ltr;">${esc(shortDate(r))}</td><td>${esc(r.collectedBy)}</td><td>${r.status==='approved'?'معتمد':(r.status==='rejected'?'مرفوض':'قيد الاعتماد')}</td></tr>`).join('')}</tbody></table></body></html>`);
@@ -2070,7 +2136,7 @@
       }
 
       const schoolSurveys = scoped.filter(r => r.school === selectedSchool);
-      if (schoolSurveys.length === 0) return alert("لا توجد سجلات لهذه المدرسة.");
+      if (schoolSurveys.length === 0) return showAlert("لا توجد سجلات لهذه المدرسة.");
       const w = window.open('', '_blank'); const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل'; const branchName = schoolSurveys[0]?.branch || 'المنطقة الشرقية';
       let sectionsHtml = '';
       schoolSurveys.forEach((entry, sIdx) => {
@@ -2086,7 +2152,7 @@
     }
 
     function exportConsolidatedSchoolExcel() {
-      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
       const scoped = getScopedResponses();
       
@@ -2095,10 +2161,10 @@
 
       if (selectedSchool) {
         targetSurveys = scoped.filter(r => r.school === selectedSchool);
-        if (targetSurveys.length === 0) return alert("لا توجد سجلات محفوظة لهذه المدرسة.");
+        if (targetSurveys.length === 0) return showAlert("لا توجد سجلات محفوظة لهذه المدرسة.");
         fileName = `تقرير_${selectedSchool.substring(0,15)}.xlsx`;
       } else {
-        if(scoped.length === 0) return alert("لا توجد تقارير في النظام.");
+        if(scoped.length === 0) return showAlert("لا توجد تقارير في النظام.");
       }
 
       let exportData = [];
@@ -2156,12 +2222,12 @@
     async function toggleSchoolEditPermission() {
       schoolDataWrapper.settings.allowInspectorEdit = document.getElementById('toggleInspectorEdit').checked;
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-      if(res.status === "success") { logAudit('SETTINGS_CHANGE', `تغيير صلاحية تحديث المدارس للمشرفين إلى: ${schoolDataWrapper.settings.allowInspectorEdit ? 'مفعّلة' : 'معطّلة'}`); pullFromCloud(); } else alert(esc(res.message));
+      if(res.status === "success") { logAudit('SETTINGS_CHANGE', `تغيير صلاحية تحديث المدارس للمشرفين إلى: ${schoolDataWrapper.settings.allowInspectorEdit ? 'مفعّلة' : 'معطّلة'}`); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
     async function addSingleSchool() {
       const minNo = document.getElementById('singleSchoolMinNo').value.trim(); const name = document.getElementById('singleSchoolName').value.trim(); const branch = document.getElementById('singleSchoolBranch').value; const inspectorUsername = document.getElementById('singleSchoolInspector').value;
-      if(!name || !inspectorUsername) return alert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
+      if(!name || !inspectorUsername) return showAlert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
       const inspUser = usersList.find(u => u.username === inspectorUsername);
       const inspectorDisplay = inspUser ? inspUser.fullName : inspectorUsername;
       if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
@@ -2171,11 +2237,11 @@
       
       document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = '';
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
-      if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); alert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else alert(esc(res.message));
+      if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); showAlert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
     function downloadSchoolsTemplate() {
-      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       const ws_data = [ ["الرقم الوزاري", "اسم المدرسة", "الإدارة المعنية", "الرمز الوظيفي أو الاسم الكامل للمشرف"], ["55608", "ابتدائية المنذر بن الزبير بالدمام", "المكتب الفرعي بالشرقية", "inspector01"] ];
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
     }
@@ -2209,10 +2275,10 @@
             let msg = `✓ تمت العملية بنجاح! تم استيراد وربط [ ${added} ] مدرسة.`;
             if (unresolved > 0) msg += `\n⚠️ تنبيه: تعذر التعرف على المشرف المطابق لـ [ ${unresolved} ] مدرسة (تأكد من كتابة الرمز الوظيفي أو الاسم الكامل تماماً كما هو مسجل بالنظام)، وتم حفظ الاسم كنص فقط دون ربط فعلي — يمكنك تصحيحه لاحقاً من نموذج الإضافة اليدوية بإدخال نفس اسم المدرسة مع اختيار المشرف الصحيح.`;
             logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${unresolved} بدون ربط مشرف`);
-            alert(msg);
+            showAlert(msg);
             pullFromCloud();
-          } else alert(esc(res.message));
-        } catch(err) { alert("حدث خطأ. تأكد من استخدام القالب المعتمد."); }
+          } else showAlert(esc(res.message));
+        } catch(err) { showAlert("حدث خطأ. تأكد من استخدام القالب المعتمد."); }
         event.target.value = ''; 
       };
       reader.readAsArrayBuffer(file);
@@ -2232,8 +2298,8 @@
        const res = await apiCall("UPDATE_SCHOOL_CONTACT", { schoolName, phone, manager });
        if(res.status === "success") {
           logAudit('SCHOOL_CONTACT_UPDATE', `تحديث بيانات تواصل: ${schoolName}`);
-          alert("✓ تم تحديث بيانات المدرسة بنجاح!"); closeUpdateSchoolModal(); pullFromCloud();
-       } else alert(esc(res.message));
+          showAlert("✓ تم تحديث بيانات المدرسة بنجاح!"); closeUpdateSchoolModal(); pullFromCloud();
+       } else showAlert(esc(res.message));
     }
 
     // ================= Logic: Users Management =================
@@ -2260,7 +2326,7 @@
     }
 
     function downloadUsersTemplate() {
-      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       const ws_data = [
         ["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي", "كلمة المرور (اختياري للجدد)"],
         ["أحمد الهنوف", "ahmed.h", "ahmed@example.com", "0555555555", "مشرف ميداني", "الشرقية", ""]
@@ -2269,8 +2335,8 @@
     }
 
     function exportUsersExcel() {
-      if(typeof XLSX === 'undefined') return alert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
-      if(!usersList || usersList.length === 0) return alert('لا يوجد مستخدمون لتصديرهم.');
+      if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      if(!usersList || usersList.length === 0) return showAlert('لا يوجد مستخدمون لتصديرهم.');
       const ws_data = [["الاسم الكامل", "الرمز الوظيفي", "البريد الإلكتروني", "رقم الجوال", "المسمى الوظيفي", "المكتب الفرعي"]];
       usersList.forEach(u => { ws_data.push([u.fullName || '', u.username || '', u.email || '', u.phone || '', ROLE_LABELS[u.role] || u.role, u.branch || 'الكل']); });
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المستخدمون"); XLSX.writeFile(wb, "قائمة_المستخدمين_الحالية_TBC.xlsx");
@@ -2296,7 +2362,7 @@
             const password = row[6] ? String(row[6]).trim() : '';
             if (fullName && username) rows.push({ fullName, username, email, phone, role: normalizeRoleLabel(roleLabel), branch: normalizeBranchLabel(branchLabel), password });
           }
-          if (rows.length === 0) { alert('لم يتم العثور على صفوف صالحة في الملف. تأكد من استخدام القالب المعتمد.'); event.target.value = ''; return; }
+          if (rows.length === 0) { showAlert('لم يتم العثور على صفوف صالحة في الملف. تأكد من استخدام القالب المعتمد.'); event.target.value = ''; return; }
 
           let created = 0, updated = 0, failed = 0;
           for (const row of rows) {
@@ -2316,9 +2382,9 @@
           let msg = `✓ اكتمل الاستيراد.\nتمت إضافة: ${created} مستخدم جديد.\nتم تحديث: ${updated} مستخدم موجود مسبقاً.`;
           if (failed > 0) msg += `\n⚠️ فشل استيراد ${failed} صف — راجع البيانات (قد يكون الرمز الوظيفي مستخدماً بصيغة غير صالحة، أو نقص بيانات إلزامية).`;
           logAudit('USER_BULK_IMPORT', `استيراد Excel: ${created} جديد، ${updated} محدَّث، ${failed} فشل`);
-          alert(msg);
+          showAlert(msg);
           renderUsersManagement();
-        } catch(err) { alert("حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد."); }
+        } catch(err) { showAlert("حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد."); }
         event.target.value = '';
       };
       reader.readAsArrayBuffer(file);
@@ -2367,48 +2433,48 @@
     }
 
     async function approveRegistration(username) {
-      if (!confirm(`اعتماد طلب تسجيل (${username}) وتفعيل الحساب فوراً؟`)) return;
+      if (!(await showConfirm(`اعتماد طلب تسجيل (${username}) وتفعيل الحساب فوراً؟`))) return;
       const res = await apiCall('APPROVE_REGISTRATION', { username });
-      if (res.status === 'success') { logAudit('REGISTRATION_APPROVE', `اعتماد تسجيل جديد: ${username}`); alert('✓ تم اعتماد الحساب وتفعيله.'); pullFromCloud(); } else alert(esc(res.message));
+      if (res.status === 'success') { logAudit('REGISTRATION_APPROVE', `اعتماد تسجيل جديد: ${username}`); showAlert('✓ تم اعتماد الحساب وتفعيله.'); pullFromCloud(); } else showAlert(esc(res.message));
     }
     async function rejectRegistration(username) {
-      const reason = prompt('سبب الرفض (اختياري، سيصل للمتقدّم عبر البريد):');
+      const reason = await showPrompt('سبب الرفض (اختياري، سيصل للمتقدّم عبر البريد):');
       if (reason === null) return;
       const res = await apiCall('REJECT_REGISTRATION', { username, reason: reason.trim() });
-      if (res.status === 'success') { logAudit('REGISTRATION_REJECT', `رفض تسجيل: ${username}`); alert('تم رفض الطلب.'); pullFromCloud(); } else alert(esc(res.message));
+      if (res.status === 'success') { logAudit('REGISTRATION_REJECT', `رفض تسجيل: ${username}`); showAlert('تم رفض الطلب.'); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
     async function toggleUserActive(username, currentlyActive) {
       const willActivate = !currentlyActive;
-      if (!confirm(willActivate ? `تفعيل حساب (${username}) مجدداً؟` : `إيقاف حساب (${username})؟ لن يتمكن من الدخول حتى تُعيد تفعيله.`)) return;
+      if (!(await showConfirm(willActivate ? `تفعيل حساب (${username}) مجدداً؟` : `إيقاف حساب (${username})؟ لن يتمكن من الدخول حتى تُعيد تفعيله.`))) return;
       const res = await apiCall('TOGGLE_USER_STATUS', { usernameTarget: username, activeState: willActivate });
-      if (res.status === 'success') { logAudit('USER_STATUS_TOGGLE', `${willActivate ? 'تفعيل' : 'إيقاف'} حساب: ${username}`); usersList = res.users; renderUsersManagement(); } else alert(esc(res.message));
+      if (res.status === 'success') { logAudit('USER_STATUS_TOGGLE', `${willActivate ? 'تفعيل' : 'إيقاف'} حساب: ${username}`); usersList = res.users; renderUsersManagement(); } else showAlert(esc(res.message));
     }
 
     async function deleteUserAccount(username, fullName) {
-      if (!confirm(`⚠️ هل أنت متأكد من حذف حساب (${fullName} - ${username}) نهائياً؟\nهذا الإجراء لا يمكن التراجع عنه، والتقارير السابقة المرتبطة به ستبقى مسجّلة باسمه لكنه لن يستطيع الدخول للنظام مرة أخرى.`)) return;
-      if (!confirm('تأكيد أخير: سيتم حذف الحساب نهائياً من النظام. هل تريد المتابعة؟')) return;
+      if (!(await showConfirm(`⚠️ هل أنت متأكد من حذف حساب (${fullName} - ${username}) نهائياً؟\nهذا الإجراء لا يمكن التراجع عنه، والتقارير السابقة المرتبطة به ستبقى مسجّلة باسمه لكنه لن يستطيع الدخول للنظام مرة أخرى.`))) return;
+      if (!(await showConfirm('تأكيد أخير: سيتم حذف الحساب نهائياً من النظام. هل تريد المتابعة؟'))) return;
       const res = await apiCall('DELETE_USER', { username });
-      if (res.status === 'success') { logAudit('USER_DELETE', `حذف حساب نهائياً: ${fullName} (${username})`); usersList = res.users; renderUsersManagement(); alert('✓ تم حذف الحساب.'); } else alert(esc(res.message));
+      if (res.status === 'success') { logAudit('USER_DELETE', `حذف حساب نهائياً: ${fullName} (${username})`); usersList = res.users; renderUsersManagement(); showAlert('✓ تم حذف الحساب.'); } else showAlert(esc(res.message));
     }
 
     async function saveUserRecord() {
       const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const phone = document.getElementById('usrPhone').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
-      if (!fullName || !username || !email) return alert("خطأ إدخال: يرجى التأكد من تعبئة كافة الحقول (الاسم، الرمز، الإيميل).");
+      if (!fullName || !username || !email) return showAlert("خطأ إدخال: يرجى التأكد من تعبئة كافة الحقول (الاسم، الرمز، الإيميل).");
       const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
       
       let res;
       if (editingUserIndex >= 0) { 
         res = await apiCall("UPDATE_USER", { username: username, fullName: fullName, email: email, phone: phone, role: role, branch: branch, permissions: permissions });
       } else { 
-        if(!password || password.length < 8) return alert("يجب إدخال كلمة مرور مبدئية من 8 خانات على الأقل للمستخدم الجديد.");
+        if(!password || password.length < 8) return showAlert("يجب إدخال كلمة مرور مبدئية من 8 خانات على الأقل للمستخدم الجديد.");
         res = await apiCall("CREATE_USER", { username: username, fullName: fullName, email: email, phone: phone, password: password, role: role, branch: branch, permissions: permissions });
       }
 
       if(res.status === "success") {
         logAudit('USER_SYNC', `${editingUserIndex >= 0 ? 'تحديث' : 'إنشاء'} مستخدم: ${fullName} (${username})`);
-        alert("✓ تمت العملية بنجاح!"); usersList = res.users; resetUserForm(); renderUsersManagement();
-      } else alert(esc(res.message));
+        showAlert("✓ تمت العملية بنجاح!"); usersList = res.users; resetUserForm(); renderUsersManagement();
+      } else showAlert(esc(res.message));
     }
 
     function editUserPrompt(idx) {
@@ -2434,9 +2500,9 @@
 
     async function confirmAdminResetPassword() {
       const newPass = document.getElementById('arpNewPassword').value.trim();
-      if (!newPass || newPass.length < 8) return alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      if (!newPass || newPass.length < 8) return showAlert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
       const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: arpTargetUsername, newPassword: newPass });
-      if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${arpTargetUsername}`); usersList = res.users; renderUsersManagement(); alert("✓ تم تعيين كلمة المرور الجديدة. لا تنسَ مشاركتها مع المستخدم يدوياً."); closeAdminResetPasswordModal(); } else alert(esc(res.message));
+      if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${arpTargetUsername}`); usersList = res.users; renderUsersManagement(); showAlert("✓ تم تعيين كلمة المرور الجديدة. لا تنسَ مشاركتها مع المستخدم يدوياً."); closeAdminResetPasswordModal(); } else showAlert(esc(res.message));
     }
 
     // ================= Logic: Change Password (self-service) =================
@@ -2452,11 +2518,11 @@
       const cur = document.getElementById('cpCurrentPass').value;
       const newP = document.getElementById('cpNewPass').value;
       const confirmP = document.getElementById('cpConfirmPass').value;
-      if (!cur || !newP || !confirmP) return alert('يرجى تعبئة جميع الحقول.');
-      if (newP.length < 8) return alert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
-      if (newP !== confirmP) return alert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
+      if (!cur || !newP || !confirmP) return showAlert('يرجى تعبئة جميع الحقول.');
+      if (newP.length < 8) return showAlert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
+      if (newP !== confirmP) return showAlert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
       const res = await apiCall('CHANGE_PASSWORD', { oldPassword: cur, newPassword: newP });
-      if (res.status === 'success') { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الذاتي'); alert('✓ تم تحديث كلمة المرور بنجاح.'); closeChangePasswordModal(); } else alert(esc(res.message || 'تعذر تحديث كلمة المرور.'));
+      if (res.status === 'success') { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الذاتي'); showAlert('✓ تم تحديث كلمة المرور بنجاح.'); closeChangePasswordModal(); } else showAlert(esc(res.message || 'تعذر تحديث كلمة المرور.'));
     }
 
     // ================= Logic: تفويض صلاحية الاعتماد المؤقت =================
@@ -2489,20 +2555,20 @@
         logAudit('DELEGATION_CHANGE', delegateApprovalTo ? `تفويض الاعتماد إلى ${delegateApprovalTo} حتى ${delegateUntil}` : 'إلغاء تفويض الاعتماد');
         return true;
       }
-      alert(esc(res.message || 'تعذر حفظ التفويض.'));
+      showAlert(esc(res.message || 'تعذر حفظ التفويض.'));
       return false;
     }
     async function saveDelegation() {
       const to = document.getElementById('delegateToUser').value;
       const until = document.getElementById('delegateUntilDate').value;
-      if (to && !until) return alert('يرجى تحديد تاريخ نهاية التفويض.');
-      if (!to) return alert('يرجى اختيار الشخص المفوَّض، أو استخدم زر "إلغاء التفويض الحالي" لمسح أي تفويض قائم.');
+      if (to && !until) return showAlert('يرجى تحديد تاريخ نهاية التفويض.');
+      if (!to) return showAlert('يرجى اختيار الشخص المفوَّض، أو استخدم زر "إلغاء التفويض الحالي" لمسح أي تفويض قائم.');
       const ok = await persistDelegation(to, until);
-      if (ok) { alert('✓ تم حفظ التفويض بنجاح.'); closeDelegateModal(); }
+      if (ok) { showAlert('✓ تم حفظ التفويض بنجاح.'); closeDelegateModal(); }
     }
     async function clearDelegation() {
       const ok = await persistDelegation('', '');
-      if (ok) { alert('✓ تم إلغاء التفويض الحالي.'); closeDelegateModal(); }
+      if (ok) { showAlert('✓ تم إلغاء التفويض الحالي.'); closeDelegateModal(); }
     }
 
     // ================= Logic: سجل التدقيق =================
