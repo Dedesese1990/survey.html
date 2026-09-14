@@ -274,6 +274,7 @@
                 <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
               </select>
               <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
+              <button class="btn btn-gold" style="font-size:0.85rem; padding:10px 16px;" onclick="exportAnalyticsPDF()">📤 تصدير تقرير PDF شامل</button>
             </div>
           </div>
 
@@ -2465,6 +2466,87 @@
     function closeUserGuide() { document.getElementById('userGuideOverlay').classList.add('hidden'); }
 
     // عرض/طباعة تقرير واحد بشكل نهائي (بديل نافذة المراجعة بمجرد اعتماد التقرير، لأن الاعتماد/الرفض لم يعودا مطلوبين)
+    // يصدّر لوحة المؤشرات الحالية بالكامل كصفحة قابلة للطباعة/الحفظ كـ PDF — يعيد استخدام نفس المحتوى المعروض
+    // فعلياً على الشاشة (بما فيه فلتر النموذج المختار حالياً) بدل إعادة حساب كل شيء من الصفر.
+    function exportAnalyticsPDF() {
+      const roleLabel = ROLE_LABELS[currentUser.role] || currentUser.role;
+      const surveyFilterEl = document.getElementById('analyticsSurveyFilter');
+      const surveyFilterText = surveyFilterEl ? surveyFilterEl.options[surveyFilterEl.selectedIndex].text : '';
+
+      const kpis = [
+        ['🏫 إجمالي المدارس في نطاقك', document.getElementById('biTotalSchoolsCount')?.innerText || '-'],
+        ['نسبة الإنجاز الفعلي', document.getElementById('biActualRate')?.innerText || '-'],
+        ['المستهدف (مبنى)', document.getElementById('biPlannedCount')?.innerText || '-'],
+        ['المعتمدة', document.getElementById('biApprovedCount')?.innerText || '-'],
+        ['قيد الاعتماد', document.getElementById('biPendingCount')?.innerText || '-'],
+        ['متأخرة عن 48 ساعة 🚨', document.getElementById('biAgingCount')?.innerText || '-'],
+        ['⏱️ متوسط زمن الاعتماد', document.getElementById('biAvgTurnaround')?.innerText || '-'],
+        ['الالتزام بالمواعيد', document.getElementById('biOnTimeRate')?.innerText || '-'],
+      ];
+      const kpisHtml = kpis.map(([label, val]) => `<div class="pdf-kpi"><div class="pdf-kpi-val">${esc(val)}</div><div class="pdf-kpi-label">${esc(label)}</div></div>`).join('');
+
+      let sCurveImg = '', pieImg = '';
+      try { sCurveImg = document.getElementById('sCurveChart').toDataURL('image/png'); } catch (e) {}
+      try { pieImg = document.getElementById('compliancePieChart').toDataURL('image/png'); } catch (e) {}
+
+      const coverageHtml = document.getElementById('coverageGapContainer')?.innerHTML || '';
+      const topFailingHtml = document.getElementById('topFailingItemsContainer')?.innerHTML || '';
+      const regionHtml = document.getElementById('schoolsByRegionContainer')?.innerHTML || '';
+      const genderHtml = document.getElementById('schoolsByGenderContainer')?.innerHTML || '';
+      const recurringHtml = document.getElementById('recurringIssuesContainer')?.innerHTML || '';
+      const perfCardVisible = !document.getElementById('inspectorPerfCard')?.classList.contains('hidden');
+      const perfTableHtml = perfCardVisible ? (document.getElementById('inspectorPerfTable')?.outerHTML || '') : '';
+
+      const w = window.open('', '_blank');
+      w.document.write(`<html lang="ar" dir="rtl"><head><title>تقرير لوحة المؤشرات - ${new Date().toLocaleDateString('ar-SA')}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+        <style>
+          * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
+          body { margin:0; padding:25px; color:#1f333a; background:#f4f7f9; font-size:13px; line-height:1.6; }
+          .header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; }
+          .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; }
+          .sec { background:#fff; border:1.5px solid #d0dfe5; border-radius:10px; padding:16px 18px; margin-bottom:18px; break-inside:avoid; }
+          .sec h4 { margin:0 0 12px; font-size:14px; font-weight:900; color:#276270; }
+          .pdf-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px; }
+          .pdf-kpi { background:#fff; border:1.5px solid #d0dfe5; border-radius:8px; padding:12px; text-align:center; }
+          .pdf-kpi-val { font-size:18px; font-weight:900; color:#276270; }
+          .pdf-kpi-label { font-size:10px; font-weight:700; color:#536e7a; margin-top:4px; }
+          .charts { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+          .charts img { width:100%; border:1px solid #e2e8f0; border-radius:8px; background:#fff; }
+          .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+          table.data-table { width:100%; border-collapse:collapse; font-size:12px; }
+          table.data-table th, table.data-table td { border:1px solid #cbd5e1; padding:8px 10px; text-align:right; }
+          table.data-table th { background:#37889b; color:#fff; }
+          @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} .pdf-kpis{grid-template-columns:repeat(4,1fr);} }
+        </style></head><body>
+        <div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير / حفظ PDF</button></div>
+        <div class="header">
+          <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
+          <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">تقرير لوحة المؤشرات والتحليلات</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
+        </div>
+        <div class="sec"><b>النطاق:</b> ${esc(roleLabel)} ${currentUser.branch && currentUser.branch !== 'الكل' ? '— ' + esc(currentUser.branch) : ''} &nbsp;|&nbsp; <b>عملية الحصر:</b> ${esc(surveyFilterText)}</div>
+
+        <div class="pdf-kpis">${kpisHtml}</div>
+
+        <div class="charts">
+          <div class="sec" style="margin-bottom:0;"><h4>📉 تقدم الحصر الميداني أسبوعياً</h4>${sCurveImg ? `<img src="${sCurveImg}">` : '<p>غير متاح</p>'}</div>
+          <div class="sec" style="margin-bottom:0;"><h4>🍩 تحليل المطابقة الشامل</h4>${pieImg ? `<img src="${pieImg}">` : '<p>غير متاح</p>'}</div>
+        </div>
+
+        <div class="two-col">
+          <div class="sec"><h4>🏫 تغطية المدارس (لم تُزر بعد)</h4>${coverageHtml}</div>
+          <div class="sec"><h4>🚩 أكثر بنود الفحص التي تحتاج معالجة</h4>${topFailingHtml}</div>
+        </div>
+        <div class="two-col">
+          <div class="sec"><h4>🗺️ توزيع المدارس حسب المنطقة</h4>${regionHtml}</div>
+          <div class="sec"><h4>🚻 توزيع المدارس حسب الجنس</h4>${genderHtml}</div>
+        </div>
+        <div class="sec"><h4>🔁 مشاكل متكررة لم تُحل</h4>${recurringHtml}</div>
+        ${perfTableHtml ? `<div class="sec"><h4>🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>${perfTableHtml}</div>` : ''}
+        </body></html>`);
+      w.document.close();
+    }
+
     function printSingleReportPDF(reportId) {
       const rep = responses.find(r => r.id === reportId); if (!rep) return showAlert('التقرير غير موجود.');
       const schInfo = schoolDataWrapper.list.find(s => s.name === rep.school);
