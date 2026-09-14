@@ -522,11 +522,11 @@
                 <option value="">-- تقرير إحصائي شامل لجميع المدارس --</option>
               </select>
               <div style="display:flex; gap:10px;">
-                <button class="btn btn-gold" style="font-size:1rem; padding:10px 20px; flex:1;" onclick="printConsolidatedSchoolPDF()">🖨️ PDF</button>
-                <button class="btn btn-petrol" style="font-size:1rem; padding:10px 20px; background:#10b981; flex:1;" onclick="exportConsolidatedSchoolExcel()">📊 Excel</button>
+                <button class="btn btn-gold" style="font-size:1rem; padding:10px 20px; flex:1;" onclick="openAdvancedExportModal()">🖨️ PDF</button>
+                <button class="btn btn-petrol" style="font-size:1rem; padding:10px 20px; background:#10b981; flex:1;" onclick="openAdvancedExportModal()">📊 Excel</button>
               </div>
             </div>
-            <small style="color:var(--text-muted); display:block; margin-top:8px; font-weight:600;">💡 تلميح: اضغط الأزرار بدون تحديد مدرسة لاستخراج <b>تقرير إحصائي شامل</b> لكل المدارس التي تحت إدارتك.</small>
+            <small style="color:var(--text-muted); display:block; margin-top:8px; font-weight:600;">💡 دوس أي زرار لفتح فلاتر التصدير المتقدمة (عملية الحصر، المكتب الفرعي، المشرف، المدرسة) قبل استخراج التقرير.</small>
           </div>
 
           <div id="filterBanner" class="card hidden" style="padding:14px 20px; background:#f8fafc; border:2px solid var(--tbc-petrol); display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap;">
@@ -851,6 +851,46 @@
         <button class="btn btn-reject" onclick="clearDelegation()">إلغاء التفويض الحالي</button>
         <button class="btn btn-outline" onclick="closeDelegateModal()">إغلاق</button>
       </div>
+    </div>
+  </div>
+
+  <div id="advancedExportModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:600px;">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔍 فلاتر التصدير المتقدمة</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">حدّد أي توليفة من الفلاتر دي، وبعدها اختار نوع التصدير. أي فلتر تسيبه "الكل" مش هيقيّد النتيجة.</p>
+
+      <div class="form-group">
+        <label>عملية الحصر (النموذج)</label>
+        <select id="advExportSurvey"><option value="ALL">-- كل العمليات --</option></select>
+      </div>
+
+      <div class="form-group">
+        <label>المكتب الفرعي (اختر واحد أو أكتر)</label>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; background:#f8fafc; border:1px dashed var(--border-subtle); border-radius:8px; padding:12px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" class="advExportBranchCheckbox" value="المكتب الفرعي بالشرقية" checked> <span>الشرقية</span></label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" class="advExportBranchCheckbox" value="المكتب الفرعي بالأحساء" checked> <span>الأحساء</span></label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" class="advExportBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked> <span>حفر الباطن</span></label>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>المشرف الميداني</label>
+          <select id="advExportInspector"><option value="ALL">-- كل المشرفين --</option></select>
+        </div>
+        <div class="form-group">
+          <label>المدرسة</label>
+          <select id="advExportSchool"><option value="ALL">-- كل المدارس --</option></select>
+        </div>
+      </div>
+
+      <p id="advExportMatchCount" style="font-size:0.85rem; font-weight:800; color:var(--tbc-petrol); margin-bottom:16px;"></p>
+
+      <div class="action-buttons-mobile" style="display:flex; gap:12px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="runAdvancedExportPDF()">🖨️ معاينة وطباعة PDF</button>
+        <button class="btn btn-petrol" style="flex:1; background:#10b981;" onclick="runAdvancedExportExcel()">📊 تصدير Excel</button>
+      </div>
+      <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeAdvancedExportModal()">إغلاق</button>
     </div>
   </div>
 
@@ -2421,7 +2461,7 @@
       } else {
         steps.push('لو أي تقرير اتُرفض، هيظهرلك زرار "تعديل التقرير" عليه.');
       }
-      steps.push('"استخراج التقارير وتصدير البيانات" في وسط الصفحة بيدّيك ملف Excel أو PDF شامل، أو لمدرسة واحدة بس لو اخترتها.');
+      steps.push('"استخراج التقارير وتصدير البيانات" بيفتح نافذة فلاتر متقدمة (النموذج، المكتب الفرعي، المشرف، المدرسة) قبل التصدير كـ Excel أو PDF، والتقرير الناتج بيبدأ بملخص إحصائي ثم التفاصيل الكاملة.');
       return steps;
     }
 
@@ -2650,66 +2690,165 @@
       w.document.close();
     }
 
-    function printConsolidatedSchoolPDF() {
-      const selectedSchool = document.getElementById('schoolSelectFilter').value;
-      const scoped = getScopedResponses(); 
-      
-      if (!selectedSchool) {
-         if (scoped.length === 0) return showAlert("لا توجد أي تقارير مسجلة في النظام لتصديرها.");
-         const total = scoped.length; const app = scoped.filter(r=>r.status==='approved').length; const rej = scoped.filter(r=>r.status==='rejected').length; const pen = scoped.filter(r=>r.status==='pending').length;
-         const w = window.open('', '_blank');
-         w.document.write(`<html lang="ar" dir="rtl"><head><title>التقرير الإحصائي الشامل</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"><style>* { font-family: 'Tajawal', sans-serif; box-sizing: border-box; } body { padding: 25px; color: #1f333a; } .header { border-bottom: 3px solid #37889b; padding-bottom: 14px; margin-bottom: 20px; text-align:center; } .box { background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; display:inline-block; margin:10px; width:200px; text-align:center; } table { width:100%; border-collapse:collapse; margin-top:20px; } th, td { border:1px solid #cbd5e1; padding:10px; text-align:right; font-size:13px; } th { background:#37889b; color:#fff; } @media print { .no-print { display: none !important; } }</style></head><body><div class="no-print" style="margin-bottom:15px;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 22px; cursor:pointer;">🖨️ طباعة أو حفظ PDF</button></div><div class="header"><h2>التقرير الإحصائي الشامل - إدارة التخطيط والتحكم</h2><p>تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</p></div><div style="text-align:center;"><div class="box"><h3>إجمالي التقارير</h3><h1 style="color:#37889b;">${total}</h1></div><div class="box"><h3>معتمدة</h3><h1 style="color:#10b981;">${app}</h1></div><div class="box"><h3>بانتظار الاعتماد</h3><h1 style="color:#f59e0b;">${pen}</h1></div><div class="box"><h3>مرفوضة</h3><h1 style="color:#ef4444;">${rej}</h1></div></div><table><thead><tr><th>المدرسة</th><th>الحصر</th><th>تاريخ الزيارة</th><th>المشرف</th><th>الحالة</th></tr></thead><tbody>${scoped.map(r => `<tr><td>${esc(r.school)}</td><td>${esc(r.surveyTitle)}</td><td style="direction:ltr;">${esc(shortDate(r))}</td><td>${esc(r.collectedBy)}</td><td>${r.status==='approved'?'معتمد':(r.status==='rejected'?'مرفوض':'قيد الاعتماد')}</td></tr>`).join('')}</tbody></table></body></html>`);
-         w.document.close();
-         return;
-      }
+    // ================= نظام التصدير المتقدم (فلاتر متعددة: عملية الحصر + المكتب الفرعي + المشرف + المدرسة) =================
+    function openAdvancedExportModal() {
+      const scoped = getScopedResponses();
 
-      const schoolSurveys = scoped.filter(r => r.school === selectedSchool);
-      if (schoolSurveys.length === 0) return showAlert("لا توجد سجلات لهذه المدرسة.");
-      const schInfo = schoolDataWrapper.list.find(s => s.name === selectedSchool);
-      const w = window.open('', '_blank'); const schoolGps = schoolSurveys.find(r => r.gps && r.gps.trim() !== '')?.gps || 'غير مسجل'; const branchName = (schInfo && schInfo.branch) || schoolSurveys[0]?.branch || 'المنطقة الشرقية';
-      const minNoTxt = (schInfo && schInfo.minNo) ? ` [${esc(schInfo.minNo)}]` : '';
-      let sectionsHtml = '';
-      schoolSurveys.forEach((entry, sIdx) => {
-        let rows = '', imgs = '';
-        for (const [q, a] of Object.entries(entry.answers)) {
-          if (a && (String(a).startsWith('http') || String(a).startsWith('data:image'))) { imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;"><img src="${esc(a)}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${esc(q)}</div></div>`; } 
-          else { rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${esc(q)}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${esc(a) || '-'}</td></tr>`; }
-        }
-        const approvedLine = entry.status === 'approved' && entry.approvedBy ? `<div style="font-size:12px; font-weight:700; color:#10b981; margin-top:6px;">✓ اعتمده: ${esc(entry.approvedBy)}${entry.approvedByRole ? ` — ${esc(ROLE_LABELS[entry.approvedByRole] || entry.approvedByRole)}` : ''}</div>` : '';
-        sectionsHtml += `<div style="margin-top:24px; border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; background:#fff; break-inside:avoid;"><div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eebb43; padding-bottom:8px; margin-bottom:12px;"><h4 style="margin:0; font-size:15px; color:#276270; font-weight:900;">الزيارة #${sIdx + 1}: ${esc(entry.surveyTitle)}</h4><span style="font-size:12px; font-weight:700; color:#5e7782;">التاريخ: ${esc(entry.date)} | بواسطة: ${esc(entry.collectedBy)}</span></div><table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:13px;"><tbody>${rows}</tbody></table>${imgs ? `<div style="font-weight:900; color:#276270; font-size:13px; margin-bottom:8px;">التوثيق المصور:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">${imgs}</div>` : ''}${approvedLine}</div>`;
-      });
-      w.document.write(`<html lang="ar" dir="rtl"><head><title>الملف الشامل - ${esc(selectedSchool)}</title><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet"><style>* { font-family: 'Tajawal', sans-serif; box-sizing: border-box; } body { margin: 0; padding: 25px; color: #1f333a; background: #f4f7f9; font-size: 13px; line-height: 1.6; } .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #37889b; padding-bottom: 16px; margin-bottom: 20px; } .badge-tbc { background: #37889b; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 14px; border-radius: 6px; } @media print { .no-print { display: none !important; } @page { size: A4; margin: 10mm; } body { background: #fff; } }</style></head><body><div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة الملف / حفظ PDF</button></div><div class="header"><div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div><div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">الملف الرقابي الموحد</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div></div><div style="background:#ffffff; border:1px solid #d0dfe5; border-radius:10px; padding:16px 20px; margin-bottom:20px;"><div style="font-size:16px; font-weight:900; color:#276270; margin-bottom:6px;">🏫 ${esc(selectedSchool)}${minNoTxt}</div><div style="font-size:13px; font-weight:700; color:#536e7a;">المكتب: ${esc(branchName)} &nbsp;|&nbsp; الزيارات: ${schoolSurveys.length}${schInfo && schInfo.gender ? ` &nbsp;|&nbsp; الجنس: ${esc(schInfo.gender)}` : ''}${schInfo && schInfo.eduAdmin ? ` &nbsp;|&nbsp; إدارة التعليم: ${esc(schInfo.eduAdmin)}` : ''}</div><div style="font-size:13px; font-weight:700; color:#536e7a; margin-top:4px;">${schInfo && schInfo.lat != null && schInfo.lng != null ? `📍 موقع المدرسة المسجّل: ${schInfo.lat}, ${schInfo.lng} &nbsp;|&nbsp; ` : ''}📍 آخر موقع زيارة مسجّل: ${esc(schoolGps)}</div></div>${sectionsHtml}</body></html>`);
-      w.document.close();
+      // عملية الحصر
+      const surveySel = document.getElementById('advExportSurvey');
+      let surveyHtml = '<option value="ALL">-- كل العمليات --</option>';
+      surveys.forEach(s => { surveyHtml += `<option value="${esc(s.title)}">${esc(s.title)}</option>`; });
+      surveySel.innerHTML = surveyHtml;
+
+      // المشرف الميداني (حسب النطاق الحالي)
+      const inspectorSel = document.getElementById('advExportInspector');
+      let inspectorHtml = '<option value="ALL">-- كل المشرفين --</option>';
+      [...new Set(scoped.map(r => r.collectedBy))].forEach(name => { inspectorHtml += `<option value="${esc(name)}">${esc(name)}</option>`; });
+      inspectorSel.innerHTML = inspectorHtml;
+
+      // المدرسة (حسب النطاق الحالي) — تُحمَّل مبدئياً بنفس اختيار الفلتر السريع لو كان محدداً
+      const quickSchoolVal = document.getElementById('schoolSelectFilter')?.value || '';
+      const schoolSel = document.getElementById('advExportSchool');
+      let schoolHtml = '<option value="ALL">-- كل المدارس --</option>';
+      [...new Set(scoped.map(r => r.school))].forEach(name => { schoolHtml += `<option value="${esc(name)}" ${name === quickSchoolVal ? 'selected' : ''}>${esc(name)}</option>`; });
+      schoolSel.innerHTML = schoolHtml;
+
+      document.querySelectorAll('.advExportBranchCheckbox').forEach(c => c.checked = true);
+
+      ['advExportSurvey', 'advExportInspector', 'advExportSchool'].forEach(id => document.getElementById(id).onchange = updateAdvExportMatchCount);
+      document.querySelectorAll('.advExportBranchCheckbox').forEach(c => c.onchange = updateAdvExportMatchCount);
+
+      updateAdvExportMatchCount();
+      document.getElementById('advancedExportModal').classList.remove('hidden');
+    }
+    function closeAdvancedExportModal() { document.getElementById('advancedExportModal').classList.add('hidden'); }
+
+    function getAdvancedExportFilteredResponses() {
+      const surveyVal = document.getElementById('advExportSurvey').value;
+      const inspectorVal = document.getElementById('advExportInspector').value;
+      const schoolVal = document.getElementById('advExportSchool').value;
+      const checkedBranches = Array.from(document.querySelectorAll('.advExportBranchCheckbox:checked')).map(c => c.value);
+
+      let list = getScopedResponses();
+      if (surveyVal !== 'ALL') list = list.filter(r => r.surveyTitle === surveyVal);
+      if (checkedBranches.length > 0 && checkedBranches.length < 3) list = list.filter(r => checkedBranches.includes(r.branch));
+      if (inspectorVal !== 'ALL') list = list.filter(r => r.collectedBy === inspectorVal);
+      if (schoolVal !== 'ALL') list = list.filter(r => r.school === schoolVal);
+      return list;
+    }
+    function updateAdvExportMatchCount() {
+      const count = getAdvancedExportFilteredResponses().length;
+      document.getElementById('advExportMatchCount').innerText = `📋 عدد التقارير المطابقة للفلاتر الحالية: ${count}`;
     }
 
-    function exportConsolidatedSchoolExcel() {
-      if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
-      const selectedSchool = document.getElementById('schoolSelectFilter').value;
-      const scoped = getScopedResponses();
-      
-      let targetSurveys = scoped;
-      let fileName = "التقرير_الشامل_لكافة_المدارس.xlsx";
+    function buildExportFilterSummaryText() {
+      const surveyVal = document.getElementById('advExportSurvey').value;
+      const inspectorVal = document.getElementById('advExportInspector').value;
+      const schoolVal = document.getElementById('advExportSchool').value;
+      const checkedBranches = Array.from(document.querySelectorAll('.advExportBranchCheckbox:checked')).map(c => c.nextElementSibling.innerText);
+      const parts = [];
+      parts.push(`عملية الحصر: ${surveyVal === 'ALL' ? 'الكل' : surveyVal}`);
+      parts.push(`المكتب الفرعي: ${checkedBranches.length === 3 ? 'الكل' : (checkedBranches.join('، ') || 'لا شيء')}`);
+      parts.push(`المشرف: ${inspectorVal === 'ALL' ? 'الكل' : inspectorVal}`);
+      parts.push(`المدرسة: ${schoolVal === 'ALL' ? 'الكل' : schoolVal}`);
+      return parts.join(' | ');
+    }
 
-      if (selectedSchool) {
-        targetSurveys = scoped.filter(r => r.school === selectedSchool);
-        if (targetSurveys.length === 0) return showAlert("لا توجد سجلات محفوظة لهذه المدرسة.");
-        fileName = `تقرير_${selectedSchool.substring(0,15)}.xlsx`;
-      } else {
-        if(scoped.length === 0) return showAlert("لا توجد تقارير في النظام.");
-      }
+    function runAdvancedExportPDF() {
+      const list = getAdvancedExportFilteredResponses();
+      if (list.length === 0) return showAlert('لا توجد تقارير مطابقة لهذه الفلاتر.');
+      const filterSummary = buildExportFilterSummaryText();
 
-      let exportData = [];
-      targetSurveys.forEach((entry, idx) => {
-        for (const [q, a] of Object.entries(entry.answers)) {
-          if (a && (String(a).startsWith('http') || String(a).startsWith('data:image'))) continue; 
-          exportData.push([idx + 1, entry.school, entry.surveyTitle, entry.date, entry.status === 'approved' ? 'معتمد' : (entry.status === 'rejected' ? 'مرفوض' : 'قيد الاعتماد'), entry.collectedBy, q, a || '-']);
+      const total = list.length; const app = list.filter(r => r.status === 'approved').length; const rej = list.filter(r => r.status === 'rejected').length; const pen = list.filter(r => r.status === 'pending').length;
+      const bySchool = {}; list.forEach(r => { bySchool[r.school] = (bySchool[r.school] || 0) + 1; });
+      const byInspector = {}; list.forEach(r => { byInspector[r.collectedBy] = (byInspector[r.collectedBy] || 0) + 1; });
+
+      const summaryBoxes = `
+        <div class="box"><h3>إجمالي التقارير</h3><h1 style="color:#37889b;">${total}</h1></div>
+        <div class="box"><h3>معتمدة</h3><h1 style="color:#10b981;">${app}</h1></div>
+        <div class="box"><h3>بانتظار الاعتماد</h3><h1 style="color:#f59e0b;">${pen}</h1></div>
+        <div class="box"><h3>مرفوضة</h3><h1 style="color:#ef4444;">${rej}</h1></div>`;
+
+      const schoolBreakdownRows = Object.entries(bySchool).sort((a, b) => b[1] - a[1]).map(([s, c]) => `<tr><td>${esc(s)}</td><td>${c}</td></tr>`).join('');
+      const inspectorBreakdownRows = Object.entries(byInspector).sort((a, b) => b[1] - a[1]).map(([s, c]) => `<tr><td>${esc(s)}</td><td>${c}</td></tr>`).join('');
+
+      let sectionsHtml = '';
+      list.slice().sort((a, b) => a.school.localeCompare(b.school, 'ar') || a.id - b.id).forEach((entry, sIdx) => {
+        const schInfo = schoolDataWrapper.list.find(s => s.name === entry.school);
+        const minNoTxt = (schInfo && schInfo.minNo) ? ` [${esc(schInfo.minNo)}]` : '';
+        let rows = '', imgs = '';
+        for (const [q, a] of Object.entries(entry.answers || {})) {
+          if (a && (String(a).startsWith('http') || String(a).startsWith('data:image'))) { imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;"><img src="${esc(a)}" style="max-height:170px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:11px; font-weight:bold; margin-top:4px; color:#276270;">${esc(q)}</div></div>`; }
+          else { rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${esc(q)}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${esc(a) || '-'}</td></tr>`; }
         }
+        const statusTxt = entry.status === 'approved' ? 'معتمد ✅' : (entry.status === 'rejected' ? 'مرفوض ❌' : 'قيد الاعتماد ⏳');
+        const approvedLine = entry.status === 'approved' && entry.approvedBy ? ` | اعتمده: ${esc(entry.approvedBy)}${entry.approvedByRole ? ` — ${esc(ROLE_LABELS[entry.approvedByRole] || entry.approvedByRole)}` : ''}` : '';
+        sectionsHtml += `<div style="margin-top:24px; border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; background:#fff; break-inside:avoid;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eebb43; padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
+            <h4 style="margin:0; font-size:15px; color:#276270; font-weight:900;">🏫 ${esc(entry.school)}${minNoTxt} — ${esc(entry.surveyTitle)}</h4>
+            <span style="font-size:12px; font-weight:700; color:#5e7782;">${esc(entry.date)} | ${esc(entry.collectedBy)} | ${statusTxt}${approvedLine}</span>
+          </div>
+          <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:13px;"><tbody>${rows}</tbody></table>
+          ${imgs ? `<div style="font-weight:900; color:#276270; font-size:13px; margin-bottom:8px;">التوثيق المصور:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">${imgs}</div>` : ''}
+        </div>`;
       });
 
-      const ws_data = [["#", "اسم المدرسة", "اسم الحصر", "تاريخ الزيارة", "حالة التقرير", "المشرف", "بند الفحص / السؤال", "النتيجة / الإجابة"], ...exportData];
-      const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "البيانات");
-      XLSX.writeFile(wb, fileName);
+      const w = window.open('', '_blank');
+      w.document.write(`<html lang="ar" dir="rtl"><head><title>تقرير مخصص - بوابة الحصر الشامل</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+        <style>* { font-family:'Tajawal',sans-serif; box-sizing:border-box; } body { margin:0; padding:25px; color:#1f333a; background:#f4f7f9; font-size:13px; line-height:1.6; } .header { border-bottom:3px solid #37889b; padding-bottom:14px; margin-bottom:20px; } .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; } .box { background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; display:inline-block; margin:6px; width:170px; text-align:center; } table.brk { width:100%; border-collapse:collapse; margin-top:10px; font-size:12px; } table.brk th, table.brk td { border:1px solid #cbd5e1; padding:8px; text-align:right; } table.brk th { background:#37889b; color:#fff; } @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }</style>
+        </head><body>
+        <div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير / حفظ PDF</button></div>
+        <div class="header"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
+          <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">تقرير مخصص حسب الفلاتر</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
+        </div></div>
+        <div style="background:#fff; border:1px solid #d0dfe5; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:12px; font-weight:700; color:#536e7a;">🔍 الفلاتر المستخدمة: ${esc(filterSummary)}</div>
+
+        <h3 style="color:#276270; font-size:15px; margin-bottom:8px;">📊 ملخص إحصائي</h3>
+        <div style="text-align:center; margin-bottom:16px;">${summaryBoxes}</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+          <div><h4 style="font-size:13px; color:#276270;">حسب المدرسة</h4><table class="brk"><thead><tr><th>المدرسة</th><th>العدد</th></tr></thead><tbody>${schoolBreakdownRows}</tbody></table></div>
+          <div><h4 style="font-size:13px; color:#276270;">حسب المشرف</h4><table class="brk"><thead><tr><th>المشرف</th><th>العدد</th></tr></thead><tbody>${inspectorBreakdownRows}</tbody></table></div>
+        </div>
+
+        <h3 style="color:#276270; font-size:15px; margin-bottom:8px;">📑 التقارير التفصيلية (${total})</h3>
+        ${sectionsHtml}
+        </body></html>`);
+      w.document.close();
+      closeAdvancedExportModal();
+    }
+
+    function runAdvancedExportExcel() {
+      if (typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      const list = getAdvancedExportFilteredResponses();
+      if (list.length === 0) return showAlert('لا توجد تقارير مطابقة لهذه الفلاتر.');
+
+      const total = list.length; const app = list.filter(r => r.status === 'approved').length; const rej = list.filter(r => r.status === 'rejected').length; const pen = list.filter(r => r.status === 'pending').length;
+      const bySchool = {}; list.forEach(r => { bySchool[r.school] = (bySchool[r.school] || 0) + 1; });
+      const byInspector = {}; list.forEach(r => { byInspector[r.collectedBy] = (byInspector[r.collectedBy] || 0) + 1; });
+
+      const summarySheet = [
+        ['ملخص التصدير المخصص'], ['الفلاتر المستخدمة', buildExportFilterSummaryText()], [],
+        ['إجمالي التقارير', total], ['معتمدة', app], ['بانتظار الاعتماد', pen], ['مرفوضة', rej], [],
+        ['حسب المدرسة'], ['المدرسة', 'العدد'], ...Object.entries(bySchool).sort((a, b) => b[1] - a[1]), [],
+        ['حسب المشرف'], ['المشرف', 'العدد'], ...Object.entries(byInspector).sort((a, b) => b[1] - a[1])
+      ];
+
+      const detailRows = [];
+      list.forEach((entry, idx) => {
+        for (const [q, a] of Object.entries(entry.answers || {})) {
+          if (a && (String(a).startsWith('http') || String(a).startsWith('data:image'))) continue;
+          detailRows.push([idx + 1, entry.school, entry.surveyTitle, entry.date, entry.status === 'approved' ? 'معتمد' : (entry.status === 'rejected' ? 'مرفوض' : 'قيد الاعتماد'), entry.collectedBy, entry.branch, q, a || '-']);
+        }
+      });
+      const detailSheet = [["#", "اسم المدرسة", "اسم الحصر", "تاريخ الزيارة", "حالة التقرير", "المشرف", "المكتب الفرعي", "بند الفحص / السؤال", "النتيجة / الإجابة"], ...detailRows];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summarySheet), "الملخص");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(detailSheet), "التفاصيل");
+      XLSX.writeFile(wb, `تقرير_مخصص_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      closeAdvancedExportModal();
     }
 
     // ================= Logic: Schools Management =================
