@@ -1192,11 +1192,26 @@
       if (sel.innerHTML !== html) { const cur = sel.value; sel.innerHTML = html; sel.value = cur || 'ALL'; }
     }
 
+    // يحوّل أي صيغة سؤال قديمة (النظام السابق: type نص/اختيار/صورة بدون id أو خيارات) لنفس الصيغة الجديدة،
+    // حتى تبقى النماذج المُنشأة قبل هذا التحديث تعمل بلا أي كسر.
+    const VALID_Q_TYPES = ['short','paragraph','radio','checkbox','dropdown','number','date','rating','photo','location'];
+    function normalizeQuestion(q) {
+      if (q && q.id && VALID_Q_TYPES.includes(q.type)) {
+        return { id: q.id, text: q.text || '', type: q.type, required: q.required !== false, options: q.options || [], condition: q.condition || null };
+      }
+      let newType = 'short'; let options = [];
+      if (q && q.type === 'choice') { newType = 'radio'; options = ['مطابق', 'غير مطابق']; }
+      else if (q && q.type === 'photo') { newType = 'photo'; }
+      return { id: 'q_legacy_' + Math.random().toString(36).slice(2, 10), text: (q && q.text) || '', type: newType, required: true, options, condition: null };
+    }
+
+    let builderQuestions = [];
+
     function openNewSurveyModal() {
       editingSurveyId = null;
       document.getElementById('surveyFormHeader').innerText = 'إعداد استمارة حصر ميداني';
       document.getElementById('srvTitle').value = ''; document.getElementById('srvDueDate').value = ''; document.getElementById('srvDesc').value = '';
-      document.getElementById('questionsBuilder').innerHTML = '';
+      builderQuestions = [];
       addQuestionField();
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
@@ -1213,39 +1228,116 @@
       editingSurveyId = s.id;
       document.getElementById('surveyFormHeader').innerText = `⚙️ جاري تعديل: ${esc(s.title)}`;
       document.getElementById('srvTitle').value = s.title || ''; document.getElementById('srvDueDate').value = s.dueDate || ''; document.getElementById('srvDesc').value = s.desc || '';
-      const builder = document.getElementById('questionsBuilder'); builder.innerHTML = '';
-      (s.questions || []).forEach(q => addQuestionField(q));
-      if ((s.questions || []).length === 0) addQuestionField();
+      builderQuestions = (s.questions || []).map(normalizeQuestion);
+      if (builderQuestions.length === 0) addQuestionField(); else renderQuestionsBuilder();
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secNewSurvey').classList.remove('hidden');
     }
 
-    let qFieldCounter = 0;
-    function addQuestionField(existing = null) {
-      qFieldCounter++;
-      const rowId = `qrow_${qFieldCounter}_${Date.now()}`;
-      const wrap = document.createElement('div');
-      wrap.className = 'form-grid';
-      wrap.id = rowId;
-      wrap.style.cssText = 'align-items:center; border:1px dashed var(--border-subtle); padding:12px; border-radius:8px; margin-bottom:10px;';
-      wrap.innerHTML = `
-        <div class="form-group" style="margin-bottom:0;">
-          <label>نص السؤال / بند الفحص</label>
-          <input type="text" class="q-text" value="${existing ? esc(existing.text) : ''}">
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label>نوع الإجابة</label>
-          <select class="q-type">
-            <option value="text" ${(!existing || existing.type === 'text') ? 'selected' : ''}>نص حر</option>
-            <option value="choice" ${(existing && existing.type === 'choice') ? 'selected' : ''}>مطابق / غير مطابق</option>
-            <option value="photo" ${(existing && existing.type === 'photo') ? 'selected' : ''}>توثيق صورة</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0; display:flex; align-items:flex-end;">
-          <button type="button" class="btn btn-reject" style="width:100%;" onclick="document.getElementById('${rowId}').remove()">🗑️ حذف البند</button>
-        </div>
-      `;
-      document.getElementById('questionsBuilder').appendChild(wrap);
+    function addQuestionField() {
+      builderQuestions.push({ id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), text: '', type: 'short', required: true, options: [], condition: null });
+      renderQuestionsBuilder();
+    }
+    function removeQuestionField(qid) {
+      builderQuestions = builderQuestions.filter(x => x.id !== qid);
+      // لو السؤال المحذوف كان "أباً" لشرط سؤال تاني، نلغي الشرط ده عشان ما يفضلش مرجع معلّق
+      builderQuestions.forEach(x => { if (x.condition && x.condition.parentId === qid) x.condition = null; });
+      renderQuestionsBuilder();
+    }
+    function updateQuestionText(qid, val) { const q = builderQuestions.find(x => x.id === qid); if (q) q.text = val; renderQuestionsBuilder(); }
+    function updateQuestionRequired(qid, val) { const q = builderQuestions.find(x => x.id === qid); if (q) q.required = val; renderQuestionsBuilder(); }
+    function updateQuestionType(qid, val) {
+      const q = builderQuestions.find(x => x.id === qid); if (!q) return;
+      q.type = val;
+      if (['radio', 'checkbox', 'dropdown'].includes(val)) { if (!q.options || q.options.length === 0) q.options = ['خيار 1', 'خيار 2']; }
+      else { q.options = []; }
+      // لو بقى نوعه غير اختياري، أي سؤال كان بيعتمد عليه كشرط لازم يتلغى ارتباطه (مفيش خيارات يتشرط عليها)
+      builderQuestions.forEach(x => { if (x.condition && x.condition.parentId === qid) x.condition = null; });
+      renderQuestionsBuilder();
+    }
+    function addOption(qid) { const q = builderQuestions.find(x => x.id === qid); if (!q) return; if (!q.options) q.options = []; q.options.push(`خيار ${q.options.length + 1}`); renderQuestionsBuilder(); }
+    function removeOption(qid, idx) {
+      const q = builderQuestions.find(x => x.id === qid); if (!q) return;
+      const removedVal = q.options[idx];
+      q.options.splice(idx, 1);
+      builderQuestions.forEach(x => { if (x.condition && x.condition.parentId === qid) x.condition.values = (x.condition.values || []).filter(v => v !== removedVal); });
+      renderQuestionsBuilder();
+    }
+    function updateOptionText(qid, idx, val) { const q = builderQuestions.find(x => x.id === qid); if (!q) return; q.options[idx] = val; renderQuestionsBuilder(); }
+
+    function toggleCondition(qid, checked) {
+      const q = builderQuestions.find(x => x.id === qid); if (!q) return;
+      q.condition = checked ? { parentId: '', values: [] } : null;
+      renderQuestionsBuilder();
+    }
+    function updateConditionParent(qid, parentId) { const q = builderQuestions.find(x => x.id === qid); if (!q || !q.condition) return; q.condition.parentId = parentId; q.condition.values = []; renderQuestionsBuilder(); }
+    function updateConditionValue(qid, val) { const q = builderQuestions.find(x => x.id === qid); if (!q || !q.condition) return; q.condition.values = val ? [val] : []; renderQuestionsBuilder(); }
+
+    const Q_TYPE_LABELS = { short: 'نص قصير', paragraph: 'فقرة طويلة', radio: 'اختيار واحد', checkbox: 'اختيار متعدد', dropdown: 'قائمة منسدلة', number: 'رقم', date: 'تاريخ', rating: 'تقييم (نجوم)', photo: 'توثيق صورة', location: 'تحديد الموقع (GPS)' };
+
+    function renderQuestionsBuilder() {
+      const container = document.getElementById('questionsBuilder'); if (!container) return;
+      container.innerHTML = builderQuestions.map((q, idx) => {
+        const isChoiceType = ['radio', 'checkbox', 'dropdown'].includes(q.type);
+        // الأسئلة الصالحة كـ"أب" لشرط: اختيارية، وسابقة على هذا السؤال بالترتيب
+        const priorChoiceQuestions = builderQuestions.slice(0, idx).filter(x => ['radio', 'checkbox', 'dropdown'].includes(x.type));
+
+        const optionsHtml = isChoiceType ? `
+          <div style="margin-top:10px; grid-column:1/-1;">
+            <label style="font-size:0.85rem;">خيارات الإجابة:</label>
+            ${(q.options || []).map((opt, oi) => `
+              <div style="display:flex; gap:8px; margin-top:6px;">
+                <input type="text" value="${esc(opt)}" onblur="updateOptionText('${q.id}', ${oi}, this.value)">
+                <button type="button" class="btn btn-reject" style="padding:0 12px;" onclick="removeOption('${q.id}', ${oi})">✕</button>
+              </div>`).join('')}
+            <button type="button" class="btn btn-outline" style="width:100%; margin-top:8px; font-size:0.85rem; padding:8px;" onclick="addOption('${q.id}')">+ إضافة خيار</button>
+          </div>` : '';
+
+        const parentQ = q.condition ? builderQuestions.find(x => x.id === q.condition.parentId) : null;
+        const conditionHtml = priorChoiceQuestions.length > 0 ? `
+          <div style="margin-top:14px; grid-column:1/-1; background:#f8fafc; border:1px dashed var(--border-subtle); border-radius:8px; padding:12px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:${q.condition ? '10px' : '0'};">
+              <input type="checkbox" ${q.condition ? 'checked' : ''} onchange="toggleCondition('${q.id}', this.checked)">
+              <span style="font-weight:800; font-size:0.9rem;">🔗 إظهار هذا السؤال بشرط إجابة سؤال سابق (مثال: صورة إلزامية فقط عند "غير مطابق")</span>
+            </label>
+            ${q.condition ? `
+              <div class="form-grid" style="margin-top:8px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="font-size:0.82rem;">السؤال المرتبط:</label>
+                  <select onchange="updateConditionParent('${q.id}', this.value)">
+                    <option value="">-- اختر --</option>
+                    ${priorChoiceQuestions.map(pq => `<option value="${pq.id}" ${q.condition.parentId === pq.id ? 'selected' : ''}>${esc(pq.text || '(بدون نص بعد)')}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="font-size:0.82rem;">يظهر عند اختيار:</label>
+                  <select onchange="updateConditionValue('${q.id}', this.value)" ${!parentQ ? 'disabled' : ''}>
+                    <option value="">-- اختر --</option>
+                    ${parentQ ? (parentQ.options || []).map(opt => `<option value="${esc(opt)}" ${q.condition.values && q.condition.values[0] === opt ? 'selected' : ''}>${esc(opt)}</option>`).join('') : ''}
+                  </select>
+                </div>
+              </div>` : ''}
+          </div>` : '';
+
+        return `<div class="form-grid" style="align-items:flex-start; border:1px solid var(--border-subtle); padding:14px; border-radius:8px; margin-bottom:12px; background:#fff;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>نص السؤال / بند الفحص</label>
+            <input type="text" value="${esc(q.text)}" onblur="updateQuestionText('${q.id}', this.value)">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>نوع الإجابة</label>
+            <select onchange="updateQuestionType('${q.id}', this.value)">
+              ${VALID_Q_TYPES.map(t => `<option value="${t}" ${q.type === t ? 'selected' : ''}>${Q_TYPE_LABELS[t]}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0; display:flex; align-items:flex-end; gap:10px;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0; white-space:nowrap;"><input type="checkbox" ${q.required ? 'checked' : ''} onchange="updateQuestionRequired('${q.id}', this.checked)"><span style="font-size:0.85rem;">إلزامي</span></label>
+            <button type="button" class="btn btn-reject" style="flex:1;" onclick="removeQuestionField('${q.id}')">🗑️ حذف</button>
+          </div>
+          ${optionsHtml}
+          ${conditionHtml}
+        </div>`;
+      }).join('');
     }
 
     async function saveLocalSurvey() {
@@ -1253,17 +1345,20 @@
       const dueDate = document.getElementById('srvDueDate').value;
       const desc = document.getElementById('srvDesc').value.trim();
       if (!title) return alert('يرجى إدخال مسمى عملية الحصر.');
-      const rows = document.querySelectorAll('#questionsBuilder > div');
-      const questions = [];
-      rows.forEach(row => {
-        const text = row.querySelector('.q-text').value.trim();
-        const type = row.querySelector('.q-type').value;
-        if (text) questions.push({ text, type });
-      });
-      if (questions.length === 0) return alert('يرجى إضافة بند فحص واحد على الأقل.');
+
+      const cleanQuestions = builderQuestions.filter(q => q.text && q.text.trim() !== '');
+      if (cleanQuestions.length === 0) return alert('يرجى إضافة بند فحص واحد على الأقل بنص سؤال.');
+      for (const q of cleanQuestions) {
+        if (['radio', 'checkbox', 'dropdown'].includes(q.type) && (!q.options || q.options.filter(o => o && o.trim()).length < 2)) {
+          return alert(`السؤال "${q.text}" يحتاج خيارين على الأقل.`);
+        }
+        if (q.condition && (!q.condition.parentId || !q.condition.values || q.condition.values.length === 0)) {
+          return alert(`يرجى إكمال إعداد الشرط الخاص بالسؤال "${q.text}" (اختيار السؤال المرتبط والقيمة)، أو إلغاء تفعيل الشرط.`);
+        }
+      }
 
       const btn = document.getElementById('saveSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الحفظ...';
-      const surveyPayload = { id: editingSurveyId || ('SRV_' + Date.now()), title, dueDate, desc, questions, targetSchoolsCount: 15 };
+      const surveyPayload = { id: editingSurveyId || ('SRV_' + Date.now()), title, dueDate, desc, questions: cleanQuestions, targetSchoolsCount: 15 };
       // SYNC_GENERAL_DATA يستبدل كامل محتوى شيت النماذج بما يُرسل، لذلك يجب دمج التعديل في القائمة كاملة قبل الإرسال
       const mergedSurveys = surveys.slice();
       const mergeIdx = mergedSurveys.findIndex(s => String(s.id) === String(surveyPayload.id));
@@ -1309,25 +1404,19 @@
       schoolSel.innerHTML = schoolHtml;
 
       const dyn = document.getElementById('dynamicFields'); dyn.innerHTML = '';
-      (survey.questions || []).forEach((q, idx) => {
+      (survey.questions || []).forEach((qRaw, idx) => {
+        const q = normalizeQuestion(qRaw);
         const fieldId = `dynq_${idx}`;
-        const answerVal = existingResponse ? (existingResponse.answers?.[q.text] || '') : '';
-        let fieldHtml = '';
-        if (q.type === 'choice') {
-          fieldHtml = `<select id="${fieldId}" data-qtext="${esc(q.text)}">
-              <option value="مطابق" ${answerVal === 'مطابق' ? 'selected' : ''}>مطابق</option>
-              <option value="غير مطابق" ${answerVal === 'غير مطابق' ? 'selected' : ''}>غير مطابق</option>
-            </select>`;
-        } else if (q.type === 'photo') {
-          const isImg = answerVal && (String(answerVal).startsWith('http') || String(answerVal).startsWith('data:image'));
-          const preview = isImg ? `<img src="${esc(answerVal)}" style="max-width:120px; border-radius:8px; margin-top:8px; display:block;">` : '';
-          fieldHtml = `<input type="file" id="${fieldId}" accept="image/*" data-qtext="${esc(q.text)}" data-existing="${esc(answerVal)}" onchange="previewPhotoField('${fieldId}')">
-            <div id="${fieldId}_preview">${preview}</div>`;
-        } else {
-          fieldHtml = `<input type="text" id="${fieldId}" data-qtext="${esc(q.text)}" value="${esc(answerVal)}">`;
-        }
-        dyn.innerHTML += `<div class="form-group"><label>${esc(q.text)}</label>${fieldHtml}</div>`;
+        const answerVal = existingResponse ? (existingResponse.answers?.[q.text] ?? '') : '';
+        const fieldHtml = buildDynFieldHtml(q, fieldId, answerVal);
+        const requiredMark = q.required ? ' <span style="color:#ef4444;">*</span>' : '';
+        const condAttrs = q.condition ? ` data-cond-parent="${esc(q.condition.parentId)}" data-cond-values='${esc(JSON.stringify(q.condition.values || []))}'` : '';
+        dyn.innerHTML += `<div class="form-group dyn-field-wrapper" data-qid="${esc(q.id)}" data-qtext="${esc(q.text)}" data-qtype="${q.type}" data-required="${q.required}"${condAttrs}>
+          <label>${esc(q.text)}${requiredMark}</label>
+          ${fieldHtml}
+        </div>`;
       });
+      applyConditionalVisibility();
 
       if (existingResponse) {
         document.getElementById('fillSchool').value = existingResponse.school || '';
@@ -1342,6 +1431,95 @@
       document.getElementById('secSurveys').classList.add('hidden');
       document.getElementById('secFillSurvey').classList.remove('hidden');
     }
+
+    // يبني عنصر الإدخال المناسب لكل نوع سؤال
+    function buildDynFieldHtml(q, fieldId, answerVal) {
+      if (q.type === 'radio') {
+        return (q.options || []).map(opt => `
+          <label style="display:flex; align-items:center; gap:8px; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px; margin-bottom:6px; cursor:pointer; font-weight:600;">
+            <input type="radio" name="${fieldId}" value="${esc(opt)}" ${answerVal === opt ? 'checked' : ''} onchange="onDynFieldChange()">
+            <span>${esc(opt)}</span>
+          </label>`).join('');
+      }
+      if (q.type === 'checkbox') {
+        const selected = answerVal ? String(answerVal).split('، ') : [];
+        return (q.options || []).map(opt => `
+          <label style="display:flex; align-items:center; gap:8px; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px; margin-bottom:6px; cursor:pointer; font-weight:600;">
+            <input type="checkbox" class="dynq-checkbox" data-group="${fieldId}" value="${esc(opt)}" ${selected.includes(opt) ? 'checked' : ''} onchange="onDynFieldChange()">
+            <span>${esc(opt)}</span>
+          </label>`).join('');
+      }
+      if (q.type === 'dropdown') {
+        return `<select id="${fieldId}" onchange="onDynFieldChange()">
+          <option value="">-- اختر --</option>
+          ${(q.options || []).map(opt => `<option value="${esc(opt)}" ${answerVal === opt ? 'selected' : ''}>${esc(opt)}</option>`).join('')}
+        </select>`;
+      }
+      if (q.type === 'number') return `<input type="number" id="${fieldId}" value="${esc(answerVal)}" onchange="onDynFieldChange()">`;
+      if (q.type === 'date') return `<input type="date" id="${fieldId}" value="${esc(answerVal)}" onchange="onDynFieldChange()">`;
+      if (q.type === 'paragraph') return `<textarea id="${fieldId}" rows="3" style="width:100%; padding:12px; border-radius:8px; border:1.5px solid var(--border-subtle); font-family:inherit; font-size:1rem; font-weight:600;" onchange="onDynFieldChange()">${esc(answerVal)}</textarea>`;
+      if (q.type === 'rating') {
+        const ratingVal = parseInt(answerVal) || 0;
+        return `<input type="hidden" id="${fieldId}" value="${ratingVal}"><div id="${fieldId}_stars">${buildRatingStarsHtml(fieldId, ratingVal)}</div>`;
+      }
+      if (q.type === 'location') {
+        return `<div style="display:flex; gap:10px; align-items:center;">
+          <input type="text" id="${fieldId}" value="${esc(answerVal)}" readonly placeholder="لم يتم تحديد الموقع بعد" style="flex:1; background:#f1f5f9; font-weight:800;">
+          <button type="button" class="btn btn-petrol" style="white-space:nowrap;" onclick="captureLocationForField('${fieldId}')">📍 تحديد</button>
+        </div>`;
+      }
+      if (q.type === 'photo') {
+        const isImg = answerVal && (String(answerVal).startsWith('http') || String(answerVal).startsWith('data:image'));
+        const preview = isImg ? `<img src="${esc(answerVal)}" style="max-width:120px; border-radius:8px; margin-top:8px; display:block;">` : '';
+        return `<input type="file" id="${fieldId}" accept="image/*" data-existing="${esc(answerVal)}" onchange="previewPhotoField('${fieldId}'); onDynFieldChange();">
+          <div id="${fieldId}_preview">${preview}</div>`;
+      }
+      // short (افتراضي)
+      return `<input type="text" id="${fieldId}" value="${esc(answerVal)}" onchange="onDynFieldChange()">`;
+    }
+
+    function buildRatingStarsHtml(fieldId, val) {
+      let stars = '';
+      for (let i = 1; i <= 5; i++) stars += `<span onclick="setRating('${fieldId}', ${i})" style="cursor:pointer; font-size:1.8rem; color:${i <= val ? '#eebb43' : '#e2e8f0'};">★</span>`;
+      return stars;
+    }
+    function setRating(fieldId, val) {
+      document.getElementById(fieldId).value = val;
+      document.getElementById(fieldId + '_stars').innerHTML = buildRatingStarsHtml(fieldId, val);
+      onDynFieldChange();
+    }
+    function captureLocationForField(fieldId) {
+      if (!navigator.geolocation) return alert('المتصفح لا يدعم تحديد الموقع.');
+      navigator.geolocation.getCurrentPosition(
+        pos => { document.getElementById(fieldId).value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; onDynFieldChange(); },
+        () => alert('تعذر تحديد الموقع. يرجى التأكد من تفعيل صلاحية الوصول للموقع.'),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    // يقرأ القيمة الحالية لأي سؤال من الـ DOM مباشرة (تُستخدم لتقييم الشروط أثناء التعبئة)
+    function getDynFieldValue(qid) {
+      const wrapper = document.querySelector(`.dyn-field-wrapper[data-qid="${qid}"]`); if (!wrapper) return '';
+      const type = wrapper.getAttribute('data-qtype');
+      if (type === 'radio') { const c = wrapper.querySelector('input[type=radio]:checked'); return c ? c.value : ''; }
+      if (type === 'checkbox') return Array.from(wrapper.querySelectorAll('.dynq-checkbox:checked')).map(c => c.value).join('، ');
+      if (type === 'rating') { const el = wrapper.querySelector('input[type=hidden]'); return el ? el.value : ''; }
+      const el = wrapper.querySelector('input, select, textarea'); return el ? el.value : '';
+    }
+
+    // يُظهر/يخفي كل سؤال مشروط حسب قيمة السؤال الذي يعتمد عليه؛ يُستدعى عند أي تغيير في أي حقل
+    function applyConditionalVisibility() {
+      document.querySelectorAll('.dyn-field-wrapper[data-cond-parent]').forEach(wrapper => {
+        const parentId = wrapper.getAttribute('data-cond-parent');
+        let triggerValues = [];
+        try { triggerValues = JSON.parse(wrapper.getAttribute('data-cond-values') || '[]'); } catch (e) {}
+        const parentVal = getDynFieldValue(parentId);
+        const parentValues = parentVal ? parentVal.split('، ') : [];
+        const shouldShow = triggerValues.some(v => parentValues.includes(v));
+        wrapper.classList.toggle('hidden', !shouldShow);
+      });
+    }
+    function onDynFieldChange() { applyConditionalVisibility(); }
 
     function previewPhotoField(fieldId) {
       const input = document.getElementById(fieldId); const preview = document.getElementById(fieldId + '_preview');
@@ -1380,32 +1558,37 @@
         if (!proceed) return;
       }
 
-      const dyn = document.getElementById('dynamicFields');
-      const inputs = dyn.querySelectorAll('[data-qtext]');
+      applyConditionalVisibility();
+      const wrappers = document.querySelectorAll('#dynamicFields .dyn-field-wrapper');
       const answers = {};
       let hasPhoto = false;
+      let validationError = '';
 
-      for (const el of inputs) {
-        const qtext = el.getAttribute('data-qtext');
-        if (el.type === 'file') {
-          if (el.files && el.files[0]) {
+      for (const wrapper of wrappers) {
+        if (wrapper.classList.contains('hidden')) continue; // الأسئلة المخفية بالشرط لا تُحفظ ولا تُتحقق منها
+        const qtext = wrapper.getAttribute('data-qtext');
+        const qtype = wrapper.getAttribute('data-qtype');
+        const isRequired = wrapper.getAttribute('data-required') === 'true';
+        let value = '';
+
+        if (qtype === 'radio') { const c = wrapper.querySelector('input[type=radio]:checked'); value = c ? c.value : ''; }
+        else if (qtype === 'checkbox') { value = Array.from(wrapper.querySelectorAll('.dynq-checkbox:checked')).map(c => c.value).join('، '); }
+        else if (qtype === 'rating') { const el = wrapper.querySelector('input[type=hidden]'); value = el ? el.value : '0'; }
+        else if (qtype === 'photo') {
+          const fileInput = wrapper.querySelector('input[type=file]');
+          if (fileInput.files && fileInput.files[0]) {
             hasPhoto = true;
-            answers[qtext] = await new Promise(resolve => {
-              const reader = new FileReader();
-              reader.onload = e => resolve(e.target.result);
-              reader.readAsDataURL(el.files[0]);
-            });
-          } else if (el.getAttribute('data-existing')) {
-            hasPhoto = true;
-            answers[qtext] = el.getAttribute('data-existing');
-          } else {
-            answers[qtext] = '';
-          }
+            value = await new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(fileInput.files[0]); });
+          } else if (fileInput.getAttribute('data-existing')) { hasPhoto = true; value = fileInput.getAttribute('data-existing'); }
         } else {
-          answers[qtext] = el.value;
+          const el = wrapper.querySelector('input, select, textarea'); value = el ? el.value : '';
         }
+
+        if (isRequired && (!value || (qtype === 'rating' && value === '0'))) { validationError = qtext; break; }
+        answers[qtext] = value;
       }
 
+      if (validationError) return alert(`يرجى الإجابة على السؤال الإلزامي: "${validationError}"`);
       if (currentUser.permissions?.requirePhoto !== false && !hasPhoto) return alert('التقاط صورة توثيقية واحدة على الأقل إلزامي قبل رفع التقرير.');
 
       const btn = document.getElementById('submitSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الرفع...';
