@@ -1233,6 +1233,7 @@
         if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
         populateAnalyticsSurveyFilter();
         if (!document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true);
+        if (!document.getElementById('secSurveys').classList.contains('hidden')) renderSurveysList();
         if (!document.getElementById('secRecords').classList.contains('hidden')) renderRecords();
         if (!document.getElementById('secSchools').classList.contains('hidden')) renderSchoolsManagement();
         if (!document.getElementById('secUsers').classList.contains('hidden')) renderUsersManagement();
