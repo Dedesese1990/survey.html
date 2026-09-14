@@ -2216,7 +2216,9 @@
             <td>${statusBadge}</td>
             <td>${esc(r.collectedBy)}</td>
             <td style="white-space:nowrap; direction:ltr;">${esc(shortDate(r))}</td>
-            <td><button class="btn btn-petrol" style="font-size:0.85rem; padding:6px 12px;" onclick="openViewReportModal(${r.id})">عرض و تدقيق</button></td>
+            <td>${r.status === 'approved'
+              ? `<button class="btn btn-gold" style="font-size:0.85rem; padding:6px 12px;" onclick="printSingleReportPDF(${r.id})">🖨️ عرض التقرير</button>`
+              : `<button class="btn btn-petrol" style="font-size:0.85rem; padding:6px 12px;" onclick="openViewReportModal(${r.id})">عرض و تدقيق</button>`}</td>
         </tr>`;
       });
     }
@@ -2460,6 +2462,44 @@
       window.scrollTo(0, 0);
     }
     function closeUserGuide() { document.getElementById('userGuideOverlay').classList.add('hidden'); }
+
+    // عرض/طباعة تقرير واحد بشكل نهائي (بديل نافذة المراجعة بمجرد اعتماد التقرير، لأن الاعتماد/الرفض لم يعودا مطلوبين)
+    function printSingleReportPDF(reportId) {
+      const rep = responses.find(r => r.id === reportId); if (!rep) return showAlert('التقرير غير موجود.');
+      const schInfo = schoolDataWrapper.list.find(s => s.name === rep.school);
+      const minNoTxt = (schInfo && schInfo.minNo) ? ` [${esc(schInfo.minNo)}]` : '';
+
+      let rows = '', imgs = '';
+      for (const [q, a] of Object.entries(rep.answers || {})) {
+        if (a && (String(a).startsWith('http') || String(a).startsWith('data:image'))) {
+          imgs += `<div style="text-align:center; border:1px solid #cbd5e1; padding:6px; border-radius:6px; background:#ffffff; break-inside:avoid;"><img src="${esc(a)}" style="max-height:220px; max-width:100%; object-fit:contain; border-radius:4px;"><div style="font-size:12px; font-weight:bold; margin-top:4px; color:#276270;">${esc(q)}</div></div>`;
+        } else {
+          rows += `<tr><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold; width:40%; background:#f8fafc; color:#276270;">${esc(q)}</td><td style="padding:10px 14px; border:1px solid #cbd5e1; font-weight:bold;">${esc(a) || '-'}</td></tr>`;
+        }
+      }
+
+      const w = window.open('', '_blank');
+      w.document.write(`<html lang="ar" dir="rtl"><head><title>تقرير معتمد - ${esc(rep.school)}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+        <style>* { font-family:'Tajawal',sans-serif; box-sizing:border-box; } body { margin:0; padding:25px; color:#1f333a; background:#f4f7f9; font-size:13px; line-height:1.6; } .header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; } .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; } @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }</style>
+        </head><body>
+        <div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير / حفظ PDF</button></div>
+        <div class="header">
+          <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
+          <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">✅ تقرير حصر معتمد</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
+        </div>
+        <div style="background:#fff; border:1px solid #d0dfe5; border-radius:10px; padding:16px 20px; margin-bottom:20px;">
+          <div style="font-size:16px; font-weight:900; color:#276270; margin-bottom:6px;">🏫 ${esc(rep.school)}${minNoTxt}</div>
+          <div style="font-size:13px; font-weight:700; color:#536e7a;">النموذج: ${esc(rep.surveyTitle)} &nbsp;|&nbsp; المكتب: ${esc(rep.branch) || '-'} &nbsp;|&nbsp; المشرف: ${esc(rep.collectedBy)} &nbsp;|&nbsp; التاريخ: ${esc(rep.date)} &nbsp;|&nbsp; 📍 GPS: ${esc(rep.gps) || 'غير مسجل'}</div>
+          ${rep.approvedBy ? `<div style="font-size:13px; font-weight:700; color:#10b981; margin-top:6px;">✓ اعتمده: ${esc(rep.approvedBy)}</div>` : ''}
+        </div>
+        <div style="border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; background:#fff;">
+          <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:13px;"><tbody>${rows}</tbody></table>
+          ${imgs ? `<div style="font-weight:900; color:#276270; font-size:13px; margin-bottom:8px;">التوثيق المصور:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">${imgs}</div>` : ''}
+        </div>
+        </body></html>`);
+      w.document.close();
+    }
 
     function printConsolidatedSchoolPDF() {
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
