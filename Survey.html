@@ -139,6 +139,14 @@
       .action-buttons-mobile { flex-direction: column; width: 100%; gap: 10px; }
       .action-buttons-mobile button, .action-buttons-mobile select, .action-buttons-mobile .search-wrapper { width: 100%; }
     }
+
+    /* طباعة دليل الاستخدام فقط، بدون باقي واجهة التطبيق تحته */
+    @media print {
+      body * { visibility: hidden; }
+      #userGuideOverlay, #userGuideOverlay * { visibility: visible; }
+      #userGuideOverlay { position: absolute; inset: 0; }
+      #userGuideActionsBar { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -761,6 +769,14 @@
         <button class="btn btn-petrol" style="flex:1;" onclick="resolveAppPrompt(true)">تأكيد</button>
       </div>
     </div>
+  </div>
+
+  <div id="userGuideOverlay" class="hidden" style="position:fixed; inset:0; background:var(--bg-canvas); z-index:6000; overflow-y:auto;">
+    <div id="userGuideActionsBar" style="position:sticky; top:0; background:#fff; border-bottom:2px solid var(--tbc-petrol); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10;">
+      <button class="btn btn-outline" onclick="closeUserGuide()">→ رجوع</button>
+      <button class="btn btn-petrol" onclick="window.print()">🖨️ طباعة الدليل / حفظ PDF</button>
+    </div>
+    <div id="userGuideContent" style="padding:24px; max-width:1000px; margin:0 auto;"></div>
   </div>
 
   <div id="delegateApprovalModal" class="modal-overlay hidden">
@@ -2313,35 +2329,27 @@
            'من نفس النافذة تقدر تلغي أي تفويض قائم في أي وقت.']);
       }
 
-      return `<html lang="ar" dir="rtl"><head><title>دليل الاستخدام - ${esc(roleLabel)}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        <style>
-          * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
-          body { margin:0; padding:25px; background:#f4f7f9; color:#1f333a; }
-          .no-print { margin-bottom:20px; text-align:left; }
-          @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }
-        </style></head>
-        <body>
-          <div class="no-print"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة الدليل / حفظ PDF</button></div>
-          <div style="display:flex; align-items:center; gap:10px; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px;">
-            <span style="background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px;">TBC</span>
-            <div>
-              <div style="font-weight:900; font-size:17px; color:#276270;">دليل استخدام بوابة الحصر الشامل</div>
-              <div style="font-weight:700; font-size:13px; color:#5e7782;">حسب صلاحية: ${esc(roleLabel)}</div>
-            </div>
+      return `
+        <div style="display:flex; align-items:center; gap:10px; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px;">
+          <span style="background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px;">TBC</span>
+          <div>
+            <div style="font-weight:900; font-size:17px; color:#276270;">دليل استخدام بوابة الحصر الشامل</div>
+            <div style="font-weight:700; font-size:13px; color:#5e7782;">حسب صلاحية: ${esc(roleLabel)}</div>
           </div>
-          <p style="font-size:12px; color:#536e7a; font-weight:600; margin-bottom:20px;">هذا الدليل مُعدّ خصيصاً لعرض الأقسام والعمليات المتاحة لصلاحيتك الحالية فقط. الرسومات أدناه توضيحية لمكان كل ميزة في الشريط الجانبي، وليست لقطات شاشة فعلية.</p>
-          ${sections}
-          ${delegationSection}
-        </body></html>`;
+        </div>
+        <p style="font-size:12px; color:#536e7a; font-weight:600; margin-bottom:20px;">هذا الدليل مُعدّ خصيصاً لعرض الأقسام والعمليات المتاحة لصلاحيتك الحالية فقط. الرسومات أدناه توضيحية لمكان كل ميزة في الشريط الجانبي، وليست لقطات شاشة فعلية.</p>
+        ${sections}
+        ${delegationSection}
+      `;
     }
 
     function openUserGuidePdf() {
       if (!currentUser) return;
-      const w = window.open('', '_blank');
-      w.document.write(buildUserGuideHtml(currentUser.role));
-      w.document.close();
+      document.getElementById('userGuideContent').innerHTML = buildUserGuideHtml(currentUser.role);
+      document.getElementById('userGuideOverlay').classList.remove('hidden');
+      window.scrollTo(0, 0);
     }
+    function closeUserGuide() { document.getElementById('userGuideOverlay').classList.add('hidden'); }
 
     function printConsolidatedSchoolPDF() {
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
