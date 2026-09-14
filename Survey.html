@@ -165,6 +165,8 @@
         <div class="header-user-section" id="headerUserActions">
           <div class="sync-status" id="cloudSyncStatus">☁️ متصل سحابياً</div>
 
+          <button id="helpGuideBtn" class="hidden" onclick="openUserGuidePdf()" title="دليل استخدام النظام حسب صلاحيتك" style="width:38px; height:38px; border-radius:50%; background:var(--tbc-petrol-light); border:1.5px solid var(--border-subtle); color:var(--tbc-petrol-dark); font-weight:900; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">؟</button>
+
           <div id="profileDropdownContainer" class="hidden" style="position:relative;">
             <div class="profile-btn" onclick="window.toggleProfileMenu(event)">
               <span>👤</span>
@@ -1139,6 +1141,7 @@
 
     function loginSuccess() {
       document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.remove('hidden');
+      document.getElementById('helpGuideBtn')?.classList.remove('hidden');
       document.getElementById('activeUserName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserFullName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserRole').innerText = esc(ROLE_LABELS[currentUser.role] || currentUser.role);
@@ -1169,7 +1172,7 @@
       }
     }
 
-    function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); }
+    function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); document.getElementById('helpGuideBtn')?.classList.add('hidden'); }
     function forceLogout() { showAlert("انتهت الجلسة."); logout(); }
 
     window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); };
@@ -2148,6 +2151,198 @@
     async function promptRejectReport(id) { const reason = await showPrompt("يرجى كتابة سبب التعديل أو الرفض ليظهر للمشرف:"); if (reason !== null && reason.trim() !== "") { setReportStatus(id, 'rejected', reason.trim()); } }
 
     // ================= Export & Global Reports =================
+    // ================= دليل الاستخدام حسب الصلاحية (قابل للطباعة كـ PDF) =================
+    // يرسم شكلاً توضيحياً مصغّراً للشريط الجانبي مع تظليل التبويب المقصود — بديل عن لقطة شاشة حقيقية
+    // (لا توجد أداة لالتقاط لقطات فعلية من الموقع المنشور).
+    function buildSidebarMockup(highlightIndex) {
+      const tabs = [
+        { icon: '📊', label: 'لوحة المؤشرات والتحليلات' },
+        { icon: '📋', label: 'نماذج وعمليات الحصر' },
+        { icon: '📑', label: 'السجلات والاعتمادات' },
+        { icon: '🏫', label: 'إدارة المدارس والبيانات' },
+        { icon: '👥', label: 'إدارة الهيكل والمستخدمين' },
+        { icon: '🧾', label: 'سجل التدقيق' }
+      ];
+      return `<div style="background:#2b5460; border-radius:10px; padding:10px; width:190px; flex-shrink:0;">
+        ${tabs.map((t, i) => `<div style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:6px; margin-bottom:4px; ${i === highlightIndex ? 'background:rgba(255,255,255,0.18); border-right:4px solid #eebb43;' : ''} color:#fff; font-size:11px; font-weight:${i === highlightIndex ? '900' : '500'};">
+          ${i === highlightIndex ? '<span style="color:#eebb43;">◄</span>' : '<span style="width:10px;"></span>'}<span>${t.icon}</span><span>${esc(t.label)}</span>
+        </div>`).join('')}
+      </div>`;
+    }
+    function buildProfileMenuMockup() {
+      return `<div style="background:#fff; border:1.5px solid #d0dfe5; border-radius:10px; width:190px; flex-shrink:0; overflow:hidden;">
+        <div style="background:#f8fafc; padding:10px; border-bottom:1px solid #d0dfe5; font-size:11px; font-weight:900; color:#1f333a;">👤 اسمك ▾</div>
+        <div style="padding:6px;">
+          <div style="padding:8px 10px; font-size:11px; color:#536e7a;">🔑 تغيير كلمة المرور</div>
+          <div style="padding:8px 10px; font-size:11px; font-weight:900; color:#1f333a; background:#edf6f8; border-radius:6px; border-right:4px solid #eebb43;">◄ 🔄 تفويض صلاحية الاعتماد</div>
+          <div style="padding:8px 10px; font-size:11px; color:#b91c1c;">🚪 تسجيل الخروج</div>
+        </div>
+      </div>`;
+    }
+    function buildGuideSectionHtml(icon, title, mockupHtml, purpose, steps) {
+      return `<div style="break-inside:avoid; margin-bottom:26px; border:1.5px solid #d0dfe5; border-radius:12px; padding:18px 20px; background:#fff;">
+        <h3 style="font-size:15px; font-weight:900; color:#1f333a; margin:0 0 6px;">${icon} ${esc(title)}</h3>
+        <p style="font-size:12px; color:#536e7a; font-weight:700; margin:0 0 14px;">${esc(purpose)}</p>
+        <div style="display:flex; gap:18px; align-items:flex-start;">
+          ${mockupHtml}
+          <div style="flex:1;">
+            <ol style="margin:0; padding-right:18px; font-size:12px; font-weight:600; color:#1f333a; line-height:1.9;">
+              ${steps.map(s => `<li style="margin-bottom:6px;">${esc(s)}</li>`).join('')}
+            </ol>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function getSurveysGuideSteps(role) {
+      const base = [];
+      if (role === 'ROLE_INSPECTOR') {
+        return base.concat([
+          'هتلاقي قائمة بكل النماذج المتاحة لك — دوس "📝 تعبئة النموذج" على أي نموذج عايز تسجّل بيه زيارة.',
+          'اختار اسم المدرسة (هتظهرلك مدارسك المُسندة لك فقط)، ودوس "التقاط GPS" لتسجيل موقعك.',
+          'جاوب على كل بند فحص؛ البنود بعلامة * إلزامية. بعض البنود بتظهر بس لو جاوبت على سؤال قبلها بإجابة معينة (مثلاً صورة التلف تظهر بس لو قلت "غير مطابق").',
+          'دوس "رفع التقرير للاعتماد" — هيروح تلقائيًا للمسؤول عنك للمراجعة.',
+          'لو تقريرك اتُرفض، هيظهرلك زرار "تعديل التقرير" من تاب السجلات خلال 48 ساعة، أو بعدها لو مُنحت إذن تعديل خاص.',
+          '📅 "التقويم الميداني" بيوريك مواعيد استحقاق النماذج وعدد زياراتك يوم بيوم.'
+        ]);
+      }
+      if (role === 'ROLE_PLANNING') {
+        return base.concat([
+          'دوس "+ إنشاء حصر جديد" لعمل نموذج فحص جديد بالكامل.',
+          'اكتب مسمى النموذج وتاريخ الاستحقاق، وابدأ إضافة بنود الفحص.',
+          'لكل بند اختار نوعه (نص، اختيار واحد أو متعدد، قائمة منسدلة، رقم، تاريخ، تقييم، صورة، أو تحديد موقع GPS)، وحدد هل هو إلزامي.',
+          'لأي بند اختياري، تقدر تربطه بشرط "يظهر بس لو..." — مفيد لجعل رفع صورة إلزاميًا فقط عند إجابة معينة.',
+          'دوس "حفظ ونشر النموذج" ليظهر فورًا لكل المشرفين. وتقدر تعدّل أو تحذف أي نموذج قديم بنفس الطريقة.'
+        ]);
+      }
+      return base.concat([
+        'تقدر تشوف كل النماذج المتاحة وتتابع عدد الردود على كل واحد.',
+        'زي إدارة التخطيط بالظبط، تقدر تعدّل أو تحذف أي نموذج موجود.'
+      ]);
+    }
+
+    function getRecordsGuideSteps(role) {
+      const canApprove = role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role);
+      const steps = [`هتلاقي جدول بكل التقارير في نطاقك ${role === 'ROLE_INSPECTOR' ? '(تقاريرك أنت فقط)' : (role === 'ROLE_PLANNING' ? '(كل النظام)' : '(فرعك فقط)')}.`];
+      if (canApprove) {
+        steps.push('فوق الجدول هتلاقي فلترين: تصفية حسب النموذج، وتصفية حسب المشرف الميداني.');
+        steps.push('دوس "عرض و تدقيق" على أي تقرير لمراجعته، وتقدر تعتمده ✓، ترفضه بملاحظة ✕، أو تمنح المشرف إذن تعديل خاص.');
+      } else {
+        steps.push('لو أي تقرير اتُرفض، هيظهرلك زرار "تعديل التقرير" عليه.');
+      }
+      steps.push('"استخراج التقارير وتصدير البيانات" في وسط الصفحة بيدّيك ملف Excel أو PDF شامل، أو لمدرسة واحدة بس لو اخترتها.');
+      return steps;
+    }
+
+    function getSchoolsGuideSteps(role) {
+      if (role === 'ROLE_PLANNING') {
+        return [
+          'تقدر تضيف مدرسة يدويًا، أو تستورد قائمة كاملة دفعة واحدة عبر ملف Excel (فيه قالب جاهز تنزّله).',
+          'كل مدرسة لازم تتربط باسم مشرف مُسند ليها — ده اللي بيحدد مين يقدر يرفع تقارير عليها.',
+          'تقدر تفتح صلاحية تحديث بيانات التواصل (تليفون/مدير) للمشرفين أنفسهم من مربع الاختيار أعلى الصفحة.',
+          'جدول "نصيب المشرفين من المدارس" بيوريك عدد المدارس المُسندة لكل مشرف.'
+        ];
+      }
+      if (role === 'ROLE_INSPECTOR') {
+        return [
+          'هتشوف بس المدارس المُسندة ليك.',
+          'لو الإدارة فتحت الصلاحية، تقدر تحدّث رقم تليفون المدرسة واسم المدير من زرار "تحديث البيانات".'
+        ];
+      }
+      return ['حاليًا لا توجد صلاحية إدارية إضافية على المدارس لهذا الدور غير المتاحة لإدارة التخطيط — هذا القسم مُخصَّص لها فقط.'];
+    }
+
+    const GUIDE_SECTION_BUILDERS = [
+      { icon: '📊', title: 'لوحة المؤشرات والتحليلات', sidebarIndex: 0, allRoles: true,
+        purpose: 'نظرة سريعة وشاملة على أداء عمليات الحصر الميداني كله في مكان واحد.',
+        steps: (role) => {
+          const s = [
+            'من الشريط الجانبي، دوس على "📊 لوحة المؤشرات والتحليلات" (أول عنصر).',
+            'فوق هتلاقي كروت بالأرقام (إجمالي، بانتظار الاعتماد، معتمدة، متأخرة عن 48 ساعة). دوس على أي كارت وهيفلترلك جدول السجلات تلقائيًا.',
+            'تحت كده: رسم بياني لتقدم رفع التقارير أسبوعيًا، ومخطط دائري لنسبة "مطابق" مقابل "غير مطابق".',
+            '"تغطية المدارس" بتوريك أي مدرسة تحت مسؤوليتك لسه ما اتزارتش، وخريطة تفاعلية بآخر حالة معروفة لكل مدرسة.'
+          ];
+          if (role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role)) s.push('هتلاقي كمان جدول "أداء المشرفين الميدانيين" في آخر الصفحة يوضح إنتاجية كل مشرف ونسبة قبول تقاريره من أول مرة.');
+          return s;
+        }
+      },
+      { icon: '📋', title: 'نماذج وعمليات الحصر', sidebarIndex: 1, allRoles: true,
+        purpose: 'هنا بتتم تعبئة نماذج الفحص الميدانية، أو إنشاؤها وإدارتها حسب صلاحيتك.',
+        steps: (role) => ['من الشريط الجانبي دوس "📋 نماذج وعمليات الحصر".'].concat(getSurveysGuideSteps(role))
+      },
+      { icon: '📑', title: 'السجلات والاعتمادات', sidebarIndex: 2, allRoles: true,
+        purpose: 'هنا تراجع كل التقارير المرفوعة، وتعتمدها أو ترفضها حسب صلاحيتك، وتصدّرها.',
+        steps: (role) => ['من الشريط الجانبي دوس "📑 السجلات والاعتمادات".'].concat(getRecordsGuideSteps(role))
+      },
+      { icon: '🏫', title: 'إدارة المدارس والبيانات', sidebarIndex: 3, allRoles: true,
+        purpose: 'قاعدة بيانات المدارس وربطها بالمشرفين المسؤولين عنها.',
+        steps: (role) => ['من الشريط الجانبي دوس "🏫 إدارة المدارس والبيانات".'].concat(getSchoolsGuideSteps(role))
+      },
+      { icon: '👥', title: 'إدارة الهيكل والمستخدمين', sidebarIndex: 4, allRoles: false, onlyRole: 'ROLE_PLANNING',
+        purpose: 'إدارة كل حسابات النظام — إضافة، تعديل، إيقاف، حذف، ومراجعة طلبات التسجيل الجديدة.',
+        steps: () => [
+          'من الشريط الجانبي دوس "👥 إدارة الهيكل والمستخدمين" (يظهر لإدارة التخطيط فقط).',
+          'لو فيه طلبات تسجيل جديدة من صفحة الدخول، هتلاقيها فوق في كارت أصفر — دوس "قبول واعتماد ✓" أو "رفض ✕".',
+          'تقدر تضيف مستخدم يدويًا، أو تستورد عدد كبير دفعة واحدة عبر Excel (الاستيراد بيحدّث الموجودين ويضيف الجدد من غير ما يمسح حد).',
+          'من الجدول تقدر: تعدّل بياناته، تعيّن له كلمة مرور جديدة، توقف حسابه مؤقتًا، أو تحذفه نهائيًا.'
+        ]
+      },
+      { icon: '🧾', title: 'سجل التدقيق', sidebarIndex: 5, allRoles: false, onlyRole: 'ROLE_PLANNING',
+        purpose: 'سجل كامل بكل عملية مهمة حصلت في النظام — للمراجعة والمساءلة.',
+        steps: () => [
+          'من الشريط الجانبي دوس "🧾 سجل التدقيق".',
+          'هتلاقي جدول بآخر 500 عملية: الوقت، المستخدم، نوع الإجراء، والتفاصيل.',
+          'دوس "تحديث ↺" لجلب أحدث الأحداث.'
+        ]
+      }
+    ];
+
+    function buildUserGuideHtml(role) {
+      const roleLabel = ROLE_LABELS[role] || role;
+      const sections = GUIDE_SECTION_BUILDERS
+        .filter(sec => sec.allRoles || sec.onlyRole === role)
+        .map(sec => buildGuideSectionHtml(sec.icon, sec.title, buildSidebarMockup(sec.sidebarIndex), sec.purpose, sec.steps(role)))
+        .join('');
+
+      let delegationSection = '';
+      if (role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role)) {
+        delegationSection = buildGuideSectionHtml('🔄', 'تفويض صلاحية الاعتماد المؤقت', buildProfileMenuMockup(),
+          'لو هتكون غير متاح لفترة (إجازة مثلاً)، تقدر تدّي صلاحية الاعتماد بتاعتك لشخص تاني مؤقتًا.',
+          ['دوس على اسمك أعلى يمين الصفحة، واختار "🔄 تفويض صلاحية الاعتماد".',
+           'اختار الشخص اللي هيتولى الصلاحية وحدد تاريخ نهاية التفويض.',
+           'من نفس النافذة تقدر تلغي أي تفويض قائم في أي وقت.']);
+      }
+
+      return `<html lang="ar" dir="rtl"><head><title>دليل الاستخدام - ${esc(roleLabel)}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+        <style>
+          * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
+          body { margin:0; padding:25px; background:#f4f7f9; color:#1f333a; }
+          .no-print { margin-bottom:20px; text-align:left; }
+          @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }
+        </style></head>
+        <body>
+          <div class="no-print"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة الدليل / حفظ PDF</button></div>
+          <div style="display:flex; align-items:center; gap:10px; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px;">
+            <span style="background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px;">TBC</span>
+            <div>
+              <div style="font-weight:900; font-size:17px; color:#276270;">دليل استخدام بوابة الحصر الشامل</div>
+              <div style="font-weight:700; font-size:13px; color:#5e7782;">حسب صلاحية: ${esc(roleLabel)}</div>
+            </div>
+          </div>
+          <p style="font-size:12px; color:#536e7a; font-weight:600; margin-bottom:20px;">هذا الدليل مُعدّ خصيصاً لعرض الأقسام والعمليات المتاحة لصلاحيتك الحالية فقط. الرسومات أدناه توضيحية لمكان كل ميزة في الشريط الجانبي، وليست لقطات شاشة فعلية.</p>
+          ${sections}
+          ${delegationSection}
+        </body></html>`;
+    }
+
+    function openUserGuidePdf() {
+      if (!currentUser) return;
+      const w = window.open('', '_blank');
+      w.document.write(buildUserGuideHtml(currentUser.role));
+      w.document.close();
+    }
+
     function printConsolidatedSchoolPDF() {
       const selectedSchool = document.getElementById('schoolSelectFilter').value;
       const scoped = getScopedResponses(); 
