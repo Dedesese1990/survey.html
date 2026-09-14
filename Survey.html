@@ -1273,11 +1273,10 @@
               <p style="color:var(--text-muted); font-size:0.9rem; font-weight:600; margin-bottom:6px;">${esc(s.desc) || ''}</p>
               <small style="color:var(--tbc-petrol); font-weight:700;">${dueTxt} &nbsp; | &nbsp; عدد الردود: ${myResponses.length}</small>
             </div>
-            <div class="action-buttons-mobile" style="display:flex; gap:10px;">
-              ${!isPlanning
-                ? `<button class="btn btn-petrol" onclick="openFillSurvey(surveys.find(x=>String(x.id)==='${esc(s.id)}'))">📝 تعبئة النموذج</button>`
-                : `<button class="btn btn-outline" onclick="editSurveyPrompt('${esc(s.id)}')">✏️ تعديل</button>
-                   <button class="btn btn-reject" onclick="deleteSurvey('${esc(s.id)}', '${esc(s.title)}')">🗑️ حذف</button>`}
+            <div class="action-buttons-mobile" style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn btn-petrol" onclick="openFillSurvey(surveys.find(x=>String(x.id)==='${esc(s.id)}'))">📝 تعبئة النموذج</button>
+              ${isPlanning ? `<button class="btn btn-outline" onclick="editSurveyPrompt('${esc(s.id)}')">✏️ تعديل</button>
+                   <button class="btn btn-reject" onclick="deleteSurvey('${esc(s.id)}', '${esc(s.title)}')">🗑️ حذف</button>` : ''}
             </div>
           </div>
         </div>`;
