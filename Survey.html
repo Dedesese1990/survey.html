@@ -553,7 +553,7 @@
             <div class="form-grid">
               <div class="form-group"><label>الرقم الوزاري</label><input type="number" id="singleSchoolMinNo"></div>
               <div class="form-group"><label>اسم المدرسة</label><input type="text" id="singleSchoolName"></div>
-              <div class="form-group"><label>المكتب الفرعي</label><select id="singleSchoolBranch"><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option></select></div>
+              <div class="form-group"><label>المكتب الفرعي</label><select id="singleSchoolBranch"><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
               <div class="form-group"><label>المشرف المُسند</label><select id="singleSchoolInspector"></select></div>
             </div>
             <button class="btn btn-gold" style="width:100%; margin-top:8px;" onclick="addSingleSchool()">إضافة المدرسة للنظام ✓</button>
@@ -606,8 +606,8 @@
                   <button type="button" class="btn btn-outline" style="padding:0 14px; font-size:0.85rem; white-space:nowrap;" onclick="generateInitialPassword()">توليد 🎲</button>
                 </div>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
-              <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
             
             <label style="margin-top:10px; font-size:1.05rem;">الصلاحيات:</label>
@@ -633,7 +633,7 @@
               <label for="usersExcelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1rem; cursor:pointer; text-align:center;">📤 رفع ملف مستخدمين</label>
               <input type="file" id="usersExcelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleUsersExcelUpload(event)">
             </div>
-            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً.</small>
+            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً.</small>
           </div>
 
           <div class="card">
@@ -842,6 +842,7 @@
         <select id="regBranch">
           <option value="المكتب الفرعي بالشرقية">الشرقية</option>
           <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+          <option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية إدارياً)</option>
         </select>
       </div>
 
@@ -902,8 +903,11 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
+    // "إدارة المكتب الفرعي" دور رابع أعلى تنظيمياً من "مدير إشراف"، لكن بنفس صلاحياته بالضبط —
+    // فيُعامَل بنفس المنطق في كل مكان عبر هذا الثابت المشترك بدل تكرار الشرط يدوياً.
+    const MANAGER_ROLES = ['ROLE_SUPERVISION_LEAD', 'ROLE_BRANCH_OFFICE'];
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
     function resolveInspectorUser(text) {
@@ -982,7 +986,7 @@
     }
     function currentUserHasApprovalAuthority() {
       if (!currentUser) return false;
-      if (currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD') return true;
+      if (currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role)) return true;
       return getActiveIncomingDelegators().length > 0;
     }
 
@@ -1066,7 +1070,8 @@
       document.getElementById('regBranchGroup').classList.add('hidden');
       document.getElementById('regBranch').innerHTML = `
         <option value="المكتب الفرعي بالشرقية">الشرقية</option>
-        <option value="المكتب الفرعي بالأحساء">الأحساء</option>`;
+        <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+        <option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية إدارياً)</option>`;
       document.getElementById('registerModal').classList.remove('hidden');
     }
     function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden'); }
@@ -1079,25 +1084,27 @@
       branchGroup.classList.toggle('hidden', val === 'PLANNING' || val === '');
 
       if (val === 'SUPERVISION_ALL') {
-        // مدير الإشراف قد يشرف على الفرعين معاً أو يُحدَّد لفرع واحد بالتحديد
+        // مدير الإشراف قد يشرف على كل الفروع معاً أو يُحدَّد لفرع واحد بالتحديد
         branchSelect.innerHTML = `
-          <option value="الكل">الفرعين معاً (الشرقية والأحساء)</option>
+          <option value="الكل">كل الفروع معاً</option>
           <option value="المكتب الفرعي بالشرقية">الشرقية فقط</option>
-          <option value="المكتب الفرعي بالأحساء">الأحساء فقط</option>`;
+          <option value="المكتب الفرعي بالأحساء">الأحساء فقط</option>
+          <option value="المكتب الفرعي بحفر الباطن">حفر الباطن فقط</option>`;
       } else {
         branchSelect.innerHTML = `
           <option value="المكتب الفرعي بالشرقية">الشرقية</option>
-          <option value="المكتب الفرعي بالأحساء">الأحساء</option>`;
+          <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+          <option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية إدارياً)</option>`;
       }
     }
 
-    // نحوّل اختيار المستخدم لنفس نظام الأدوار الثلاثة الموجود فعلياً (ROLE_INSPECTOR / ROLE_SUPERVISION_LEAD / ROLE_PLANNING)
-    // بدل استحداث دور رابع — "مدير إشراف" و"إدارة مكتب فرعي" كلاهما ROLE_SUPERVISION_LEAD، والفارق بينهما هو نطاق الفرع فقط،
-    // وهو نفس المفهوم المستخدم أصلاً في باقي النظام لتحديد الصلاحيات والتصفية.
+    // نحوّل اختيار المستخدم لنظام الأدوار الأربعة (ROLE_INSPECTOR < ROLE_SUPERVISION_LEAD < ROLE_BRANCH_OFFICE < ROLE_PLANNING).
+    // "إدارة مكتب فرعي" دور مستقل (وليس نفس دور "مدير إشراف")، لكنه يُعامَل بنفس صلاحياته في كل منطق التصفية والاعتماد
+    // عبر ثابت MANAGER_ROLES المشترك — الفرق بينهما تنظيمي (رتبة أعلى) وليس فرقاً في الصلاحيات الفعلية.
     function mapRegRoleChoice(choice, branchVal) {
       if (choice === 'INSPECTOR') return { role: 'ROLE_INSPECTOR', branch: branchVal };
       if (choice === 'SUPERVISION_ALL') return { role: 'ROLE_SUPERVISION_LEAD', branch: branchVal };
-      if (choice === 'SUB_OFFICE') return { role: 'ROLE_SUPERVISION_LEAD', branch: branchVal };
+      if (choice === 'SUB_OFFICE') return { role: 'ROLE_BRANCH_OFFICE', branch: branchVal };
       if (choice === 'PLANNING') return { role: 'ROLE_PLANNING', branch: 'الكل' };
       return null;
     }
@@ -1136,7 +1143,7 @@
       document.getElementById('menuUserFullName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserRole').innerText = esc(ROLE_LABELS[currentUser.role] || currentUser.role);
       const isPlanning = currentUser.role === "ROLE_PLANNING";
-      const canDelegate = currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD';
+      const canDelegate = currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role);
       document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden');
       document.getElementById('tabAuditLog')?.classList.toggle('hidden', !isPlanning);
       document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
@@ -1198,7 +1205,8 @@
             <div class="action-buttons-mobile" style="display:flex; gap:10px;">
               ${!isPlanning
                 ? `<button class="btn btn-petrol" onclick="openFillSurvey(surveys.find(x=>String(x.id)==='${esc(s.id)}'))">📝 تعبئة النموذج</button>`
-                : `<button class="btn btn-outline" onclick="editSurveyPrompt('${esc(s.id)}')">✏️ تعديل</button>`}
+                : `<button class="btn btn-outline" onclick="editSurveyPrompt('${esc(s.id)}')">✏️ تعديل</button>
+                   <button class="btn btn-reject" onclick="deleteSurvey('${esc(s.id)}', '${esc(s.title)}')">🗑️ حذف</button>`}
             </div>
           </div>
         </div>`;
@@ -1441,6 +1449,24 @@
       } else showAlert(esc(res.message || 'حدث خطأ أثناء الحفظ.'));
     }
 
+    async function deleteSurvey(surveyId, title) {
+      const linkedResponses = responses.filter(r => r.surveyTitle === title).length;
+      const warnTxt = linkedResponses > 0
+        ? `⚠️ يوجد ${linkedResponses} تقرير مرفوع مرتبط بهذا النموذج. حذف النموذج لن يحذف التقارير القديمة (ستبقى في السجلات)، لكن لن يعد بالإمكان تعبئة نماذج جديدة عليه.\n\nهل أنت متأكد من حذف "${title}"؟`
+        : `هل أنت متأكد من حذف نموذج "${title}"؟ هذا الإجراء لا يمكن التراجع عنه.`;
+      if (!(await showConfirm(warnTxt))) return;
+
+      const mergedSurveys = surveys.filter(s => String(s.id) !== String(surveyId));
+      const res = await apiCall('SYNC_GENERAL_DATA', { surveys: mergedSurveys });
+      if (res.status === 'success') {
+        logAudit('SURVEY_DELETE', `حذف نموذج حصر: ${title}`);
+        surveys = mergedSurveys;
+        renderSurveysList();
+        populateAnalyticsSurveyFilter();
+        showAlert('✓ تم حذف النموذج.');
+      } else showAlert(esc(res.message || 'تعذر حذف النموذج.'));
+    }
+
     function backToSurveysList() {
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSurveys').classList.remove('hidden');
@@ -1463,7 +1489,7 @@
       const myBranch = currentUser.branch;
       const scopedSchools = (schoolDataWrapper.list || []).filter(sch => {
         if (currentUser.role === 'ROLE_INSPECTOR') return schoolBelongsToUser(sch, currentUser);
-        if (currentUser.role === 'ROLE_SUPERVISION_LEAD' && myBranch && myBranch !== 'الكل') return sch.branch === myBranch;
+        if (MANAGER_ROLES.includes(currentUser.role) && myBranch && myBranch !== 'الكل') return sch.branch === myBranch;
         return true;
       });
       scopedSchools.forEach(sch => { schoolHtml += `<option value="${esc(sch.name)}">${esc(sch.name)}</option>`; });
@@ -1811,7 +1837,7 @@
       const visitedSchoolNames = new Set(scopedResponses.map(r => r.school));
       let scopeSchools = schoolDataWrapper.list || [];
       if (currentUser.role === 'ROLE_INSPECTOR') scopeSchools = scopeSchools.filter(s => schoolBelongsToUser(s, currentUser));
-      else if (currentUser.role === 'ROLE_SUPERVISION_LEAD' && currentUser.branch && currentUser.branch !== 'الكل') scopeSchools = scopeSchools.filter(s => s.branch === currentUser.branch);
+      else if (MANAGER_ROLES.includes(currentUser.role) && currentUser.branch && currentUser.branch !== 'الكل') scopeSchools = scopeSchools.filter(s => s.branch === currentUser.branch);
       const gap = scopeSchools.filter(s => !visitedSchoolNames.has(s.name));
       if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
       if (gap.length === 0) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#10b981; font-weight:800;">✅ تم رفع تقرير واحد على الأقل لكل مدرسة ضمن النطاق الحالي.</div>`; return; }
@@ -1849,7 +1875,7 @@
     // لوحة أداء المشرفين الميدانيين — مرئية فقط لإدارة التخطيط ومدير الإشراف
     function renderInspectorPerformance(scopedResponses) {
       const card = document.getElementById('inspectorPerfCard'); if (!card) return;
-      const canSeeThis = currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD';
+      const canSeeThis = currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role);
       card.classList.toggle('hidden', !canSeeThis);
       if (!canSeeThis) return;
       const tbody = document.querySelector('#inspectorPerfTable tbody'); if (!tbody) return;
@@ -1997,11 +2023,11 @@
       let list = responses;
       if (currentUser.role === "ROLE_SUB_EAST") { list = list.filter(r => r.branch === "المكتب الفرعي بالشرقية"); } 
       else if (currentUser.role === "ROLE_SUB_AHSA") { list = list.filter(r => r.branch === "المكتب الفرعي بالأحساء"); } 
-      else if (currentUser.role === "ROLE_SUPERVISION_LEAD") { if (currentUser.branch && currentUser.branch !== "الكل") list = list.filter(r => r.branch === currentUser.branch); } 
+      else if (MANAGER_ROLES.includes(currentUser.role)) { if (currentUser.branch && currentUser.branch !== "الكل") list = list.filter(r => r.branch === currentUser.branch); } 
       else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); }
 
       // دمج نطاق أي مُفوِّض نشط (تفويض صلاحية الاعتماد مؤقتاً بين إدارة التخطيط/مديري الإشراف)
-      if (currentUser.role === 'ROLE_PLANNING' || currentUser.role === 'ROLE_SUPERVISION_LEAD') {
+      if (currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role)) {
         const delegators = getActiveIncomingDelegators();
         if (delegators.length > 0) {
           const extra = responses.filter(r => delegators.some(d => !d.branch || d.branch === 'الكل' || r.branch === d.branch));
@@ -2259,7 +2285,7 @@
             const minNo = row[0] ? String(row[0]).trim() : ''; const name = row[1] ? String(row[1]).trim() : '';
             let branchRaw = row[2] ? String(row[2]).trim() : 'المكتب الفرعي بالشرقية'; const inspectorText = row[3] ? String(row[3]).trim() : '';
             if (name && inspectorText) {
-              let branch = "المكتب الفرعي بالشرقية"; if (branchRaw.includes("أحساء") || branchRaw.includes("الاحساء")) branch = "المكتب الفرعي بالأحساء";
+              let branch = "المكتب الفرعي بالشرقية"; if (branchRaw.includes("حفر الباطن") || branchRaw.includes("حفرالباطن") || branchRaw.includes("الباطن")) branch = "المكتب الفرعي بحفر الباطن"; else if (branchRaw.includes("أحساء") || branchRaw.includes("الاحساء")) branch = "المكتب الفرعي بالأحساء";
               const inspUser = resolveInspectorUser(inspectorText);
               if (!inspUser) unresolved++;
               const inspectorUsername = inspUser ? inspUser.username : '';
@@ -2313,6 +2339,7 @@
     // ---- استيراد / تصدير جماعي للمستخدمين عبر Excel ----
     function normalizeBranchLabel(text) {
       const t = (text || '').trim();
+      if (t.includes('حفر الباطن') || t.includes('حفرالباطن') || t.includes('الباطن')) return 'المكتب الفرعي بحفر الباطن';
       if (t.includes('أحساء') || t.includes('احساء')) return 'المكتب الفرعي بالأحساء';
       if (t.includes('شرقية')) return 'المكتب الفرعي بالشرقية';
       if (t === 'الكل' || t === '') return 'الكل';
@@ -2529,7 +2556,7 @@
     function openDelegateModal() {
       const sel = document.getElementById('delegateToUser');
       sel.innerHTML = '<option value="">-- بدون تفويض --</option>';
-      usersList.filter(u => (u.role === 'ROLE_PLANNING' || u.role === 'ROLE_SUPERVISION_LEAD') && u.username !== currentUser.username)
+      usersList.filter(u => (u.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(u.role)) && u.username !== currentUser.username)
         .forEach(u => { sel.innerHTML += `<option value="${esc(u.username)}">${esc(u.fullName)} (${esc(ROLE_LABELS[u.role] || u.role)})</option>`; });
 
       const noteEl = document.getElementById('currentDelegationNote');
