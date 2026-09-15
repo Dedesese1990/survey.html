@@ -1366,7 +1366,7 @@
         populateAnalyticsSurveyFilter();
         if (!document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true);
         if (!document.getElementById('secSurveys').classList.contains('hidden')) renderSurveysList();
-        if (!document.getElementById('secRecords').classList.contains('hidden')) { updateKPIs(); renderRecords(); }
+        if (!document.getElementById('secRecords').classList.contains('hidden')) { populateFilterDropdowns(); updateKPIs(); renderRecords(); }
         if (!document.getElementById('secSchools').classList.contains('hidden')) renderSchoolsManagement();
         if (!document.getElementById('secUsers').classList.contains('hidden')) renderUsersManagement();
         if (!document.getElementById('secAuditLog')?.classList.contains('hidden')) renderAuditLog();
@@ -1931,7 +1931,7 @@
     }
 
     // ================= Analytics & Dashboard =================
-    setInterval(() => { if (currentUser && !document.getElementById('secAnalytics').classList.contains('hidden')) refreshAnalyticsDashboard(true); if (currentUser && !document.getElementById('secRecords').classList.contains('hidden')) updateKPIs(); }, 15000);
+    setInterval(() => { if (currentUser && currentSessionToken) pullFromCloud(); }, 20000);
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser || !schoolDataWrapper.list) return;
