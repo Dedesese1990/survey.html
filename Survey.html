@@ -142,6 +142,12 @@
     .radial-progress .rp-fill { fill: none; stroke: var(--tbc-gold); stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
     .radial-progress .rp-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
 
+    /* تنقّل مقسّم لأقسام لوحة المؤشرات الثلاثة */
+    .analytics-subnav { display: flex; gap: 6px; background: #e9eef1; padding: 6px; border-radius: 14px; margin-bottom: 26px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .analytics-subnav-btn { flex: 1; white-space: nowrap; padding: 13px 16px; border: none; background: transparent; border-radius: 10px; font-weight: 800; font-size: 0.88rem; color: var(--text-muted); cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; font-family: 'Tajawal', sans-serif; }
+    .analytics-subnav-btn.active { background: #fff; color: var(--tbc-petrol-dark); box-shadow: var(--shadow-sm); }
+    .analytics-subnav-btn:not(.active):hover { color: var(--tbc-petrol-dark); }
+
     /* كروت مؤشرات السجلات (قابلة للنقر للتصفية) وشريط الفلاتر — كانا يُستخدَمان في الكود بدون أي تنسيق مُعرّف */
     .kpi-box { background: #fff; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm); text-align: center; cursor: pointer; transition: all 0.2s ease; }
     .kpi-box:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--tbc-petrol); }
@@ -319,199 +325,187 @@
               <select id="analyticsSurveyFilter" style="width:auto; font-size:0.88rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
                 <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
               </select>
-              <div style="position:relative;">
-                <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('branchFilterPanel').classList.toggle('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
-                <div id="branchFilterPanel" class="hidden" style="position:absolute; top:110%; left:0; background:#fff; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); box-shadow:var(--shadow-md); padding:12px; z-index:50; min-width:190px;">
-                  <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onAnalyticsBranchFilterChange()"> الشرقية</label>
-                  <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onAnalyticsBranchFilterChange()"> الأحساء</label>
-                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onAnalyticsBranchFilterChange()"> حفر الباطن</label>
-                </div>
-              </div>
+              <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('branchFilterPanel').classList.remove('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
               <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
               <button class="btn btn-gold" style="font-size:0.85rem; padding:10px 16px;" onclick="exportAnalyticsPDF()">📤 تصدير تقرير PDF شامل</button>
             </div>
           </div>
 
-          <div class="section-label">🏫 إحصائيات المدارس والمباني</div>
-          <div class="stats-grid" style="margin-bottom: 32px;">
-            <div class="bi-kpi-card">
-              <div class="bi-title">👤 عدد المشرفين المسجلين</div>
-              <div class="bi-num" id="biInspectorsCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
-              <div class="bi-title">🏫 عدد المدارس</div>
-              <div class="bi-num" id="biTotalSchoolsCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
-              <div class="bi-title">🏢 عدد المباني</div>
-              <div class="bi-num" id="biBuildingsCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
-              <div class="bi-title">🔑 المباني المستأجرة</div>
-              <div class="bi-num" id="biRentedBuildingsCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
-              <div class="bi-title">🎓 عدد المعاهد</div>
-              <div class="bi-num" id="biInstitutesCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
-              <div class="bi-title">🏛️ المباني الإدارية</div>
-              <div class="bi-num" id="biAdminBuildingsCount">0</div>
-            </div>
+          <div class="analytics-subnav">
+            <button type="button" class="analytics-subnav-btn active" data-key="schools" onclick="showAnalyticsSubSection('schools')">🏫 المدارس والمباني</button>
+            <button type="button" class="analytics-subnav-btn" data-key="complaints" onclick="showAnalyticsSubSection('complaints')">🚨 البلاغات</button>
+            <button type="button" class="analytics-subnav-btn" data-key="operations" onclick="showAnalyticsSubSection('operations')">📋 عمليات الحصر</button>
           </div>
 
-          <div class="section-label">⚡ مؤشرات الأداء والاعتماد</div>
-          <div class="bento-grid">
-            <div class="bento-hero">
-              <div class="bi-title">نسبة الإنجاز الفعلي</div>
-              <div class="radial-progress">
-                <svg viewBox="0 0 120 120">
-                  <circle class="rp-track" cx="60" cy="60" r="50"></circle>
-                  <circle class="rp-fill" id="actualRateRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
-                </svg>
-                <div class="rp-label" id="biActualRate">0.0%</div>
+          <!-- ============ القسم 1: المدارس والمباني ============ -->
+          <div id="analyticsSectionSchools" class="analytics-section">
+            <div class="bento-grid">
+              <div class="bento-hero">
+                <div class="bi-title">🏫 عدد المدارس الإجمالي</div>
+                <div style="font-size:3.1rem; font-weight:900; color:#fff; font-variant-numeric:tabular-nums; text-align:center; margin:10px 0;" id="biTotalSchoolsCount">0</div>
+                <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">ضمن نطاقك الحالي</div>
               </div>
-              <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من إجمالي المستهدف لعمليات الحصر الجارية</div>
+              <div class="bento-cell"><div class="bi-title">👤 عدد المشرفين</div><div class="bi-num" id="biInspectorsCount">0</div></div>
+              <div class="bento-cell"><div class="bi-title">🏢 عدد المباني</div><div class="bi-num" id="biBuildingsCount">0</div></div>
+              <div class="bento-cell tone-pending"><div class="bi-title">🔑 مستأجرة</div><div class="bi-num" id="biRentedBuildingsCount">0</div></div>
+              <div class="bento-cell"><div class="bi-title">🎓 معاهد</div><div class="bi-num" id="biInstitutesCount">0</div></div>
+              <div class="bento-cell"><div class="bi-title">🏛️ إدارية</div><div class="bi-num" id="biAdminBuildingsCount">0</div></div>
             </div>
-            <div class="bento-cell tone-approved clickable" onclick="goToRecordsFiltered('approved')">
-              <div class="bi-title">المعتمدة</div>
-              <div class="bi-num" style="color:#10b981;" id="biApprovedCount">0</div>
-            </div>
-            <div class="bento-cell tone-pending clickable" onclick="goToRecordsFiltered('pending')">
-              <div class="bi-title">قيد الاعتماد</div>
-              <div class="bi-num" style="color:#f59e0b;" id="biPendingCount">0</div>
-            </div>
-            <!-- الكارت الجديد لتحليل التقادم والاختناق (Bottleneck Analysis) -->
-            <div class="bento-cell wide tone-danger">
-              <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
-              <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
-              <p style="font-size:0.74rem; color:#b91c1c; margin-top:6px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
-              <button class="btn btn-reject" style="font-size:0.74rem; padding:6px 10px; margin-top:8px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button>
-            </div>
-            <div class="bento-cell">
-              <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
-              <div class="bi-num" style="font-size:1.55rem;" id="biAvgTurnaround">-</div>
-            </div>
-            <div class="bento-cell">
-              <div class="bi-title">الالتزام بالمواعيد</div>
-              <div class="bi-num" id="biOnTimeRate">-</div>
-            </div>
-            <div class="bento-cell">
-              <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
-              <div class="bi-num" style="font-size:1.35rem;" id="biAvgFillDuration">-</div>
+
+            <div class="card">
+              <div class="chart-card-title">🚻 توزيع المدارس حسب الجنس</div>
+              <p class="chart-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
+              <div id="schoolsByGenderContainer"></div>
             </div>
           </div>
 
-          <div class="section-label">🚨 ملخص البلاغات</div>
-          <div class="card" id="analyticsComplaintsSummaryCard">
-            <div class="chart-card-header-row">
-              <div class="chart-card-title">🚨 حالة بلاغات الدعم الموحد</div>
-              <span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.85rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span>
-            </div>
-            <p class="chart-card-desc">نظرة سريعة على بلاغات الصيانة والدعم ضمن نطاقك — للتفاصيل الكاملة والرسوم البيانية ادخل تاب "البلاغات".</p>
-            <div id="analyticsComplaintsSummaryEmpty" class="empty-state" style="padding:20px;">لا توجد بيانات بلاغات مستوردة بعد.</div>
-            <div id="analyticsComplaintsSummaryContent" class="hidden">
-              <div class="bento-grid" style="margin-bottom:20px;">
-                <div class="bento-hero" id="acsSlaHero">
-                  <div class="bi-title">الالتزام بـ SLA (أُغلق في الموعد)</div>
-                  <div class="radial-progress">
-                    <svg viewBox="0 0 120 120">
-                      <circle class="rp-track" cx="60" cy="60" r="50"></circle>
-                      <circle class="rp-fill" id="acsSlaRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
-                    </svg>
-                    <div class="rp-label" id="acsSla">0%</div>
+          <!-- ============ القسم 2: البلاغات ============ -->
+          <div id="analyticsSectionComplaints" class="analytics-section hidden">
+            <div class="card" id="analyticsComplaintsSummaryCard">
+              <div class="chart-card-header-row">
+                <div class="chart-card-title">🚨 حالة بلاغات الدعم الموحد</div>
+                <span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.85rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span>
+              </div>
+              <p class="chart-card-desc">نظرة سريعة على بلاغات الصيانة والدعم ضمن نطاقك — للتفاصيل الكاملة والرسوم البيانية ادخل تاب "البلاغات".</p>
+              <div id="analyticsComplaintsSummaryEmpty" class="empty-state" style="padding:20px;">لا توجد بيانات بلاغات مستوردة بعد.</div>
+              <div id="analyticsComplaintsSummaryContent" class="hidden">
+                <div class="bento-grid" style="margin-bottom:20px;">
+                  <div class="bento-hero" id="acsSlaHero">
+                    <div class="bi-title">الالتزام بـ SLA (أُغلق في الموعد)</div>
+                    <div class="radial-progress">
+                      <svg viewBox="0 0 120 120">
+                        <circle class="rp-track" cx="60" cy="60" r="50"></circle>
+                        <circle class="rp-fill" id="acsSlaRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                      </svg>
+                      <div class="rp-label" id="acsSla">0%</div>
+                    </div>
+                    <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من البلاغات المغلقة خلال المهلة الزمنية المحددة</div>
                   </div>
-                  <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من البلاغات المغلقة خلال المهلة الزمنية المحددة</div>
+                  <div class="bento-cell"><div class="bi-title">إجمالي البلاغات</div><div class="bi-num" id="acsTotal">0</div></div>
+                  <div class="bento-cell tone-pending clickable" onclick="showTab('complaints')"><div class="bi-title">مفتوحة</div><div class="bi-num" style="color:#f59e0b;" id="acsOpen">0</div></div>
+                  <div class="bento-cell tone-approved"><div class="bi-title">نسبة الإغلاق</div><div class="bi-num" style="color:#10b981;" id="acsClosureRate">0%</div></div>
+                  <div class="bento-cell"><div class="bi-title">مغلقة</div><div class="bi-num" style="color:#10b981;" id="acsClosed">0</div></div>
+                  <div class="bento-cell tone-danger clickable" onclick="showTab('complaints')"><div class="bi-title">🔁 معاد فتحها</div><div class="bi-num" style="color:#ef4444;" id="acsReopened">0</div></div>
                 </div>
-                <div class="bento-cell"><div class="bi-title">إجمالي البلاغات</div><div class="bi-num" id="acsTotal">0</div></div>
-                <div class="bento-cell tone-pending clickable" onclick="showTab('complaints')"><div class="bi-title">مفتوحة</div><div class="bi-num" style="color:#f59e0b;" id="acsOpen">0</div></div>
-                <div class="bento-cell tone-approved"><div class="bi-title">نسبة الإغلاق</div><div class="bi-num" style="color:#10b981;" id="acsClosureRate">0%</div></div>
-                <div class="bento-cell"><div class="bi-title">مغلقة</div><div class="bi-num" style="color:#10b981;" id="acsClosed">0</div></div>
-                <div class="bento-cell tone-danger clickable" onclick="showTab('complaints')"><div class="bi-title">🔁 معاد فتحها</div><div class="bi-num" style="color:#ef4444;" id="acsReopened">0</div></div>
-              </div>
-              <div class="chart-card-title" style="margin-bottom:12px;">توزيع البلاغات حسب الحالة التشغيلية</div>
-              <div style="height:220px; position:relative;"><canvas id="acsStatusChart"></canvas></div>
-            </div>
-          </div>
-
-          <!-- ===== قسم: محتاج تتابعه (تغطية، مشاكل متكررة) ===== -->
-          <div class="card">
-            <div class="chart-card-title">🏫 تغطية المدارس (لم تتم زيارتها بعد)</div>
-            <p class="chart-card-desc">مدارس مسجلة في قاعدة البيانات ولم يُرفع لها أي تقرير حصر حتى الآن ضمن النطاق الحالي.</p>
-            <div id="coverageGapContainer"></div>
-          </div>
-
-          <div class="card">
-            <div class="chart-card-title">🔁 مشاكل متكررة لم تُحل</div>
-            <p class="chart-card-desc">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
-            <div id="recurringIssuesContainer"></div>
-          </div>
-
-          <!-- ===== قسم: التوزيعات الجغرافية والخرائط ===== -->
-          <div class="card">
-            <div class="chart-card-title">🚻 توزيع المدارس حسب الجنس</div>
-            <p class="chart-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
-            <div id="schoolsByGenderContainer"></div>
-          </div>
-
-          <div class="card" style="margin-bottom:0;">
-            <div class="chart-card-header-row">
-              <div class="chart-card-title">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <select id="mapBranchFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
-                  <option value="ALL">-- كل الفروع --</option>
-                  <option value="المكتب الفرعي بالشرقية">الشرقية</option>
-                  <option value="المكتب الفرعي بالأحساء">الأحساء</option>
-                  <option value="المكتب الفرعي بحفر الباطن">حفر الباطن</option>
-                </select>
-                <select id="mapStatusFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
-                  <option value="ALL">-- كل الحالات --</option>
-                  <option value="APPROVED">🟢 معتمدة وسليمة</option>
-                  <option value="PENDING">🟠 قيد الاعتماد</option>
-                  <option value="ISSUES">🔴 بها ملاحظات</option>
-                  <option value="NOT_VISITED">⚪ لم تُزر بعد</option>
-                </select>
+                <div class="chart-card-title" style="margin-bottom:12px;">توزيع البلاغات حسب الحالة التشغيلية</div>
+                <div style="height:220px; position:relative;"><canvas id="acsStatusChart"></canvas></div>
               </div>
             </div>
-            <div class="map-legend"><span>🟢 معتمدة وسليمة</span><span>🟠 قيد الاعتماد</span><span>🔴 بها بنود غير مطابقة أو مرفوضة</span><span>⚪ لم تُزر بعد</span></div>
-            <p class="chart-card-desc" style="margin-top:-6px;">الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً، ولا تُستخدم إحداثيات الزيارة إلا لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً.</p>
-            <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
           </div>
-          <div style="height:24px;"></div>
 
-          <!-- ===== قسم: جداول التفاصيل (الأقل استخدامًا يوميًا، الأكثر تفصيلاً) ===== -->
-          <div class="card" id="inspectorPerfCard">
-            <div class="chart-card-title" style="margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</div>
-            <div class="table-responsive">
-              <table class="data-table" id="inspectorPerfTable">
-                <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th><th>⏱️ متوسط مدة الإنجاز</th></tr></thead>
-                <tbody></tbody>
-              </table>
+          <!-- ============ القسم 3: عمليات الحصر ============ -->
+          <div id="analyticsSectionOperations" class="analytics-section hidden">
+            <div class="bento-grid">
+              <div class="bento-hero">
+                <div class="bi-title">نسبة الإنجاز الفعلي</div>
+                <div class="radial-progress">
+                  <svg viewBox="0 0 120 120">
+                    <circle class="rp-track" cx="60" cy="60" r="50"></circle>
+                    <circle class="rp-fill" id="actualRateRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                  </svg>
+                  <div class="rp-label" id="biActualRate">0.0%</div>
+                </div>
+                <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من إجمالي المستهدف لعمليات الحصر الجارية</div>
+              </div>
+              <div class="bento-cell tone-approved clickable" onclick="goToRecordsFiltered('approved')">
+                <div class="bi-title">المعتمدة</div>
+                <div class="bi-num" style="color:#10b981;" id="biApprovedCount">0</div>
+              </div>
+              <div class="bento-cell tone-pending clickable" onclick="goToRecordsFiltered('pending')">
+                <div class="bi-title">قيد الاعتماد</div>
+                <div class="bi-num" style="color:#f59e0b;" id="biPendingCount">0</div>
+              </div>
+              <!-- الكارت الجديد لتحليل التقادم والاختناق (Bottleneck Analysis) -->
+              <div class="bento-cell wide tone-danger">
+                <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
+                <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
+                <p style="font-size:0.74rem; color:#b91c1c; margin-top:6px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
+                <button class="btn btn-reject" style="font-size:0.74rem; padding:6px 10px; margin-top:8px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button>
+              </div>
+              <div class="bento-cell">
+                <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
+                <div class="bi-num" style="font-size:1.55rem;" id="biAvgTurnaround">-</div>
+              </div>
+              <div class="bento-cell">
+                <div class="bi-title">الالتزام بالمواعيد</div>
+                <div class="bi-num" id="biOnTimeRate">-</div>
+              </div>
+              <div class="bento-cell">
+                <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
+                <div class="bi-num" style="font-size:1.35rem;" id="biAvgFillDuration">-</div>
+              </div>
             </div>
-          </div>
-          <div style="height:24px;"></div>
 
-          <div class="card">
-            <div class="chart-card-title">📊 مقارنة الأداء بين فترتين</div>
-            <div class="action-buttons-mobile" style="display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;">
-              <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من</label><input type="date" id="cmpPeriodStart"></div>
-              <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">إلى</label><input type="date" id="cmpPeriodEnd"></div>
-              <button class="btn btn-outline" style="align-self:flex-end; padding:11px 16px;" onclick="renderPeriodComparison()">قارن ↺</button>
+            <!-- ===== محتاج تتابعه (تغطية، مشاكل متكررة) ===== -->
+            <div class="card">
+              <div class="chart-card-title">🏫 تغطية المدارس (لم تتم زيارتها بعد)</div>
+              <p class="chart-card-desc">مدارس مسجلة في قاعدة البيانات ولم يُرفع لها أي تقرير حصر حتى الآن ضمن النطاق الحالي.</p>
+              <div id="coverageGapContainer"></div>
             </div>
-            <p class="chart-card-desc" style="margin-top:0;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
-            <div id="periodComparisonContainer"></div>
-          </div>
-          <div style="height:24px;"></div>
 
-          <div class="card">
-            <div class="chart-card-title" style="margin-bottom:16px;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</div>
-            <div style="height: 300px; position: relative; width:100%;">
-              <canvas id="sCurveChart"></canvas>
+            <div class="card">
+              <div class="chart-card-title">🔁 مشاكل متكررة لم تُحل</div>
+              <p class="chart-card-desc">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
+              <div id="recurringIssuesContainer"></div>
+            </div>
+
+            <div class="card" style="margin-bottom:0;">
+              <div class="chart-card-header-row">
+                <div class="chart-card-title">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <select id="mapBranchFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
+                    <option value="ALL">-- كل الفروع --</option>
+                    <option value="المكتب الفرعي بالشرقية">الشرقية</option>
+                    <option value="المكتب الفرعي بالأحساء">الأحساء</option>
+                    <option value="المكتب الفرعي بحفر الباطن">حفر الباطن</option>
+                  </select>
+                  <select id="mapStatusFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
+                    <option value="ALL">-- كل الحالات --</option>
+                    <option value="APPROVED">🟢 معتمدة وسليمة</option>
+                    <option value="PENDING">🟠 قيد الاعتماد</option>
+                    <option value="ISSUES">🔴 بها ملاحظات</option>
+                    <option value="NOT_VISITED">⚪ لم تُزر بعد</option>
+                  </select>
+                </div>
+              </div>
+              <div class="map-legend"><span>🟢 معتمدة وسليمة</span><span>🟠 قيد الاعتماد</span><span>🔴 بها بنود غير مطابقة أو مرفوضة</span><span>⚪ لم تُزر بعد</span></div>
+              <p class="chart-card-desc" style="margin-top:-6px;">الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً، ولا تُستخدم إحداثيات الزيارة إلا لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً.</p>
+              <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
+            </div>
+            <div style="height:24px;"></div>
+
+            <!-- ===== جداول التفاصيل ===== -->
+            <div class="card" id="inspectorPerfCard">
+              <div class="chart-card-title" style="margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</div>
+              <div class="table-responsive">
+                <table class="data-table" id="inspectorPerfTable">
+                  <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th><th>⏱️ متوسط مدة الإنجاز</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <div style="height:24px;"></div>
+
+            <div class="card">
+              <div class="chart-card-title">📊 مقارنة الأداء بين فترتين</div>
+              <div class="action-buttons-mobile" style="display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;">
+                <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من</label><input type="date" id="cmpPeriodStart"></div>
+                <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">إلى</label><input type="date" id="cmpPeriodEnd"></div>
+                <button class="btn btn-outline" style="align-self:flex-end; padding:11px 16px;" onclick="renderPeriodComparison()">قارن ↺</button>
+              </div>
+              <p class="chart-card-desc" style="margin-top:0;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
+              <div id="periodComparisonContainer"></div>
+            </div>
+            <div style="height:24px;"></div>
+
+            <div class="card">
+              <div class="chart-card-title" style="margin-bottom:16px;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</div>
+              <div style="height: 300px; position: relative; width:100%;">
+                <canvas id="sCurveChart"></canvas>
+              </div>
             </div>
           </div>
         </section>
-
-        <!-- ================= 2. Surveys Tab ================= -->
 
         <!-- ================= 2. Surveys Tab ================= -->
         <section id="secSurveys" class="hidden">
@@ -775,14 +769,7 @@
             <div class="action-buttons-mobile" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من تاريخ</label><input type="date" id="cmpFilterFrom" onchange="loadComplaintsStats()"></div>
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">إلى تاريخ</label><input type="date" id="cmpFilterTo" onchange="loadComplaintsStats()"></div>
-              <div style="position:relative;">
-                <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('cmpBranchFilterPanel').classList.toggle('hidden')" id="cmpBranchFilterBtn">🏢 كل الفروع ▾</button>
-                <div id="cmpBranchFilterPanel" class="hidden" style="position:absolute; top:110%; left:0; background:#fff; border:1px solid var(--border-subtle); border-radius:8px; box-shadow:var(--shadow-md); padding:12px; z-index:50; min-width:190px;">
-                  <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onCmpBranchFilterChange()"> الشرقية</label>
-                  <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onCmpBranchFilterChange()"> الأحساء</label>
-                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onCmpBranchFilterChange()"> حفر الباطن</label>
-                </div>
-              </div>
+              <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('cmpBranchFilterPanel').classList.remove('hidden')" id="cmpBranchFilterBtn">🏢 كل الفروع ▾</button>
               <div style="flex:1; min-width:180px;">
                 <label style="font-size:0.8rem; margin-bottom:4px;">المشرف الميداني</label>
                 <select id="cmpFilterInspector" onchange="loadComplaintsStats()"><option value="">-- كل المشرفين --</option></select>
@@ -1111,6 +1098,26 @@
         <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordChange()">تحديث ✓</button>
         <button class="btn btn-outline" onclick="closeChangePasswordModal()">إلغاء</button>
       </div>
+    </div>
+  </div>
+
+  <div id="branchFilterPanel" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px;">
+      <h4 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.1rem; font-weight:900;">🏢 اختر الفروع المعروضة</h4>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> الشرقية</label>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> الأحساء</label>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> حفر الباطن</label>
+      <button class="btn btn-petrol" style="width:100%;" onclick="document.getElementById('branchFilterPanel').classList.add('hidden')">تم ✓</button>
+    </div>
+  </div>
+
+  <div id="cmpBranchFilterPanel" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px;">
+      <h4 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.1rem; font-weight:900;">🏢 اختر الفروع المعروضة</h4>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> الشرقية</label>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> الأحساء</label>
+      <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> حفر الباطن</label>
+      <button class="btn btn-petrol" style="width:100%;" onclick="document.getElementById('cmpBranchFilterPanel').classList.add('hidden')">تم ✓</button>
     </div>
   </div>
 
@@ -1695,6 +1702,19 @@
       });
       ['secNewSurvey', 'secFillSurvey'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
       if(tab === 'analytics') { refreshAnalyticsDashboard(true); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); }
+    }
+
+    // التنقّل بين أقسام لوحة المؤشرات الثلاثة (المدارس/البلاغات/عمليات الحصر)
+    function showAnalyticsSubSection(key) {
+      ['schools', 'complaints', 'operations'].forEach(k => {
+        const el = document.getElementById('analyticsSection' + k.charAt(0).toUpperCase() + k.slice(1));
+        if (el) el.classList.toggle('hidden', k !== key);
+      });
+      document.querySelectorAll('.analytics-subnav-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-key') === key));
+      // الخريطة والرسم البياني بُنيا وهما مخفيّان أول مرة، فبيحتاجوا إعادة حساب أبعادهم لحظة ما يظهروا فعلياً
+      if (key === 'operations') {
+        setTimeout(() => { try { fieldMapInstance?.invalidateSize(); sCurveChartInstance?.resize(); } catch (e) {} }, 50);
+      }
     }
 
     // ================= Logic: Surveys Management (النماذج) =================
