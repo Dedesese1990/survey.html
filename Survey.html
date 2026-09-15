@@ -22,7 +22,9 @@
       --bg-canvas: #f4f7f9; --surface-card: #ffffff; --border-subtle: #d0dfe5; --text-main: #1f333a; --text-muted: #536e7a;
       --status-pending: #f59e0b; --status-pending-bg: #fffbeb; --status-approved: #10b981; --status-approved-bg: #ecfdf5;
       --status-rejected: #ef4444; --status-rejected-bg: #fef2f2;
-      --shadow-sm: 0 2px 8px rgba(39,98,112,0.08); --shadow-md: 0 8px 24px rgba(39,98,112,0.12);
+      --shadow-sm: 0 1px 2px rgba(31,51,58,0.05), 0 1px 3px rgba(31,51,58,0.05);
+      --shadow-md: 0 6px 16px rgba(31,51,58,0.09), 0 2px 6px rgba(31,51,58,0.05);
+      --shadow-lift: 0 10px 24px rgba(31,51,58,0.14);
       --radius-sm: 8px; --radius-md: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
@@ -74,9 +76,9 @@
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px; }
 
     /* ================= UI Elements ================= */
-    .btn { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; transition: all 0.2s ease; }
-    .btn-petrol { background: var(--tbc-petrol); color: #fff; } .btn-petrol:hover { background: var(--tbc-petrol-dark); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-    .btn-gold { background: var(--tbc-gold); color: #1f333a; } .btn-gold:hover { background: var(--tbc-gold-hover); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .btn { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+    .btn-petrol { background: var(--tbc-petrol); color: #fff; } .btn-petrol:hover { background: var(--tbc-petrol-dark); box-shadow: var(--shadow-sm); }
+    .btn-gold { background: var(--tbc-gold); color: #1f333a; } .btn-gold:hover { background: var(--tbc-gold-hover); box-shadow: var(--shadow-sm); }
     .btn-outline { background: #fff; border: 1.5px solid var(--border-subtle); color: var(--tbc-petrol-dark); } .btn-outline:hover { background: var(--tbc-petrol-light); border-color: var(--tbc-petrol); }
     .btn-approve { background: #10b981; color: #fff; } .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
@@ -98,7 +100,21 @@
     .badge-status.approved { background: var(--status-approved-bg); color: #047857; border: 1px solid #a7f3d0; }
     .badge-status.rejected { background: var(--status-rejected-bg); color: #b91c1c; border: 1px solid #fecaca; }
 
-    .bi-kpi-card { background: #fff; border-radius: var(--radius-md); padding: 20px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    .bi-kpi-card { position: relative; background: #fff; border-radius: var(--radius-md); padding: 20px 18px 18px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; transition: box-shadow 0.25s ease, transform 0.25s ease; }
+    .bi-kpi-card::before { content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px; background: var(--tbc-petrol); opacity: 0.55; }
+    .bi-kpi-card.highlight::before { background: var(--tbc-gold); opacity: 1; }
+
+    /* section headers شارة موحّدة لتقسيمات الصفحة الرئيسية (KPI groups) */
+    .section-label { display: flex; align-items: center; gap: 10px; margin: 4px 0 14px; font-size: 0.92rem; font-weight: 900; color: var(--tbc-petrol-mid); }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, var(--border-subtle), transparent); }
+
+    /* ترويسة موحّدة لكل كارت رسم بياني/جدول: عنوان + وصف مختصر */
+    .chart-card-title { font-size: 1.02rem; font-weight: 900; color: var(--tbc-petrol-dark); display: flex; align-items: center; gap: 8px; }
+    .chart-card-desc { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-top: 5px; margin-bottom: 16px; line-height: 1.55; }
+    .chart-card-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
+
+    .map-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; }
+    .map-legend span { white-space: nowrap; }
 
     /* كروت مؤشرات السجلات (قابلة للنقر للتصفية) وشريط الفلاتر — كانا يُستخدَمان في الكود بدون أي تنسيق مُعرّف */
     .kpi-box { background: #fff; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm); text-align: center; cursor: pointer; transition: all 0.2s ease; }
@@ -109,9 +125,9 @@
 
     .filter-bar-card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-right: 5px solid var(--tbc-petrol); border-radius: var(--radius-md); padding: 20px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
     .bi-kpi-card.highlight { background: #1e293b; border: none; }
-    .bi-title { font-size: 0.9rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
-    .bi-num { font-size: 2.2rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); }
-    .bi-kpi-card.highlight .bi-title { color: #cbd5e1; }
+    .bi-title { font-size: 0.82rem; font-weight: 800; color: var(--text-muted); margin-bottom: 9px; letter-spacing: 0.1px; }
+    .bi-num { font-size: 2.15rem; font-weight: 900; line-height: 1; color: var(--tbc-petrol-mid); font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+    .bi-kpi-card.highlight .bi-title { color: #94a3b8; }
     .bi-kpi-card.highlight .bi-num { color: var(--tbc-gold); }
 
     .search-wrapper { position: relative; flex: 1; min-width: 250px; }
@@ -268,18 +284,18 @@
         
         <!-- ================= 1. Analytics Tab ================= -->
         <section id="secAnalytics">
-          <div class="card" style="padding:16px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border-top:5px solid var(--tbc-petrol);">
+          <div class="card" style="padding:20px 26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-top:3px solid var(--tbc-petrol);">
             <div>
-              <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.2rem;">📈 المؤشرات التنفيذية ونسب الإنجاز</h3>
+              <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.25rem; font-weight:900;">📈 المؤشرات التنفيذية ونسب الإنجاز</h3>
               <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="analyticsScopeNote">متابعة الأداء الحي لعمليات الحصر الميداني</p>
             </div>
-            <div class="action-buttons-mobile" style="display:flex; gap:12px; align-items:center;">
-              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.9rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
+            <div class="action-buttons-mobile" style="display:flex; gap:10px; align-items:center;">
+              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.88rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
                 <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
               </select>
               <div style="position:relative;">
                 <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('branchFilterPanel').classList.toggle('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
-                <div id="branchFilterPanel" class="hidden" style="position:absolute; top:110%; left:0; background:#fff; border:1px solid var(--border-subtle); border-radius:8px; box-shadow:var(--shadow-md); padding:12px; z-index:50; min-width:190px;">
+                <div id="branchFilterPanel" class="hidden" style="position:absolute; top:110%; left:0; background:#fff; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); box-shadow:var(--shadow-md); padding:12px; z-index:50; min-width:190px;">
                   <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onAnalyticsBranchFilterChange()"> الشرقية</label>
                   <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onAnalyticsBranchFilterChange()"> الأحساء</label>
                   <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.9rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onAnalyticsBranchFilterChange()"> حفر الباطن</label>
@@ -290,8 +306,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom:10px; font-size:0.95rem; font-weight:900; color:var(--tbc-petrol-dark);">🏫 إحصائيات المدارس والمباني</div>
-          <div class="stats-grid" style="margin-bottom: 24px;">
+          <div class="section-label">🏫 إحصائيات المدارس والمباني</div>
+          <div class="stats-grid" style="margin-bottom: 32px;">
             <div class="bi-kpi-card">
               <div class="bi-title">👤 عدد المشرفين المسجلين</div>
               <div class="bi-num" id="biInspectorsCount">0</div>
@@ -318,8 +334,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom:10px; font-size:0.95rem; font-weight:900; color:var(--tbc-petrol-dark);">⚡ مؤشرات الأداء والاعتماد</div>
-          <div class="stats-grid" style="margin-bottom: 24px;">
+          <div class="section-label">⚡ مؤشرات الأداء والاعتماد</div>
+          <div class="stats-grid" style="margin-bottom: 32px;">
             <div class="bi-kpi-card highlight">
               <div class="bi-title">نسبة الإنجاز الفعلي</div>
               <div class="bi-num" id="biActualRate">0.0%</div>
@@ -333,15 +349,15 @@
               <div class="bi-num" style="color:#f59e0b;" id="biPendingCount">0</div>
             </div>
             <!-- الكارت الجديد لتحليل التقادم والاختناق (Bottleneck Analysis) -->
-            <div class="bi-kpi-card" style="border: 2px solid #fecaca; background:#fff5f5;">
+            <div class="bi-kpi-card" style="border-color: #fecaca; background:#fffafa;">
               <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
               <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
-              <p style="font-size:0.75rem; color:#b91c1c; margin-top:5px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
-              <div style="text-align:left; margin-top:8px;"><button class="btn btn-reject" style="font-size:0.75rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button></div>
+              <p style="font-size:0.74rem; color:#b91c1c; margin-top:6px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
+              <div style="text-align:left; margin-top:8px; width:100%;"><button class="btn btn-reject" style="font-size:0.74rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button></div>
             </div>
             <div class="bi-kpi-card">
               <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
-              <div class="bi-num" style="font-size:1.6rem;" id="biAvgTurnaround">-</div>
+              <div class="bi-num" style="font-size:1.55rem;" id="biAvgTurnaround">-</div>
             </div>
             <div class="bi-kpi-card">
               <div class="bi-title">الالتزام بالمواعيد</div>
@@ -349,33 +365,33 @@
             </div>
             <div class="bi-kpi-card">
               <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
-              <div class="bi-num" style="font-size:1.4rem;" id="biAvgFillDuration">-</div>
+              <div class="bi-num" style="font-size:1.35rem;" id="biAvgFillDuration">-</div>
             </div>
           </div>
 
           <!-- ===== قسم: محتاج تتابعه (تغطية، مشاكل متكررة) ===== -->
           <div class="card">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🏫 تغطية المدارس (لم تتم زيارتها بعد)</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">مدارس مسجلة في قاعدة البيانات ولم يُرفع لها أي تقرير حصر حتى الآن ضمن النطاق الحالي.</p>
+            <div class="chart-card-title">🏫 تغطية المدارس (لم تتم زيارتها بعد)</div>
+            <p class="chart-card-desc">مدارس مسجلة في قاعدة البيانات ولم يُرفع لها أي تقرير حصر حتى الآن ضمن النطاق الحالي.</p>
             <div id="coverageGapContainer"></div>
           </div>
 
           <div class="card">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🔁 مشاكل متكررة لم تُحل</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
+            <div class="chart-card-title">🔁 مشاكل متكررة لم تُحل</div>
+            <p class="chart-card-desc">نفس بند الفحص سُجّل "غير مطابق" في أكثر من زيارة منفصلة لنفس المدرسة — إشارة على أن المشكلة لم تُعالج بعد.</p>
             <div id="recurringIssuesContainer"></div>
           </div>
 
           <!-- ===== قسم: التوزيعات الجغرافية والخرائط ===== -->
           <div class="card">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🚻 توزيع المدارس حسب الجنس</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
+            <div class="chart-card-title">🚻 توزيع المدارس حسب الجنس</div>
+            <p class="chart-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
             <div id="schoolsByGenderContainer"></div>
           </div>
 
           <div class="card" style="margin-bottom:0;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:6px;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</h4>
+            <div class="chart-card-header-row">
+              <div class="chart-card-title">🗺️ الخريطة الميدانية (كل المدارس ضمن نطاقك)</div>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <select id="mapBranchFilter" style="font-size:0.85rem; padding:8px 12px; font-weight:700;" onchange="renderFieldMap(lastScopedResponsesForMap)">
                   <option value="ALL">-- كل الفروع --</option>
@@ -392,14 +408,15 @@
                 </select>
               </div>
             </div>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">🟢 معتمدة وسليمة &nbsp; 🟠 قيد الاعتماد &nbsp; 🔴 بها بنود غير مطابقة أو مرفوضة &nbsp; ⚪ لم تُزر بعد — الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً، ولا تُستخدم إحداثيات الزيارة إلا لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً.</p>
+            <div class="map-legend"><span>🟢 معتمدة وسليمة</span><span>🟠 قيد الاعتماد</span><span>🔴 بها بنود غير مطابقة أو مرفوضة</span><span>⚪ لم تُزر بعد</span></div>
+            <p class="chart-card-desc" style="margin-top:-6px;">الأولوية دائماً لإحداثيات المدرسة الحقيقية المسجّلة يدوياً، ولا تُستخدم إحداثيات الزيارة إلا لو المدرسة ماعندهاش إحداثيات مسجّلة أصلاً.</p>
             <div id="fieldMapContainer" style="height:400px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
           </div>
           <div style="height:24px;"></div>
 
           <!-- ===== قسم: جداول التفاصيل (الأقل استخدامًا يوميًا، الأكثر تفصيلاً) ===== -->
           <div class="card" id="inspectorPerfCard">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>
+            <div class="chart-card-title" style="margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</div>
             <div class="table-responsive">
               <table class="data-table" id="inspectorPerfTable">
                 <thead><tr><th>المشرف</th><th>عدد المدارس المُسندة</th><th>إجمالي التقارير</th><th>معتمدة</th><th>مرفوضة</th><th>قيد الاعتماد</th><th>نسبة الاعتماد</th><th>قبول من أول مرة</th><th>⏱️ متوسط مدة الإنجاز</th></tr></thead>
@@ -410,26 +427,26 @@
           <div style="height:24px;"></div>
 
           <div class="card">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📊 مقارنة الأداء بين فترتين</h4>
-            <div class="action-buttons-mobile" style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+            <div class="chart-card-title">📊 مقارنة الأداء بين فترتين</div>
+            <div class="action-buttons-mobile" style="display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;">
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من</label><input type="date" id="cmpPeriodStart"></div>
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">إلى</label><input type="date" id="cmpPeriodEnd"></div>
               <button class="btn btn-outline" style="align-self:flex-end; padding:11px 16px;" onclick="renderPeriodComparison()">قارن ↺</button>
             </div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
+            <p class="chart-card-desc" style="margin-top:0;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
             <div id="periodComparisonContainer"></div>
           </div>
           <div style="height:24px;"></div>
 
           <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</h4>
-            </div>
+            <div class="chart-card-title" style="margin-bottom:16px;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</div>
             <div style="height: 300px; position: relative; width:100%;">
               <canvas id="sCurveChart"></canvas>
             </div>
           </div>
         </section>
+
+        <!-- ================= 2. Surveys Tab ================= -->
 
         <!-- ================= 2. Surveys Tab ================= -->
         <section id="secSurveys" class="hidden">
@@ -1336,6 +1353,26 @@
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
     
     // Globals
+    // إعدادات بصرية موحّدة لكل الرسوم البيانية في النظام (خط، تولتيب، نقاط) — تُطبَّق تلقائياً على أي Chart جديد
+    if (typeof Chart !== 'undefined') {
+      Chart.defaults.font.family = "'Tajawal', sans-serif";
+      Chart.defaults.font.size = 12;
+      Chart.defaults.color = '#536e7a';
+      Chart.defaults.plugins.tooltip.backgroundColor = '#1f333a';
+      Chart.defaults.plugins.tooltip.titleFont = { family: "'Tajawal', sans-serif", weight: '800', size: 13 };
+      Chart.defaults.plugins.tooltip.bodyFont = { family: "'Tajawal', sans-serif", size: 12, weight: '600' };
+      Chart.defaults.plugins.tooltip.padding = 10;
+      Chart.defaults.plugins.tooltip.cornerRadius = 8;
+      Chart.defaults.plugins.tooltip.rtl = true;
+      Chart.defaults.plugins.legend.labels.usePointStyle = true;
+      Chart.defaults.plugins.legend.labels.padding = 16;
+      Chart.defaults.plugins.legend.labels.font = { family: "'Tajawal', sans-serif", size: 12, weight: '700' };
+      Chart.defaults.elements.line.borderWidth = 2.5;
+      Chart.defaults.elements.point.radius = 3;
+      Chart.defaults.elements.point.hoverRadius = 5;
+      Chart.defaults.elements.arc.borderWidth = 2;
+    }
+
     let sCurveChartInstance = null;
     let activeSrv = null; let fillStartTime = null; let selectedSurveyFilter = "ALL"; let selectedInspectorFilter = "ALL"; let selectedKpiStatusFilter = "ALL";
     let editingUserIndex = -1; let editingSurveyId = null; let editingResponseId = null;
@@ -2323,7 +2360,7 @@
         if (sCurveChartInstance) { sCurveChartInstance.data.datasets[0].data = submittedCum; sCurveChartInstance.data.datasets[1].data = approvedCum; sCurveChartInstance.update('none'); } 
         else {
           const canvas = document.getElementById('sCurveChart'); if(!canvas) return;
-          sCurveChartInstance = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels, datasets: [ { label: 'إجمالي التقارير المرفوعة (تراكمي)', data: submittedCum, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4 }, { label: 'التقارير المعتمدة (تراكمي)', data: approvedCum, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.2)', borderWidth: 3.5, fill: true, tension: 0.3, pointRadius: 5 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: { font: { family: 'Tajawal', size: 12, weight: 'bold' } } } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
+          sCurveChartInstance = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels, datasets: [ { label: 'إجمالي التقارير المرفوعة (تراكمي)', data: submittedCum, borderColor: '#eebb43', backgroundColor: 'rgba(238, 187, 67, 0.08)', borderWidth: 2.5, fill: true, tension: 0.35, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: '#eebb43' }, { label: 'التقارير المعتمدة (تراكمي)', data: approvedCum, borderColor: '#37889b', backgroundColor: 'rgba(55, 136, 155, 0.12)', borderWidth: 2.5, fill: true, tension: 0.35, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: '#37889b' } ] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom', rtl: true } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#536e7a' } }, x: { grid: { display: false }, ticks: { color: '#536e7a' } } } } });
         }
       } catch(e) {}
     }
