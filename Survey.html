@@ -561,6 +561,11 @@
             <small style="color:var(--text-muted); display:block; margin-top:8px; font-weight:600;">💡 دوس أي زرار لفتح فلاتر التصدير المتقدمة (عملية الحصر، المكتب الفرعي، المشرف، المدرسة) قبل استخراج التقرير.</small>
           </div>
 
+          <div class="card hidden" id="orphanCleanupBar" style="padding:14px 20px; background:#f8fafc; border:1.5px dashed #cbd5e1; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+            <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">🧹 تقارير مرتبطة بنماذج حصر تم حذفها مسبقاً (من قبل إضافة خيار حذف التقارير المرتبطة)</span>
+            <button class="btn btn-outline" style="font-size:0.85rem; padding:8px 16px;" onclick="cleanupOrphanedResponses()">تنظيف التقارير اليتيمة الآن</button>
+          </div>
+
           <div class="card hidden" id="bulkApprovalBar" style="padding:16px 20px; background:#fefce8; border:2px solid var(--tbc-gold); display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
             <span style="font-size:0.95rem; font-weight:800; color:var(--tbc-petrol-dark);" id="bulkApprovalCountText"></span>
             <div style="display:flex; gap:10px;">
@@ -1693,6 +1698,26 @@
       pullFromCloud();
     }
 
+    // ينظّف التقارير "اليتيمة" — المرتبطة بنماذج حصر تم حذفها قبل إضافة خيار حذف التقارير المرتبطة تلقائياً
+    async function cleanupOrphanedResponses() {
+      const validTitles = new Set(surveys.map(s => s.title));
+      const orphaned = responses.filter(r => !validTitles.has(r.surveyTitle));
+      if (orphaned.length === 0) return showAlert('لا توجد تقارير يتيمة حالياً — كل التقارير مرتبطة بنماذج موجودة.');
+
+      const orphanTitles = [...new Set(orphaned.map(r => r.surveyTitle))];
+      const listTxt = orphanTitles.map(t => `- ${t} (${orphaned.filter(r => r.surveyTitle === t).length} تقرير)`).join('\n');
+      if (!(await showConfirm(`وُجد ${orphaned.length} تقرير مرتبط بـ ${orphanTitles.length} نموذج تم حذفه سابقاً:\n${listTxt}\n\nهل تريد حذف هذه التقارير نهائياً من السجلات والإحصائيات؟`))) return;
+
+      let totalDeleted = 0;
+      for (const t of orphanTitles) {
+        const res = await apiCall('DELETE_RESPONSES_BY_SURVEY', { surveyTitle: t });
+        if (res.status === 'success') totalDeleted += res.deletedCount;
+      }
+      logAudit('SURVEY_DELETE', `تنظيف تقارير يتيمة: ${totalDeleted} تقرير من ${orphanTitles.length} نموذج محذوف مسبقاً`);
+      showAlert(`✓ تم حذف ${totalDeleted} تقرير يتيم.`);
+      pullFromCloud();
+    }
+
     function backToSurveysList() {
       document.getElementById('secFillSurvey').classList.add('hidden');
       document.getElementById('secSurveys').classList.remove('hidden');
@@ -2512,6 +2537,14 @@
         bulkBar.classList.remove('hidden');
         document.getElementById('bulkApprovalCountText').innerText = `📋 ${pendingInView.length} تقرير قيد الاعتماد ضمن الفلاتر الحالية`;
       } else { bulkBar.classList.add('hidden'); }
+
+      // تقارير يتيمة مرتبطة بنماذج حصر تم حذفها مسبقاً — تظهر لإدارة التخطيط فقط
+      const orphanBar = document.getElementById('orphanCleanupBar');
+      if (orphanBar) {
+        const validTitles = new Set(surveys.map(s => s.title));
+        const hasOrphans = FULL_ADMIN_ROLES.includes(currentUser.role) && responses.some(r => !validTitles.has(r.surveyTitle));
+        orphanBar.classList.toggle('hidden', !hasOrphans);
+      }
 
       if (visible.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;"><div class="empty-state"><h4>لا توجد سجلات حالياً</h4></div></td></tr>`; return; }
 
