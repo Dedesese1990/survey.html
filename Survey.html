@@ -621,7 +621,7 @@
 
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب جديد تلقائياً بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب "مشرف ميداني" جديد تلقائياً. عمود "المدير المباشر" يُنشئ له كذلك حساب "مدير إشراف" تلقائياً لو غير موجود. كل الحسابات الجديدة بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
             <div style="margin-bottom:10px; background:#fff; border-radius:8px; padding:10px 12px;">
               <input type="checkbox" id="schoolsBulkSendEmailNotify" style="vertical-align:middle; margin-left:8px;">
               <span onclick="document.getElementById('schoolsBulkSendEmailNotify').click()" style="font-weight:800; cursor:pointer; font-size:0.9rem;">📧 إرسال إشعار بالبريد الإلكتروني</span>
@@ -3262,7 +3262,7 @@
     async function handleExcelUpload(event) {
       const file = event.target.files[0]; if (!file) return;
       const willSendEmail = document.getElementById('schoolsBulkSendEmailNotify')?.checked === true;
-      const proceed = await showConfirm(`أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً بكلمة مرور مؤقتة موحّدة (Tbc@123456)، وسيُطلب منه تغييرها فور أول دخول.\n\n${willSendEmail ? '📧 خيار إرسال إشعار بريدي مفعّل — سيصل إيميل ببيانات الدخول لكل حساب جديد له بريد إلكتروني بالملف.' : '📧 خيار إرسال إشعار بريدي غير مفعّل — لن تُرسل أي إيميلات، وعليك تبليغ المشرفين ببياناتهم يدوياً.'}\n\nهل تريد المتابعة؟`);
+      const proceed = await showConfirm(`أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً (وكذلك "المدير المباشر" كحساب مدير إشراف لو غير موجود)، بكلمة مرور مؤقتة موحّدة (Tbc@123456)، وسيُطلب تغييرها فور أول دخول.\n\n${willSendEmail ? '📧 خيار إرسال إشعار بريدي مفعّل — سيصل إيميل ببيانات الدخول لكل حساب مشرف جديد له بريد إلكتروني بالملف.' : '📧 خيار إرسال إشعار بريدي غير مفعّل — لن تُرسل أي إيميلات، وعليك تبليغ المشرفين ببياناتهم يدوياً.'}\n\nهل تريد المتابعة؟`);
       if (!proceed) { event.target.value = ''; return; }
 
       const reader = new FileReader();
@@ -3270,14 +3270,16 @@
         try {
           const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
           const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-          let added = 0; let unresolved = 0; let accountsCreated = 0;
-          const supervisorUpdates = {}; // username -> {phone, email, nationality, certificate, yearsExperience, joinDate, directManager} (لمشرفين لهم حساب مسبقاً)
-          const newlyCreatedThisImport = {}; // نص اسم المشرف كما ورد بالملف -> كائن المستخدم المُنشأ حديثاً (لتفادي إنشاء حساب مكرر لنفس الشخص عبر صفوف مدارسه المتعددة)
-          if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
-          for(let i = 1; i < json.length; i++) {
+
+          // ===== تمريرة 1: نجمع بيانات كل مشرف/مدير فريد مرة واحدة، وكل صفوف المدارس الخام =====
+          // ترتيب أعمدة قالب "حصر المشرفين والمدارس": م(0) اسم المشرف(1) جوال(2) مدير مباشر(3) جنسية(4) شهادة(5)
+          // خبرة(6) تاريخ التحاق(7) إدارة تعليم(8) منطقة(9) اسم المدرسة(10) رقم وزاري(11) ايميل(12) جنس(13) طول(14) عرض(15)
+          const inspectorInfo = {}; // اسم المشرف -> بياناته (آخر صف شوهد فيه)
+          const managerNames = new Set();
+          const schoolRows = [];
+
+          for (let i = 1; i < json.length; i++) {
             const row = json[i]; if (!row || row.length === 0) continue;
-            // ترتيب أعمدة قالب "حصر المشرفين والمدارس": م(0) اسم المشرف(1) جوال(2) مدير مباشر(3) جنسية(4) شهادة(5)
-            // خبرة(6) تاريخ التحاق(7) إدارة تعليم(8) منطقة(9) اسم المدرسة(10) رقم وزاري(11) ايميل(12) جنس(13) طول(14) عرض(15)
             const inspectorText = row[1] ? String(row[1]).trim() : '';
             const supPhone = row[2] ? String(row[2]).trim() : '';
             const supDirectManager = row[3] ? String(row[3]).trim() : '';
@@ -3292,50 +3294,75 @@
             const supEmail = row[12] ? String(row[12]).trim() : '';
             const genderRaw = row[13] ? String(row[13]).trim() : '';
             const lngRaw = row[14]; const latRaw = row[15];
+            if (!name || !inspectorText) continue;
 
-            if (name && inspectorText) {
-              let branch = "المكتب الفرعي بالشرقية";
-              if (regionRaw.includes("حفر الباطن") || regionRaw.includes("حفرالباطن") || regionRaw.includes("الباطن")) branch = "المكتب الفرعي بحفر الباطن";
-              else if (regionRaw.includes("أحساء") || regionRaw.includes("احساء")) branch = "المكتب الفرعي بالأحساء";
+            let branch = "المكتب الفرعي بالشرقية";
+            if (regionRaw.includes("حفر الباطن") || regionRaw.includes("حفرالباطن") || regionRaw.includes("الباطن")) branch = "المكتب الفرعي بحفر الباطن";
+            else if (regionRaw.includes("أحساء") || regionRaw.includes("احساء")) branch = "المكتب الفرعي بالأحساء";
 
-              let gender = ''; if (genderRaw.includes('بنين') || genderRaw.includes('اولاد') || genderRaw.includes('بنون')) gender = 'بنين'; else if (genderRaw.includes('بنات')) gender = 'بنات';
-              const lng = (lngRaw !== undefined && lngRaw !== '' && !isNaN(parseFloat(lngRaw))) ? parseFloat(lngRaw) : null;
-              const lat = (latRaw !== undefined && latRaw !== '' && !isNaN(parseFloat(latRaw))) ? parseFloat(latRaw) : null;
+            let gender = ''; if (genderRaw.includes('بنين') || genderRaw.includes('اولاد') || genderRaw.includes('بنون')) gender = 'بنين'; else if (genderRaw.includes('بنات')) gender = 'بنات';
+            const lng = (lngRaw !== undefined && lngRaw !== '' && !isNaN(parseFloat(lngRaw))) ? parseFloat(lngRaw) : null;
+            const lat = (latRaw !== undefined && latRaw !== '' && !isNaN(parseFloat(latRaw))) ? parseFloat(latRaw) : null;
 
-              let inspUser = resolveInspectorUser(inspectorText);
-              if (inspUser) {
-                // مشرف له حساب مسبقاً: نجمّع بياناته الشخصية عشان نحدّث ملفه مرة واحدة بعد نجاح استيراد المدارس
-                supervisorUpdates[inspUser.username] = { phone: supPhone, email: supEmail, nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager };
-              } else if (newlyCreatedThisImport[inspectorText]) {
-                inspUser = newlyCreatedThisImport[inspectorText];
-              } else {
-                // مشرف بلا حساب: إنشاء حساب جديد تلقائياً بكلمة المرور المؤقتة الموحّدة
-                const newUsername = generateUsernameFromName(inspectorText, newlyCreatedThisImport);
-                const createRes = await apiCall('CREATE_USER', {
-                  username: newUsername, fullName: inspectorText, email: supEmail, phone: supPhone,
-                  password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch, sendEmailNotification: willSendEmail,
-                  permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
-                  nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager
-                });
-                if (createRes.status === 'success') {
-                  usersList = createRes.users;
-                  inspUser = usersList.find(u => u.username === newUsername);
-                  newlyCreatedThisImport[inspectorText] = inspUser;
-                  accountsCreated++;
-                }
-              }
-
-              if (!inspUser) unresolved++;
-              const inspectorUsername = inspUser ? inspUser.username : '';
-              const inspectorDisplay = inspUser ? inspUser.fullName : inspectorText;
-
-              const idx = schoolDataWrapper.list.findIndex(s => s.name === name);
-              const schoolRecord = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, gender, lng, lat, eduAdmin,
-                phone: (idx > -1 ? schoolDataWrapper.list[idx].phone : "") || "", manager: (idx > -1 ? schoolDataWrapper.list[idx].manager : "") || "" };
-              if (idx > -1) schoolDataWrapper.list[idx] = schoolRecord; else schoolDataWrapper.list.push(schoolRecord);
-              added++;
-            }
+            inspectorInfo[inspectorText] = { phone: supPhone, email: supEmail, nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager, branch };
+            if (supDirectManager) managerNames.add(supDirectManager);
+            schoolRows.push({ name, minNo, branch, gender, lng, lat, eduAdmin, inspectorText });
           }
+
+          // ===== تمريرة 2: حل/إنشاء حساب لكل "مدير مباشر" فريد بدور "مدير إشراف" =====
+          const managerUsernameMap = {};
+          let managersCreated = 0;
+          for (const mgrName of managerNames) {
+            let mgrUser = resolveInspectorUser(mgrName);
+            if (!mgrUser) {
+              const newUsername = generateUsernameFromName(mgrName, {});
+              const createRes = await apiCall('CREATE_USER', {
+                username: newUsername, fullName: mgrName, email: '', phone: '',
+                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_SUPERVISION_LEAD', branch: 'الكل', sendEmailNotification: false,
+                permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
+              });
+              if (createRes.status === 'success') { usersList = createRes.users; mgrUser = usersList.find(u => u.username === newUsername); managersCreated++; }
+            }
+            if (mgrUser) managerUsernameMap[mgrName] = mgrUser.username;
+          }
+
+          // ===== تمريرة 3: حل/إنشاء حساب لكل مشرف فريد بدور "مشرف ميداني" — خريطة نهائية واحدة قبل أي ربط مدارس =====
+          const inspectorUsernameMap = {};
+          const supervisorUpdates = {};
+          let accountsCreated = 0;
+          for (const inspName in inspectorInfo) {
+            const info = inspectorInfo[inspName];
+            let inspUser = resolveInspectorUser(inspName);
+            if (inspUser) {
+              supervisorUpdates[inspUser.username] = { phone: info.phone, email: info.email, nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager };
+            } else {
+              const newUsername = generateUsernameFromName(inspName, {});
+              const createRes = await apiCall('CREATE_USER', {
+                username: newUsername, fullName: inspName, email: info.email, phone: info.phone,
+                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch: info.branch, sendEmailNotification: willSendEmail,
+                permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
+                nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager
+              });
+              if (createRes.status === 'success') { usersList = createRes.users; inspUser = usersList.find(u => u.username === newUsername); accountsCreated++; }
+            }
+            if (inspUser) inspectorUsernameMap[inspName] = inspUser.username;
+          }
+
+          // ===== تمريرة 4: بناء كل سجلات المدارس دفعة واحدة، باستخدام الخريطة النهائية (بدون أي احتمال تعارض) =====
+          if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
+          let added = 0, unresolved = 0;
+          schoolRows.forEach(sr => {
+            const inspectorUsername = inspectorUsernameMap[sr.inspectorText] || '';
+            if (!inspectorUsername) unresolved++;
+            const inspUserObj = usersList.find(u => u.username === inspectorUsername);
+            const inspectorDisplay = inspUserObj ? inspUserObj.fullName : sr.inspectorText;
+            const idx = schoolDataWrapper.list.findIndex(s => s.name === sr.name);
+            const schoolRecord = { minNo: sr.minNo, name: sr.name, branch: sr.branch, inspector: inspectorDisplay, inspectorUsername, gender: sr.gender, lng: sr.lng, lat: sr.lat, eduAdmin: sr.eduAdmin,
+              phone: (idx > -1 ? schoolDataWrapper.list[idx].phone : "") || "", manager: (idx > -1 ? schoolDataWrapper.list[idx].manager : "") || "" };
+            if (idx > -1) schoolDataWrapper.list[idx] = schoolRecord; else schoolDataWrapper.list.push(schoolRecord);
+            added++;
+          });
+
           const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
           if(res.status === "success") {
             // تحديث ملفات المشرفين الذين كان لهم حساب من قبل (الجوال، الايميل، الجنسية، الشهادة، الخبرة، تاريخ الالتحاق، المدير المباشر)
@@ -3356,8 +3383,9 @@
 
             let msg = `✓ تمت العملية بنجاح!\nتم استيراد وربط [ ${added} ] مدرسة.\nتم تحديث بيانات [ ${supervisorsUpdated} ] مشرف كان له حساب مسبقاً.`;
             if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: Tbc@123456 (سيُطلب من كل واحد تغييرها فور أول دخول). ${willSendEmail ? 'وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.' : 'لم يتم إرسال أي إيميلات (الخيار كان معطّلاً) — يرجى تبليغهم ببياناتهم يدوياً.'}`;
-            if (unresolved > 0) msg += `\n⚠️ تعذر إنشاء أو ربط حساب لـ [ ${unresolved} ] مدرسة — تحقق من اسم المشرف في الملف، أو أكمل الربط يدوياً لاحقاً.`;
-            logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
+            if (managersCreated > 0) msg += `\n👤 تم إنشاء [ ${managersCreated} ] حساب "مدير إشراف" جديد تلقائياً من عمود "المدير المباشر"، بنفس كلمة المرور المؤقتة.`;
+            if (unresolved > 0) msg += `\n⚠️ تعذّر ربط [ ${unresolved} ] مدرسة بحساب مشرف — راجعها يدوياً من نموذج الإضافة اليدوية.`;
+            logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب مشرف جديد، ${managersCreated} حساب مدير إشراف جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
             showAlert(msg);
             pullFromCloud();
           } else showAlert(esc(res.message));
