@@ -60,7 +60,7 @@
     .sidebar { width: 260px; background-color: var(--tbc-petrol-sidebar); box-shadow: -2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex-shrink: 0; z-index: 900; }
     .sidebar-title { color: #b0c4de; font-size: 0.85rem; font-weight: 500; padding: 24px 24px 10px; letter-spacing: 0.5px; }
     .sidebar-menu { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
-    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: #e2e8f0; font-weight: 500; font-size: 0.95rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border-right: 4px solid transparent; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: #e2e8f0; font-weight: 500; font-size: 0.82rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border-right: 4px solid transparent; white-space: nowrap; }
     .sidebar-item:hover { background-color: rgba(255,255,255,0.08); color: #ffffff; }
     .sidebar-item.active { background-color: rgba(255,255,255,0.15); color: var(--tbc-gold); border-right-color: var(--tbc-gold); font-weight: 800; }
 
@@ -125,7 +125,7 @@
       .sidebar { width: 100%; height: auto; position: static; padding: 5px; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--tbc-petrol); -webkit-overflow-scrolling: touch; }
       .sidebar-title { display: none; }
       .sidebar-menu { display: flex; flex-direction: row; gap: 8px; padding: 0 5px; }
-      .sidebar-item { border-right: none; border-bottom: 4px solid transparent; padding: 12px 14px; border-radius: 0; font-size: 0.9rem; }
+      .sidebar-item { border-right: none; border-bottom: 4px solid transparent; padding: 12px 14px; border-radius: 0; font-size: 0.78rem; white-space: normal; }
       .sidebar-item.active { border-right-color: transparent; border-bottom-color: var(--tbc-gold); border-radius: 8px 8px 0 0; }
       .main-content { padding: 16px 12px; width: 100%; }
       .card { padding: 20px 16px; margin-bottom: 16px; }
@@ -285,10 +285,6 @@
               <div class="bi-num" id="biActualRate">0.0%</div>
             </div>
             <div class="bi-kpi-card">
-              <div class="bi-title">المستهدف (مبنى)</div>
-              <div class="bi-num" id="biPlannedCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
               <div class="bi-title">المعتمدة</div>
               <div class="bi-num" style="color:#10b981;" id="biApprovedCount">0</div>
             </div>
@@ -301,7 +297,7 @@
               <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
               <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
               <p style="font-size:0.75rem; color:#b91c1c; margin-top:5px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
-              <button class="btn btn-reject" style="margin-top:8px; font-size:0.75rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button>
+              <div style="text-align:left; margin-top:8px;"><button class="btn btn-reject" style="font-size:0.75rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button></div>
             </div>
             <div class="bi-kpi-card">
               <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
@@ -312,31 +308,32 @@
               <div class="bi-num" id="biOnTimeRate">-</div>
             </div>
             <div class="bi-kpi-card">
-              <div class="bi-title">🏫 إجمالي المدارس في نطاقك</div>
-              <div class="bi-num" id="biTotalSchoolsCount">0</div>
-            </div>
-            <div class="bi-kpi-card">
               <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
               <div class="bi-num" style="font-size:1.4rem;" id="biAvgFillDuration">-</div>
             </div>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="card" style="margin-bottom:0;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</h4>
-              </div>
-              <div style="height: 300px; position: relative; width:100%;">
-                <canvas id="sCurveChart"></canvas>
-              </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">👤 عدد المشرفين المسجلين</div>
+              <div class="bi-num" id="biInspectorsCount">0</div>
             </div>
-            <!-- مخطط الدونات الجديد لتحليل المطابقة -->
-            <div class="card" style="margin-bottom:0;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🍩 تحليل المطابقة الشامل (أداء المدارس)</h4>
-              <div style="height: 250px; position: relative; width:100%;">
-                <canvas id="compliancePieChart"></canvas>
-              </div>
-              <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:10px; font-weight:600;">يقيس هذا المؤشر نسبة الإجابات "مطابق" مقابل المشاكل والعيوب المسجلة في كل بنود الفحص للمدارس.</p>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🏫 عدد المدارس</div>
+              <div class="bi-num" id="biTotalSchoolsCount">0</div>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🏢 عدد المباني</div>
+              <div class="bi-num" id="biBuildingsCount">0</div>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🔑 المباني المستأجرة</div>
+              <div class="bi-num" id="biRentedBuildingsCount">0</div>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🎓 عدد المعاهد</div>
+              <div class="bi-num" id="biInstitutesCount">0</div>
+            </div>
+            <div class="bi-kpi-card">
+              <div class="bi-title">🏛️ المباني الإدارية</div>
+              <div class="bi-num" id="biAdminBuildingsCount">0</div>
             </div>
           </div>
 
@@ -361,17 +358,10 @@
           </div>
 
           <!-- ===== قسم: التوزيعات الجغرافية والخرائط ===== -->
-          <div class="dashboard-grid">
-            <div class="card" style="margin-bottom:0;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🗺️ توزيع المدارس حسب المنطقة</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد المدارس المسجّلة في كل فرع ضمن نطاقك.</p>
-              <div id="schoolsByRegionContainer"></div>
-            </div>
-            <div class="card" style="margin-bottom:0;">
-              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🚻 توزيع المدارس حسب الجنس</h4>
-              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
-              <div id="schoolsByGenderContainer"></div>
-            </div>
+          <div class="card">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🚻 توزيع المدارس حسب الجنس</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
+            <div id="schoolsByGenderContainer"></div>
           </div>
 
           <div class="card">
@@ -382,6 +372,12 @@
               <div id="governorateListContainer"></div>
             </div>
             <div id="governorateMapContainer" style="height:340px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
+          </div>
+
+          <div class="card">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🏢 توزيع المباني حسب المحافظة (الأحساء والشرقية)</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">حجم النقطة يعكس عدد المباني بالمحافظة — اضغط على أي نقطة لعرض تفصيل العدد الإجمالي، المستأجر، المعاهد، والمباني الإدارية (يعتمد على تصنيف كل مدرسة، يُحدَّد من نموذج إضافة/تعديل المدرسة).</p>
+            <div id="buildingsMapContainer" style="height:340px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
           </div>
 
           <div class="card" style="margin-bottom:0;">
@@ -408,13 +404,6 @@
           </div>
           <div style="height:24px;"></div>
 
-          <div class="card">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📍 التحقق من مطابقة موقع الزيارة لموقع المدرسة</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">يقارن آخر GPS مسجّل عند رفع تقرير بموقع المدرسة الثابت المستورد (لو موجود)، لمعرفة هل المشرف كان فعلياً في موقع المدرسة وقت الرفع. المدارس بدون موقع ثابت مُسجَّل حالياً تظهر بحالة "لا يوجد موقع مسجّل" — أضف الإحداثيات لأي مدرسة من تاب إدارة المدارس ليظهر التحقق لها.</p>
-            <div id="locationVerificationContainer"></div>
-          </div>
-          <div style="height:24px;"></div>
-
           <!-- ===== قسم: جداول التفاصيل (الأقل استخدامًا يوميًا، الأكثر تفصيلاً) ===== -->
           <div class="card" id="inspectorPerfCard">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; margin-bottom:16px;">🏆 أداء المشرفين الميدانيين (نصاب المدارس وحجم الأعمال)</h4>
@@ -436,6 +425,16 @@
             </div>
             <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">تتم المقارنة تلقائياً بفترة سابقة مساوية في الطول لمباشرة قبل الفترة المحددة (تصلح كأساس لمقارنة سنوية Year-over-Year عند توفر بيانات كافية).</p>
             <div id="periodComparisonContainer"></div>
+          </div>
+          <div style="height:24px;"></div>
+
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem;">📉 تقدم الحصر الميداني الفعلي أسبوعياً (تراكمي)</h4>
+            </div>
+            <div style="height: 300px; position: relative; width:100%;">
+              <canvas id="sCurveChart"></canvas>
+            </div>
           </div>
         </section>
 
@@ -655,6 +654,11 @@
               <div class="form-group"><label>إدارة التعليم</label><input type="text" id="singleSchoolEduAdmin" placeholder="اختياري"></div>
               <div class="form-group"><label>خط الطول (Longitude)</label><input type="number" step="any" id="singleSchoolLng" placeholder="اختياري"></div>
               <div class="form-group"><label>خط العرض (Latitude)</label><input type="number" step="any" id="singleSchoolLat" placeholder="اختياري"></div>
+              <div class="form-group"><label>تصنيف المبنى</label><select id="singleSchoolBuildingCategory"><option value="">مدرسة (افتراضي)</option><option value="معهد">معهد</option><option value="إداري">مبنى إداري</option></select></div>
+              <div class="form-group">
+                <label>حالة الملكية</label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; background:#f8fafc; padding:10px 12px; border-radius:8px;"><input type="checkbox" id="singleSchoolIsRented"> <span>🔑 مبنى مستأجر</span></label>
+              </div>
             </div>
             <button class="btn btn-gold" style="width:100%; margin-top:8px;" onclick="addSingleSchool()">إضافة المدرسة للنظام ✓</button>
           </div>
@@ -813,6 +817,12 @@
                 <tbody></tbody>
               </table>
             </div>
+          </div>
+
+          <div class="card" style="border-top:5px solid var(--tbc-petrol);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📍 التحقق من مطابقة موقع الزيارة لموقع المدرسة</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">يقارن آخر GPS مسجّل عند رفع تقرير بموقع المدرسة الثابت المستورد (لو موجود)، لمعرفة هل المشرف كان فعلياً في موقع المدرسة وقت الرفع. المدارس بدون موقع ثابت مُسجَّل حالياً تظهر بحالة "لا يوجد موقع مسجّل" — أضف الإحداثيات لأي مدرسة من تاب إدارة المدارس ليظهر التحقق لها.</p>
+            <div id="locationVerificationContainer"></div>
           </div>
 
           <div class="card" style="border-top:5px solid var(--tbc-petrol);">
@@ -1155,7 +1165,7 @@
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
     
     // Globals
-    let sCurveChartInstance = null; let compliancePieChartInstance = null; let governorateDonutChartInstance = null; let governorateMapInstance = null; let governorateMapMarkersLayer = null;
+    let sCurveChartInstance = null; let governorateDonutChartInstance = null; let governorateMapInstance = null; let governorateMapMarkersLayer = null; let buildingsMapInstance = null; let buildingsMapMarkersLayer = null;
     let activeSrv = null; let fillStartTime = null; let selectedSurveyFilter = "ALL"; let selectedInspectorFilter = "ALL"; let selectedKpiStatusFilter = "ALL";
     let editingUserIndex = -1; let editingSurveyId = null; let editingResponseId = null;
 
@@ -2022,11 +2032,18 @@
       } else { document.getElementById('biOnTimeRate').innerText = '-'; }
       
       document.getElementById('biActualRate').innerText = `${actualRate}%`;
-      document.getElementById('biPlannedCount').innerText = plannedTarget;
       document.getElementById('biApprovedCount').innerText = approvedCount;
       document.getElementById('biPendingCount').innerText = pendingCount;
       document.getElementById('biAgingCount').innerText = stuckCount;
-      document.getElementById('biTotalSchoolsCount').innerText = getScopedSchools().length;
+      const scopeSchoolsForKpi = getScopedSchools();
+      document.getElementById('biTotalSchoolsCount').innerText = scopeSchoolsForKpi.length;
+      document.getElementById('biInspectorsCount').innerText = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (FULL_ADMIN_ROLES.includes(currentUser.role) || currentUser.branch === 'الكل' || u.branch === currentUser.branch)).length;
+
+      const buildingStats = computeBuildingStats(scopeSchoolsForKpi);
+      document.getElementById('biBuildingsCount').innerText = buildingStats.totalBuildings;
+      document.getElementById('biRentedBuildingsCount').innerText = buildingStats.rentedBuildings;
+      document.getElementById('biInstitutesCount').innerText = buildingStats.institutesCount;
+      document.getElementById('biAdminBuildingsCount').innerText = buildingStats.adminBuildingsCount;
 
       const withDuration = scoped.filter(r => typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0);
       document.getElementById('biAvgFillDuration').innerText = withDuration.length > 0
@@ -2034,49 +2051,40 @@
         : '-';
       
       renderSCurveChart(scoped);
-      renderCompliancePieChart(scoped);
       renderCoverageGap(scoped);
       renderTopFailingItems(scoped);
-      renderSchoolsByRegion();
       renderSchoolsByGender();
       renderGovernorateBreakdown();
       renderGovernorateMap();
+      renderBuildingsMap();
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped);
       lastScopedResponsesForMap = scoped;
       renderFieldMap(scoped);
-      renderLocationVerificationTable();
       renderPeriodComparison();
     }
 
-    function renderCompliancePieChart(scopedResponses) {
-      try {
-        if (typeof Chart === 'undefined') return;
-        let matchCount = 0; let failCount = 0;
-        scopedResponses.forEach(r => {
-           if(r.answers) {
-              for (const [q, a] of Object.entries(r.answers)) {
-                 if (typeof a === 'string') {
-                    if (a.includes('غير مطابق') || a.includes('تحتاج') || a.includes('معطل')) failCount++;
-                    else if (a.includes('مطابق') || a === 'نعم') matchCount++;
-                 }
-              }
-           }
-        });
-        if(matchCount === 0 && failCount === 0) { matchCount = 1; failCount = 0; }
-
-        if (compliancePieChartInstance) {
-          compliancePieChartInstance.data.datasets[0].data = [matchCount, failCount];
-          compliancePieChartInstance.update('none');
+    // يجمّع المدارس حسب إحداثياتها الحقيقية لحساب عدد "المباني" الفعلي (مدرستان على نفس الإحداثيات = مبنى واحد)،
+    // بالإضافة إلى عدّ المباني المستأجرة والمعاهد والمباني الإدارية حسب تصنيف كل مدرسة
+    function computeBuildingStats(schools) {
+      const coordGroups = {};
+      const noCoordSchools = [];
+      schools.forEach(s => {
+        if (s.lat != null && s.lng != null) {
+          const key = s.lat.toFixed(5) + ',' + s.lng.toFixed(5);
+          if (!coordGroups[key]) coordGroups[key] = [];
+          coordGroups[key].push(s);
         } else {
-          const canvas = document.getElementById('compliancePieChart'); if(!canvas) return;
-          compliancePieChartInstance = new Chart(canvas.getContext('2d'), { 
-            type: 'doughnut', 
-            data: { labels: ['بنود مطابقة وسليمة', 'بنود تتطلب معالجة (غير مطابق)'], datasets: [{ data: [matchCount, failCount], backgroundColor: ['#10b981', '#ef4444'], hoverOffset: 4 }] }, 
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 12 } } } } } 
-          });
+          noCoordSchools.push(s);
         }
-      } catch(e) {}
+      });
+      const buildingGroups = [...Object.values(coordGroups), ...noCoordSchools.map(s => [s])];
+      return {
+        totalBuildings: buildingGroups.length,
+        rentedBuildings: buildingGroups.filter(g => g.some(s => s.isRented === true)).length,
+        institutesCount: schools.filter(s => s.buildingCategory === 'معهد').length,
+        adminBuildingsCount: schools.filter(s => s.buildingCategory === 'إداري').length
+      };
     }
 
     // يبني منحنى تراكمي أسبوعي حقيقي من تواريخ الرفع الفعلية (بدل نسب افتراضية وهمية)
@@ -2136,20 +2144,6 @@
     }
 
     // توزيع المدارس ضمن النطاق الحالي حسب الفرع/المنطقة
-    function renderSchoolsByRegion() {
-      const container = document.getElementById('schoolsByRegionContainer'); if (!container) return;
-      const scopeSchools = getScopedSchools();
-      if (scopeSchools.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد مدارس مسجلة ضمن نطاقك بعد.</div>`; return; }
-      const counts = {};
-      scopeSchools.forEach(s => { const b = s.branch || 'غير محدد'; counts[b] = (counts[b] || 0) + 1; });
-      const maxCount = Math.max(...Object.values(counts));
-      container.innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([branch, count]) => `
-        <div style="margin-bottom:10px;">
-          <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(branch)}</span><span style="color:var(--tbc-petrol);">${count}</span></div>
-          <div style="background:var(--tbc-petrol-light); border-radius:6px; height:8px; overflow:hidden;"><div style="background:var(--tbc-petrol); height:100%; width:${Math.round((count / maxCount) * 100)}%;"></div></div>
-        </div>`).join('');
-    }
-
     // توزيع المدارس ضمن النطاق الحالي حسب الجنس (بنين/بنات) — يعتمد على بيانات مستوردة فعلياً
     function renderSchoolsByGender() {
       const container = document.getElementById('schoolsByGenderContainer'); if (!container) return;
@@ -2160,9 +2154,9 @@
       const unknown = scopeSchools.length - boys - girls;
       let html = `
         <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
-          <div style="background:#eff6ff; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:#2563eb;">${boys}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنين</div></div>
-          <div style="background:#fdf2f8; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:#db2777;">${girls}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنات</div></div>
-          <div style="background:#f8fafc; border-radius:8px; padding:14px;"><div style="font-size:1.6rem; font-weight:900; color:var(--text-muted);">${unknown}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">غير محدد</div></div>
+          <div style="background:#eff6ff; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">👦</div><div style="font-size:1.6rem; font-weight:900; color:#2563eb;">${boys}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنين</div></div>
+          <div style="background:#fdf2f8; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">👧</div><div style="font-size:1.6rem; font-weight:900; color:#db2777;">${girls}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنات</div></div>
+          <div style="background:#f8fafc; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">❔</div><div style="font-size:1.6rem; font-weight:900; color:var(--text-muted);">${unknown}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">غير محدد</div></div>
         </div>`;
       if (unknown > 0) html += `<p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px;">💡 المدارس "غير محدد" يمكن تحديد جنسها لاحقاً من نموذج إضافة/استيراد المدارس.</p>`;
       container.innerHTML = html;
@@ -2234,6 +2228,42 @@
 
         if (points.length > 0) { governorateMapInstance.fitBounds(points, { padding: [40, 40], maxZoom: 11 }); }
         setTimeout(() => governorateMapInstance.invalidateSize(), 200);
+      } catch (e) {}
+    }
+
+    // خريطة المباني (مدارس + معاهد + مبانٍ إدارية) لمحافظات الأحساء والشرقية تحديداً، بتفصيل المستأجر منها
+    function renderBuildingsMap() {
+      const el = document.getElementById('buildingsMapContainer'); if (!el) return;
+      if (typeof L === 'undefined') { el.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">تعذر تحميل مكتبة الخرائط.</div>`; return; }
+      try {
+        if (!buildingsMapInstance) {
+          buildingsMapInstance = L.map(el).setView([25.9, 49.6], 8);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(buildingsMapInstance);
+          buildingsMapMarkersLayer = L.layerGroup().addTo(buildingsMapInstance);
+        }
+        buildingsMapMarkersLayer.clearLayers();
+
+        const targetBranches = ['المكتب الفرعي بالشرقية', 'المكتب الفرعي بالأحساء'];
+        const scopeSchools = getScopedSchools().filter(s => s.lat != null && s.lng != null && s.governorate && targetBranches.includes(s.branch));
+        const groups = {};
+        scopeSchools.forEach(s => { if (!groups[s.governorate]) groups[s.governorate] = []; groups[s.governorate].push(s); });
+
+        const entries = Object.entries(groups);
+        const maxCount = Math.max(1, ...entries.map(([, arr]) => arr.length));
+        const points = [];
+        entries.forEach(([gov, arr]) => {
+          const lat = arr.reduce((sum, s) => sum + s.lat, 0) / arr.length;
+          const lng = arr.reduce((sum, s) => sum + s.lng, 0) / arr.length;
+          const stats = computeBuildingStats(arr);
+          const radius = 10 + (arr.length / maxCount) * 22;
+          const marker = L.circleMarker([lat, lng], { radius, color: '#fff', weight: 2, fillColor: '#37889b', fillOpacity: 0.75 });
+          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(gov)}</b><br>عدد المدارس: ${arr.length}<br>عدد المباني: ${stats.totalBuildings}<br>🔑 مستأجرة: ${stats.rentedBuildings}<br>🎓 معاهد: ${stats.institutesCount}<br>🏛️ إدارية: ${stats.adminBuildingsCount}</div>`);
+          marker.addTo(buildingsMapMarkersLayer);
+          points.push([lat, lng]);
+        });
+
+        if (points.length > 0) { buildingsMapInstance.fitBounds(points, { padding: [40, 40], maxZoom: 11 }); }
+        setTimeout(() => buildingsMapInstance.invalidateSize(), 200);
       } catch (e) {}
     }
 
@@ -3232,17 +3262,18 @@
       const lngRaw = document.getElementById('singleSchoolLng').value; const latRaw = document.getElementById('singleSchoolLat').value;
       const lng = lngRaw !== '' && !isNaN(parseFloat(lngRaw)) ? parseFloat(lngRaw) : null;
       const lat = latRaw !== '' && !isNaN(parseFloat(latRaw)) ? parseFloat(latRaw) : null;
+      const buildingCategory = document.getElementById('singleSchoolBuildingCategory').value; const isRented = document.getElementById('singleSchoolIsRented').checked;
       if(!name || !inspectorUsername) return showAlert('يرجى تعبئة اسم المدرسة واسم المشرف على الأقل.');
       const inspUser = usersList.find(u => u.username === inspectorUsername);
       const inspectorDisplay = inspUser ? inspUser.fullName : inspectorUsername;
       if(!schoolDataWrapper.list) schoolDataWrapper.list = [];
       const exists = schoolDataWrapper.list.findIndex(s => s.name === name);
-      const schoolRecord = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, gender, eduAdmin, lng, lat,
+      const schoolRecord = { minNo, name, branch, inspector: inspectorDisplay, inspectorUsername, gender, eduAdmin, lng, lat, buildingCategory, isRented,
         phone: (exists > -1 ? schoolDataWrapper.list[exists].phone : '') || '', manager: (exists > -1 ? schoolDataWrapper.list[exists].manager : '') || '' };
       if(exists > -1) { schoolDataWrapper.list[exists] = schoolRecord; } 
       else { schoolDataWrapper.list.push(schoolRecord); }
       
-      document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = ''; document.getElementById('singleSchoolEduAdmin').value = ''; document.getElementById('singleSchoolLng').value = ''; document.getElementById('singleSchoolLat').value = ''; document.getElementById('singleSchoolGender').value = '';
+      document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = ''; document.getElementById('singleSchoolEduAdmin').value = ''; document.getElementById('singleSchoolLng').value = ''; document.getElementById('singleSchoolLat').value = ''; document.getElementById('singleSchoolGender').value = ''; document.getElementById('singleSchoolBuildingCategory').value = ''; document.getElementById('singleSchoolIsRented').checked = false;
       const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
       if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); showAlert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else showAlert(esc(res.message));
     }
@@ -3367,7 +3398,8 @@
             const inspectorDisplay = inspUserObj ? inspUserObj.fullName : sr.inspectorText;
             const idx = schoolDataWrapper.list.findIndex(s => s.name === sr.name);
             const schoolRecord = { minNo: sr.minNo, name: sr.name, branch: sr.branch, inspector: inspectorDisplay, inspectorUsername, gender: sr.gender, lng: sr.lng, lat: sr.lat, eduAdmin: sr.eduAdmin,
-              phone: (idx > -1 ? schoolDataWrapper.list[idx].phone : "") || "", manager: (idx > -1 ? schoolDataWrapper.list[idx].manager : "") || "" };
+              phone: (idx > -1 ? schoolDataWrapper.list[idx].phone : "") || "", manager: (idx > -1 ? schoolDataWrapper.list[idx].manager : "") || "",
+              buildingCategory: (idx > -1 ? schoolDataWrapper.list[idx].buildingCategory : "") || "", isRented: idx > -1 ? (schoolDataWrapper.list[idx].isRented === true) : false };
             if (idx > -1) schoolDataWrapper.list[idx] = schoolRecord; else schoolDataWrapper.list.push(schoolRecord);
             added++;
           });
@@ -3793,6 +3825,7 @@
 
     function renderAuditLog() {
       renderUserSessionStatus();
+      renderLocationVerificationTable();
       const tbody = document.querySelector('#auditLogTable tbody'); if (!tbody) return;
       const logs = (schoolDataWrapper.logs || []).slice().reverse().slice(0, 500);
       if (logs.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا توجد أحداث مسجّلة بعد.</td></tr>`; return; }
