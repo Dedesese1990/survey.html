@@ -308,6 +308,9 @@
           <div class="sidebar-item hidden" id="tabAuditLog" onclick="showTab('auditLog')">
             <span style="font-size:1.1rem;">🧾</span> <span>سجل التدقيق</span>
           </div>
+          <div class="sidebar-item" id="tabSupport" onclick="showTab('support')">
+            <span style="font-size:1.1rem;">🎫</span> <span>الدعم الفني</span>
+          </div>
         </div>
       </aside>
 
@@ -897,6 +900,13 @@
               <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">Top 10 لكل فرع — الشرقية، الأحساء، حفر الباطن — بنفس التصنيف المختار فوق.</p>
               <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px;" id="cmpRegionCompareContainer"></div>
             </div>
+
+            <div class="card">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; font-weight:900; margin-bottom:6px;">🔥 الخريطة الحرارية للبلاغات</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">حجم ولون النقطة يعكسان عدد البلاغات في كل مدرسة — الأحمر يعني كثافة بلاغات أعلى. اضغط على أي نقطة لتفاصيل المدرسة (مفتوحة/مغلقة/معاد فتحها). تظهر فقط المدارس التي لها إحداثيات حقيقية مسجّلة.</p>
+              <div id="cmpHeatmapEmpty" class="empty-state hidden" style="padding:20px;">لا توجد مدارس مرتبطة ببلاغات ولها إحداثيات مسجّلة بعد.</div>
+              <div id="cmpHeatmapContainer" style="height:420px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
+            </div>
           </div>
         </section>
 
@@ -996,7 +1006,7 @@
                 </div>
                 <small style="color:var(--text-muted); font-weight:600;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_SUPPORT">الدعم الفني</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
 
@@ -1059,6 +1069,30 @@
           </div>
         </section>
 
+        <!-- ================= 7. Support Tickets Tab ================= -->
+        <section id="secSupport" class="hidden">
+          <div class="card" style="padding:20px 26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-top:3px solid var(--tbc-petrol);">
+            <div>
+              <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.2rem; font-weight:900;">🎫 الدعم الفني</h3>
+              <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="supportScopeNote">أرسل مشكلتك أو استفسارك وهيتم الرد عليك من فريق الدعم الفني</p>
+            </div>
+            <button class="btn btn-gold" style="font-size:0.9rem; padding:12px 20px;" onclick="openNewTicketModal()">➕ تذكرة جديدة</button>
+          </div>
+
+          <div class="card">
+            <div class="chart-card-header-row">
+              <div class="chart-card-title">📋 التذاكر</div>
+              <select id="ticketStatusFilter" style="width:auto; font-size:0.85rem; padding:8px 14px; font-weight:700;" onchange="renderTicketsList()">
+                <option value="ALL">-- كل الحالات --</option>
+                <option value="مفتوحة">مفتوحة</option>
+                <option value="قيد المعالجة">قيد المعالجة</option>
+                <option value="مغلقة">مغلقة</option>
+              </select>
+            </div>
+            <div id="ticketsListContainer"></div>
+          </div>
+        </section>
+
       </main>
     </div>
   </div>
@@ -1118,6 +1152,42 @@
       <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> الأحساء</label>
       <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> حفر الباطن</label>
       <button class="btn btn-petrol" style="width:100%;" onclick="document.getElementById('cmpBranchFilterPanel').classList.add('hidden')">تم ✓</button>
+    </div>
+  </div>
+
+  <div id="newTicketModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.3rem;">🎫 تذكرة دعم فني جديدة</h3>
+      <div class="form-group"><label>عنوان المشكلة *</label><input type="text" id="newTicketSubject" placeholder="وصف مختصر للمشكلة"></div>
+      <div class="form-group"><label>تفاصيل المشكلة *</label><textarea id="newTicketDescription" rows="5" placeholder="اشرح المشكلة بالتفصيل..."></textarea></div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="submitNewTicket()">إرسال التذكرة ✓</button>
+        <button class="btn btn-outline" onclick="document.getElementById('newTicketModal').classList.add('hidden')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ticketDetailModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:640px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
+        <h3 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900;" id="ticketDetailSubject"></h3>
+        <span class="badge-status" id="ticketDetailStatusBadge"></span>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;" id="ticketDetailMeta"></p>
+      <div id="ticketDetailStatusControl" class="hidden" style="margin-bottom:16px; display:flex; align-items:center; gap:10px; background:#f8fafc; padding:10px 14px; border-radius:8px;">
+        <label style="margin:0; font-size:0.85rem;">تغيير الحالة:</label>
+        <select id="ticketDetailStatusSelect" style="width:auto; font-size:0.85rem; padding:6px 10px;" onchange="changeTicketStatus()">
+          <option value="مفتوحة">مفتوحة</option>
+          <option value="قيد المعالجة">قيد المعالجة</option>
+          <option value="مغلقة">مغلقة</option>
+        </select>
+      </div>
+      <div id="ticketDetailMessages" style="max-height:340px; overflow-y:auto; margin-bottom:16px; padding-left:4px;"></div>
+      <div class="form-group"><label>الرد</label><textarea id="ticketReplyText" rows="3" placeholder="اكتب ردك هنا..."></textarea></div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px;">
+        <button class="btn btn-petrol" style="flex:1;" onclick="submitTicketReply()">إرسال الرد ✓</button>
+        <button class="btn btn-outline" onclick="document.getElementById('ticketDetailModal').classList.add('hidden')">إغلاق</button>
+      </div>
     </div>
   </div>
 
@@ -1394,7 +1464,7 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_SUPPORT: "الدعم الفني", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
     // "إدارة المكتب الفرعي" دور رابع أعلى تنظيمياً من "مدير إشراف"، لكن بنفس صلاحياته بالضبط —
     // فيُعامَل بنفس المنطق في كل مكان عبر هذا الثابت المشترك بدل تكرار الشرط يدوياً.
@@ -1402,7 +1472,7 @@
     // "إدارة القطاع الشرقي" دور جديد بنفس صلاحيات "إدارة التخطيط والتحكم" بالكامل حالياً (بطلب صريح، على أن
     // تُراجَع الصلاحيات وتُخصَّص لاحقاً) — كل مكان يفحص "هل المستخدم إدارة تخطيط؟" يفحص هذه القائمة بدلاً من
     // الدور الواحد، فيسهل تضييق النطاق مستقبلاً من مكان واحد فقط.
-    const FULL_ADMIN_ROLES = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR'];
+    const FULL_ADMIN_ROLES = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR', 'ROLE_SUPPORT'];
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
     function resolveInspectorUser(text) {
@@ -1421,7 +1491,7 @@
       return sch.inspector === user.username || sch.inspector === user.fullName;
     }
 
-    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} }; let pendingRegistrations = []; let pendingSchoolRequests = [];
+    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} }; let pendingRegistrations = []; let pendingSchoolRequests = []; let tickets = [];
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
     
     // Globals
@@ -1673,7 +1743,7 @@
       if(!currentSessionToken) return;
       const resData = await apiCall("PULL_DATA");
       if (resData.status === "success") {
-        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || []; pendingSchoolRequests = resData.data.pendingSchoolRequests || [];
+        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || []; pendingSchoolRequests = resData.data.pendingSchoolRequests || []; tickets = resData.data.tickets || [];
         if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
         if (!schoolDataWrapper.settings) schoolDataWrapper.settings = {};
         if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
@@ -1684,6 +1754,7 @@
         if (!document.getElementById('secSchools').classList.contains('hidden')) renderSchoolsManagement();
         if (!document.getElementById('secUsers').classList.contains('hidden')) renderUsersManagement();
         if (!document.getElementById('secAuditLog')?.classList.contains('hidden')) renderAuditLog();
+        if (!document.getElementById('secSupport')?.classList.contains('hidden')) renderTicketsList();
       }
     }
 
@@ -1696,12 +1767,12 @@
 
     function showTab(tab) {
       if(!currentUser) return;
-      ['analytics', 'surveys', 'records', 'schools', 'complaints', 'users', 'auditLog'].forEach(t => {
+      ['analytics', 'surveys', 'records', 'schools', 'complaints', 'users', 'auditLog', 'support'].forEach(t => {
         const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)); if (btn) btn.classList.toggle('active', tab === t);
         const sec = document.getElementById('sec' + t.charAt(0).toUpperCase() + t.slice(1)); if (sec) sec.classList.toggle('hidden', tab !== t);
       });
       ['secNewSurvey', 'secFillSurvey'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-      if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); }
+      if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); } else if(tab === 'support') { renderTicketsList(); }
     }
 
     // التنقّل بين أقسام لوحة المؤشرات الثلاثة (المدارس/البلاغات/عمليات الحصر)
@@ -3843,6 +3914,40 @@
         Object.entries(stats.avgResponseByCategory).map(([k, v]) => `<div style="background:#f8fafc; border-radius:8px; padding:14px; text-align:center;"><div style="font-size:1.3rem; font-weight:900; color:var(--tbc-petrol-dark);">${formatDays(v)}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-top:4px;">${esc(k)}</div></div>`).join('') + `</div>`;
 
       renderTopSchoolsTable('reopened');
+      renderComplaintsHeatmap(stats.byLocation || []);
+    }
+
+    let cmpHeatmapInstance = null, cmpHeatmapMarkersLayer = null;
+    function renderComplaintsHeatmap(locations) {
+      const emptyEl = document.getElementById('cmpHeatmapEmpty'); const containerEl = document.getElementById('cmpHeatmapContainer');
+      if (!emptyEl || !containerEl) return;
+      if (!locations || locations.length === 0) { emptyEl.classList.remove('hidden'); containerEl.classList.add('hidden'); return; }
+      emptyEl.classList.add('hidden'); containerEl.classList.remove('hidden');
+      if (typeof L === 'undefined') { containerEl.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">تعذر تحميل مكتبة الخرائط.</div>`; return; }
+      try {
+        if (!cmpHeatmapInstance) {
+          cmpHeatmapInstance = L.map(containerEl).setView([25.9, 49.6], 8);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(cmpHeatmapInstance);
+          cmpHeatmapMarkersLayer = L.layerGroup().addTo(cmpHeatmapInstance);
+        }
+        cmpHeatmapMarkersLayer.clearLayers();
+
+        const maxCount = Math.max(1, ...locations.map(l => l.count));
+        const points = [];
+        locations.forEach(loc => {
+          const ratio = loc.count / maxCount;
+          // تدرّج حراري: أصفر (منخفض) → برتقالي (متوسط) → أحمر (مرتفع)
+          const color = ratio > 0.66 ? '#dc2626' : ratio > 0.33 ? '#f97316' : '#facc15';
+          const radius = 8 + ratio * 26;
+          const marker = L.circleMarker([loc.lat, loc.lng], { radius, color: '#fff', weight: 1.5, fillColor: color, fillOpacity: 0.75 });
+          marker.bindPopup(`<div style="font-family:Tajawal,sans-serif; text-align:right;"><b>${esc(loc.school)}</b><br>إجمالي البلاغات: ${loc.count}<br>🟠 مفتوحة: ${loc.open}<br>🟢 مغلقة: ${loc.closed}<br>🔁 معاد فتحها: ${loc.reopened}</div>`);
+          marker.addTo(cmpHeatmapMarkersLayer);
+          points.push([loc.lat, loc.lng]);
+        });
+
+        if (points.length > 0) cmpHeatmapInstance.fitBounds(points, { padding: [40, 40], maxZoom: 12 });
+        setTimeout(() => cmpHeatmapInstance.invalidateSize(), 200);
+      } catch (e) {}
     }
 
     function renderTopSchoolsTable(key) {
@@ -4349,6 +4454,96 @@
         <td style="white-space:nowrap; direction:ltr; font-size:0.85rem;">${esc(fmt(u.lastLogin))}</td>
         <td style="white-space:nowrap; direction:ltr; font-size:0.85rem;">${esc(fmt(u.lastLogout))}</td>
       </tr>`).join('');
+    }
+
+    // ==================== نظام الدعم الفني (التذاكر) ====================
+    function renderTicketsList() {
+      const container = document.getElementById('ticketsListContainer'); if (!container) return;
+      const isSupportStaff = FULL_ADMIN_ROLES.includes(currentUser.role);
+      document.getElementById('supportScopeNote').innerText = isSupportStaff ? 'كل تذاكر الدعم الفني من جميع المستخدمين' : 'أرسل مشكلتك أو استفسارك وهيتم الرد عليك من فريق الدعم الفني';
+      const filterVal = document.getElementById('ticketStatusFilter').value;
+      let list = tickets.slice();
+      if (filterVal !== 'ALL') list = list.filter(t => t.status === filterVal);
+      list.sort((a, b) => b.createdAt - a.createdAt);
+
+      if (list.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:30px;">${tickets.length === 0 ? 'لا توجد تذاكر بعد.' : 'لا توجد تذاكر مطابقة لهذه الحالة.'}</div>`; return; }
+
+      const statusClass = { 'مفتوحة': 'pending', 'قيد المعالجة': 'pending', 'مغلقة': 'approved' };
+      container.innerHTML = list.map(t => {
+        const lastMsg = t.messages && t.messages.length > 0 ? t.messages[t.messages.length - 1] : null;
+        const lastDate = lastMsg ? new Date(lastMsg.ts).toLocaleString('ar-SA-u-ca-gregory') : '';
+        return `<div onclick="openTicketDetail(${t.id})" style="background:#fff; border:1px solid var(--border-subtle); border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer; transition:box-shadow 0.2s ease;" onmouseover="this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.boxShadow='none'">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;">
+            <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:1rem;">${esc(t.subject)}</div>
+            <span class="badge-status ${statusClass[t.status] || 'pending'}">${esc(t.status)}</span>
+          </div>
+          <div style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">${isSupportStaff ? `بواسطة: ${esc(t.createdByName)} — ` : ''}${t.messages ? t.messages.length : 0} رسالة${lastDate ? ' — آخر نشاط: ' + esc(lastDate) : ''}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function openNewTicketModal() {
+      document.getElementById('newTicketSubject').value = '';
+      document.getElementById('newTicketDescription').value = '';
+      document.getElementById('newTicketModal').classList.remove('hidden');
+    }
+
+    async function submitNewTicket() {
+      const subject = document.getElementById('newTicketSubject').value.trim();
+      const description = document.getElementById('newTicketDescription').value.trim();
+      if (!subject || !description) return showAlert('يرجى تعبئة العنوان والتفاصيل.');
+      const res = await apiCall('CREATE_TICKET', { subject, description });
+      if (res.status === 'success') {
+        document.getElementById('newTicketModal').classList.add('hidden');
+        showAlert('✓ ' + res.message);
+        pullFromCloud();
+      } else showAlert(esc(res.message));
+    }
+
+    let activeTicketId = null;
+    function openTicketDetail(ticketId) {
+      const t = tickets.find(x => x.id === ticketId); if (!t) return;
+      activeTicketId = ticketId;
+      const isSupportStaff = FULL_ADMIN_ROLES.includes(currentUser.role);
+      document.getElementById('ticketDetailSubject').innerText = t.subject;
+      const statusClass = { 'مفتوحة': 'pending', 'قيد المعالجة': 'pending', 'مغلقة': 'approved' };
+      const badge = document.getElementById('ticketDetailStatusBadge');
+      badge.className = `badge-status ${statusClass[t.status] || 'pending'}`; badge.innerText = t.status;
+      document.getElementById('ticketDetailMeta').innerText = `بواسطة: ${t.createdByName} — ${new Date(t.createdAt).toLocaleString('ar-SA-u-ca-gregory')}`;
+      document.getElementById('ticketDetailStatusControl').classList.toggle('hidden', !isSupportStaff);
+      if (isSupportStaff) document.getElementById('ticketDetailStatusSelect').value = t.status;
+
+      const msgsHtml = (t.messages || []).map(m => `
+        <div style="margin-bottom:12px; display:flex; flex-direction:column; align-items:${m.isSupport ? 'flex-start' : 'flex-end'};">
+          <div style="max-width:80%; background:${m.isSupport ? 'var(--tbc-petrol-light)' : '#f8fafc'}; border-radius:10px; padding:10px 14px; border:1px solid ${m.isSupport ? '#c8e2e8' : 'var(--border-subtle)'};">
+            <div style="font-size:0.78rem; font-weight:900; color:${m.isSupport ? 'var(--tbc-petrol-dark)' : 'var(--text-muted)'}; margin-bottom:4px;">${esc(m.senderName)}${m.isSupport ? ' (الدعم الفني)' : ''}</div>
+            <div style="font-size:0.9rem; font-weight:600; white-space:pre-wrap;">${esc(m.text)}</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px;">${new Date(m.ts).toLocaleString('ar-SA-u-ca-gregory')}</div>
+          </div>
+        </div>`).join('');
+      document.getElementById('ticketDetailMessages').innerHTML = msgsHtml;
+      document.getElementById('ticketReplyText').value = '';
+      document.getElementById('ticketDetailModal').classList.remove('hidden');
+    }
+
+    async function submitTicketReply() {
+      const text = document.getElementById('ticketReplyText').value.trim();
+      if (!text) return showAlert('يرجى كتابة الرد أولاً.');
+      const res = await apiCall('REPLY_TICKET', { ticketId: activeTicketId, text });
+      if (res.status === 'success') {
+        await pullFromCloud();
+        openTicketDetail(activeTicketId);
+      } else showAlert(esc(res.message));
+    }
+
+    async function changeTicketStatus() {
+      const newStatus = document.getElementById('ticketDetailStatusSelect').value;
+      const res = await apiCall('UPDATE_TICKET_STATUS', { ticketId: activeTicketId, status: newStatus });
+      if (res.status === 'success') {
+        logAudit('TICKET_STATUS', `تحديث حالة تذكرة #${activeTicketId} إلى: ${newStatus}`);
+        await pullFromCloud();
+        openTicketDetail(activeTicketId);
+      } else showAlert(esc(res.message));
     }
 
     function renderAuditLog() {
