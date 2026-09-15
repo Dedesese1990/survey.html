@@ -623,11 +623,9 @@
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب جديد تلقائياً بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
             <div style="margin-bottom:10px; background:#fff; border-radius:8px; padding:10px 12px;">
-              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:0.9rem; width:100%;">
-                <input type="checkbox" id="schoolsBulkSendEmailNotify" style="flex-shrink:0;">
-                <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
-              </label>
-              <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً).</p>
+              <input type="checkbox" id="schoolsBulkSendEmailNotify" style="vertical-align:middle; margin-left:8px;">
+              <span onclick="document.getElementById('schoolsBulkSendEmailNotify').click()" style="font-weight:800; cursor:pointer; font-size:0.9rem;">📧 إرسال إشعار بالبريد الإلكتروني</span>
+              <div style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-top:6px;">لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً).</div>
             </div>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
@@ -716,11 +714,9 @@
                 <label>البريد الإلكتروني (اختياري)</label>
                 <input type="email" id="usrEmail">
                 <div id="usrSendEmailNotifyGroup" style="margin-top:10px; background:#f8fafc; border-radius:8px; padding:10px 12px;">
-                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:0.85rem; width:100%;">
-                    <input type="checkbox" id="usrSendEmailNotify" style="flex-shrink:0;">
-                    <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
-                  </label>
-                  <p style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه).</p>
+                  <input type="checkbox" id="usrSendEmailNotify" style="vertical-align:middle; margin-left:8px;">
+                  <span onclick="document.getElementById('usrSendEmailNotify').click()" style="font-weight:800; cursor:pointer; font-size:0.85rem;">📧 إرسال إشعار بالبريد الإلكتروني</span>
+                  <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:6px;">عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه).</div>
                 </div>
               </div>
             </div>
@@ -767,11 +763,9 @@
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
             <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:12px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
             <div style="margin-bottom:16px; background:#fff; border-radius:8px; padding:10px 12px;">
-              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:0.9rem; width:100%;">
-                <input type="checkbox" id="usersBulkSendEmailNotify" style="flex-shrink:0;">
-                <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
-              </label>
-              <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً).</p>
+              <input type="checkbox" id="usersBulkSendEmailNotify" style="vertical-align:middle; margin-left:8px;">
+              <span onclick="document.getElementById('usersBulkSendEmailNotify').click()" style="font-weight:800; cursor:pointer; font-size:0.9rem;">📧 إرسال إشعار بالبريد الإلكتروني</span>
+              <div style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-top:6px;">لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً).</div>
             </div>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="downloadUsersTemplate()">📥 تنزيل القالب</button>
