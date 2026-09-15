@@ -597,7 +597,11 @@
 
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". أعمدة بيانات المشرف الشخصية (الجوال، المدير المباشر، الجنسية، الشهادة، الخبرة، الايميل) تُحدَّث تلقائياً على ملف المشرف الموجود بالنظام إذا تم التعرف عليه بالاسم أو الرمز الوظيفي — لا تُنشئ حساباً جديداً (لازم يكون له حساب مُسجَّل مسبقاً من تاب المستخدمين).</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب جديد تلقائياً بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:6px;">
+              <input type="checkbox" id="schoolsBulkSendEmailNotify">
+              <span>📧 إرسال إشعار بالبريد الإلكتروني لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً)</span>
+            </label>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
               <label for="excelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع القالب المعبأ</label>
@@ -675,7 +679,14 @@
             <div class="form-grid">
               <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="usrFullName"></div>
               <div class="form-group"><label>الرمز الوظيفي *</label><input type="text" id="usrUsername" placeholder="بدون مسافات"></div>
-              <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" id="usrEmail"></div>
+              <div class="form-group">
+                <label>البريد الإلكتروني (اختياري)</label>
+                <input type="email" id="usrEmail">
+                <label id="usrSendEmailNotifyGroup" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:8px; font-weight:700; font-size:0.85rem;">
+                  <input type="checkbox" id="usrSendEmailNotify">
+                  <span>📧 إرسال إشعار بالبريد الإلكتروني عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه)</span>
+                </label>
+              </div>
             </div>
             
             <div class="form-grid">
@@ -686,8 +697,9 @@
                   <input type="text" id="usrPassword" style="flex:1;" placeholder="يتم التوليد تلقائياً">
                   <button type="button" class="btn btn-outline" style="padding:0 14px; font-size:0.85rem; white-space:nowrap;" onclick="generateInitialPassword()">توليد 🎲</button>
                 </div>
+                <small style="color:var(--text-muted); font-weight:600;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
 
@@ -717,14 +729,18 @@
 
           <div class="bulk-import-box card" id="usersBulkImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
-            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:16px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
+            <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:12px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:16px;">
+              <input type="checkbox" id="usersBulkSendEmailNotify">
+              <span>📧 إرسال إشعار بالبريد الإلكتروني لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً)</span>
+            </label>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="downloadUsersTemplate()">📥 تنزيل القالب</button>
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="exportUsersExcel()">📤 تصدير القائمة الحالية</button>
               <label for="usersExcelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1rem; cursor:pointer; text-align:center;">📤 رفع ملف مستخدمين</label>
               <input type="file" id="usersExcelFileInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleUsersExcelUpload(event)">
             </div>
-            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً يتم توليدها تلقائياً. الأعمدة الإضافية (الجنسية، الشهادة، سنوات الخبرة، تاريخ الالتحاق، المدير المباشر) اختيارية بالكامل.</small>
+            <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً أو لم تحقق شرط القوة (8 خانات + حرف كبير وصغير ورقم ورمز) يتم توليد كلمة قوية تلقائياً بدلاً منها. الأعمدة الإضافية (الجنسية، الشهادة، سنوات الخبرة، تاريخ الالتحاق، المدير المباشر) اختيارية بالكامل.</small>
           </div>
 
           <div class="card">
@@ -806,7 +822,7 @@
     <div class="modal-content">
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:8px; font-size:1.3rem;">🔑 تغيير كلمة المرور</h3>
       <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="cpCurrentPass"></div>
-      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="cpNewPass"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="cpNewPass"><small style="color:var(--text-muted); font-weight:600; display:block; margin-top:4px;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small></div>
       <div class="form-group"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="cpConfirmPass"></div>
       <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:26px;">
         <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordChange()">تحديث ✓</button>
@@ -825,6 +841,7 @@
           <input type="text" id="arpNewPassword" style="flex:1; font-weight:800; direction:ltr; text-align:left;">
           <button type="button" class="btn btn-outline" style="padding:0 14px; white-space:nowrap;" onclick="document.getElementById('arpNewPassword').value = generateRandomPassword();">توليد 🎲</button>
         </div>
+        <small style="color:var(--text-muted); font-weight:600;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small>
       </div>
       <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:20px;">
         <button class="btn btn-petrol" style="flex:1;" onclick="confirmAdminResetPassword()">تعيين وحفظ ✓</button>
@@ -935,7 +952,7 @@
       <h3 style="color:#ef4444; margin-bottom:8px; font-size:1.3rem;">⚠️ إجراء أمني مطلوب</h3>
       <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; font-weight:600;">يجب عليك تغيير كلمة المرور الافتراضية قبل الدخول إلى المنظومة.</p>
       <div class="form-group"><label>كلمة المرور الحالية</label><input type="password" id="fcpCurrentPass"></div>
-      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fcpNewPass" placeholder="8 أحرف أو أرقام على الأقل"></div>
+      <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fcpNewPass"><small style="color:var(--text-muted); font-weight:600; display:block; margin-top:4px;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small></div>
       <button class="btn btn-reject" style="width:100%; margin-top:16px;" onclick="submitForcedPasswordChange()">تغيير واعتماد كلمة المرور ✓</button>
     </div>
   </div>
@@ -953,7 +970,7 @@
       <div id="fpStep2" class="hidden">
         <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">إذا كان الحساب موجوداً، وصلك رمز تحقق على بريدك المسجّل. أدخله هنا مع كلمة المرور الجديدة (صالح 15 دقيقة).</p>
         <div class="form-group"><label>رمز التحقق (6 أرقام)</label><input type="text" id="fpCode" maxlength="6" inputmode="numeric"></div>
-        <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fpNewPass"></div>
+        <div class="form-group"><label>كلمة المرور الجديدة</label><input type="password" id="fpNewPass"><small style="color:var(--text-muted); font-weight:600; display:block; margin-top:4px;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small></div>
         <div class="form-group"><label>تأكيد كلمة المرور</label><input type="password" id="fpConfirmPass"></div>
         <button class="btn btn-petrol" style="width:100%;" id="fpResetBtn" onclick="submitResetWithCode()">تعيين كلمة المرور الجديدة ✓</button>
         <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="backToFpStep1()">لم يصلني الرمز — إعادة المحاولة</button>
@@ -977,7 +994,7 @@
         <div class="form-group"><label>رقم الجوال</label><input type="text" id="regPhone" placeholder="05XXXXXXXX"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label>كلمة المرور *</label><input type="password" id="regPassword" placeholder="8 أحرف على الأقل"></div>
+        <div class="form-group"><label>كلمة المرور *</label><input type="password" id="regPassword"><small style="color:var(--text-muted); font-weight:600; display:block; margin-top:4px;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small></div>
         <div class="form-group"><label>تأكيد كلمة المرور *</label><input type="password" id="regConfirmPassword"></div>
       </div>
 
@@ -1066,11 +1083,15 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
     // "إدارة المكتب الفرعي" دور رابع أعلى تنظيمياً من "مدير إشراف"، لكن بنفس صلاحياته بالضبط —
     // فيُعامَل بنفس المنطق في كل مكان عبر هذا الثابت المشترك بدل تكرار الشرط يدوياً.
     const MANAGER_ROLES = ['ROLE_SUPERVISION_LEAD', 'ROLE_BRANCH_OFFICE'];
+    // "إدارة القطاع الشرقي" دور جديد بنفس صلاحيات "إدارة التخطيط والتحكم" بالكامل حالياً (بطلب صريح، على أن
+    // تُراجَع الصلاحيات وتُخصَّص لاحقاً) — كل مكان يفحص "هل المستخدم إدارة تخطيط؟" يفحص هذه القائمة بدلاً من
+    // الدور الواحد، فيسهل تضييق النطاق مستقبلاً من مكان واحد فقط.
+    const FULL_ADMIN_ROLES = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR'];
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
     function resolveInspectorUser(text) {
@@ -1149,7 +1170,7 @@
     }
     function currentUserHasApprovalAuthority() {
       if (!currentUser) return false;
-      if (currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role)) return true;
+      if (FULL_ADMIN_ROLES.includes(currentUser.role) || MANAGER_ROLES.includes(currentUser.role)) return true;
       return getActiveIncomingDelegators().length > 0;
     }
 
@@ -1175,7 +1196,8 @@
 
     async function submitForcedPasswordChange() {
       const cur = document.getElementById('fcpCurrentPass').value; const newP = document.getElementById('fcpNewPass').value;
-      if (!cur || !newP || newP.length < 8) return showAlert("كلمة المرور يجب أن تكون 8 أحرف على الأقل.");
+      if (!cur || !newP) return showAlert("يرجى تعبئة الحقلين.");
+      if (!isPasswordStrong(newP)) return showAlert(PASSWORD_HINT_TEXT);
       try {
         const resData = await callBackend({ token: SECURE_API_TOKEN, action: "CHANGE_PASSWORD", sessionToken: currentSessionToken, payload: { oldPassword: cur, newPassword: newP } });
         if (resData.status === "success") { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الإجباري عند أول دخول'); document.getElementById('forceChangePasswordModal').classList.add('hidden'); showAlert("تم التأمين بنجاح!"); loginSuccess(); } else { showAlert(esc(resData.message)); }
@@ -1214,7 +1236,7 @@
       const newP = document.getElementById('fpNewPass').value;
       const confirmP = document.getElementById('fpConfirmPass').value;
       if (!/^\d{6}$/.test(code)) return showAlert('يرجى إدخال رمز التحقق المكوّن من 6 أرقام.');
-      if (!newP || newP.length < 8) return showAlert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
+      if (!newP || !isPasswordStrong(newP)) return showAlert(PASSWORD_HINT_TEXT);
       if (newP !== confirmP) return showAlert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
       const btn = document.getElementById('fpResetBtn'); btn.disabled = true; btn.innerText = 'جاري التحقق...';
       const res = await apiCall('RESET_PASSWORD_WITH_CODE', { username: fpPendingUsername, code, newPassword: newP });
@@ -1284,7 +1306,7 @@
 
       if (!fullName || !username || !email) return showAlert('يرجى تعبئة الاسم الكامل والرمز الوظيفي والبريد الإلكتروني.');
       if (!roleChoice) return showAlert('يرجى اختيار المسمى الوظيفي المطلوب.');
-      if (!password || password.length < 8) return showAlert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      if (!password || !isPasswordStrong(password)) return showAlert(PASSWORD_HINT_TEXT);
       if (password !== confirmPassword) return showAlert('كلمة المرور وتأكيدها غير متطابقين.');
 
       const mapped = mapRegRoleChoice(roleChoice, branchVal);
@@ -1306,8 +1328,8 @@
       document.getElementById('activeUserName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserFullName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserRole').innerText = esc(ROLE_LABELS[currentUser.role] || currentUser.role);
-      const isPlanning = currentUser.role === "ROLE_PLANNING";
-      const canDelegate = currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role);
+      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role); // "إدارة القطاع الشرقي" لها نفس صلاحيات إدارة التخطيط حالياً
+      const canDelegate = isPlanning || MANAGER_ROLES.includes(currentUser.role);
       document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden');
       document.getElementById('tabAuditLog')?.classList.toggle('hidden', !isPlanning);
       document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
@@ -1354,7 +1376,7 @@
     // ================= Logic: Surveys Management (النماذج) =================
     function renderSurveysList() {
       const container = document.getElementById('surveysListContainer'); if(!container) return;
-      const isPlanning = currentUser.role === "ROLE_PLANNING";
+      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role);
       if (!surveys || surveys.length === 0) { container.innerHTML = `<div class="card"><div class="empty-state"><h4>لا توجد نماذج حصر منشورة حالياً</h4></div></div>`; return; }
       let html = '';
       surveys.slice().reverse().forEach(s => {
@@ -2095,7 +2117,7 @@
     // لوحة أداء المشرفين الميدانيين — مرئية فقط لإدارة التخطيط ومدير الإشراف
     function renderInspectorPerformance(scopedResponses) {
       const card = document.getElementById('inspectorPerfCard'); if (!card) return;
-      const canSeeThis = currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role);
+      const canSeeThis = FULL_ADMIN_ROLES.includes(currentUser.role) || MANAGER_ROLES.includes(currentUser.role);
       card.classList.toggle('hidden', !canSeeThis);
       if (!canSeeThis) return;
       const tbody = document.querySelector('#inspectorPerfTable tbody'); if (!tbody) return;
@@ -2324,7 +2346,7 @@
       else if (currentUser.role === "ROLE_INSPECTOR") { list = list.filter(r => r.username === currentUser.username); }
 
       // دمج نطاق أي مُفوِّض نشط (تفويض صلاحية الاعتماد مؤقتاً بين إدارة التخطيط/مديري الإشراف)
-      if (currentUser.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(currentUser.role)) {
+      if (FULL_ADMIN_ROLES.includes(currentUser.role) || MANAGER_ROLES.includes(currentUser.role)) {
         const delegators = getActiveIncomingDelegators();
         if (delegators.length > 0) {
           const extra = responses.filter(r => delegators.some(d => !d.branch || d.branch === 'الكل' || r.branch === d.branch));
@@ -2502,7 +2524,7 @@
           '📅 "التقويم الميداني" بيوريك مواعيد استحقاق النماذج وعدد زياراتك يوم بيوم.'
         ]);
       }
-      if (role === 'ROLE_PLANNING') {
+      if (FULL_ADMIN_ROLES.includes(role)) {
         return base.concat([
           'دوس "+ إنشاء حصر جديد" لعمل نموذج فحص جديد بالكامل.',
           'اكتب مسمى النموذج وتاريخ الاستحقاق، وابدأ إضافة بنود الفحص.',
@@ -2518,8 +2540,8 @@
     }
 
     function getRecordsGuideSteps(role) {
-      const canApprove = role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role);
-      const steps = [`هتلاقي جدول بكل التقارير في نطاقك ${role === 'ROLE_INSPECTOR' ? '(تقاريرك أنت فقط)' : (role === 'ROLE_PLANNING' ? '(كل النظام)' : '(فرعك فقط)')}.`];
+      const canApprove = FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role);
+      const steps = [`هتلاقي جدول بكل التقارير في نطاقك ${role === 'ROLE_INSPECTOR' ? '(تقاريرك أنت فقط)' : (FULL_ADMIN_ROLES.includes(role) ? '(كل النظام)' : '(فرعك فقط)')}.`];
       if (canApprove) {
         steps.push('فوق الجدول هتلاقي فلترين: تصفية حسب النموذج، وتصفية حسب المشرف الميداني.');
         steps.push('دوس "عرض و تدقيق" على أي تقرير لمراجعته، وتقدر تعتمده ✓، ترفضه بملاحظة ✕، أو تمنح المشرف إذن تعديل خاص.');
@@ -2531,7 +2553,7 @@
     }
 
     function getSchoolsGuideSteps(role) {
-      if (role === 'ROLE_PLANNING') {
+      if (FULL_ADMIN_ROLES.includes(role)) {
         return [
           'تقدر تضيف مدرسة يدويًا، أو تستورد قائمة كاملة دفعة واحدة عبر ملف Excel (فيه قالب جاهز تنزّله).',
           'كل مدرسة لازم تتربط باسم مشرف مُسند ليها — ده اللي بيحدد مين يقدر يرفع تقارير عليها.',
@@ -2558,7 +2580,7 @@
             'تحت كده: رسم بياني لتقدم رفع التقارير أسبوعيًا، ومخطط دائري لنسبة "مطابق" مقابل "غير مطابق".',
             '"تغطية المدارس" بتوريك أي مدرسة تحت مسؤوليتك لسه ما اتزارتش، وخريطة تفاعلية بآخر حالة معروفة لكل مدرسة.'
           ];
-          if (role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role)) s.push('هتلاقي كمان جدول "أداء المشرفين الميدانيين" في آخر الصفحة يوضح إنتاجية كل مشرف ونسبة قبول تقاريره من أول مرة.');
+          if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) s.push('هتلاقي كمان جدول "أداء المشرفين الميدانيين" في آخر الصفحة يوضح إنتاجية كل مشرف ونسبة قبول تقاريره من أول مرة.');
           return s;
         }
       },
@@ -2574,7 +2596,7 @@
         purpose: 'قاعدة بيانات المدارس وربطها بالمشرفين المسؤولين عنها.',
         steps: (role) => ['من الشريط الجانبي دوس "🏫 إدارة المدارس والبيانات".'].concat(getSchoolsGuideSteps(role))
       },
-      { icon: '👥', title: 'إدارة الهيكل والمستخدمين', sidebarIndex: 4, allRoles: false, onlyRole: 'ROLE_PLANNING',
+      { icon: '👥', title: 'إدارة الهيكل والمستخدمين', sidebarIndex: 4, allRoles: false, onlyRoles: FULL_ADMIN_ROLES,
         purpose: 'إدارة كل حسابات النظام — إضافة، تعديل، إيقاف، حذف، ومراجعة طلبات التسجيل الجديدة.',
         steps: () => [
           'من الشريط الجانبي دوس "👥 إدارة الهيكل والمستخدمين" (يظهر لإدارة التخطيط فقط).',
@@ -2583,7 +2605,7 @@
           'من الجدول تقدر: تعدّل بياناته، تعيّن له كلمة مرور جديدة، توقف حسابه مؤقتًا، أو تحذفه نهائيًا.'
         ]
       },
-      { icon: '🧾', title: 'سجل التدقيق', sidebarIndex: 5, allRoles: false, onlyRole: 'ROLE_PLANNING',
+      { icon: '🧾', title: 'سجل التدقيق', sidebarIndex: 5, allRoles: false, onlyRoles: FULL_ADMIN_ROLES,
         purpose: 'سجل كامل بكل عملية مهمة حصلت في النظام — للمراجعة والمساءلة.',
         steps: () => [
           'من الشريط الجانبي دوس "🧾 سجل التدقيق".',
@@ -2596,12 +2618,12 @@
     function buildUserGuideHtml(role) {
       const roleLabel = ROLE_LABELS[role] || role;
       const sections = GUIDE_SECTION_BUILDERS
-        .filter(sec => sec.allRoles || sec.onlyRole === role)
+        .filter(sec => sec.allRoles || (sec.onlyRoles && sec.onlyRoles.includes(role)))
         .map(sec => buildGuideSectionHtml(sec.icon, sec.title, buildSidebarMockup(sec.sidebarIndex), sec.purpose, sec.steps(role)))
         .join('');
 
       let delegationSection = '';
-      if (role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(role)) {
+      if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) {
         delegationSection = buildGuideSectionHtml('🔄', 'تفويض صلاحية الاعتماد المؤقت', buildProfileMenuMockup(),
           'لو هتكون غير متاح لفترة (إجازة مثلاً)، تقدر تدّي صلاحية الاعتماد بتاعتك لشخص تاني مؤقتًا.',
           ['دوس على اسمك أعلى يمين الصفحة، واختار "🔄 تفويض صلاحية الاعتماد".',
@@ -2947,7 +2969,7 @@
     // ================= Logic: Schools Management =================
     function renderSchoolsManagement() {
       if(!currentUser) return;
-      const isPlanning = currentUser.role === "ROLE_PLANNING";
+      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role);
       
       const views = ['schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4'];
       views.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isPlanning); });
@@ -3019,7 +3041,7 @@
     }
 
     // كلمة مرور مؤقتة موحّدة للحسابات التي يُنشئها استيراد المدارس تلقائياً (أرقام 1-9، 9 خانات) — يُطلب تغييرها فوراً عند أول دخول
-    const SCHOOL_IMPORT_TEMP_PASSWORD = '123456789';
+    const SCHOOL_IMPORT_TEMP_PASSWORD = 'Tbc@123456'; // يجب أن تحقق شرط قوة كلمة المرور الجديد (كبير+صغير+رقم+رمز)
 
     function generateUsernameFromName(name, sessionMap) {
       const base = name.trim().replace(/\s+/g, '_');
@@ -3031,7 +3053,8 @@
 
     async function handleExcelUpload(event) {
       const file = event.target.files[0]; if (!file) return;
-      const proceed = await showConfirm('أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً بكلمة مرور مؤقتة موحّدة (123456789)، وسيُطلب منه تغييرها فور أول دخول. لو كان بريده الإلكتروني موجوداً بالملف سيصله إيميل ببيانات الدخول تلقائياً.\n\nهل تريد المتابعة؟');
+      const willSendEmail = document.getElementById('schoolsBulkSendEmailNotify')?.checked === true;
+      const proceed = await showConfirm(`أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً بكلمة مرور مؤقتة موحّدة (Tbc@123456)، وسيُطلب منه تغييرها فور أول دخول.\n\n${willSendEmail ? '📧 خيار إرسال إشعار بريدي مفعّل — سيصل إيميل ببيانات الدخول لكل حساب جديد له بريد إلكتروني بالملف.' : '📧 خيار إرسال إشعار بريدي غير مفعّل — لن تُرسل أي إيميلات، وعليك تبليغ المشرفين ببياناتهم يدوياً.'}\n\nهل تريد المتابعة؟`);
       if (!proceed) { event.target.value = ''; return; }
 
       const reader = new FileReader();
@@ -3082,7 +3105,7 @@
                 const newUsername = generateUsernameFromName(inspectorText, newlyCreatedThisImport);
                 const createRes = await apiCall('CREATE_USER', {
                   username: newUsername, fullName: inspectorText, email: supEmail, phone: supPhone,
-                  password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch,
+                  password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch, sendEmailNotification: willSendEmail,
                   permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
                   nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager
                 });
@@ -3124,7 +3147,7 @@
             }
 
             let msg = `✓ تمت العملية بنجاح!\nتم استيراد وربط [ ${added} ] مدرسة.\nتم تحديث بيانات [ ${supervisorsUpdated} ] مشرف كان له حساب مسبقاً.`;
-            if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: 123456789 (سيُطلب من كل واحد تغييرها فور أول دخول). وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.`;
+            if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: Tbc@123456 (سيُطلب من كل واحد تغييرها فور أول دخول). ${willSendEmail ? 'وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.' : 'لم يتم إرسال أي إيميلات (الخيار كان معطّلاً) — يرجى تبليغهم ببياناتهم يدوياً.'}`;
             if (unresolved > 0) msg += `\n⚠️ تعذر إنشاء أو ربط حساب لـ [ ${unresolved} ] مدرسة — تحقق من اسم المشرف في الملف، أو أكمل الربط يدوياً لاحقاً.`;
             logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
             showAlert(msg);
@@ -3156,11 +3179,21 @@
 
     // ================= Logic: Users Management =================
     function generateRandomPassword() {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; let pass = "";
-      for (let i = 0; i < 8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
-      return pass;
+      const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ"; const lower = "abcdefghjkmnpqrstuvwxyz"; const digits = "23456789"; const symbols = "!@#$%*";
+      let pass = upper.charAt(Math.floor(Math.random() * upper.length)) + lower.charAt(Math.floor(Math.random() * lower.length)) + digits.charAt(Math.floor(Math.random() * digits.length)) + symbols.charAt(Math.floor(Math.random() * symbols.length));
+      const all = upper + lower + digits + symbols;
+      for (let i = 0; i < 6; i++) pass += all.charAt(Math.floor(Math.random() * all.length));
+      return pass.split('').sort(() => Math.random() - 0.5).join(''); // خلط الترتيب حتى لا تبدأ كل كلمة مرور بنفس نمط الأحرف
     }
     function generateInitialPassword() { document.getElementById('usrPassword').value = generateRandomPassword(); }
+
+    // فحص قوة كلمة المرور على الواجهة (نفس شرط الباك إند بالضبط) — للتنبيه الفوري قبل الإرسال
+    function isPasswordStrong(pw) {
+      if (typeof pw !== 'string') return false;
+      const p = pw.trim();
+      return p.length >= 8 && /[a-z]/.test(p) && /[A-Z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p);
+    }
+    const PASSWORD_HINT_TEXT = 'يجب ألا تقل عن 8 خانات، وتحتوي على حرف كبير وحرف صغير ورقم ورمز — مثال: Tbc@2026';
 
     // ---- استيراد / تصدير جماعي للمستخدمين عبر Excel ----
     function normalizeBranchLabel(text) {
@@ -3197,7 +3230,9 @@
     }
 
     async function handleUsersExcelUpload(event) {
-      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+      const file = event.target.files[0]; if (!file) return;
+      const willSendEmail = document.getElementById('usersBulkSendEmailNotify')?.checked === true;
+      const reader = new FileReader();
       reader.onload = async function(e) {
         try {
           const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
@@ -3232,8 +3267,8 @@
               res = await apiCall("UPDATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, role: row.role, branch: row.branch, permissions, ...hrFields });
               if (res.status === 'success') { updated++; usersList = res.users; } else failed++;
             } else {
-              const pass = row.password && row.password.length >= 8 ? row.password : generateRandomPassword();
-              res = await apiCall("CREATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, password: pass, role: row.role, branch: row.branch, permissions, ...hrFields });
+              const pass = isPasswordStrong(row.password) ? row.password : generateRandomPassword();
+              res = await apiCall("CREATE_USER", { username: row.username, fullName: row.fullName, email: row.email, phone: row.phone, password: pass, role: row.role, branch: row.branch, permissions, sendEmailNotification: willSendEmail, ...hrFields });
               if (res.status === 'success') { created++; usersList = res.users; } else failed++;
             }
           }
@@ -3358,7 +3393,9 @@
     async function saveUserRecord() {
       const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const phone = document.getElementById('usrPhone').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
       const nationality = document.getElementById('usrNationality').value.trim(); const certificate = document.getElementById('usrCertificate').value.trim(); const yearsExperience = document.getElementById('usrYearsExperience').value; const joinDate = document.getElementById('usrJoinDate').value; const directManager = document.getElementById('usrDirectManager').value.trim();
-      if (!fullName || !username || !email) return showAlert("خطأ إدخال: يرجى التأكد من تعبئة كافة الحقول (الاسم، الرمز، الإيميل).");
+      const sendEmailNotification = document.getElementById('usrSendEmailNotify').checked;
+      if (!fullName || !username) return showAlert("خطأ إدخال: يرجى التأكد من تعبئة الاسم الكامل والرمز الوظيفي على الأقل.");
+      if (sendEmailNotification && !email) return showAlert("فعّلت خيار إرسال الإشعار بالبريد، لكن لم تُدخل بريداً إلكترونياً — يرجى إدخال البريد أو إلغاء تفعيل الخيار.");
       const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
       const hrFields = { nationality, certificate, yearsExperience, joinDate, directManager };
       
@@ -3366,8 +3403,8 @@
       if (editingUserIndex >= 0) { 
         res = await apiCall("UPDATE_USER", { username, fullName, email, phone, role, branch, permissions, ...hrFields });
       } else { 
-        if(!password || password.length < 8) return showAlert("يجب إدخال كلمة مرور مبدئية من 8 خانات على الأقل للمستخدم الجديد.");
-        res = await apiCall("CREATE_USER", { username, fullName, email, phone, password, role, branch, permissions, ...hrFields });
+        if(!password || !isPasswordStrong(password)) return showAlert(PASSWORD_HINT_TEXT);
+        res = await apiCall("CREATE_USER", { username, fullName, email, phone, password, role, branch, permissions, sendEmailNotification, ...hrFields });
       }
 
       if(res.status === "success") {
@@ -3378,7 +3415,7 @@
 
     function editUserPrompt(idx) {
       editingUserIndex = idx; const u = usersList[idx];
-      document.getElementById('usrFullName').value = u.fullName; document.getElementById('usrUsername').value = u.username; document.getElementById('usrEmail').value = u.email || ''; document.getElementById('usrPhone').value = u.phone || ''; document.getElementById('usrPasswordGroup').style.display = 'none'; document.getElementById('usrRole').value = u.role; document.getElementById('usrBranch').value = u.branch || 'الكل';
+      document.getElementById('usrFullName').value = u.fullName; document.getElementById('usrUsername').value = u.username; document.getElementById('usrEmail').value = u.email || ''; document.getElementById('usrPhone').value = u.phone || ''; document.getElementById('usrPasswordGroup').style.display = 'none'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'none'; document.getElementById('usrRole').value = u.role; document.getElementById('usrBranch').value = u.branch || 'الكل';
       document.getElementById('usrNationality').value = u.nationality || ''; document.getElementById('usrCertificate').value = u.certificate || ''; document.getElementById('usrYearsExperience').value = u.yearsExperience || ''; document.getElementById('usrJoinDate').value = u.joinDate || ''; document.getElementById('usrDirectManager').value = u.directManager || '';
       const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
       document.getElementById('permAllowEdit').checked = p.allowEdit !== false; document.getElementById('permRequireGps').checked = p.requireGps !== false; document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false; document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
@@ -3386,7 +3423,7 @@
     }
 
     function resetUserForm() {
-      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'flex'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
       document.getElementById('usrNationality').value = ''; document.getElementById('usrCertificate').value = ''; document.getElementById('usrYearsExperience').value = ''; document.getElementById('usrJoinDate').value = ''; document.getElementById('usrDirectManager').value = '';
       document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
@@ -3402,7 +3439,7 @@
 
     async function confirmAdminResetPassword() {
       const newPass = document.getElementById('arpNewPassword').value.trim();
-      if (!newPass || newPass.length < 8) return showAlert('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      if (!newPass || !isPasswordStrong(newPass)) return showAlert(PASSWORD_HINT_TEXT);
       const res = await apiCall("ADMIN_RESET_PASSWORD", { usernameTarget: arpTargetUsername, newPassword: newPass });
       if(res.status==="success") { logAudit('ADMIN_RESET_PASSWORD', `إعادة تعيين كلمة مرور للمستخدم: ${arpTargetUsername}`); usersList = res.users; renderUsersManagement(); showAlert("✓ تم تعيين كلمة المرور الجديدة. لا تنسَ مشاركتها مع المستخدم يدوياً."); closeAdminResetPasswordModal(); } else showAlert(esc(res.message));
     }
@@ -3421,7 +3458,7 @@
       const newP = document.getElementById('cpNewPass').value;
       const confirmP = document.getElementById('cpConfirmPass').value;
       if (!cur || !newP || !confirmP) return showAlert('يرجى تعبئة جميع الحقول.');
-      if (newP.length < 8) return showAlert('كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.');
+      if (!isPasswordStrong(newP)) return showAlert(PASSWORD_HINT_TEXT);
       if (newP !== confirmP) return showAlert('كلمة المرور الجديدة وتأكيدها غير متطابقين.');
       const res = await apiCall('CHANGE_PASSWORD', { oldPassword: cur, newPassword: newP });
       if (res.status === 'success') { logAudit('PASSWORD_CHANGE', 'تغيير كلمة المرور الذاتي'); showAlert('✓ تم تحديث كلمة المرور بنجاح.'); closeChangePasswordModal(); } else showAlert(esc(res.message || 'تعذر تحديث كلمة المرور.'));
@@ -3431,7 +3468,7 @@
     function openDelegateModal() {
       const sel = document.getElementById('delegateToUser');
       sel.innerHTML = '<option value="">-- بدون تفويض --</option>';
-      usersList.filter(u => (u.role === 'ROLE_PLANNING' || MANAGER_ROLES.includes(u.role)) && u.username !== currentUser.username)
+      usersList.filter(u => (FULL_ADMIN_ROLES.includes(u.role) || MANAGER_ROLES.includes(u.role)) && u.username !== currentUser.username)
         .forEach(u => { sel.innerHTML += `<option value="${esc(u.username)}">${esc(u.fullName)} (${esc(ROLE_LABELS[u.role] || u.role)})</option>`; });
 
       const noteEl = document.getElementById('currentDelegationNote');
