@@ -599,8 +599,8 @@
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب جديد تلقائياً بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:6px;">
-              <input type="checkbox" id="schoolsBulkSendEmailNotify">
+            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:6px;">
+              <input type="checkbox" id="schoolsBulkSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
               <span>📧 إرسال إشعار بالبريد الإلكتروني لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً)</span>
             </label>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
@@ -683,8 +683,8 @@
               <div class="form-group">
                 <label>البريد الإلكتروني (اختياري)</label>
                 <input type="email" id="usrEmail">
-                <label id="usrSendEmailNotifyGroup" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:8px; font-weight:700; font-size:0.85rem;">
-                  <input type="checkbox" id="usrSendEmailNotify">
+                <label id="usrSendEmailNotifyGroup" style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; margin-top:8px; font-weight:700; font-size:0.85rem;">
+                  <input type="checkbox" id="usrSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
                   <span>📧 إرسال إشعار بالبريد الإلكتروني عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه)</span>
                 </label>
               </div>
@@ -731,8 +731,8 @@
           <div class="bulk-import-box card" id="usersBulkImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
             <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:12px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:16px;">
-              <input type="checkbox" id="usersBulkSendEmailNotify">
+            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:16px;">
+              <input type="checkbox" id="usersBulkSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
               <span>📧 إرسال إشعار بالبريد الإلكتروني لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً)</span>
             </label>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
