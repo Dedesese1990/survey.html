@@ -1701,7 +1701,7 @@
         const sec = document.getElementById('sec' + t.charAt(0).toUpperCase() + t.slice(1)); if (sec) sec.classList.toggle('hidden', tab !== t);
       });
       ['secNewSurvey', 'secFillSurvey'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-      if(tab === 'analytics') { refreshAnalyticsDashboard(true); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); }
+      if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); }
     }
 
     // التنقّل بين أقسام لوحة المؤشرات الثلاثة (المدارس/البلاغات/عمليات الحصر)
@@ -2394,7 +2394,8 @@
       lastScopedResponsesForMap = scoped;
       renderFieldMap(scoped);
       renderPeriodComparison();
-      loadAnalyticsComplaintsSummary();
+      // ملخص البلاغات ثقيل نسبيًا (يقرأ كل صفوف شيت البلاغات) — نحمّله فقط عند فعل مقصود من المستخدم، مش في كل دورة تحديث تلقائي صامتة (كل 20 ثانية)
+      if (!isSilent) loadAnalyticsComplaintsSummary();
     }
 
     // ملخص خفيف للبلاغات داخل لوحة المؤشرات الرئيسية (غير مرتبط بفلاتر تاب البلاغات — نظرة عامة سريعة فقط)
