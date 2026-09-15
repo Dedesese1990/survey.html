@@ -622,10 +622,13 @@
           <div class="bulk-import-box card" id="schoolsAdminView2" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:10px;">📥 استيراد جماعي للمدارس (عبر Excel)</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:6px;">القالب مطابق لملف "حصر المشرفين والمدارس". لو المشرف موجود بالفعل، تُحدَّث بياناته الشخصية تلقائياً. لو غير موجود، يُنشأ له حساب جديد تلقائياً بكلمة مرور مؤقتة موحّدة يُطلب تغييرها عند أول دخول.</p>
-            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:6px; width:100%;">
-              <input type="checkbox" id="schoolsBulkSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
-              <span style="flex:1; min-width:0;">📧 إرسال إشعار بالبريد الإلكتروني لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً)</span>
-            </label>
+            <div style="margin-bottom:10px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:800; font-size:0.9rem;">
+                <input type="checkbox" id="schoolsBulkSendEmailNotify">
+                <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
+              </label>
+              <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">لكل حساب مشرف جديد يُنشأ تلقائياً (معطّل افتراضياً).</p>
+            </div>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1.05rem;" onclick="downloadSchoolsTemplate()">📥 تنزيل القالب المعتمد</button>
               <label for="excelFileInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع القالب المعبأ</label>
@@ -712,10 +715,13 @@
               <div class="form-group">
                 <label>البريد الإلكتروني (اختياري)</label>
                 <input type="email" id="usrEmail">
-                <label id="usrSendEmailNotifyGroup" style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; margin-top:8px; font-weight:700; font-size:0.85rem; width:100%;">
-                  <input type="checkbox" id="usrSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
-                  <span style="flex:1; min-width:0;">📧 إرسال إشعار بالبريد الإلكتروني عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه)</span>
-                </label>
+                <div id="usrSendEmailNotifyGroup" style="margin-top:10px;">
+                  <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:800; font-size:0.85rem;">
+                    <input type="checkbox" id="usrSendEmailNotify">
+                    <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
+                  </label>
+                  <p style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">عند الإنشاء (يتطلب إدخال بريد إلكتروني أعلاه).</p>
+                </div>
               </div>
             </div>
             
@@ -760,10 +766,13 @@
           <div class="bulk-import-box card" id="usersBulkImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
             <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:12px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
-            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-bottom:16px; width:100%;">
-              <input type="checkbox" id="usersBulkSendEmailNotify" style="margin-top:3px; flex-shrink:0;">
-              <span style="flex:1; min-width:0;">📧 إرسال إشعار بالبريد الإلكتروني لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً)</span>
-            </label>
+            <div style="margin-bottom:16px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:800; font-size:0.9rem;">
+                <input type="checkbox" id="usersBulkSendEmailNotify">
+                <span>📧 إرسال إشعار بالبريد الإلكتروني</span>
+              </label>
+              <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:4px 0 0;">لكل حساب جديد يُنشأ من هذا الملف (معطّل افتراضياً).</p>
+            </div>
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="downloadUsersTemplate()">📥 تنزيل القالب</button>
               <button class="btn btn-outline" style="flex:1; padding:16px; font-size:1rem;" onclick="exportUsersExcel()">📤 تصدير القائمة الحالية</button>
@@ -3628,7 +3637,7 @@
     }
 
     function resetUserForm() {
-      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'flex'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'block'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
       document.getElementById('usrNationality').value = ''; document.getElementById('usrCertificate').value = ''; document.getElementById('usrYearsExperience').value = ''; document.getElementById('usrJoinDate').value = ''; document.getElementById('usrDirectManager').value = '';
       document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
