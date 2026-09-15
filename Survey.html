@@ -736,7 +736,7 @@
               <div class="bi-kpi-card"><div class="bi-title">البلاغات المغلقة</div><div class="bi-num" style="color:#10b981;" id="cmpClosed">0</div></div>
               <div class="bi-kpi-card"><div class="bi-title">نسبة الإغلاق ضمن SLA</div><div class="bi-num" id="cmpSlaPct">0%</div></div>
               <div class="bi-kpi-card"><div class="bi-title">متوسط زمن الاستجابة</div><div class="bi-num" style="font-size:1.4rem;" id="cmpAvgResponse">-</div></div>
-              <div class="bi-kpi-card"><div class="bi-title">🔁 بلاغات معاد فتحها</div><div class="bi-num" id="cmpReopened">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">🔁 بلاغات معاد فتحها</div><div class="bi-num" id="cmpReopened">0</div><p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; font-weight:700;">آخر يوم بالبيانات: <span id="cmpReopenedLastDay">0</span></p></div>
               <div class="bi-kpi-card"><div class="bi-title">معدل الإغلاق</div><div class="bi-num" id="cmpClosureRate">0%</div></div>
               <div class="bi-kpi-card"><div class="bi-title">🏫 مدارس رفعت بلاغات</div><div class="bi-num" id="cmpSchoolsReported">0</div></div>
             </div>
@@ -775,6 +775,11 @@
             </div>
 
             <div class="card">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🔁 تصنيف البلاغات المعاد فتحها</h4>
+              <div id="cmpReopenedByCategoryContainer"></div>
+            </div>
+
+            <div class="card">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📉 الاتجاه اليومي حسب التصنيف</h4>
               <div style="height:320px; position:relative;"><canvas id="cmpDailyCategoryChart"></canvas></div>
             </div>
@@ -782,6 +787,19 @@
             <div class="card">
               <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📈 الإجمالي التراكمي (مفتوحة / مغلقة / معاد فتحها)</h4>
               <div style="height:320px; position:relative;"><canvas id="cmpDailyCumulativeChart"></canvas></div>
+            </div>
+
+            <div class="dashboard-grid">
+              <div class="card" style="margin-bottom:0;">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">✅ معدل الالتزام بـ SLA يومياً</h4>
+                <p style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-bottom:10px;">نسبة البلاغات المغلقة ضمن المهلة الزمنية، حسب يوم الإغلاق الفعلي.</p>
+                <div style="height:260px; position:relative;"><canvas id="cmpDailySlaChart"></canvas></div>
+              </div>
+              <div class="card" style="margin-bottom:0;">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">⏱️ متوسط زمن الاستجابة يومياً</h4>
+                <p style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-bottom:10px;">متوسط عدد أيام الاستجابة للبلاغات المغلقة، حسب يوم الإغلاق الفعلي.</p>
+                <div style="height:260px; position:relative;"><canvas id="cmpDailyResponseChart"></canvas></div>
+              </div>
             </div>
 
             <div class="card">
@@ -803,6 +821,12 @@
               <div class="table-responsive">
                 <table class="data-table" id="cmpTopSchoolsTable"><thead><tr><th>المدرسة</th><th>عدد البلاغات</th></tr></thead><tbody></tbody></table>
               </div>
+            </div>
+
+            <div class="card">
+              <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; font-weight:900; margin-bottom:6px;">🗺️ أعلى المدارس حسب المنطقة (مقارنة جنباً إلى جنب)</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">Top 10 لكل فرع — الشرقية، الأحساء، حفر الباطن — بنفس التصنيف المختار فوق.</p>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px;" id="cmpRegionCompareContainer"></div>
             </div>
           </div>
         </section>
@@ -3557,7 +3581,7 @@
     }
 
     // ==================== عرض لوحة البلاغات ====================
-    let cmpStatusChartInstance = null, cmpPriorityChartInstance = null, cmpCategoryChartInstance = null, cmpDailyCategoryChartInstance = null, cmpDailyCumulativeChartInstance = null;
+    let cmpStatusChartInstance = null, cmpPriorityChartInstance = null, cmpCategoryChartInstance = null, cmpDailyCategoryChartInstance = null, cmpDailyCumulativeChartInstance = null, cmpDailySlaChartInstance = null, cmpDailyResponseChartInstance = null;
     const CMP_CATEGORY_COLORS = { 'تكييف': '#37889b', 'صيانة': '#eebb43', 'مدني': '#10b981', 'نظافة': '#a855f7', 'مراقبة وأمن وسلامة': '#ef4444' };
 
     function formatDays(d) { if (d == null) return '-'; return d < 1 ? `${Math.round(d * 24)} ساعة` : `${d.toFixed(1)} يوم`; }
@@ -3571,6 +3595,7 @@
       document.getElementById('cmpReopened').innerText = stats.reopenedCount.toLocaleString('en-US');
       document.getElementById('cmpClosureRate').innerText = stats.closureRatePct + '%';
       document.getElementById('cmpSchoolsReported').innerText = stats.totalSchoolsReported.toLocaleString('en-US');
+      document.getElementById('cmpReopenedLastDay').innerText = (stats.reopenedLastDay || 0).toLocaleString('en-US');
 
       try {
         if (typeof Chart !== 'undefined') {
@@ -3608,8 +3633,26 @@
           ];
           if (cmpDailyCumulativeChartInstance) { cmpDailyCumulativeChartInstance.data.labels = dLabels; cmpDailyCumulativeChartInstance.data.datasets = cumDatasets; cmpDailyCumulativeChartInstance.update('none'); }
           else cmpDailyCumulativeChartInstance = new Chart(document.getElementById('cmpDailyCumulativeChart').getContext('2d'), { type: 'line', data: { labels: dLabels, datasets: cumDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
+
+          // معدل SLA اليومي ومتوسط زمن الاستجابة اليومي (حسب يوم الإغلاق الفعلي)
+          const resTrend = stats.dailyResolutionTrend || [];
+          const resLabels = resTrend.map(t => t.date);
+          const slaData = resTrend.map(t => t.slaPct);
+          if (cmpDailySlaChartInstance) { cmpDailySlaChartInstance.data.labels = resLabels; cmpDailySlaChartInstance.data.datasets[0].data = slaData; cmpDailySlaChartInstance.update('none'); }
+          else cmpDailySlaChartInstance = new Chart(document.getElementById('cmpDailySlaChart').getContext('2d'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'نسبة الالتزام بـ SLA %', data: slaData, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
+
+          const respData = resTrend.map(t => t.avgResponseDays != null ? +t.avgResponseDays.toFixed(2) : null);
+          if (cmpDailyResponseChartInstance) { cmpDailyResponseChartInstance.data.labels = resLabels; cmpDailyResponseChartInstance.data.datasets[0].data = respData; cmpDailyResponseChartInstance.update('none'); }
+          else cmpDailyResponseChartInstance = new Chart(document.getElementById('cmpDailyResponseChart').getContext('2d'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'متوسط أيام الاستجابة', data: respData, borderColor: '#37889b', backgroundColor: '#37889b', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
       } catch (e) {}
+
+      // تصنيف البلاغات المعاد فتحها
+      const reopByCat = document.getElementById('cmpReopenedByCategoryContainer');
+      const reopByCatTotal = Object.values(stats.byCategoryReopened).reduce((a, b) => a + b, 0) || 1;
+      const reopByCatEntries = Object.entries(stats.byCategoryReopened);
+      reopByCat.innerHTML = reopByCatEntries.length === 0 ? `<div class="empty-state" style="padding:14px;">لا توجد بلاغات معاد فتحها ضمن النطاق الحالي.</div>` :
+        reopByCatEntries.sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; margin-left:6px;"></span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#fee2e2; border-radius:6px; height:8px; overflow:hidden;"><div style="background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; height:100%; width:${Math.round((v / reopByCatTotal) * 100)}%;"></div></div></div>`).join('');
 
       // المرحلة الدراسية
       const stageContainer = document.getElementById('cmpStageContainer');
@@ -3644,6 +3687,19 @@
       const tbody = document.querySelector('#cmpTopSchoolsTable tbody');
       if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:20px;">لا توجد بيانات.</td></tr>`; return; }
       tbody.innerHTML = list.map(r => `<tr><td style="font-weight:700;">${esc(r.school)}</td><td>${r.count.toLocaleString('en-US')}</td></tr>`).join('');
+      renderRegionCompare(key);
+    }
+
+    function renderRegionCompare(key) {
+      const container = document.getElementById('cmpRegionCompareContainer'); if (!container || !complaintsRawStats?.topSchoolsByRegion) return;
+      const branchLabels = { 'المكتب الفرعي بالشرقية': 'الشرقية', 'المكتب الفرعي بالأحساء': 'الأحساء', 'المكتب الفرعي بحفر الباطن': 'حفر الباطن' };
+      container.innerHTML = Object.entries(branchLabels).map(([branchKey, label]) => {
+        const data = complaintsRawStats.topSchoolsByRegion[branchKey] || { reopened: [], open: [], byCategory: {} };
+        const list = key === 'reopened' ? data.reopened : key === 'open' ? data.open : (data.byCategory[key] || []);
+        const rows = list.length === 0 ? `<div style="padding:14px; text-align:center; color:var(--text-muted); font-size:0.85rem;">لا توجد بيانات</div>` :
+          list.map((r, i) => `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;"><span style="font-weight:700;">${i + 1}. ${esc(r.school)}</span><span style="font-weight:900; color:var(--tbc-petrol);">${r.count}</span></div>`).join('');
+        return `<div style="background:#f8fafc; border-radius:10px; padding:16px;"><h5 style="font-size:0.95rem; font-weight:900; color:var(--tbc-petrol-dark); margin-bottom:10px;">${label}</h5>${rows}</div>`;
+      }).join('');
     }
 
 
