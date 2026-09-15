@@ -1661,21 +1661,36 @@
     }
 
     async function deleteSurvey(surveyId, title) {
-      const linkedResponses = responses.filter(r => r.surveyTitle === title).length;
-      const warnTxt = linkedResponses > 0
-        ? `⚠️ يوجد ${linkedResponses} تقرير مرفوع مرتبط بهذا النموذج. حذف النموذج لن يحذف التقارير القديمة (ستبقى في السجلات)، لكن لن يعد بالإمكان تعبئة نماذج جديدة عليه.\n\nهل أنت متأكد من حذف "${title}"؟`
+      const linkedResponses = responses.filter(r => r.surveyTitle === title);
+      const warnTxt = linkedResponses.length > 0
+        ? `⚠️ يوجد ${linkedResponses.length} تقرير مرفوع مرتبط بهذا النموذج "${title}".\n\nهل أنت متأكد من حذف النموذج؟`
         : `هل أنت متأكد من حذف نموذج "${title}"؟ هذا الإجراء لا يمكن التراجع عنه.`;
       if (!(await showConfirm(warnTxt))) return;
 
+      let alsoDeleteResponses = false;
+      if (linkedResponses.length > 0) {
+        alsoDeleteResponses = await showConfirm(`فيه ${linkedResponses.length} تقرير مرتبط بالنموذج ده.\n\nهل تريد حذف هذه التقارير كمان نهائياً (من السجلات والإحصائيات)؟\n\nتأكيد = حذف التقارير المرتبطة كمان (مفيد لتنظيف بيانات تجريبية)\nإلغاء = الاحتفاظ بها كسجل تاريخي، وحذف تعريف النموذج فقط`);
+      }
+
       const mergedSurveys = surveys.filter(s => String(s.id) !== String(surveyId));
       const res = await apiCall('SYNC_GENERAL_DATA', { surveys: mergedSurveys });
-      if (res.status === 'success') {
-        logAudit('SURVEY_DELETE', `حذف نموذج حصر: ${title}`);
-        surveys = mergedSurveys;
-        renderSurveysList();
-        populateAnalyticsSurveyFilter();
-        showAlert('✓ تم حذف النموذج.');
-      } else showAlert(esc(res.message || 'تعذر حذف النموذج.'));
+      if (res.status !== 'success') return showAlert(esc(res.message || 'تعذر حذف النموذج.'));
+
+      surveys = mergedSurveys;
+      let finalMsg = '✓ تم حذف النموذج.';
+      if (alsoDeleteResponses) {
+        const delRes = await apiCall('DELETE_RESPONSES_BY_SURVEY', { surveyTitle: title });
+        if (delRes.status === 'success') {
+          responses = responses.filter(r => r.surveyTitle !== title);
+          finalMsg += ` وتم حذف ${delRes.deletedCount} تقرير مرتبط.`;
+        } else finalMsg += ' ⚠️ لكن تعذّر حذف التقارير المرتبطة: ' + esc(delRes.message);
+      }
+
+      logAudit('SURVEY_DELETE', `حذف نموذج حصر: ${title}${alsoDeleteResponses ? ' (مع التقارير المرتبطة)' : ''}`);
+      renderSurveysList();
+      populateAnalyticsSurveyFilter();
+      showAlert(finalMsg);
+      pullFromCloud();
     }
 
     function backToSurveysList() {
