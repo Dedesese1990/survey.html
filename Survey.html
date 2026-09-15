@@ -116,6 +116,32 @@
     .map-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; }
     .map-legend span { white-space: nowrap; }
 
+    /* ===== تخطيط Bento للوحة المؤشرات: كارت رئيسي كبير + كروت داعمة حوله ===== */
+    .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: minmax(108px, auto); gap: 14px; margin-bottom: 32px; }
+    .bento-hero { grid-column: span 2; grid-row: span 2; background: linear-gradient(150deg, #16232b 0%, #1f333a 60%, #2b5460 100%); border-radius: var(--radius-md); padding: 22px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .bento-hero .bi-title { color: #a8c4cc; margin-bottom: 0; }
+    .bento-cell { grid-column: span 2; background: #fff; border-radius: var(--radius-md); padding: 16px 14px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .bento-cell.wide { grid-column: span 2; }
+    .bento-cell.clickable { cursor: pointer; }
+    .bento-cell.clickable:hover { box-shadow: var(--shadow-lift); transform: translateY(-3px); border-color: var(--tbc-petrol); }
+    .bento-cell.clickable::after { content: '↗ عرض السجلات'; position: absolute; bottom: 6px; font-size: 0.68rem; font-weight: 800; color: var(--tbc-petrol); opacity: 0; transition: opacity 0.2s; }
+    .bento-cell.clickable:hover::after { opacity: 1; }
+    .bento-cell.tone-approved { background: #f2fbf7; border-color: #bfe9d4; }
+    .bento-cell.tone-pending { background: #fffaf0; border-color: #fbe3ae; }
+    .bento-cell.tone-danger { background: #fff6f6; border-color: #f6c9c9; }
+    @media (max-width: 900px) {
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+      .bento-hero { grid-column: span 2; grid-row: span 1; }
+      .bento-cell { grid-column: span 1; }
+      .bento-cell.wide { grid-column: span 2; }
+    }
+
+    .radial-progress { position: relative; width: 118px; height: 118px; margin: 6px auto; }
+    .radial-progress svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .radial-progress .rp-track { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 9; }
+    .radial-progress .rp-fill { fill: none; stroke: var(--tbc-gold); stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+    .radial-progress .rp-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
+
     /* كروت مؤشرات السجلات (قابلة للنقر للتصفية) وشريط الفلاتر — كانا يُستخدَمان في الكود بدون أي تنسيق مُعرّف */
     .kpi-box { background: #fff; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm); text-align: center; cursor: pointer; transition: all 0.2s ease; }
     .kpi-box:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--tbc-petrol); }
@@ -335,37 +361,61 @@
           </div>
 
           <div class="section-label">⚡ مؤشرات الأداء والاعتماد</div>
-          <div class="stats-grid" style="margin-bottom: 32px;">
-            <div class="bi-kpi-card highlight">
+          <div class="bento-grid">
+            <div class="bento-hero">
               <div class="bi-title">نسبة الإنجاز الفعلي</div>
-              <div class="bi-num" id="biActualRate">0.0%</div>
+              <div class="radial-progress">
+                <svg viewBox="0 0 120 120">
+                  <circle class="rp-track" cx="60" cy="60" r="50"></circle>
+                  <circle class="rp-fill" id="actualRateRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                </svg>
+                <div class="rp-label" id="biActualRate">0.0%</div>
+              </div>
+              <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من إجمالي المستهدف لعمليات الحصر الجارية</div>
             </div>
-            <div class="bi-kpi-card">
+            <div class="bento-cell tone-approved clickable" onclick="goToRecordsFiltered('approved')">
               <div class="bi-title">المعتمدة</div>
               <div class="bi-num" style="color:#10b981;" id="biApprovedCount">0</div>
             </div>
-            <div class="bi-kpi-card">
+            <div class="bento-cell tone-pending clickable" onclick="goToRecordsFiltered('pending')">
               <div class="bi-title">قيد الاعتماد</div>
               <div class="bi-num" style="color:#f59e0b;" id="biPendingCount">0</div>
             </div>
             <!-- الكارت الجديد لتحليل التقادم والاختناق (Bottleneck Analysis) -->
-            <div class="bi-kpi-card" style="border-color: #fecaca; background:#fffafa;">
+            <div class="bento-cell wide tone-danger">
               <div class="bi-title" style="color:#b91c1c;">متأخرة عن 48 ساعة 🚨</div>
               <div class="bi-num" style="color:#ef4444;" id="biAgingCount">0</div>
               <p style="font-size:0.74rem; color:#b91c1c; margin-top:6px; font-weight:700;">تقارير تتطلب تدخل فوري</p>
-              <div style="text-align:left; margin-top:8px; width:100%;"><button class="btn btn-reject" style="font-size:0.74rem; padding:6px 10px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button></div>
+              <button class="btn btn-reject" style="font-size:0.74rem; padding:6px 10px; margin-top:8px;" onclick="shareAgingAlert()">📤 مشاركة تنبيه</button>
             </div>
-            <div class="bi-kpi-card">
+            <div class="bento-cell">
               <div class="bi-title">⏱️ متوسط زمن الاعتماد</div>
               <div class="bi-num" style="font-size:1.55rem;" id="biAvgTurnaround">-</div>
             </div>
-            <div class="bi-kpi-card">
+            <div class="bento-cell">
               <div class="bi-title">الالتزام بالمواعيد</div>
               <div class="bi-num" id="biOnTimeRate">-</div>
             </div>
-            <div class="bi-kpi-card">
+            <div class="bento-cell">
               <div class="bi-title">⏱️ متوسط مدة إنجاز التقرير</div>
               <div class="bi-num" style="font-size:1.35rem;" id="biAvgFillDuration">-</div>
+            </div>
+          </div>
+
+          <div class="section-label">🚨 ملخص البلاغات</div>
+          <div class="card" id="analyticsComplaintsSummaryCard">
+            <div class="chart-card-header-row">
+              <div class="chart-card-title">🚨 حالة بلاغات الدعم الموحد</div>
+              <span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.85rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span>
+            </div>
+            <p class="chart-card-desc">نظرة سريعة على بلاغات الصيانة والدعم ضمن نطاقك — للتفاصيل الكاملة والرسوم البيانية ادخل تاب "البلاغات".</p>
+            <div id="analyticsComplaintsSummaryEmpty" class="empty-state" style="padding:20px;">لا توجد بيانات بلاغات مستوردة بعد.</div>
+            <div id="analyticsComplaintsSummaryGrid" class="stats-grid hidden">
+              <div class="bi-kpi-card"><div class="bi-title">إجمالي البلاغات</div><div class="bi-num" id="acsTotal">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">مفتوحة</div><div class="bi-num" style="color:#f59e0b;" id="acsOpen">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">مغلقة</div><div class="bi-num" style="color:#10b981;" id="acsClosed">0</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">ضمن SLA</div><div class="bi-num" id="acsSla">0%</div></div>
+              <div class="bi-kpi-card"><div class="bi-title">🔁 معاد فتحها</div><div class="bi-num" style="color:#ef4444;" id="acsReopened">0</div></div>
             </div>
           </div>
 
@@ -2281,6 +2331,8 @@
       } else { document.getElementById('biOnTimeRate').innerText = '-'; }
       
       document.getElementById('biActualRate').innerText = `${actualRate}%`;
+      const rpRing = document.getElementById('actualRateRing');
+      if (rpRing) { const circumference = 314.159; const pct = Math.max(0, Math.min(100, parseFloat(actualRate))); rpRing.style.strokeDashoffset = circumference - (pct / 100) * circumference; }
       document.getElementById('biApprovedCount').innerText = approvedCount;
       document.getElementById('biPendingCount').innerText = pendingCount;
       document.getElementById('biAgingCount').innerText = stuckCount;
@@ -2307,6 +2359,27 @@
       lastScopedResponsesForMap = scoped;
       renderFieldMap(scoped);
       renderPeriodComparison();
+      loadAnalyticsComplaintsSummary();
+    }
+
+    // ملخص خفيف للبلاغات داخل لوحة المؤشرات الرئيسية (غير مرتبط بفلاتر تاب البلاغات — نظرة عامة سريعة فقط)
+    async function loadAnalyticsComplaintsSummary() {
+      try {
+        const res = await apiCall('PULL_COMPLAINTS_STATS', {});
+        if (res.status !== 'success' || !res.stats || res.totalRows === 0) {
+          document.getElementById('analyticsComplaintsSummaryEmpty').classList.remove('hidden');
+          document.getElementById('analyticsComplaintsSummaryGrid').classList.add('hidden');
+          return;
+        }
+        document.getElementById('analyticsComplaintsSummaryEmpty').classList.add('hidden');
+        document.getElementById('analyticsComplaintsSummaryGrid').classList.remove('hidden');
+        const s = res.stats;
+        document.getElementById('acsTotal').innerText = s.total.toLocaleString('en-US');
+        document.getElementById('acsOpen').innerText = s.openCount.toLocaleString('en-US');
+        document.getElementById('acsClosed').innerText = s.closedCount.toLocaleString('en-US');
+        document.getElementById('acsSla').innerText = s.slaCompliancePct + '%';
+        document.getElementById('acsReopened').innerText = s.reopenedCount.toLocaleString('en-US');
+      } catch (e) {}
     }
 
     // يجمّع المدارس حسب إحداثياتها الحقيقية لحساب عدد "المباني" الفعلي (مدرستان على نفس الإحداثيات = مبنى واحد)،
@@ -2678,6 +2751,8 @@
     }
 
     function filterByKpi(status) { selectedKpiStatusFilter = status; renderRecords(); }
+    // من لوحة المؤشرات: يوديك لتاب السجلات مباشرة مفلتر بنفس الحالة (يعيد استخدام آلية الفلترة الموجودة بدون تعديلها)
+    function goToRecordsFiltered(status) { selectedKpiStatusFilter = status; showTab('records'); }
     
     function populateFilterDropdowns() {
       const sSelect = document.getElementById('filterBySurveySelect'); const iSelect = document.getElementById('filterByInspectorSelect'); if (!sSelect || !iSelect) return;
