@@ -2545,9 +2545,9 @@
       const unknown = scopeSchools.length - boys - girls;
       let html = `
         <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
-          <div style="background:#eff6ff; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">👦</div><div style="font-size:1.6rem; font-weight:900; color:#2563eb;">${boys}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنين</div></div>
-          <div style="background:#fdf2f8; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">👧</div><div style="font-size:1.6rem; font-weight:900; color:#db2777;">${girls}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">بنات</div></div>
-          <div style="background:#f8fafc; border-radius:8px; padding:14px;"><div style="font-size:1.8rem;">❔</div><div style="font-size:1.6rem; font-weight:900; color:var(--text-muted);">${unknown}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">غير محدد</div></div>
+          <div style="background:var(--tbc-petrol-light); border-radius:10px; padding:16px 14px; border:1px solid #c8e2e8;"><div style="font-size:1.8rem;">👦</div><div style="font-size:1.6rem; font-weight:900; color:var(--tbc-petrol-dark); font-variant-numeric:tabular-nums;">${boys}</div><div style="font-size:0.8rem; font-weight:700; color:var(--tbc-petrol-mid);">بنين</div></div>
+          <div style="background:#fbf3e2; border-radius:10px; padding:16px 14px; border:1px solid #f0dfb0;"><div style="font-size:1.8rem;">👧</div><div style="font-size:1.6rem; font-weight:900; color:#8a6416; font-variant-numeric:tabular-nums;">${girls}</div><div style="font-size:0.8rem; font-weight:700; color:#a9761f;">بنات</div></div>
+          <div style="background:#f8fafc; border-radius:10px; padding:16px 14px; border:1px solid var(--border-subtle);"><div style="font-size:1.8rem; opacity:0.5;">❔</div><div style="font-size:1.6rem; font-weight:900; color:var(--text-muted); font-variant-numeric:tabular-nums;">${unknown}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">غير محدد</div></div>
         </div>`;
       if (unknown > 0) html += `<p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px;">💡 المدارس "غير محدد" يمكن تحديد جنسها لاحقاً من نموذج إضافة/استيراد المدارس.</p>`;
       container.innerHTML = html;
