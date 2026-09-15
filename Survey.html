@@ -709,10 +709,10 @@
             
             <div class="form-grid">
               <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="usrFullName"></div>
-              <div class="form-group"><label>الرمز الوظيفي *</label><input type="text" id="usrUsername" placeholder="بدون مسافات"></div>
+              <div class="form-group"><label>الرمز الوظيفي *</label><input type="text" id="usrUsername" placeholder="بدون مسافات" oninput="this.dataset.manuallyEdited='true';"></div>
               <div class="form-group">
                 <label>البريد الإلكتروني (اختياري)</label>
-                <input type="email" id="usrEmail">
+                <input type="email" id="usrEmail" oninput="if(!document.getElementById('usrUsername').dataset.manuallyEdited) document.getElementById('usrUsername').value = this.value.trim().toLowerCase();">
                 <div id="usrSendEmailNotifyGroup" style="margin-top:10px; background:#f8fafc; border-radius:8px; padding:10px 12px;">
                   <input type="checkbox" id="usrSendEmailNotify" style="vertical-align:middle; margin-left:8px;">
                   <span onclick="document.getElementById('usrSendEmailNotify').click()" style="font-weight:800; cursor:pointer; font-size:0.85rem;">📧 إرسال إشعار بالبريد الإلكتروني</span>
@@ -3251,8 +3251,9 @@
     // كلمة مرور مؤقتة موحّدة للحسابات التي يُنشئها استيراد المدارس تلقائياً (أرقام 1-9، 9 خانات) — يُطلب تغييرها فوراً عند أول دخول
     const SCHOOL_IMPORT_TEMP_PASSWORD = 'Tbc@123456'; // يجب أن تحقق شرط قوة كلمة المرور الجديد (كبير+صغير+رقم+رمز)
 
-    function generateUsernameFromName(name, sessionMap) {
-      const base = name.trim().replace(/\s+/g, '_');
+    function generateUsernameFromName(name, sessionMap, preferredEmail) {
+      const isValidEmail = preferredEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(preferredEmail.trim());
+      const base = isValidEmail ? preferredEmail.trim().toLowerCase() : name.trim().replace(/\s+/g, '_');
       let candidate = base; let i = 1;
       const isTaken = (u) => usersList.some(x => x.username === u) || Object.values(sessionMap).some(x => x.username === u);
       while (isTaken(candidate)) { i++; candidate = base + '_' + i; }
@@ -3336,7 +3337,7 @@
             if (inspUser) {
               supervisorUpdates[inspUser.username] = { phone: info.phone, email: info.email, nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager };
             } else {
-              const newUsername = generateUsernameFromName(inspName, {});
+              const newUsername = generateUsernameFromName(inspName, {}, info.email);
               const createRes = await apiCall('CREATE_USER', {
                 username: newUsername, fullName: inspName, email: info.email, phone: info.phone,
                 password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch: info.branch, sendEmailNotification: willSendEmail,
@@ -3659,7 +3660,7 @@
     }
 
     function resetUserForm() {
-      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'block'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
+      editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; delete document.getElementById('usrUsername').dataset.manuallyEdited; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'block'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
       document.getElementById('usrNationality').value = ''; document.getElementById('usrCertificate').value = ''; document.getElementById('usrYearsExperience').value = ''; document.getElementById('usrJoinDate').value = ''; document.getElementById('usrDirectManager').value = '';
       document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد'; document.getElementById('cancelUserEditBtn').style.display = 'none';
     }
