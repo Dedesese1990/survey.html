@@ -818,6 +818,7 @@
               </div>
               <button class="btn btn-outline" style="padding:11px 16px; font-size:0.85rem;" onclick="resetComplaintsFilters()">إعادة الضبط ↺</button>
             </div>
+            <p style="font-size:0.75rem; font-weight:600; color:var(--text-muted); margin-top:6px;">💡 معروض افتراضياً البلاغات من 10 أغسطس 2026 فقط لتسريع التحميل — امسح حقل "من تاريخ" أو غيّره لعرض فترة أقدم.</p>
           </div>
 
           <div class="bulk-import-box card hidden" id="complaintsImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
@@ -4316,6 +4317,10 @@
     const COMPLAINTS_BATCH_SIZE = 2000;
     let complaintsRawStats = null;
 
+    // تاريخ افتراضي لفلتر "من تاريخ" — يقلل حجم البيانات المحسوبة كل مرة تفتح فيها الشاشة (أسرع بكتير)،
+    // وبيفضل نفس المستخدم قادر يرجع للفترة اللي قبله وقت ما يحب بمسح التاريخ أو تغييره يدوياً.
+    const CMP_DEFAULT_DATE_FROM = '2026-08-10';
+
     function initComplaintsTab() {
       const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       document.getElementById('complaintsImportBox').classList.toggle('hidden', !isPlanning);
@@ -4324,6 +4329,8 @@
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
+      const fromInput = document.getElementById('cmpFilterFrom');
+      if (!fromInput.value) fromInput.value = CMP_DEFAULT_DATE_FROM; // لا نغيّره لو المستخدم مختار تاريخ بالفعل في نفس الجلسة
       loadComplaintsStats();
     }
 
@@ -4338,7 +4345,9 @@
     }
 
     function resetComplaintsFilters() {
-      document.getElementById('cmpFilterFrom').value = ''; document.getElementById('cmpFilterTo').value = ''; document.getElementById('cmpFilterInspector').value = '';
+      // "إعادة الضبط" بترجع للوضع الافتراضي (من 10 أغسطس 2026)، مش تعرض كل التاريخ من الأول — عشان السرعة.
+      // لو محتاج فترة أقدم فعلاً، غيّر "من تاريخ" يدوياً أو امسحه خالص لعرض كل البيانات.
+      document.getElementById('cmpFilterFrom').value = CMP_DEFAULT_DATE_FROM; document.getElementById('cmpFilterTo').value = ''; document.getElementById('cmpFilterInspector').value = '';
       document.querySelectorAll('.cmpBranchCheckbox').forEach(b => b.checked = true);
       document.getElementById('cmpBranchFilterBtn').innerText = '🏢 كل الفروع ▾';
       loadComplaintsStats();
@@ -4376,8 +4385,19 @@
       document.getElementById('complaintsDashboard').classList.remove('hidden');
       complaintsRawStats = res.stats;
       renderComplaintsDashboard(res.stats);
+
+      // نستخدم صفحة الجدول الجاهزة اللي رجعت مع نفس الرد (بلا فلتر بحث ولا ترقيم مخصص) بدل عمل طلب منفصل
+      // يعيد قراءة الشيت من جديد — إلا لو فيه بحث نصي فعّال أو المستخدم مش في أول صفحة أصلاً، وقتها نجيب طلب حقيقي.
       cmpTablePage = 1;
-      loadComplaintsTable();
+      if (!cmpTableSearch && cmpTablePageSize === 50 && res.tableRows) {
+        cmpTableTotalFiltered = res.tableTotalFiltered;
+        renderCmpTableHead();
+        renderCmpTableRows(res.tableRows);
+        const maxPage = Math.max(1, Math.ceil(cmpTableTotalFiltered / cmpTablePageSize));
+        document.getElementById('cmpTablePageInfo').innerText = cmpTableTotalFiltered === 0 ? 'لا توجد بلاغات مطابقة' : `صفحة ${cmpTablePage} من ${maxPage} — إجمالي ${cmpTableTotalFiltered.toLocaleString('en-US')} بلاغ`;
+      } else {
+        loadComplaintsTable();
+      }
     }
 
     // ============ جدول البلاغات: أعمدة قابلة للاختيار + بحث + ترقيم صفحات + تصدير ============
