@@ -2679,11 +2679,12 @@
     async function loadAnalyticsComplaintsSummary() {
       try {
         const res = await apiCall('PULL_COMPLAINTS_STATS', {});
-        if (res.status !== 'success' || !res.stats || res.totalRows === 0) {
+        if (res.status !== 'success') {
           document.getElementById('analyticsComplaintsSummaryEmpty').classList.remove('hidden');
           document.getElementById('analyticsComplaintsSummaryContent').classList.add('hidden');
           return;
         }
+        // نعرض ملخص البلاغات دايماً حتى لو أصفار (لا يوجد بيانات بعد) — بدل إخفائه بالكامل
         document.getElementById('analyticsComplaintsSummaryEmpty').classList.add('hidden');
         document.getElementById('analyticsComplaintsSummaryContent').classList.remove('hidden');
         const s = res.stats;
@@ -4277,11 +4278,7 @@
       const res = await apiCall('PULL_COMPLAINTS_STATS', { dateFrom, dateTo, branches, inspectorUsername });
       if (res.status !== 'success') return showAlert(esc(res.message));
 
-      if (!res.stats || res.totalRows === 0) {
-        document.getElementById('complaintsEmptyState').classList.remove('hidden');
-        document.getElementById('complaintsDashboard').classList.add('hidden');
-        return;
-      }
+      // نعرض اللوحة دايماً حتى لو مفيش بيانات (أصفار) — بدل ما نخفيها بشاشة "فاضية" توهم إن فيه عطل
       document.getElementById('complaintsEmptyState').classList.add('hidden');
       document.getElementById('complaintsDashboard').classList.remove('hidden');
       complaintsRawStats = res.stats;
