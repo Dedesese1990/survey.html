@@ -377,12 +377,11 @@
           </div>
 
           <div class="analytics-subnav">
-            <button type="button" class="analytics-subnav-btn active" data-key="schools" onclick="showAnalyticsSubSection('schools')">🏫 المدارس والمباني</button>
-            <button type="button" class="analytics-subnav-btn" data-key="complaints" onclick="showAnalyticsSubSection('complaints')">🚨 البلاغات</button>
+            <button type="button" class="analytics-subnav-btn active" data-key="schools" onclick="showAnalyticsSubSection('schools')">🏫 المدارس والمباني والبلاغات</button>
             <button type="button" class="analytics-subnav-btn" data-key="operations" onclick="showAnalyticsSubSection('operations')">📋 عمليات الحصر</button>
           </div>
 
-          <!-- ============ القسم 1: المدارس والمباني ============ -->
+          <!-- ============ القسم 1: المدارس والمباني ثم البلاغات مباشرة تحتها ============ -->
           <div id="analyticsSectionSchools" class="analytics-section">
             <div class="bento-grid">
               <div class="bento-hero">
@@ -402,10 +401,8 @@
               <p class="chart-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
               <div id="schoolsByGenderContainer"></div>
             </div>
-          </div>
 
-          <!-- ============ القسم 2: البلاغات ============ -->
-          <div id="analyticsSectionComplaints" class="analytics-section hidden">
+            <!-- البلاغات دلوقتي مدمجة هنا مباشرة تحت المدارس، بدل ما تكون تاب منفصل يحتاج تنقّل -->
             <div class="card" id="analyticsComplaintsSummaryCard">
               <div class="chart-card-header-row">
                 <div class="chart-card-title">🚨 حالة بلاغات الدعم الموحد</div>
@@ -438,7 +435,7 @@
             </div>
           </div>
 
-          <!-- ============ القسم 3: عمليات الحصر ============ -->
+          <!-- ============ القسم 2: عمليات الحصر ============ -->
           <div id="analyticsSectionOperations" class="analytics-section hidden">
             <div class="bento-grid">
               <div class="bento-hero">
@@ -1978,9 +1975,9 @@
       if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); } else if(tab === 'support') { renderTicketsList(); }
     }
 
-    // التنقّل بين أقسام لوحة المؤشرات الثلاثة (المدارس/البلاغات/عمليات الحصر)
+    // التنقّل بين قسمي لوحة المؤشرات (المدارس+البلاغات مدمجين معاً / عمليات الحصر)
     function showAnalyticsSubSection(key) {
-      ['schools', 'complaints', 'operations'].forEach(k => {
+      ['schools', 'operations'].forEach(k => {
         const el = document.getElementById('analyticsSection' + k.charAt(0).toUpperCase() + k.slice(1));
         if (el) el.classList.toggle('hidden', k !== key);
       });
