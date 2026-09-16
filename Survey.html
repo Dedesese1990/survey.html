@@ -2699,15 +2699,20 @@
         slaRing.style.stroke = pct >= 70 ? '#34d399' : pct >= 40 ? '#eebb43' : '#f87171';
 
         // توزيع البلاغات حسب الحالة التشغيلية
-        try {
-          if (typeof Chart !== 'undefined') {
-            const labels = ['مغلق', 'مفتوح', 'ملغى', 'موافقة الاستشاري قيد التنفيذ'];
-            const data = [s.closedCount, s.openCount, s.cancelledCount, s.consultantCount];
-            const colors = ['#10b981', '#f59e0b', '#94a3b8', '#a855f7'];
-            if (acsStatusChartInstance) { acsStatusChartInstance.data.datasets[0].data = data; acsStatusChartInstance.update('none'); }
-            else acsStatusChartInstance = new Chart(document.getElementById('acsStatusChart').getContext('2d'), { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-          }
-        } catch (e) {}
+        if (s.total === 0) {
+          showEmptyChartPlaceholder('acsStatusChart', 'لا توجد بيانات بلاغات بعد');
+        } else {
+          hideEmptyChartPlaceholder('acsStatusChart');
+          try {
+            if (typeof Chart !== 'undefined') {
+              const labels = ['مغلق', 'مفتوح', 'ملغى', 'موافقة الاستشاري قيد التنفيذ'];
+              const data = [s.closedCount, s.openCount, s.cancelledCount, s.consultantCount];
+              const colors = ['#10b981', '#f59e0b', '#94a3b8', '#a855f7'];
+              if (acsStatusChartInstance) { acsStatusChartInstance.data.datasets[0].data = data; acsStatusChartInstance.update('none'); }
+              else acsStatusChartInstance = new Chart(document.getElementById('acsStatusChart').getContext('2d'), { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+            }
+          } catch (e) {}
+        }
       } catch (e) {}
     }
 
@@ -4083,6 +4088,29 @@
 
     function formatDays(d) { if (d == null) return '-'; return d < 1 ? `${Math.round(d * 24)} ساعة` : `${d.toFixed(1)} يوم`; }
 
+    // يعرض رسالة "لا توجد بيانات" فوق شارت فاضي بدل ما يفضل بصرياً بلا محتوى ظاهر — بيستخدم في أي شارت
+    // (بلاغات أو غيرها) لما القيم كلها صفرية، عشان الفراغ يبان "متوقع" بدل ما يوحي إن فيه عطل.
+    function showEmptyChartPlaceholder(canvasId, message) {
+      const canvas = document.getElementById(canvasId); if (!canvas) return;
+      const container = canvas.parentElement; if (!container) return;
+      container.style.position = 'relative';
+      canvas.style.visibility = 'hidden';
+      let ph = container.querySelector('.chart-empty-placeholder');
+      if (!ph) {
+        ph = document.createElement('div');
+        ph.className = 'chart-empty-placeholder';
+        ph.style.cssText = 'position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:16px; color:var(--text-muted); font-weight:700; font-size:0.85rem;';
+        container.appendChild(ph);
+      }
+      ph.innerText = message;
+    }
+    function hideEmptyChartPlaceholder(canvasId) {
+      const canvas = document.getElementById(canvasId); if (!canvas) return;
+      canvas.style.visibility = '';
+      const container = canvas.parentElement;
+      container?.querySelector('.chart-empty-placeholder')?.remove();
+    }
+
     function renderComplaintsDashboard(stats) {
       document.getElementById('cmpTotal').innerText = stats.total.toLocaleString('en-US');
       document.getElementById('cmpOpen').innerText = stats.openCount.toLocaleString('en-US');
@@ -4094,6 +4122,13 @@
       document.getElementById('cmpSchoolsReported').innerText = stats.totalSchoolsReported.toLocaleString('en-US');
       document.getElementById('cmpReopenedLastDay').innerText = (stats.reopenedLastDay || 0).toLocaleString('en-US');
 
+      const CMP_CHART_IDS = ['cmpStatusChart', 'cmpPriorityChart', 'cmpCategoryChart', 'cmpDailyCategoryChart', 'cmpDailyCumulativeChart', 'cmpDailySlaChart', 'cmpDailyResponseChart'];
+      if (stats.total === 0) {
+        // مفيش بيانات خالص — نعرض رسالة واضحة فوق كل شارت بدل ما يفضل فاضي بصرياً (شارت بقيم صفرية بيرسم
+        // دايرة/خط غير مرئي عملياً، وده كان بيدي إحساس إن فيه عطل حتى لو مفيش أي مشكلة فعلية).
+        CMP_CHART_IDS.forEach(id => showEmptyChartPlaceholder(id, 'لا توجد بيانات بلاغات بعد — استورد ملفاً لعرض الرسم البياني'));
+      } else {
+      CMP_CHART_IDS.forEach(id => hideEmptyChartPlaceholder(id));
       try {
         if (typeof Chart !== 'undefined') {
           // حالة البلاغات
@@ -4143,6 +4178,7 @@
           else cmpDailyResponseChartInstance = new Chart(document.getElementById('cmpDailyResponseChart').getContext('2d'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'متوسط أيام الاستجابة', data: respData, borderColor: '#37889b', backgroundColor: '#37889b', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
       } catch (e) {}
+      }
 
       // تصنيف البلاغات المعاد فتحها
       const reopByCat = document.getElementById('cmpReopenedByCategoryContainer');
