@@ -806,7 +806,7 @@
                 <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.2rem;">🚨 بلاغات الدعم الموحد</h3>
                 <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="complaintsScopeNote">تحليل أداء وأنماط البلاغات</p>
               </div>
-              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="loadComplaintsStats()">تحديث ↺</button>
+              <button class="btn btn-outline" id="complaintsRefreshBtn" style="font-size:0.85rem; padding:10px 16px;" onclick="loadComplaintsStats()">تحديث ↺</button>
             </div>
             <div class="action-buttons-mobile" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من تاريخ</label><input type="date" id="cmpFilterFrom" onchange="loadComplaintsStats()"></div>
@@ -2676,7 +2676,9 @@
     let acsStatusChartInstance = null;
     async function loadAnalyticsComplaintsSummary() {
       try {
-        const res = await apiCall('PULL_COMPLAINTS_STATS', {});
+        // مهلة أطول من المعتاد: حساب مؤشرات البلاغات (متوسطات، اتجاه يومي...) على عشرات الآلاف من الصفوف
+        // عملية ثقيلة نسبياً، والمهلة الافتراضية (30 ثانية) مش كافية دايماً مع كمية بيانات كبيرة.
+        const res = await apiCall('PULL_COMPLAINTS_STATS', {}, { timeoutMs: 60000 });
         if (res.status !== 'success') {
           document.getElementById('analyticsComplaintsSummaryEmpty').classList.remove('hidden');
           document.getElementById('analyticsComplaintsSummaryContent').classList.add('hidden');
@@ -4310,7 +4312,17 @@
       const checked = Array.from(boxes).filter(b => b.checked).map(b => b.value);
       const branches = checked.length === boxes.length ? [] : checked;
 
-      const res = await apiCall('PULL_COMPLAINTS_STATS', { dateFrom, dateTo, branches, inspectorUsername });
+      // زرار التحديث بيدخل حالة انتظار مرئية: الحساب على عدد كبير من الصفوف ممكن ياخد وقت، وهذا الأكشن صامت
+      // (بلا شريط تقدّم عام) عمداً عشان ميزعجش أثناء التحميل التلقائي، فمحتاج مؤشر بسيط خاص بيه هنا تحديداً.
+      const refreshBtn = document.getElementById('complaintsRefreshBtn');
+      const refreshBtnOriginalText = refreshBtn ? refreshBtn.innerText : null;
+      if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.innerText = '⏳ جاري الحساب...'; }
+
+      // مهلة أطول من المعتاد: حساب مؤشرات البلاغات الكاملة (متوسطات، اتجاه يومي، جداول أعلى المدارس...) على
+      // عشرات الآلاف من الصفوف عملية ثقيلة نسبياً، والمهلة الافتراضية (30 ثانية) مش كافية دايماً.
+      const res = await apiCall('PULL_COMPLAINTS_STATS', { dateFrom, dateTo, branches, inspectorUsername }, { timeoutMs: 60000 });
+
+      if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerText = refreshBtnOriginalText; }
       if (res.status !== 'success') return showAlert(esc(res.message));
 
       // نعرض اللوحة دايماً حتى لو مفيش بيانات (أصفار) — بدل ما نخفيها بشاشة "فاضية" توهم إن فيه عطل
