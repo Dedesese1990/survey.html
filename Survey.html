@@ -30,6 +30,19 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     html, body { font-size: 16px; scroll-behavior: smooth; background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; overflow-x: hidden; }
 
+    /* ================= شريط تقدّم العمليات (Global Action Progress) =================
+       يظهر تلقائياً أثناء أي أكشن حقيقي (رفع تقرير، اعتماد، رد تذكرة...) عشان يطمئن المستخدم
+       إن العملية شغالة والموقع مش معلّق، حتى لو استغرق الرد وقتاً بسبب رفع صور أو ضغط عالي. */
+    #globalActionProgress { position: fixed; top: 18px; left: 50%; transform: translateX(-50%) translateY(-14px); z-index: 99999; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-lift); padding: 12px 18px; min-width: 260px; max-width: min(92vw, 360px); direction: rtl; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; }
+    #globalActionProgress.gap-visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    #globalActionProgress .gap-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    #globalActionProgress .gap-label { font-size: 0.85rem; font-weight: 800; color: var(--tbc-petrol-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #globalActionProgress .gap-pct { font-size: 0.82rem; font-weight: 900; color: var(--tbc-petrol); white-space: nowrap; }
+    #globalActionProgress .gap-track { width: 100%; height: 6px; background: var(--tbc-petrol-light); border-radius: 99px; overflow: hidden; }
+    #globalActionProgress .gap-fill { height: 100%; width: 0%; border-radius: 99px; background: linear-gradient(90deg, var(--tbc-petrol), var(--tbc-gold)); transition: width 0.25s ease-out, background 0.25s ease; }
+    #globalActionProgress.gap-complete .gap-fill { background: var(--status-approved); }
+    #globalActionProgress.gap-complete .gap-pct { color: var(--status-approved); }
+
     /* ================= Header ================= */
     header { background: #ffffff; border-bottom: 3px solid var(--tbc-petrol); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000; }
     .header-content { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; gap: 15px; flex-wrap: wrap; }
@@ -199,6 +212,15 @@
   </style>
 </head>
 <body>
+
+  <!-- ================= شريط تقدّم العمليات ================= -->
+  <div id="globalActionProgress">
+    <div class="gap-row">
+      <span class="gap-label" id="globalActionProgressLabel">جاري تنفيذ العملية...</span>
+      <span class="gap-pct" id="globalActionProgressPct">0%</span>
+    </div>
+    <div class="gap-track"><div class="gap-fill" id="globalActionProgressFill"></div></div>
+  </div>
 
   <!-- ================= Header ================= -->
   <header>
@@ -1616,7 +1638,7 @@
     // ملاحظة: خوادم Google Apps Script أحياناً تُبطئ أول طلب (Cold Start) أو يفشل الطلب الأول
     // بسبب مشاكل CORS/إعادة التوجيه الشائعة معها، رغم أن الطلب قد يكون نُفّذ بالفعل على الخادم.
     // لذلك بدل إظهار خطأ فوري للمستخدم، نعيد المحاولة تلقائياً قبل اعتبارها فشلاً حقيقياً.
-    async function callBackend(payload, { retries = 2, timeoutMs = 20000 } = {}) {
+    async function callBackend(payload, { retries = 2, timeoutMs = 30000 } = {}) {
       let lastErr = null;
       for (let attempt = 0; attempt <= retries; attempt++) {
         const controller = new AbortController();
@@ -1634,13 +1656,65 @@
       throw lastErr;
     }
 
+    // ---- شريط تقدّم العمليات (Global Action Progress) ----
+    // تنبيه: هذا تقدّم "تقريبي" مُحاكى وليس تقدماً حقيقياً قادماً من الخادم — Apps Script بيرد برد واحد
+    // فقط في نهاية الطلب، فمفيش طريقة نعرف بيها نسبة الإنجاز الحقيقية أثناء التنفيذ. الهدف منه بصرياً هو
+    // طمأنة المستخدم إن العملية شغالة والموقع مش معلّق، مش عرض رقم دقيق. لذلك يتقدّم بسرعة في البداية ثم
+    // يتباطأ ويثبت عند 90% لحد ما يوصل رد فعلي من الخادم، وعندها يقفز لـ100% فوراً.
+    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS"];
+    const ACTION_PROGRESS_LABELS = {
+      ADD_REPORT: "جاري رفع التقرير...", UPDATE_REPORT: "جاري حفظ تعديلات التقرير...",
+      APPROVE_REPORT: "جاري تحديث حالة التقرير...", CREATE_TICKET: "جاري إرسال التذكرة...",
+      REPLY_TICKET: "جاري إرسال الرد...", UPDATE_TICKET_STATUS: "جاري تحديث حالة التذكرة...",
+      CREATE_USER: "جاري إنشاء المستخدم...", UPDATE_USER: "جاري حفظ بيانات المستخدم...",
+      DELETE_USER: "جاري حذف المستخدم...", TOGGLE_USER_STATUS: "جاري تحديث حالة الحساب...",
+      SYNC_GENERAL_DATA: "جاري حفظ البيانات...", SEND_NOTIFICATION: "جاري إرسال الإشعار...",
+      ADMIN_RESET_PASSWORD: "جاري إعادة تعيين كلمة المرور...", CHANGE_PASSWORD: "جاري تحديث كلمة المرور...",
+      APPROVE_REGISTRATION: "جاري اعتماد الحساب...", REJECT_REGISTRATION: "جاري رفض الطلب...",
+      APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
+      SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
+      DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
+      REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
+      RESET_PASSWORD_WITH_CODE: "جاري إعادة تعيين كلمة المرور...", REGISTER_REQUEST: "جاري إرسال طلب التسجيل..."
+    };
+    let __gapTimer = null;
+    function startActionProgress(actionName) {
+      const el = document.getElementById('globalActionProgress');
+      const fill = document.getElementById('globalActionProgressFill');
+      const pct = document.getElementById('globalActionProgressPct');
+      document.getElementById('globalActionProgressLabel').innerText = ACTION_PROGRESS_LABELS[actionName] || "جاري تنفيذ العملية...";
+      el.classList.remove('gap-complete');
+      el.classList.add('gap-visible');
+      let current = 0;
+      fill.style.width = '0%'; pct.innerText = '0%';
+      clearInterval(__gapTimer);
+      __gapTimer = setInterval(() => {
+        current += Math.max((90 - current) * 0.09, 0.5); // تباطؤ تدريجي، لا يتجاوز 90% أبداً قبل الرد الفعلي
+        if (current > 90) current = 90;
+        fill.style.width = current.toFixed(0) + '%';
+        pct.innerText = Math.round(current) + '%';
+      }, 180);
+    }
+    function finishActionProgress() {
+      clearInterval(__gapTimer);
+      const el = document.getElementById('globalActionProgress');
+      const fill = document.getElementById('globalActionProgressFill');
+      const pct = document.getElementById('globalActionProgressPct');
+      fill.style.width = '100%'; pct.innerText = '100%';
+      el.classList.add('gap-complete');
+      setTimeout(() => { el.classList.remove('gap-visible'); }, 450);
+    }
+
     async function apiCall(actionName, payloadData = {}) {
       updateSyncStatus('syncing');
+      const showProgress = SILENT_BACKGROUND_ACTIONS.indexOf(actionName) === -1;
+      if (showProgress) startActionProgress(actionName);
       try {
         const data = await callBackend({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData });
         if(data.message && data.message.includes("Unauthorized")) forceLogout();
         updateSyncStatus('connected'); return data;
       } catch(e) { updateSyncStatus('connected'); return { status: "error", message: "تعذر الاتصال بالخادم. يرجى التأكد من الإنترنت والمحاولة مجدداً." }; }
+      finally { if (showProgress) finishActionProgress(); }
     }
 
     // ---- سجل التدقيق (Audit Log) ----
@@ -1834,9 +1908,19 @@
       logAudit('LOGIN', `تسجيل دخول`);
     }
 
+    // "pullInFlight" يمنع تراكم طلبات PULL_DATA فوق بعض: لو طلب لسه شغال ومخدش رد، والمزامنة الدورية
+    // (كل 30 ثانية) حاولت تبعت طلب جديد قبل ما يخلص، كان ده بيسبب "طوفان" طلبات متزاحمة على نفس الخادم في
+    // نفس اللحظة (خصوصاً وقت الضغط العالي أو لو رد الخادم اتأخر شوية)، وكل طلب زيادة بيبطّئ اللي قبله أكتر.
+    let pullInFlight = false;
     async function pullFromCloud() {
-      if(!currentSessionToken) return;
-      const resData = await apiCall("PULL_DATA");
+      if(!currentSessionToken || pullInFlight) return;
+      pullInFlight = true;
+      let resData;
+      try {
+        resData = await apiCall("PULL_DATA");
+      } finally {
+        pullInFlight = false;
+      }
       if (resData.status === "success") {
         if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || []; pendingSchoolRequests = resData.data.pendingSchoolRequests || []; tickets = resData.data.tickets || []; notifications = resData.data.notifications || []; updateNotificationBadge();
         if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
@@ -2501,7 +2585,9 @@
     }
 
     // ================= Analytics & Dashboard =================
-    setInterval(() => { if (currentUser && currentSessionToken) pullFromCloud(); }, 20000);
+    // كانت المزامنة كل 20 ثانية أضيق من مهلة انتظار الطلب نفسها (20 ثانية أيضاً) — يعني لو طلب اتأخر شوية،
+    // كان بيتحط طلب جديد فوقه فوراً بدل ما يستنى. رفعناها لـ30 ثانية عشان تدي مساحة كافية للرد يوصل عادي.
+    setInterval(() => { if (currentUser && currentSessionToken) pullFromCloud(); }, 30000);
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser || !schoolDataWrapper.list) return;
