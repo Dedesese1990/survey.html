@@ -948,6 +948,45 @@
               <div id="cmpHeatmapEmpty" class="empty-state hidden" style="padding:20px;">لا توجد مدارس مرتبطة ببلاغات ولها إحداثيات مسجّلة بعد.</div>
               <div id="cmpHeatmapContainer" style="height:420px; border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);"></div>
             </div>
+
+            <!-- ============ جدول البلاغات (مضغوط، أعمدة قابلة للاختيار، بحث، تصدير) ============ -->
+            <div class="card">
+              <div class="chart-card-header-row" style="flex-wrap:wrap; gap:10px;">
+                <div>
+                  <div class="chart-card-title">📋 جدول البلاغات</div>
+                  <p class="chart-card-desc" style="margin:2px 0 0;">قائمة البلاغات التفصيلية ضمن نفس الفلاتر فوق — اختر الأعمدة اللي محتاجها وصدّرها لإكسل وقت ما تحب.</p>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                  <input type="text" id="cmpTableSearch" placeholder="🔍 بحث برقم البلاغ / المدرسة / الوصف..." style="width:220px; padding:8px 12px; font-size:0.82rem;" oninput="onCmpTableSearchInput()">
+                  <div style="position:relative;">
+                    <button class="btn btn-outline" style="font-size:0.8rem; padding:8px 14px;" onclick="toggleCmpColumnPicker()">🧩 الأعمدة ▾</button>
+                    <div id="cmpColumnPickerPanel" class="hidden" style="position:absolute; left:0; top:calc(100% + 6px); background:#fff; border:1px solid var(--border-subtle); border-radius:10px; box-shadow:var(--shadow-lift); padding:10px; z-index:50; min-width:220px; max-height:320px; overflow-y:auto;"></div>
+                  </div>
+                  <button class="btn btn-gold" style="font-size:0.8rem; padding:8px 14px;" onclick="exportComplaintsTable(event)">📤 تصدير Excel</button>
+                </div>
+              </div>
+
+              <div id="cmpTableEmpty" class="empty-state hidden" style="padding:20px;">لا توجد بلاغات مطابقة.</div>
+              <div id="cmpTableScrollWrap" style="overflow-x:auto; border:1px solid var(--border-subtle); border-radius:10px; margin-top:12px;">
+                <table id="cmpDataTable" style="width:100%; border-collapse:collapse; font-size:0.76rem; white-space:nowrap;">
+                  <thead><tr id="cmpTableHeadRow" style="background:var(--tbc-petrol-light); position:sticky; top:0; z-index:1;"></tr></thead>
+                  <tbody id="cmpTableBody"></tbody>
+                </table>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:10px;">
+                <span id="cmpTablePageInfo" style="font-size:0.78rem; font-weight:700; color:var(--text-muted);"></span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <select id="cmpTablePageSizeSelect" style="font-size:0.78rem; padding:6px 10px;" onchange="onCmpTablePageSizeChange()">
+                    <option value="25">25 / صفحة</option>
+                    <option value="50" selected>50 / صفحة</option>
+                    <option value="100">100 / صفحة</option>
+                    <option value="200">200 / صفحة</option>
+                  </select>
+                  <button class="btn btn-outline" style="font-size:0.78rem; padding:7px 12px;" onclick="changeCmpTablePage(-1)">◀ السابق</button>
+                  <button class="btn btn-outline" style="font-size:0.78rem; padding:7px 12px;" onclick="changeCmpTablePage(1)">التالي ▶</button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1666,7 +1705,7 @@
     // فقط في نهاية الطلب، فمفيش طريقة نعرف بيها نسبة الإنجاز الحقيقية أثناء التنفيذ. الهدف منه بصرياً هو
     // طمأنة المستخدم إن العملية شغالة والموقع مش معلّق، مش عرض رقم دقيق. لذلك يتقدّم بسرعة في البداية ثم
     // يتباطأ ويثبت عند 90% لحد ما يوصل رد فعلي من الخادم، وعندها يقفز لـ100% فوراً.
-    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS"];
+    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS", "PULL_COMPLAINTS_TABLE"];
     const ACTION_PROGRESS_LABELS = {
       ADD_REPORT: "جاري رفع التقرير...", UPDATE_REPORT: "جاري حفظ تعديلات التقرير...",
       APPROVE_REPORT: "جاري تحديث حالة التقرير...", CREATE_TICKET: "جاري إرسال التذكرة...",
@@ -1680,6 +1719,7 @@
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
       CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
+      EXPORT_COMPLAINTS_TABLE: "جاري تجهيز ملف التصدير...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESET_PASSWORD_WITH_CODE: "جاري إعادة تعيين كلمة المرور...", REGISTER_REQUEST: "جاري إرسال طلب التسجيل..."
     };
@@ -4304,13 +4344,19 @@
       loadComplaintsStats();
     }
 
-    async function loadComplaintsStats() {
+    // يجمع قراءة الفلاتر الحالية (تاريخ، فروع، مشرف) في مكان واحد — تستخدمه كل من الإحصائيات والجدول والتصدير
+    function getCmpCurrentFilters() {
       const dateFrom = document.getElementById('cmpFilterFrom').value;
       const dateTo = document.getElementById('cmpFilterTo').value;
       const inspectorUsername = document.getElementById('cmpFilterInspector').value;
       const boxes = document.querySelectorAll('.cmpBranchCheckbox');
       const checked = Array.from(boxes).filter(b => b.checked).map(b => b.value);
       const branches = checked.length === boxes.length ? [] : checked;
+      return { dateFrom, dateTo, branches, inspectorUsername };
+    }
+
+    async function loadComplaintsStats() {
+      const { dateFrom, dateTo, branches, inspectorUsername } = getCmpCurrentFilters();
 
       // زرار التحديث بيدخل حالة انتظار مرئية: الحساب على عدد كبير من الصفوف ممكن ياخد وقت، وهذا الأكشن صامت
       // (بلا شريط تقدّم عام) عمداً عشان ميزعجش أثناء التحميل التلقائي، فمحتاج مؤشر بسيط خاص بيه هنا تحديداً.
@@ -4330,6 +4376,147 @@
       document.getElementById('complaintsDashboard').classList.remove('hidden');
       complaintsRawStats = res.stats;
       renderComplaintsDashboard(res.stats);
+      cmpTablePage = 1;
+      loadComplaintsTable();
+    }
+
+    // ============ جدول البلاغات: أعمدة قابلة للاختيار + بحث + ترقيم صفحات + تصدير ============
+    const CMP_TABLE_COLUMNS = [
+      { key: 'displayId', label: 'رقم البلاغ', defaultVisible: true },
+      { key: 'linkedSchoolName', label: 'المدرسة', defaultVisible: true },
+      { key: 'linkedBranch', label: 'الفرع', defaultVisible: false },
+      { key: 'linkedInspectorUsername', label: 'المشرف', defaultVisible: false },
+      { key: 'priority', label: 'الأولوية', defaultVisible: true },
+      { key: 'caseStatus', label: 'الحالة', defaultVisible: true },
+      { key: 'category', label: 'التصنيف', defaultVisible: true },
+      { key: 'slmStatus', label: 'حالة SLA', defaultVisible: false },
+      { key: 'schoolStage', label: 'المرحلة', defaultVisible: false },
+      { key: 'schoolGender', label: 'الجنس', defaultVisible: false },
+      { key: 'tbcCity', label: 'المدينة', defaultVisible: false },
+      { key: 'reopened', label: 'معاد فتحها', defaultVisible: false },
+      { key: 'createdDate', label: 'تاريخ الإنشاء', defaultVisible: true },
+      { key: 'resolutionDate', label: 'تاريخ الإغلاق', defaultVisible: false },
+      { key: 'contractorCompanyName', label: 'المقاول', defaultVisible: false },
+      { key: 'description', label: 'وصف البلاغ', defaultVisible: true }
+    ];
+    let cmpTableVisibleCols = new Set(CMP_TABLE_COLUMNS.filter(c => c.defaultVisible).map(c => c.key));
+    let cmpTablePage = 1, cmpTablePageSize = 50, cmpTableSearch = '', cmpTableTotalFiltered = 0;
+    let cmpTableSearchDebounce = null;
+
+    function onCmpTableSearchInput() {
+      clearTimeout(cmpTableSearchDebounce);
+      cmpTableSearchDebounce = setTimeout(() => {
+        cmpTableSearch = document.getElementById('cmpTableSearch').value.trim();
+        cmpTablePage = 1;
+        loadComplaintsTable();
+      }, 400);
+    }
+
+    function onCmpTablePageSizeChange() {
+      cmpTablePageSize = parseInt(document.getElementById('cmpTablePageSizeSelect').value, 10) || 50;
+      cmpTablePage = 1;
+      loadComplaintsTable();
+    }
+
+    function changeCmpTablePage(delta) {
+      const maxPage = Math.max(1, Math.ceil(cmpTableTotalFiltered / cmpTablePageSize));
+      const next = cmpTablePage + delta;
+      if (next < 1 || next > maxPage) return;
+      cmpTablePage = next;
+      loadComplaintsTable();
+    }
+
+    function toggleCmpColumnPicker() {
+      const panel = document.getElementById('cmpColumnPickerPanel');
+      const willShow = panel.classList.contains('hidden');
+      if (!willShow) { panel.classList.add('hidden'); return; }
+      panel.innerHTML = CMP_TABLE_COLUMNS.map(c => `
+        <label style="display:flex; align-items:center; gap:8px; padding:5px 4px; font-size:0.82rem; font-weight:700; cursor:pointer; white-space:nowrap;">
+          <input type="checkbox" ${cmpTableVisibleCols.has(c.key) ? 'checked' : ''} onchange="toggleCmpColumn('${c.key}')"> ${esc(c.label)}
+        </label>`).join('');
+      panel.classList.remove('hidden');
+    }
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('cmpColumnPickerPanel');
+      if (!panel || panel.classList.contains('hidden')) return;
+      if (!panel.contains(e.target) && !e.target.closest('button[onclick="toggleCmpColumnPicker()"]')) panel.classList.add('hidden');
+    });
+
+    function toggleCmpColumn(key) {
+      if (cmpTableVisibleCols.has(key)) {
+        if (cmpTableVisibleCols.size === 1) return; // لازم يفضل عمود واحد ظاهر على الأقل
+        cmpTableVisibleCols.delete(key);
+      } else cmpTableVisibleCols.add(key);
+      renderCmpTableHead();
+      renderCmpTableRows(cmpTableLastRows || []);
+    }
+
+    // تنسيق عرض قيمة الخلية حسب نوع العمود (تاريخ، Boolean، نص طويل يُقطع مع tooltip بالنص الكامل)
+    function formatCmpCellValue(key, value) {
+      if (value == null || value === '') return '-';
+      if (key === 'createdDate' || key === 'resolutionDate') {
+        const d = new Date(value); return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('ar-SA-u-ca-gregory');
+      }
+      if (key === 'reopened') return value === true ? '✅ نعم' : 'لا';
+      return String(value);
+    }
+
+    let cmpTableLastRows = [];
+    function renderCmpTableHead() {
+      const cols = CMP_TABLE_COLUMNS.filter(c => cmpTableVisibleCols.has(c.key));
+      document.getElementById('cmpTableHeadRow').innerHTML = cols.map(c =>
+        `<th style="padding:8px 10px; text-align:right; font-weight:900; color:var(--tbc-petrol-dark); border-bottom:2px solid var(--border-subtle);">${esc(c.label)}</th>`
+      ).join('');
+    }
+    function renderCmpTableRows(rows) {
+      cmpTableLastRows = rows;
+      const cols = CMP_TABLE_COLUMNS.filter(c => cmpTableVisibleCols.has(c.key));
+      const tbody = document.getElementById('cmpTableBody');
+      if (rows.length === 0) {
+        tbody.innerHTML = '';
+        document.getElementById('cmpTableEmpty').classList.remove('hidden');
+        document.getElementById('cmpTableScrollWrap').classList.add('hidden');
+        return;
+      }
+      document.getElementById('cmpTableEmpty').classList.add('hidden');
+      document.getElementById('cmpTableScrollWrap').classList.remove('hidden');
+      tbody.innerHTML = rows.map((r, idx) => `
+        <tr style="background:${idx % 2 === 0 ? '#fff' : '#fafbfc'};">
+          ${cols.map(c => {
+            const val = formatCmpCellValue(c.key, r[c.key]);
+            const isLong = c.key === 'description';
+            return `<td style="padding:6px 10px; border-bottom:1px solid #f1f5f9; ${isLong ? 'max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;' : ''}" ${isLong ? `title="${esc(val)}"` : ''}>${esc(val)}</td>`;
+          }).join('')}
+        </tr>`).join('');
+    }
+
+    async function loadComplaintsTable() {
+      renderCmpTableHead();
+      const filters = getCmpCurrentFilters();
+      const res = await apiCall('PULL_COMPLAINTS_TABLE', { ...filters, search: cmpTableSearch, page: cmpTablePage, pageSize: cmpTablePageSize });
+      if (res.status !== 'success') return showAlert(esc(res.message));
+      cmpTableTotalFiltered = res.totalFiltered;
+      renderCmpTableRows(res.rows);
+      const maxPage = Math.max(1, Math.ceil(cmpTableTotalFiltered / cmpTablePageSize));
+      document.getElementById('cmpTablePageInfo').innerText = cmpTableTotalFiltered === 0 ? 'لا توجد بلاغات مطابقة' : `صفحة ${cmpTablePage} من ${maxPage} — إجمالي ${cmpTableTotalFiltered.toLocaleString('en-US')} بلاغ`;
+    }
+
+    async function exportComplaintsTable(evt) {
+      const filters = getCmpCurrentFilters();
+      const btn = evt?.target; const originalText = btn ? btn.innerText : null;
+      if (btn) { btn.disabled = true; btn.innerText = '⏳ جاري التصدير...'; }
+      const res = await apiCall('EXPORT_COMPLAINTS_TABLE', { ...filters, search: cmpTableSearch }, { timeoutMs: 90000 });
+      if (btn) { btn.disabled = false; btn.innerText = originalText; }
+      if (res.status !== 'success') return showAlert(esc(res.message));
+      if (res.rows.length === 0) return showAlert('لا توجد بيانات مطابقة للتصدير.');
+
+      const cols = CMP_TABLE_COLUMNS.filter(c => cmpTableVisibleCols.has(c.key));
+      const headerRow = cols.map(c => c.label);
+      const dataRows = res.rows.map(r => cols.map(c => formatCmpCellValue(c.key, r[c.key])));
+      const ws = XLSX.utils.aoa_to_sheet([headerRow, ...dataRows]);
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "البلاغات");
+      XLSX.writeFile(wb, `بلاغات_${new Date().toISOString().slice(0,10)}.xlsx`);
+      if (res.truncated) showAlert('⚠️ عدد البلاغات المطابقة كبير جداً، تم تصدير أول 50,000 بلاغ فقط. ضيّق الفلاتر لتصدير الباقي.');
     }
 
     function downloadComplaintsTemplate() {
@@ -4369,7 +4556,8 @@
                 iPriority = colIdx('Priority'), iCaseStatus = colIdx('CaseStatus'), iCity = colIdx('TBC City'),
                 iStage = colIdx('School Stage'), iGender = colIdx('School Gender'), iSlm = colIdx('SLMStatus'),
                 iCreated = colIdx('CreatedDate'), iResolution = colIdx('ResolutionDate'), iReopened = colIdx('Reopened'),
-                iTier2 = colIdx('CategoryTier2'), iTier3 = colIdx('CategoryTier3'), iContractor = colIdx('ContractorCompanyName');
+                iTier2 = colIdx('CategoryTier2'), iTier3 = colIdx('CategoryTier3'), iContractor = colIdx('ContractorCompanyName'),
+                iDescription = colIdx('Description');
 
           if (iDisplayId === -1 || iSchoolNumber === -1) { progressBox.classList.add('hidden'); return showAlert('الملف لا يطابق القالب المتوقع — تأكد من وجود أعمدة DisplayID و SchoolNumber على الأقل.'); }
 
@@ -4393,7 +4581,8 @@
               reopened: iReopened > -1 ? (String(row[iReopened]).toLowerCase() === 'true' || row[iReopened] === true) : false,
               categoryTier2: iTier2 > -1 ? String(row[iTier2] || '').trim() : '',
               categoryTier3: iTier3 > -1 ? String(row[iTier3] || '').trim() : '',
-              contractorCompanyName: iContractor > -1 ? String(row[iContractor] || '').trim() : ''
+              contractorCompanyName: iContractor > -1 ? String(row[iContractor] || '').trim() : '',
+              description: iDescription > -1 ? String(row[iDescription] || '').trim() : ''
             });
           }
 
