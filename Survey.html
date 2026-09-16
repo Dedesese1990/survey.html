@@ -829,6 +829,7 @@
             <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
               <label for="complaintsExcelInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع ملف البلاغات</label>
               <input type="file" id="complaintsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsExcelUpload(event)">
+              <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:16px; font-size:0.95rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
             </div>
             <div id="complaintsImportProgress" class="hidden" style="margin-top:16px;">
               <div style="background:#f1f5f9; border-radius:8px; height:14px; overflow:hidden;"><div id="complaintsImportProgressBar" style="background:var(--tbc-petrol); height:100%; width:0%; transition:width 0.3s;"></div></div>
@@ -1680,6 +1681,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESET_PASSWORD_WITH_CODE: "جاري إعادة تعيين كلمة المرور...", REGISTER_REQUEST: "جاري إرسال طلب التسجيل..."
     };
@@ -4240,6 +4242,7 @@
     function initComplaintsTab() {
       const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       document.getElementById('complaintsImportBox').classList.toggle('hidden', !isPlanning);
+      document.getElementById('complaintsClearAllBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
@@ -4293,10 +4296,15 @@
       XLSX.writeFile(wb, "قالب_البلاغات.xlsx");
     }
 
+    // يمنع بدء رفع جديد وهو رفع تاني لسه شغال — الحماية دي مهمة جداً هنا تحديداً: لو رفعان اشتغلوا في نفس
+    // الوقت بالغلط (دبل كليك، أو تاب تاني)، كل واحد كان بيقدر يمسح أو يجاوز بيانات التاني بسبب تداخل الدفعات.
+    let complaintsImportInProgress = false;
     async function handleComplaintsExcelUpload(event) {
+      if (complaintsImportInProgress) { event.target.value = ''; return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.'); }
       const file = event.target.files[0]; if (!file) return;
       const proceed = await showConfirm('استيراد ملف بلاغات كبير قد يستغرق عدة دقائق حسب عدد الصفوف. البلاغات الموجودة بنفس الرقم (DisplayID) تُحدَّث، والجديدة تُضاف — لا يُحذف شيء. هل تريد المتابعة؟');
       if (!proceed) { event.target.value = ''; return; }
+      complaintsImportInProgress = true;
 
       const progressBox = document.getElementById('complaintsImportProgress');
       const progressBar = document.getElementById('complaintsImportProgressBar');
@@ -4352,7 +4360,7 @@
             const pct = Math.round(((b + 1) / totalBatches) * 100);
             progressBar.style.width = pct + '%';
             progressText.innerText = `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
-            const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isFirstBatch: b === 0 });
+            const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows });
             if (res.status === 'success') { totalAdded += res.added; totalUpdated += res.updated; totalLinked += res.linked; }
             else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
           }
@@ -4362,9 +4370,19 @@
           showAlert(`✓ تم استيراد ${allRows.length} بلاغ بنجاح.\n🆕 جديد: ${totalAdded}\n🔄 محدَّث: ${totalUpdated}\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)`);
           loadComplaintsStats();
         } catch (err) { progressBox.classList.add('hidden'); showAlert('حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد. (' + err.message + ')'); }
+        finally { complaintsImportInProgress = false; }
         event.target.value = '';
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    async function clearAllComplaints() {
+      if (complaintsImportInProgress) return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.');
+      const confirmed = await showConfirm('⚠️ هل أنت متأكد من مسح كل بيانات البلاغات نهائياً؟ ده إجراء لا يمكن التراجع عنه، ولازم تستورد الملف تاني من الصفر بعده لو احتجت البيانات.');
+      if (!confirmed) return;
+      const res = await apiCall('CLEAR_ALL_COMPLAINTS', {});
+      if (res.status === 'success') { logAudit('COMPLAINTS_CLEAR', 'مسح كل بيانات البلاغات'); showAlert('✓ تم مسح كل بيانات البلاغات.'); loadComplaintsStats(); }
+      else showAlert(esc(res.message));
     }
 
     async function handleUsersExcelUpload(event) {
