@@ -541,6 +541,94 @@
               </div>
             </div>
 
+            <!-- ============ تحليلات البلاغات التفصيلية (منقولة من تاب البلاغات — نفس التناسق والدوال بالظبط) ============ -->
+            <div class="exec-section" style="margin-top:34px;">
+              <div class="exec-section-head">
+                <span class="exec-section-tag" style="background:var(--tbc-gold);"></span>
+                <div>
+                  <h4>📊 تحليلات البلاغات التفصيلية</h4>
+                  <p>نفس التحليلات الموجودة في تاب "البلاغات"، معروضة هنا لسهولة المتابعة ضمن لوحة المؤشرات</p>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:20px;">
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">📊 البلاغات حسب الحالة التشغيلية</h4>
+                  <div style="height:230px; position:relative;"><canvas id="anCmpStatusChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🔺 أولوية البلاغات</h4>
+                  <div style="height:230px; position:relative;"><canvas id="anCmpPriorityChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🗂️ تصنيف البلاغات</h4>
+                <div style="height:260px; position:relative;"><canvas id="anCmpCategoryChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:20px;">
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🎓 حسب المرحلة الدراسية</h4>
+                  <div id="anCmpStageContainer"></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:16px;">🚻 حسب نوع المبنى</h4>
+                  <div id="anCmpGenderContainer"></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">🔁 تصنيف البلاغات المعاد فتحها</h4>
+                <div id="anCmpReopenedByCategoryContainer"></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+
+              <div class="card">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📉 الاتجاه اليومي حسب التصنيف</h4>
+                <div style="height:320px; position:relative;"><canvas id="anCmpDailyCategoryChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+
+              <div class="card">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">📈 الإجمالي التراكمي (مفتوحة / مغلقة / معاد فتحها)</h4>
+                <div style="height:320px; position:relative;"><canvas id="anCmpDailyCumulativeChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:20px;">
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">✅ معدل الالتزام بـ SLA يومياً</h4>
+                  <div style="height:260px; position:relative;"><canvas id="anCmpDailySlaChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                  <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">⏱️ متوسط زمن الاستجابة يومياً</h4>
+                  <div style="height:260px; position:relative;"><canvas id="anCmpDailyResponseChart"></canvas></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; margin-bottom:6px;">⏱️ متوسط زمن الاستجابة حسب التصنيف</h4>
+                <div id="anCmpAvgResponseByCategoryContainer"></div>
+                  <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+
+              <div class="card" style="margin-bottom:0;">
+                <h4 style="color:var(--tbc-petrol-dark); font-size:1.1rem; font-weight:900; margin-bottom:16px;">🏆 أعلى المدارس (معاد فتحها — Top 20)</h4>
+                <div class="table-responsive">
+                  <table class="data-table" id="anCmpTopSchoolsTable"><thead><tr><th>المدرسة</th><th>عدد البلاغات</th></tr></thead><tbody></tbody></table>
+                </div>
+                <div style="text-align:left; margin-top:10px;"><span onclick="showTab('complaints')" style="color:var(--tbc-petrol); font-weight:800; font-size:0.8rem; cursor:pointer; text-decoration:underline; white-space:nowrap;">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+            </div>
+
             <!-- ============ أداء المشرفين: نصاب المدارس والأكثر بلاغات ============ -->
             <div class="exec-section" style="margin-top:34px;">
               <div class="exec-section-head">
@@ -1475,6 +1563,11 @@
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.3rem;">🎫 تذكرة دعم فني جديدة</h3>
       <div class="form-group"><label>عنوان المشكلة *</label><input type="text" id="newTicketSubject" placeholder="وصف مختصر للمشكلة"></div>
       <div class="form-group"><label>تفاصيل المشكلة *</label><textarea id="newTicketDescription" rows="5" placeholder="اشرح المشكلة بالتفصيل..."></textarea></div>
+      <div class="form-group">
+        <label>صورة توضيحية للمشكلة (اختياري)</label>
+        <input type="file" id="newTicketImage" accept="image/*" onchange="previewPhotoField('newTicketImage')">
+        <div id="newTicketImage_preview"></div>
+      </div>
       <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:16px;">
         <button class="btn btn-gold" style="flex:1;" onclick="submitNewTicket()">إرسال التذكرة ✓</button>
         <button class="btn btn-outline" onclick="document.getElementById('newTicketModal').classList.add('hidden')">إلغاء</button>
@@ -1499,6 +1592,11 @@
       </div>
       <div id="ticketDetailMessages" style="max-height:340px; overflow-y:auto; margin-bottom:16px; padding-left:4px;"></div>
       <div class="form-group"><label>الرد</label><textarea id="ticketReplyText" rows="3" placeholder="اكتب ردك هنا..."></textarea></div>
+      <div class="form-group">
+        <label>إرفاق صورة (اختياري)</label>
+        <input type="file" id="ticketReplyImage" accept="image/*" onchange="previewPhotoField('ticketReplyImage')">
+        <div id="ticketReplyImage_preview"></div>
+      </div>
       <div class="action-buttons-mobile" style="display:flex; gap:12px;">
         <button class="btn btn-petrol" style="flex:1;" onclick="submitTicketReply()">إرسال الرد ✓</button>
         <button class="btn btn-outline" onclick="document.getElementById('ticketDetailModal').classList.add('hidden')">إغلاق</button>
@@ -2971,6 +3069,7 @@
         }
 
         renderSupervisorPerformance(s.byInspector || {});
+        renderComplaintsDashboard(s, 'an');
         renderTopCitiesPerformance(s.byCity || {});
       } catch (e) {}
     }
@@ -4502,7 +4601,17 @@
     }
 
     // ==================== عرض لوحة البلاغات ====================
-    let cmpStatusChartInstance = null, cmpPriorityChartInstance = null, cmpCategoryChartInstance = null, cmpDailyCategoryChartInstance = null, cmpDailyCumulativeChartInstance = null, cmpDailySlaChartInstance = null, cmpDailyResponseChartInstance = null;
+    let cmpChartInstanceStore = {};
+    function getOrCreateChart(key, canvasEl, config) {
+      if (!canvasEl) return null;
+      if (cmpChartInstanceStore[key]) {
+        const inst = cmpChartInstanceStore[key];
+        inst.data = config.data; inst.options = config.options; inst.update('none');
+        return inst;
+      }
+      cmpChartInstanceStore[key] = new Chart(canvasEl.getContext('2d'), config);
+      return cmpChartInstanceStore[key];
+    }
     const CMP_CATEGORY_COLORS = { 'تكييف': '#37889b', 'صيانة': '#eebb43', 'مدني': '#10b981', 'نظافة': '#a855f7', 'مراقبة وأمن وسلامة': '#ef4444' };
 
     function formatDays(d) { if (d == null) return '-'; return d < 1 ? `${Math.round(d * 24)} ساعة` : `${d.toFixed(1)} يوم`; }
@@ -4550,51 +4659,55 @@
       container?.querySelector('.chart-empty-placeholder')?.remove();
     }
 
-    function renderComplaintsDashboard(stats) {
-      document.getElementById('cmpTotal').innerText = stats.total.toLocaleString('en-US');
-      document.getElementById('cmpOpen').innerText = stats.openCount.toLocaleString('en-US');
-      document.getElementById('cmpClosed').innerText = stats.closedCount.toLocaleString('en-US');
-      document.getElementById('cmpSlaPct').innerText = stats.slaCompliancePct + '%';
-      document.getElementById('cmpAvgResponse').innerText = formatDays(stats.avgResponseDays);
-      document.getElementById('cmpReopened').innerText = stats.reopenedCount.toLocaleString('en-US');
-      document.getElementById('cmpClosureRate').innerText = stats.closureRatePct + '%';
-      document.getElementById('cmpSchoolsReported').innerText = stats.totalSchoolsReported.toLocaleString('en-US');
-      document.getElementById('cmpReopenedLastDay').innerText = (stats.reopenedLastDay || 0).toLocaleString('en-US');
+    // targetPrefix: '' للتاب المستقل الأصلي، 'an' للنسخة المكررة جوه صفحة المؤشرات. القسمين بيستخدموا نفس
+    // منطق الحساب والرسم بالظبط (نفس الدالة) لضمان التناسق التام بينهم بصرياً ووظيفياً — الفرق الوحيد هو
+    // الـID المستهدف. بعض الأقسام (حسب المدن، مقارنة المناطق، الخريطة الحرارية) عمداً مش بتتكرر في النسخة
+    // التانية بناءً على طلب صريح، فبتتفعّل بس لما targetPrefix يكون فاضي (التاب الأصلي).
+    function renderComplaintsDashboard(stats, targetPrefix) {
+      targetPrefix = targetPrefix || '';
+      const id = (base) => targetPrefix ? targetPrefix + base.charAt(0).toUpperCase() + base.slice(1) : base;
+      const el = (base) => document.getElementById(id(base));
 
-      const CMP_CHART_IDS = ['cmpStatusChart', 'cmpPriorityChart', 'cmpCategoryChart', 'cmpDailyCategoryChart', 'cmpDailyCumulativeChart', 'cmpDailySlaChart', 'cmpDailyResponseChart'];
+      const totalEl = el('cmpTotal'); if (totalEl) totalEl.innerText = stats.total.toLocaleString('en-US');
+      const openEl = el('cmpOpen'); if (openEl) openEl.innerText = stats.openCount.toLocaleString('en-US');
+      const closedEl = el('cmpClosed'); if (closedEl) closedEl.innerText = stats.closedCount.toLocaleString('en-US');
+      const slaPctEl = el('cmpSlaPct'); if (slaPctEl) slaPctEl.innerText = stats.slaCompliancePct + '%';
+      const avgRespEl = el('cmpAvgResponse'); if (avgRespEl) avgRespEl.innerText = formatDays(stats.avgResponseDays);
+      const reopEl = el('cmpReopened'); if (reopEl) reopEl.innerText = stats.reopenedCount.toLocaleString('en-US');
+      const closureRateEl = el('cmpClosureRate'); if (closureRateEl) closureRateEl.innerText = stats.closureRatePct + '%';
+      const schoolsRepEl = el('cmpSchoolsReported'); if (schoolsRepEl) schoolsRepEl.innerText = stats.totalSchoolsReported.toLocaleString('en-US');
+      const reopLastDayEl = el('cmpReopenedLastDay'); if (reopLastDayEl) reopLastDayEl.innerText = (stats.reopenedLastDay || 0).toLocaleString('en-US');
+
+      const CMP_CHART_IDS = ['cmpStatusChart', 'cmpPriorityChart', 'cmpCategoryChart', 'cmpDailyCategoryChart', 'cmpDailyCumulativeChart', 'cmpDailySlaChart', 'cmpDailyResponseChart'].map(id);
       if (stats.total === 0) {
         // مفيش بيانات خالص — نعرض رسالة واضحة فوق كل شارت بدل ما يفضل فاضي بصرياً (شارت بقيم صفرية بيرسم
         // دايرة/خط غير مرئي عملياً، وده كان بيدي إحساس إن فيه عطل حتى لو مفيش أي مشكلة فعلية).
-        CMP_CHART_IDS.forEach(id => showEmptyChartPlaceholder(id, 'لا توجد بيانات بلاغات بعد — استورد ملفاً لعرض الرسم البياني'));
+        CMP_CHART_IDS.forEach(cid => showEmptyChartPlaceholder(cid, 'لا توجد بيانات بلاغات بعد — استورد ملفاً لعرض الرسم البياني'));
       } else {
-      CMP_CHART_IDS.forEach(id => hideEmptyChartPlaceholder(id));
+      CMP_CHART_IDS.forEach(cid => hideEmptyChartPlaceholder(cid));
       try {
         if (typeof Chart !== 'undefined') {
           // حالة البلاغات
           const statusLabels = ['مغلق', 'مفتوح', 'ملغى', 'موافقة الاستشاري قيد التنفيذ'];
           const statusData = [stats.closedCount, stats.openCount, stats.cancelledCount, stats.consultantCount];
           const statusColors = ['#10b981', '#f59e0b', '#94a3b8', '#a855f7'];
-          if (cmpStatusChartInstance) { cmpStatusChartInstance.data.datasets[0].data = statusData; cmpStatusChartInstance.update('none'); }
-          else cmpStatusChartInstance = new Chart(document.getElementById('cmpStatusChart').getContext('2d'), { type: 'doughnut', data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: statusColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
+          getOrCreateChart(id('cmpStatus'), el('cmpStatusChart'), { type: 'doughnut', data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: statusColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
           // الأولوية
           const prioLabels = Object.keys(stats.byPriority); const prioData = Object.values(stats.byPriority);
-          if (cmpPriorityChartInstance) { cmpPriorityChartInstance.data.labels = prioLabels; cmpPriorityChartInstance.data.datasets[0].data = prioData; cmpPriorityChartInstance.update('none'); }
-          else cmpPriorityChartInstance = new Chart(document.getElementById('cmpPriorityChart').getContext('2d'), { type: 'doughnut', data: { labels: prioLabels, datasets: [{ data: prioData, backgroundColor: ['#ef4444', '#f59e0b', '#37889b', '#94a3b8'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
+          getOrCreateChart(id('cmpPriority'), el('cmpPriorityChart'), { type: 'doughnut', data: { labels: prioLabels, datasets: [{ data: prioData, backgroundColor: ['#ef4444', '#f59e0b', '#37889b', '#94a3b8'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
           // التصنيف
           const catLabels = ['تكييف', 'صيانة', 'مدني', 'نظافة', 'مراقبة وأمن وسلامة'];
           const catData = catLabels.map(c => stats.byCategory[c] || 0);
           const catColors = catLabels.map(c => CMP_CATEGORY_COLORS[c]);
-          if (cmpCategoryChartInstance) { cmpCategoryChartInstance.data.datasets[0].data = catData; cmpCategoryChartInstance.update('none'); }
-          else cmpCategoryChartInstance = new Chart(document.getElementById('cmpCategoryChart').getContext('2d'), { type: 'bar', data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { family: 'Tajawal' } } }, y: { beginAtZero: true } } } });
+          getOrCreateChart(id('cmpCategory'), el('cmpCategoryChart'), { type: 'bar', data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { family: 'Tajawal' } } }, y: { beginAtZero: true } } } });
 
           // الاتجاه اليومي بالتصنيف
           const trend = stats.dailyTrend || [];
           const dLabels = trend.map(t => t.date);
           const dailyDatasets = catLabels.map(c => ({ label: c, data: trend.map(t => (t.byCategory && t.byCategory[c]) || 0), borderColor: CMP_CATEGORY_COLORS[c], backgroundColor: CMP_CATEGORY_COLORS[c], tension: 0.3, fill: false }));
-          if (cmpDailyCategoryChartInstance) { cmpDailyCategoryChartInstance.data.labels = dLabels; cmpDailyCategoryChartInstance.data.datasets = dailyDatasets; cmpDailyCategoryChartInstance.update('none'); }
-          else cmpDailyCategoryChartInstance = new Chart(document.getElementById('cmpDailyCategoryChart').getContext('2d'), { type: 'line', data: { labels: dLabels, datasets: dailyDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
+          getOrCreateChart(id('cmpDailyCategory'), el('cmpDailyCategoryChart'), { type: 'line', data: { labels: dLabels, datasets: dailyDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
           // التراكمي
           const cumDatasets = [
@@ -4602,53 +4715,70 @@
             { label: 'مفتوحة (تراكمي)', data: trend.map(t => t.cumOpen), borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.3, fill: false },
             { label: 'معاد فتحها (تراكمي)', data: trend.map(t => t.cumReopened), borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.3, fill: false }
           ];
-          if (cmpDailyCumulativeChartInstance) { cmpDailyCumulativeChartInstance.data.labels = dLabels; cmpDailyCumulativeChartInstance.data.datasets = cumDatasets; cmpDailyCumulativeChartInstance.update('none'); }
-          else cmpDailyCumulativeChartInstance = new Chart(document.getElementById('cmpDailyCumulativeChart').getContext('2d'), { type: 'line', data: { labels: dLabels, datasets: cumDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
+          getOrCreateChart(id('cmpDailyCumulative'), el('cmpDailyCumulativeChart'), { type: 'line', data: { labels: dLabels, datasets: cumDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
           // معدل SLA اليومي ومتوسط زمن الاستجابة اليومي (حسب يوم الإغلاق الفعلي)
           const resTrend = stats.dailyResolutionTrend || [];
           const resLabels = resTrend.map(t => t.date);
           const slaData = resTrend.map(t => t.slaPct);
-          if (cmpDailySlaChartInstance) { cmpDailySlaChartInstance.data.labels = resLabels; cmpDailySlaChartInstance.data.datasets[0].data = slaData; cmpDailySlaChartInstance.update('none'); }
-          else cmpDailySlaChartInstance = new Chart(document.getElementById('cmpDailySlaChart').getContext('2d'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'نسبة الالتزام بـ SLA %', data: slaData, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
+          getOrCreateChart(id('cmpDailySla'), el('cmpDailySlaChart'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'نسبة الالتزام بـ SLA %', data: slaData, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
 
           const respData = resTrend.map(t => t.avgResponseDays != null ? +t.avgResponseDays.toFixed(2) : null);
-          if (cmpDailyResponseChartInstance) { cmpDailyResponseChartInstance.data.labels = resLabels; cmpDailyResponseChartInstance.data.datasets[0].data = respData; cmpDailyResponseChartInstance.update('none'); }
-          else cmpDailyResponseChartInstance = new Chart(document.getElementById('cmpDailyResponseChart').getContext('2d'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'متوسط أيام الاستجابة', data: respData, borderColor: '#37889b', backgroundColor: '#37889b', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+          getOrCreateChart(id('cmpDailyResponse'), el('cmpDailyResponseChart'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'متوسط أيام الاستجابة', data: respData, borderColor: '#37889b', backgroundColor: '#37889b', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
       } catch (e) {}
       }
 
       // تصنيف البلاغات المعاد فتحها
-      const reopByCat = document.getElementById('cmpReopenedByCategoryContainer');
-      const reopByCatTotal = Object.values(stats.byCategoryReopened).reduce((a, b) => a + b, 0) || 1;
-      const reopByCatEntries = Object.entries(stats.byCategoryReopened);
-      reopByCat.innerHTML = reopByCatEntries.length === 0 ? `<div class="empty-state" style="padding:14px;">لا توجد بلاغات معاد فتحها ضمن النطاق الحالي.</div>` :
-        reopByCatEntries.sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; margin-left:6px;"></span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#fee2e2; border-radius:6px; height:8px; overflow:hidden;"><div style="background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; height:100%; width:${Math.round((v / reopByCatTotal) * 100)}%;"></div></div></div>`).join('');
+      const reopByCat = el('cmpReopenedByCategoryContainer');
+      if (reopByCat) {
+        const reopByCatTotal = Object.values(stats.byCategoryReopened).reduce((a, b) => a + b, 0) || 1;
+        const reopByCatEntries = Object.entries(stats.byCategoryReopened);
+        reopByCat.innerHTML = reopByCatEntries.length === 0 ? `<div class="empty-state" style="padding:14px;">لا توجد بلاغات معاد فتحها ضمن النطاق الحالي.</div>` :
+          reopByCatEntries.sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; margin-left:6px;"></span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#fee2e2; border-radius:6px; height:8px; overflow:hidden;"><div style="background:${CMP_CATEGORY_COLORS[k] || '#94a3b8'}; height:100%; width:${Math.round((v / reopByCatTotal) * 100)}%;"></div></div></div>`).join('');
+      }
 
       // المرحلة الدراسية
-      const stageContainer = document.getElementById('cmpStageContainer');
-      const stageTotal = Object.values(stats.byStage).reduce((a, b) => a + b, 0) || 1;
-      stageContainer.innerHTML = Object.entries(stats.byStage).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:var(--tbc-petrol-light); border-radius:6px; height:8px; overflow:hidden;"><div style="background:var(--tbc-petrol); height:100%; width:${Math.round((v / stageTotal) * 100)}%;"></div></div></div>`).join('');
+      const stageContainer = el('cmpStageContainer');
+      if (stageContainer) {
+        const stageTotal = Object.values(stats.byStage).reduce((a, b) => a + b, 0) || 1;
+        stageContainer.innerHTML = Object.entries(stats.byStage).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:var(--tbc-petrol-light); border-radius:6px; height:8px; overflow:hidden;"><div style="background:var(--tbc-petrol); height:100%; width:${Math.round((v / stageTotal) * 100)}%;"></div></div></div>`).join('');
+      }
 
       // نوع المبنى/الجنس
-      const genderContainer = document.getElementById('cmpGenderContainer');
-      const genderTotal = Object.values(stats.byGender).reduce((a, b) => a + b, 0) || 1;
-      genderContainer.innerHTML = Object.entries(stats.byGender).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#fdf2f8; border-radius:6px; height:8px; overflow:hidden;"><div style="background:#db2777; height:100%; width:${Math.round((v / genderTotal) * 100)}%;"></div></div></div>`).join('');
-
-      // المدن/المكاتب
-      const cityContainer = document.getElementById('cmpCityContainer');
-      const cityEntries = Object.entries(stats.byCity).sort((a, b) => b[1] - a[1]);
-      const cityMax = cityEntries.length > 0 ? cityEntries[0][1] : 1;
-      cityContainer.innerHTML = cityEntries.map(([k, v]) => `<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:3px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#f1f5f9; border-radius:6px; height:7px; overflow:hidden;"><div style="background:var(--tbc-gold); height:100%; width:${Math.round((v / cityMax) * 100)}%;"></div></div></div>`).join('');
+      const genderContainer = el('cmpGenderContainer');
+      if (genderContainer) {
+        const genderTotal = Object.values(stats.byGender).reduce((a, b) => a + b, 0) || 1;
+        genderContainer.innerHTML = Object.entries(stats.byGender).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700; margin-bottom:4px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#fdf2f8; border-radius:6px; height:8px; overflow:hidden;"><div style="background:#db2777; height:100%; width:${Math.round((v / genderTotal) * 100)}%;"></div></div></div>`).join('');
+      }
 
       // متوسط زمن الاستجابة بالتصنيف
-      const avgContainer = document.getElementById('cmpAvgResponseByCategoryContainer');
-      avgContainer.innerHTML = `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">` +
-        Object.entries(stats.avgResponseByCategory).map(([k, v]) => `<div style="background:#f8fafc; border-radius:8px; padding:14px; text-align:center;"><div style="font-size:1.3rem; font-weight:900; color:var(--tbc-petrol-dark);">${formatDays(v)}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-top:4px;">${esc(k)}</div></div>`).join('') + `</div>`;
+      const avgContainer = el('cmpAvgResponseByCategoryContainer');
+      if (avgContainer) {
+        avgContainer.innerHTML = `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">` +
+          Object.entries(stats.avgResponseByCategory).map(([k, v]) => `<div style="background:#f8fafc; border-radius:8px; padding:14px; text-align:center;"><div style="font-size:1.3rem; font-weight:900; color:var(--tbc-petrol-dark);">${formatDays(v)}</div><div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-top:4px;">${esc(k)}</div></div>`).join('') + `</div>`;
+      }
 
-      renderTopSchoolsTable('reopened');
-      renderComplaintsHeatmap(stats.byLocation || []);
+      // أعلى المدارس (Top 20) — النسخة المكررة بتعرض تبويب "معاد فتحها" الافتراضي بس، من غير تبويبات تفاعلية،
+      // للحفاظ على البساطة في صفحة المؤشرات (التبويبات الكاملة بالتفصيل تفضل في تاب البلاغات المستقل)
+      const topTable = el('cmpTopSchoolsTable');
+      if (topTable) {
+        const tbody = topTable.querySelector('tbody');
+        const list = (stats.topSchools && stats.topSchools.reopened) || [];
+        tbody.innerHTML = list.length === 0 ? `<tr><td colspan="2" style="text-align:center; padding:20px;">لا توجد بيانات.</td></tr>` : list.map(r => `<tr><td style="font-weight:700;">${esc(r.school)}</td><td>${r.count.toLocaleString('en-US')}</td></tr>`).join('');
+      }
+
+      // الأقسام دي عمداً بتفضل بس في التاب المستقل (مش متكررة في صفحة المؤشرات) بناءً على طلب صريح
+      if (!targetPrefix) {
+        // المدن/المكاتب
+        const cityContainer = document.getElementById('cmpCityContainer');
+        const cityEntries = Object.entries(stats.byCity).sort((a, b) => b[1] - a[1]);
+        const cityMax = cityEntries.length > 0 ? cityEntries[0][1] : 1;
+        cityContainer.innerHTML = cityEntries.map(([k, v]) => `<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:3px;"><span>${esc(k)}</span><span>${v.toLocaleString('en-US')}</span></div><div style="background:#f1f5f9; border-radius:6px; height:7px; overflow:hidden;"><div style="background:var(--tbc-gold); height:100%; width:${Math.round((v / cityMax) * 100)}%;"></div></div></div>`).join('');
+
+        renderTopSchoolsTable('reopened');
+        renderComplaintsHeatmap(stats.byLocation || []);
+      }
     }
 
     let cmpHeatmapInstance = null, cmpHeatmapMarkersLayer = null;
@@ -5437,6 +5567,8 @@
     function openNewTicketModal() {
       document.getElementById('newTicketSubject').value = '';
       document.getElementById('newTicketDescription').value = '';
+      document.getElementById('newTicketImage').value = '';
+      document.getElementById('newTicketImage_preview').innerHTML = '';
       document.getElementById('newTicketModal').classList.remove('hidden');
     }
 
@@ -5444,7 +5576,12 @@
       const subject = document.getElementById('newTicketSubject').value.trim();
       const description = document.getElementById('newTicketDescription').value.trim();
       if (!subject || !description) return showAlert('يرجى تعبئة العنوان والتفاصيل.');
-      const res = await apiCall('CREATE_TICKET', { subject, description });
+      const imageInput = document.getElementById('newTicketImage');
+      let image = null;
+      if (imageInput.files && imageInput.files[0]) {
+        image = await new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(imageInput.files[0]); });
+      }
+      const res = await apiCall('CREATE_TICKET', { subject, description, image });
       if (res.status === 'success') {
         document.getElementById('newTicketModal').classList.add('hidden');
         showAlert('✓ ' + res.message);
@@ -5470,18 +5607,26 @@
           <div style="max-width:80%; background:${m.isSupport ? 'var(--tbc-petrol-light)' : '#f8fafc'}; border-radius:10px; padding:10px 14px; border:1px solid ${m.isSupport ? '#c8e2e8' : 'var(--border-subtle)'};">
             <div style="font-size:0.78rem; font-weight:900; color:${m.isSupport ? 'var(--tbc-petrol-dark)' : 'var(--text-muted)'}; margin-bottom:4px;">${esc(m.senderName)}${m.isSupport ? ' (الدعم الفني)' : ''}</div>
             <div style="font-size:0.9rem; font-weight:600; white-space:pre-wrap;">${esc(m.text)}</div>
+            ${m.imageUrl ? `<a href="${esc(m.imageUrl)}" target="_blank"><img src="${esc(m.imageUrl)}" style="max-width:180px; border-radius:8px; margin-top:8px; display:block; border:1px solid var(--border-subtle);"></a>` : ''}
             <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px;">${new Date(m.ts).toLocaleString('ar-SA-u-ca-gregory')}</div>
           </div>
         </div>`).join('');
       document.getElementById('ticketDetailMessages').innerHTML = msgsHtml;
       document.getElementById('ticketReplyText').value = '';
+      document.getElementById('ticketReplyImage').value = '';
+      document.getElementById('ticketReplyImage_preview').innerHTML = '';
       document.getElementById('ticketDetailModal').classList.remove('hidden');
     }
 
     async function submitTicketReply() {
       const text = document.getElementById('ticketReplyText').value.trim();
       if (!text) return showAlert('يرجى كتابة الرد أولاً.');
-      const res = await apiCall('REPLY_TICKET', { ticketId: activeTicketId, text });
+      const imageInput = document.getElementById('ticketReplyImage');
+      let image = null;
+      if (imageInput.files && imageInput.files[0]) {
+        image = await new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(imageInput.files[0]); });
+      }
+      const res = await apiCall('REPLY_TICKET', { ticketId: activeTicketId, text, image });
       if (res.status === 'success') {
         await pullFromCloud();
         openTicketDetail(activeTicketId);
