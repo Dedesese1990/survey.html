@@ -827,6 +827,7 @@
               <label for="complaintsExcelInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع ملف البلاغات</label>
               <input type="file" id="complaintsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsExcelUpload(event)">
               <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:16px; font-size:0.95rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
+              <button class="btn btn-outline hidden" id="complaintsDedupeBtn" style="padding:16px; font-size:0.95rem;" onclick="dedupeAllComplaints()">🧹 تنظيف التكرارات</button>
             </div>
             <div id="complaintsImportProgress" class="hidden" style="margin-top:16px;">
               <div style="background:#f1f5f9; border-radius:8px; height:14px; overflow:hidden;"><div id="complaintsImportProgressBar" style="background:var(--tbc-petrol); height:100%; width:0%; transition:width 0.3s;"></div></div>
@@ -1678,7 +1679,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
-      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESET_PASSWORD_WITH_CODE: "جاري إعادة تعيين كلمة المرور...", REGISTER_REQUEST: "جاري إرسال طلب التسجيل..."
     };
@@ -4277,6 +4278,7 @@
       const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       document.getElementById('complaintsImportBox').classList.toggle('hidden', !isPlanning);
       document.getElementById('complaintsClearAllBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
+      document.getElementById('complaintsDedupeBtn')?.classList.toggle('hidden', !isPlanning);
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
@@ -4384,15 +4386,12 @@
           }
 
           const totalBatches = Math.ceil(allRows.length / COMPLAINTS_BATCH_SIZE);
-          let totalAdded = 0, totalLinked = 0, finalTotalRows = null;
+          let totalAdded = 0, totalLinked = 0;
           for (let b = 0; b < totalBatches; b++) {
             const batchRows = allRows.slice(b * COMPLAINTS_BATCH_SIZE, (b + 1) * COMPLAINTS_BATCH_SIZE);
-            const isLastBatch = b === totalBatches - 1;
             const pct = Math.round(((b + 1) / totalBatches) * 100);
             progressBar.style.width = pct + '%';
-            progressText.innerText = isLastBatch
-              ? `جاري إنهاء الاستيراد ودمج أي تكرارات... (${allRows.length} بلاغ إجمالاً)`
-              : `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
+            progressText.innerText = `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
             // فاصل بسيط قبل كل دفعة (عدا الأولى): إرسال عشرات الطلبات المتتالية لنفس رابط Google Apps Script
             // من غير أي فاصل بينها بيشبه "إغراق بالطلبات" في نظر جوجل، فبيحصل تأخير/تجاهل للرد أحياناً حتى لو
             // الخادم نفذ الكود فعلياً في أقل من ثانية (تأكدنا من ده مباشرة من سجل Executions). الفاصل ده بسيط
@@ -4403,19 +4402,19 @@
             // بدل ما نلغي الاستيراد كله بسبب ثوانٍ زحمة عابرة، نعيد محاولة نفس الدفعة بس (لا نكرر غيرها) عدة مرات.
             let res = null;
             for (let attempt = 0; attempt <= 2; attempt++) {
-              res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isLastBatch }, isLastBatch ? { timeoutMs: 90000 } : {});
+              res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows });
               const isLockContention = res.status !== 'success' && /مهلة التأمين|Lock timeout|lock for too long/i.test(res.message || '');
               if (res.status === 'success' || !isLockContention || attempt === 2) break;
               progressText.innerText = `ازدحام مؤقت على الخادم — إعادة محاولة الدفعة ${b + 1} (محاولة ${attempt + 2})...`;
               await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
             }
-            if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; if (res.finalTotalRows != null) finalTotalRows = res.finalTotalRows; }
+            if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; }
             else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
           }
 
           progressBox.classList.add('hidden');
-          logAudit('COMPLAINTS_IMPORT', `استيراد بلاغات: ${allRows.length} صف من الملف — الإجمالي النهائي بعد دمج التكرارات: ${finalTotalRows ?? '؟'}`);
-          showAlert(`✓ اكتمل استيراد الملف (${allRows.length} صف).\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)\n📊 الإجمالي النهائي في النظام بعد دمج أي تكرارات: ${finalTotalRows ?? '—'}`);
+          logAudit('COMPLAINTS_IMPORT', `استيراد بلاغات: ${allRows.length} صف من الملف (${totalLinked} مرتبط بمدرسة)`);
+          showAlert(`✓ اكتمل استيراد الملف (${allRows.length} صف).\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)\n\nملحوظة: لو الملف فيه بلاغات مكررة المعرّف، استخدم زرار "تنظيف التكرارات" لدمجها.`);
           loadComplaintsStats();
         } catch (err) { progressBox.classList.add('hidden'); showAlert('حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد. (' + err.message + ')'); }
         finally { complaintsImportInProgress = false; }
@@ -4430,6 +4429,17 @@
       if (!confirmed) return;
       const res = await apiCall('CLEAR_ALL_COMPLAINTS', {});
       if (res.status === 'success') { logAudit('COMPLAINTS_CLEAR', 'مسح كل بيانات البلاغات'); showAlert('✓ تم مسح كل بيانات البلاغات.'); loadComplaintsStats(); }
+      else showAlert(esc(res.message));
+    }
+
+    // خطوة منفصلة عن الاستيراد نفسه: تدمج أي بلاغات تكرر معرّفها (يفوز آخر ظهور). مفصولة عمداً عشان تُشغَّل
+    // وقت ما المستخدم مرتاح ومستعد ينتظر، بدل ما تكون مربوطة بتوقيت ضيق جوه عملية الاستيراد الحرجة.
+    async function dedupeAllComplaints() {
+      if (complaintsImportInProgress) return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.');
+      const confirmed = await showConfirm('هتفحص كل البلاغات وتدمج أي معرّف مكرر (تفضل آخر نسخة). العملية دي ممكن تاخد دقيقة أو أكتر مع عدد بلاغات كبير — سيب الصفحة مفتوحة لحد ما تخلص. متابعة؟');
+      if (!confirmed) return;
+      const res = await apiCall('DEDUPE_COMPLAINTS', {}, { timeoutMs: 120000 });
+      if (res.status === 'success') { logAudit('COMPLAINTS_DEDUPE', res.message); showAlert('✓ ' + res.message); loadComplaintsStats(); }
       else showAlert(esc(res.message));
     }
 
