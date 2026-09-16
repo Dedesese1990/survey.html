@@ -201,7 +201,8 @@
     .city-rank-value { font-size: 1.05rem; font-weight: 900; color: var(--tbc-petrol); font-variant-numeric: tabular-nums; }
 
     /* بلاطات المدارس/المباني: بلاطة رئيسية بتدرّج لوني (المباني) + بلاطات صغيرة بأيقونات دائرية ملوّنة */
-    .exec-tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .exec-tile-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+    @media (max-width: 700px) { .exec-tile-grid { grid-template-columns: repeat(2, 1fr); } }
     .exec-tile-hero { grid-column: 1 / -1; background: linear-gradient(135deg, var(--tbc-petrol-dark), var(--tbc-petrol)); border-radius: 14px; padding: 20px 20px 20px 60px; display: flex; align-items: center; justify-content: center; gap: 14px; }
     .exec-tile-hero-icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; }
     .exec-tile-hero-label { font-size: 0.75rem; color: #dcecf0; margin-bottom: 2px; }
