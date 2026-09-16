@@ -1713,12 +1713,12 @@
       setTimeout(() => { el.classList.remove('gap-visible'); }, 450);
     }
 
-    async function apiCall(actionName, payloadData = {}) {
+    async function apiCall(actionName, payloadData = {}, options = {}) {
       updateSyncStatus('syncing');
       const showProgress = SILENT_BACKGROUND_ACTIONS.indexOf(actionName) === -1;
       if (showProgress) startActionProgress(actionName);
       try {
-        const data = await callBackend({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData });
+        const data = await callBackend({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData }, options);
         if(data.message && data.message.includes("Unauthorized")) forceLogout();
         updateSyncStatus('connected'); return data;
       } catch(e) {
@@ -4351,20 +4351,24 @@
           }
 
           const totalBatches = Math.ceil(allRows.length / COMPLAINTS_BATCH_SIZE);
-          let totalAdded = 0, totalUpdated = 0, totalLinked = 0;
+          let totalAdded = 0, totalLinked = 0, finalTotalRows = null;
           for (let b = 0; b < totalBatches; b++) {
             const batchRows = allRows.slice(b * COMPLAINTS_BATCH_SIZE, (b + 1) * COMPLAINTS_BATCH_SIZE);
+            const isLastBatch = b === totalBatches - 1;
             const pct = Math.round(((b + 1) / totalBatches) * 100);
             progressBar.style.width = pct + '%';
-            progressText.innerText = `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
-            const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows });
-            if (res.status === 'success') { totalAdded += res.added; totalUpdated += res.updated; totalLinked += res.linked; }
+            progressText.innerText = isLastBatch
+              ? `جاري إنهاء الاستيراد ودمج أي تكرارات... (${allRows.length} بلاغ إجمالاً)`
+              : `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
+            // الدفعة الأخيرة بتعمل خطوة إضافية (قراءة الشيت كله ودمج التكرارات مرة واحدة)، فمهلة انتظارها أطول من العادي
+            const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isLastBatch }, isLastBatch ? { timeoutMs: 90000 } : {});
+            if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; if (res.finalTotalRows != null) finalTotalRows = res.finalTotalRows; }
             else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
           }
 
           progressBox.classList.add('hidden');
-          logAudit('COMPLAINTS_IMPORT', `استيراد بلاغات: ${allRows.length} صف (${totalAdded} جديد، ${totalUpdated} محدَّث، ${totalLinked} مرتبط بمدرسة)`);
-          showAlert(`✓ تم استيراد ${allRows.length} بلاغ بنجاح.\n🆕 جديد: ${totalAdded}\n🔄 محدَّث: ${totalUpdated}\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)`);
+          logAudit('COMPLAINTS_IMPORT', `استيراد بلاغات: ${allRows.length} صف من الملف — الإجمالي النهائي بعد دمج التكرارات: ${finalTotalRows ?? '؟'}`);
+          showAlert(`✓ اكتمل استيراد الملف (${allRows.length} صف).\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)\n📊 الإجمالي النهائي في النظام بعد دمج أي تكرارات: ${finalTotalRows ?? '—'}`);
           loadComplaintsStats();
         } catch (err) { progressBox.classList.add('hidden'); showAlert('حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد. (' + err.message + ')'); }
         finally { complaintsImportInProgress = false; }
