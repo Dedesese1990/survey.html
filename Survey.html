@@ -1646,10 +1646,16 @@
         try {
           const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), signal: controller.signal });
           clearTimeout(timer);
+          // Google Apps Script بيرجّع أخطاءه المنطقية جوه الـ JSON نفسه (status:"error") مش عبر HTTP status code،
+          // لكن لو حصل خطأ حقيقي على مستوى البنية التحتية (زي 500 من جوجل نفسها)، نوثّقه بدل ما نتجاهله بصمت.
+          if (!response.ok) { const httpErr = new Error('HTTP_' + response.status); httpErr.httpStatus = response.status; throw httpErr; }
           return await response.json();
         } catch (err) {
           clearTimeout(timer);
           lastErr = err;
+          // تسجيل تقني في الـ Console فقط (اسم الأكشن ونوع الخطأ) بدون أي بيانات حساسة (توكن/باسورد) — يساعد
+          // في التشخيص السريع من Console بدل ما يكون كل شيء رسالة عامة واحدة مبهمة.
+          console.warn('[callBackend] فشلت المحاولة ' + (attempt + 1) + ' من ' + (retries + 1) + ' لطلب "' + (payload && payload.action) + '":', (err && err.name) + (err && err.message ? (' — ' + err.message) : ''));
           if (attempt < retries) { await new Promise(r => setTimeout(r, 900 * (attempt + 1))); continue; }
         }
       }
@@ -1713,7 +1719,20 @@
         const data = await callBackend({ token: SECURE_API_TOKEN, action: actionName, sessionToken: currentSessionToken, payload: payloadData });
         if(data.message && data.message.includes("Unauthorized")) forceLogout();
         updateSyncStatus('connected'); return data;
-      } catch(e) { updateSyncStatus('connected'); return { status: "error", message: "تعذر الاتصال بالخادم. يرجى التأكد من الإنترنت والمحاولة مجدداً." }; }
+      } catch(e) {
+        updateSyncStatus('connected');
+        // نميّز نوع العطل الحقيقي بدل رسالة واحدة عامة تلخبط التشخيص — بدون كشف أي تفاصيل تقنية حساسة للمستخدم،
+        // مع تسجيل التفاصيل الكاملة في Console (أعلاه في callBackend) لأي مطوّر يحتاج يشخّص المشكلة لاحقاً.
+        let msg = "تعذر الاتصال بالخادم. يرجى التأكد من الإنترنت والمحاولة مجدداً.";
+        if (e && e.name === 'AbortError') {
+          msg = "استغرق الخادم وقتاً أطول من المعتاد في الرد (غالباً بسبب ضغط عالٍ حالياً). يرجى المحاولة مرة أخرى خلال لحظات.";
+        } else if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+          msg = "يبدو أنك غير متصل بالإنترنت حالياً. يرجى التأكد من الاتصال والمحاولة مجدداً.";
+        } else if (e && e.httpStatus) {
+          msg = "حدث خطأ غير متوقع من الخادم (رمز " + e.httpStatus + "). يرجى المحاولة مرة أخرى، ولو استمرت المشكلة تواصل مع الدعم الفني.";
+        }
+        return { status: "error", message: msg };
+      }
       finally { if (showProgress) finishActionProgress(); }
     }
 
