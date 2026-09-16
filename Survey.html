@@ -224,6 +224,23 @@
 
           <button id="helpGuideBtn" class="hidden" onclick="openUserGuidePdf()" title="دليل استخدام النظام حسب صلاحيتك" style="width:38px; height:38px; border-radius:50%; background:var(--tbc-petrol-light); border:1.5px solid var(--border-subtle); color:var(--tbc-petrol-dark); font-weight:900; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">؟</button>
 
+          <div id="notificationBellContainer" class="hidden" style="position:relative;">
+            <button onclick="toggleNotificationPanel(event)" title="الإشعارات" style="width:38px; height:38px; border-radius:50%; background:var(--tbc-petrol-light); border:1.5px solid var(--border-subtle); color:var(--tbc-petrol-dark); font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative;">
+              🔔
+              <span id="notificationUnreadBadge" class="hidden" style="position:absolute; top:-4px; left:-4px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:900; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 4px;">0</span>
+            </button>
+            <div id="notificationPanel" class="profile-dropdown-menu hidden" style="width:340px; max-height:440px; display:flex; flex-direction:column;">
+              <div class="profile-menu-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="profile-user-name">🔔 الإشعارات</div>
+                <span onclick="markAllNotificationsRead()" style="font-size:0.78rem; font-weight:800; color:var(--tbc-petrol); cursor:pointer;">تعليم الكل كمقروء</span>
+              </div>
+              <div id="notificationListContainer" style="overflow-y:auto; flex:1; padding:8px;"></div>
+              <div id="notificationBroadcastBtnWrap" class="hidden" style="padding:10px; border-top:1px solid var(--border-subtle);">
+                <button class="btn btn-gold" style="width:100%; font-size:0.85rem; padding:10px;" onclick="openBroadcastModal()">📢 إرسال تعميم / إشعار جديد</button>
+              </div>
+            </div>
+          </div>
+
           <div id="profileDropdownContainer" class="hidden" style="position:relative;">
             <div class="profile-btn" onclick="window.toggleProfileMenu(event)">
               <span>👤</span>
@@ -241,6 +258,9 @@
                 </button>
                 <button class="profile-menu-item hidden" id="delegateMenuItem" onclick="openDelegateModal(); window.closeProfileMenu();">
                   <span>🔄</span> <span>تفويض صلاحية الاعتماد</span>
+                </button>
+                <button class="profile-menu-item hidden" id="permissionsReportMenuItem" onclick="openPermissionsReport(); window.closeProfileMenu();">
+                  <span>📊</span> <span>تقرير الصلاحيات</span>
                 </button>
                 <button class="profile-menu-item logout-item" onclick="logout(); window.closeProfileMenu();">
                   <span>🚪</span> <span>تسجيل الخروج من المنظومة</span>
@@ -260,7 +280,7 @@
       <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">بوابة الحصر الشامل لجميع عمليات المكتب الإقليمي بالشرقية</p>
       
       <div class="form-group">
-        <input type="text" id="loginUsername" placeholder="الرمز الوظيفي (مثال: admin)">
+        <input type="text" id="loginUsername" placeholder="الرمز الوظيفي أو البريد الإلكتروني">
       </div>
       <div class="form-group" style="margin-bottom:10px;">
         <input type="password" id="loginPassword" placeholder="كلمة المرور" onkeydown="if(event.key === 'Enter') handleLogin();">
@@ -1006,7 +1026,7 @@
                 </div>
                 <small style="color:var(--text-muted); font-weight:600;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_SUPPORT">الدعم الفني</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_SUPPORT">الدعم الفني</option><option value="ROLE_COMPLAINTS_SUPERVISOR">مشرف البلاغات</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
 
@@ -1152,6 +1172,42 @@
       <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> الأحساء</label>
       <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="cmpBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onCmpBranchFilterChange()" style="width:20px; height:20px;"> حفر الباطن</label>
       <button class="btn btn-petrol" style="width:100%;" onclick="document.getElementById('cmpBranchFilterPanel').classList.add('hidden')">تم ✓</button>
+    </div>
+  </div>
+
+  <div id="broadcastModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.3rem;">📢 إرسال إشعار / تعميم</h3>
+      <div class="form-group">
+        <label>المستهدَفون *</label>
+        <select id="broadcastTargetType" onchange="onBroadcastTargetTypeChange()">
+          <option value="all">📢 جميع المستخدمين (تعميم عام)</option>
+          <option value="role">🏷️ نوع حسابات معيّن</option>
+          <option value="user">👤 مستخدم محدد</option>
+        </select>
+      </div>
+      <div class="form-group hidden" id="broadcastRoleGroup">
+        <label>نوع الحساب</label>
+        <select id="broadcastTargetRole">
+          <option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option>
+          <option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option>
+          <option value="ROLE_SUPPORT">الدعم الفني</option>
+          <option value="ROLE_COMPLAINTS_SUPERVISOR">مشرف البلاغات</option>
+          <option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option>
+          <option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option>
+          <option value="ROLE_INSPECTOR">مشرف ميداني</option>
+        </select>
+      </div>
+      <div class="form-group hidden" id="broadcastUserGroup">
+        <label>المستخدم</label>
+        <select id="broadcastTargetUser"></select>
+      </div>
+      <div class="form-group"><label>عنوان الإشعار *</label><input type="text" id="broadcastTitle"></div>
+      <div class="form-group"><label>نص الإشعار *</label><textarea id="broadcastMessage" rows="4"></textarea></div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:16px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="submitBroadcast()">إرسال ✓</button>
+        <button class="btn btn-outline" onclick="document.getElementById('broadcastModal').classList.add('hidden')">إلغاء</button>
+      </div>
     </div>
   </div>
 
@@ -1343,8 +1399,8 @@
       <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">🔑 استعادة كلمة المرور</h3>
 
       <div id="fpStep1">
-        <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">أدخل الرمز الوظيفي، وسنرسل رمز تحقق مكوّن من 6 أرقام إلى بريدك الإلكتروني المسجّل بالنظام.</p>
-        <div class="form-group"><label>الرمز الوظيفي</label><input type="text" id="fpUsername" onkeydown="if(event.key==='Enter') requestResetCode();"></div>
+        <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:18px;">أدخل الرمز الوظيفي أو بريدك الإلكتروني المسجّل، وسنرسل رمز تحقق مكوّن من 6 أرقام إلى بريدك الإلكتروني المسجّل بالنظام.</p>
+        <div class="form-group"><label>الرمز الوظيفي أو البريد الإلكتروني</label><input type="text" id="fpUsername" onkeydown="if(event.key==='Enter') requestResetCode();"></div>
         <button class="btn btn-petrol" style="width:100%;" id="fpRequestBtn" onclick="requestResetCode()">إرسال رمز التحقق ✉️</button>
       </div>
 
@@ -1464,7 +1520,7 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_SUPPORT: "الدعم الفني", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_SUPPORT: "الدعم الفني", ROLE_COMPLAINTS_SUPERVISOR: "مشرف البلاغات", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
     // "إدارة المكتب الفرعي" دور رابع أعلى تنظيمياً من "مدير إشراف"، لكن بنفس صلاحياته بالضبط —
     // فيُعامَل بنفس المنطق في كل مكان عبر هذا الثابت المشترك بدل تكرار الشرط يدوياً.
@@ -1473,6 +1529,37 @@
     // تُراجَع الصلاحيات وتُخصَّص لاحقاً) — كل مكان يفحص "هل المستخدم إدارة تخطيط؟" يفحص هذه القائمة بدلاً من
     // الدور الواحد، فيسهل تضييق النطاق مستقبلاً من مكان واحد فقط.
     const FULL_ADMIN_ROLES = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR', 'ROLE_SUPPORT'];
+    // "مشرف البلاغات": يدير البلاغات والمدارس، ممنوع من نماذج/سجلات/إحصائيات عمليات الحصر الميداني
+    const COMPLAINTS_SUPERVISOR_ROLE = 'ROLE_COMPLAINTS_SUPERVISOR';
+    const SCHOOLS_MANAGE_ROLES = FULL_ADMIN_ROLES.concat([COMPLAINTS_SUPERVISOR_ROLE]);
+    const ALL_ROLES_ORDERED = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR', 'ROLE_SUPPORT', 'ROLE_COMPLAINTS_SUPERVISOR', 'ROLE_BRANCH_OFFICE', 'ROLE_SUPERVISION_LEAD', 'ROLE_INSPECTOR'];
+
+    // مصفوفة صلاحيات مركزية — مصدر واحد للحقيقة: تتحكم فعلياً في إظهار التابات (عبر loginSuccess)، وتُستخدم لتوليد
+    // تقرير مقارنة الصلاحيات تلقائياً. أي تعديل هنا ينعكس في الاثنين معاً في نفس اللحظة.
+    const PERMISSIONS_MATRIX = {
+      tabs: [
+        { key: 'analytics', label: '📈 لوحة المؤشرات والتحليلات', roles: 'ALL' },
+        { key: 'surveys', label: '📋 نماذج وعمليات الحصر', roles: ALL_ROLES_ORDERED.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
+        { key: 'records', label: '📑 السجلات والاعتمادات', roles: ALL_ROLES_ORDERED.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
+        { key: 'schools', label: '🏫 إدارة المدارس والبيانات', roles: 'ALL', note: 'المحتوى يختلف حسب الدور: إدارة كاملة للأدوار الإدارية ومشرف البلاغات، وعرض المدارس المُسندة فقط لبقية الأدوار' },
+        { key: 'complaints', label: '🚨 البلاغات', roles: 'ALL', note: 'الاستيراد واعتماد الطلبات للأدوار الإدارية ومشرف البلاغات فقط؛ الباقي يرى إحصائيات نطاقه' },
+        { key: 'users', label: '👥 إدارة الهيكل والمستخدمين', roles: FULL_ADMIN_ROLES },
+        { key: 'auditLog', label: '🧾 سجل التدقيق', roles: FULL_ADMIN_ROLES },
+        { key: 'support', label: '🎫 الدعم الفني (تذاكر)', roles: 'ALL', note: 'كل مستخدم يرى تذاكره فقط، إلا الأدوار الإدارية والدعم الفني اللي تشوف كل التذاكر' },
+      ],
+      actions: [
+        { key: 'approveReports', label: 'اعتماد / رفض التقارير', roles: MANAGER_ROLES.concat(FULL_ADMIN_ROLES) },
+        { key: 'manageUsers', label: 'إضافة / حذف / تعديل المستخدمين', roles: FULL_ADMIN_ROLES },
+        { key: 'manageSchools', label: 'إدارة المدارس (إضافة / حذف / استيراد)', roles: SCHOOLS_MANAGE_ROLES },
+        { key: 'importComplaints', label: 'استيراد بيانات البلاغات', roles: SCHOOLS_MANAGE_ROLES },
+        { key: 'manageSurveys', label: 'إنشاء / حذف نماذج الحصر', roles: FULL_ADMIN_ROLES },
+        { key: 'sendBroadcast', label: 'إرسال إشعار / تعميم', roles: FULL_ADMIN_ROLES },
+        { key: 'delegateApproval', label: 'تفويض صلاحية الاعتماد', roles: FULL_ADMIN_ROLES.concat(MANAGER_ROLES) },
+        { key: 'viewPermissionsReport', label: 'عرض تقرير الصلاحيات هذا', roles: ['ROLE_PLANNING', 'ROLE_SUPPORT'] },
+      ]
+    };
+    function roleHasAccess(entryRoles, role) { return entryRoles === 'ALL' || entryRoles.includes(role); }
+
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
     function resolveInspectorUser(text) {
@@ -1491,7 +1578,7 @@
       return sch.inspector === user.username || sch.inspector === user.fullName;
     }
 
-    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} }; let pendingRegistrations = []; let pendingSchoolRequests = []; let tickets = [];
+    let usersList = []; let surveys = []; let responses = []; let schoolDataWrapper = { list: [], logs: [], settings: {} }; let pendingRegistrations = []; let pendingSchoolRequests = []; let tickets = []; let notifications = [];
     let currentUser = null; let currentSessionToken = localStorage.getItem('tbc_session_token');
     
     // Globals
@@ -1729,12 +1816,20 @@
       document.getElementById('activeUserName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserFullName').innerText = esc(currentUser.fullName);
       document.getElementById('menuUserRole').innerText = esc(ROLE_LABELS[currentUser.role] || currentUser.role);
-      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role); // "إدارة القطاع الشرقي" لها نفس صلاحيات إدارة التخطيط حالياً
+      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role); // "إدارة القطاع الشرقي" و"الدعم الفني" لهم نفس صلاحيات إدارة التخطيط حالياً
       const canDelegate = isPlanning || MANAGER_ROLES.includes(currentUser.role);
-      document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabUsers')?.classList.toggle('hidden', !isPlanning); document.getElementById('tabSchools')?.classList.remove('hidden');
-      document.getElementById('tabAuditLog')?.classList.toggle('hidden', !isPlanning);
+      document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning);
+      // إظهار/إخفاء كل تاب حسب مصفوفة الصلاحيات المركزية (مصدر واحد للحقيقة يغذّي أيضاً تقرير الصلاحيات)
+      PERMISSIONS_MATRIX.tabs.forEach(t => {
+        document.getElementById('tab' + t.key.charAt(0).toUpperCase() + t.key.slice(1))?.classList.toggle('hidden', !roleHasAccess(t.roles, currentUser.role));
+      });
       document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
       document.getElementById('adminFilterSection')?.classList.toggle('hidden', !canDelegate);
+      document.getElementById('notificationBellContainer')?.classList.remove('hidden');
+      document.getElementById('notificationBroadcastBtnWrap')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'sendBroadcast').roles, currentUser.role));
+      document.getElementById('permissionsReportMenuItem')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'viewPermissionsReport').roles, currentUser.role));
+      // "مشرف البلاغات": يرى البلاغات والمدارس والمشرفين، ولا يرى قسم عمليات الحصر داخل لوحة المؤشرات إطلاقاً
+      document.querySelector('.analytics-subnav-btn[data-key="operations"]')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.tabs.find(t => t.key === 'surveys').roles, currentUser.role));
       pullFromCloud(); showTab('analytics');
       logAudit('LOGIN', `تسجيل دخول`);
     }
@@ -1743,7 +1838,7 @@
       if(!currentSessionToken) return;
       const resData = await apiCall("PULL_DATA");
       if (resData.status === "success") {
-        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || []; pendingSchoolRequests = resData.data.pendingSchoolRequests || []; tickets = resData.data.tickets || [];
+        if(resData.data.surveys) surveys = resData.data.surveys; if(resData.data.responses) responses = resData.data.responses; if(resData.data.schools) schoolDataWrapper = resData.data.schools; if(resData.data.users) usersList = resData.data.users; pendingRegistrations = resData.data.pendingRegistrations || []; pendingSchoolRequests = resData.data.pendingSchoolRequests || []; tickets = resData.data.tickets || []; notifications = resData.data.notifications || []; updateNotificationBadge();
         if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
         if (!schoolDataWrapper.settings) schoolDataWrapper.settings = {};
         if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
@@ -1761,9 +1856,12 @@
     function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); document.getElementById('helpGuideBtn')?.classList.add('hidden'); }
     function forceLogout() { showAlert("انتهت الجلسة."); logout(); }
 
-    window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); };
+    window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('notificationPanel')?.classList.add('hidden'); document.getElementById('profileMenu').classList.toggle('hidden'); };
     window.closeProfileMenu = function() { document.getElementById('profileMenu')?.classList.add('hidden'); };
-    document.addEventListener('click', function(e) { const profM = document.getElementById('profileMenu'); const profC = document.getElementById('profileDropdownContainer'); if (profM && !profM.classList.contains('hidden') && profC && !profC.contains(e.target)) profM.classList.add('hidden'); });
+    document.addEventListener('click', function(e) {
+      const profM = document.getElementById('profileMenu'); const profC = document.getElementById('profileDropdownContainer'); if (profM && !profM.classList.contains('hidden') && profC && !profC.contains(e.target)) profM.classList.add('hidden');
+      const notifP = document.getElementById('notificationPanel'); const notifC = document.getElementById('notificationBellContainer'); if (notifP && !notifP.classList.contains('hidden') && notifC && !notifC.contains(e.target)) notifP.classList.add('hidden');
+    });
 
     function showTab(tab) {
       if(!currentUser) return;
@@ -3219,10 +3317,49 @@
     }
     function closeUserGuide() { document.getElementById('userGuideOverlay').classList.add('hidden'); }
 
+    // تقرير مقارنة صلاحيات كل أنواع الحسابات — يُبنى بالكامل من PERMISSIONS_MATRIX (مصدر الحقيقة الوحيد)،
+    // فأي تعديل على الصلاحيات الفعلية في المصفوفة ينعكس هنا تلقائياً في نفس اللحظة
+    function openPermissionsReport() {
+      const roleCols = ALL_ROLES_ORDERED.map(r => `<th style="min-width:110px;">${esc(ROLE_LABELS[r] || r)}</th>`).join('');
+      function buildRows(entries) {
+        return entries.map(e => `<tr>
+          <td style="text-align:right; font-weight:800; background:#f8fafc;">${esc(e.label)}${e.note ? `<div style="font-size:0.72rem; color:var(--text-muted); font-weight:600; margin-top:3px;">${esc(e.note)}</div>` : ''}</td>
+          ${ALL_ROLES_ORDERED.map(r => `<td style="text-align:center; ${roleHasAccess(e.roles, r) ? 'color:#10b981; font-size:1.1rem;' : 'color:#cbd5e1;'}">${roleHasAccess(e.roles, r) ? '✅' : '➖'}</td>`).join('')}
+        </tr>`).join('');
+      }
+      const reportHtml = `
+        <style>
+          .perm-report * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
+          .perm-report { color:#1f333a; font-size:13px; line-height:1.6; }
+          .perm-report .header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+          .perm-report .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; }
+          .perm-report table { width:100%; border-collapse:collapse; font-size:12.5px; }
+          .perm-report th, .perm-report td { border:1px solid #cbd5e1; padding:10px; }
+          .perm-report th { background:#37889b; color:#fff; font-weight:800; }
+          .perm-report h4 { color:#276270; font-size:15px; margin:22px 0 10px; }
+        </style>
+        <div class="perm-report">
+          <div class="header">
+            <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
+            <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">📊 تقرير مقارنة صلاحيات الحسابات</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">هذا التقرير يُولَّد تلقائياً من إعدادات الصلاحيات الفعلية في النظام — أي تعديل مستقبلي على الصلاحيات ينعكس هنا تلقائياً.</p>
+          <h4>🗂️ الوصول للتابات الرئيسية</h4>
+          <div style="overflow-x:auto;"><table><thead><tr><th style="text-align:right;">التاب</th>${roleCols}</tr></thead><tbody>${buildRows(PERMISSIONS_MATRIX.tabs)}</tbody></table></div>
+          <h4>🔐 الصلاحيات التفصيلية</h4>
+          <div style="overflow-x:auto;"><table><thead><tr><th style="text-align:right;">الصلاحية</th>${roleCols}</tr></thead><tbody>${buildRows(PERMISSIONS_MATRIX.actions)}</tbody></table></div>
+        </div>`;
+      document.getElementById('userGuideContent').innerHTML = reportHtml;
+      document.getElementById('userGuideOverlay').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
     // عرض/طباعة تقرير واحد بشكل نهائي (بديل نافذة المراجعة بمجرد اعتماد التقرير، لأن الاعتماد/الرفض لم يعودا مطلوبين)
     // يصدّر لوحة المؤشرات الحالية بالكامل كصفحة قابلة للطباعة/الحفظ كـ PDF — يعيد استخدام نفس المحتوى المعروض
     // فعلياً على الشاشة (بما فيه فلتر النموذج المختار حالياً) بدل إعادة حساب كل شيء من الصفر.
-    function exportAnalyticsPDF() {
+    async function exportAnalyticsPDF() {
+      await pullFromCloud();
+      refreshAnalyticsDashboard(false);
       const roleLabel = ROLE_LABELS[currentUser.role] || currentUser.role;
       const surveyFilterEl = document.getElementById('analyticsSurveyFilter');
       const surveyFilterText = surveyFilterEl ? surveyFilterEl.options[surveyFilterEl.selectedIndex].text : '';
@@ -3308,8 +3445,9 @@
       </div>`;
     }
 
-    function printSingleReportPDF(reportId) {
-      const rep = responses.find(r => r.id === reportId); if (!rep) return showAlert('التقرير غير موجود.');
+    async function printSingleReportPDF(reportId) {
+      await pullFromCloud();
+      const rep = responses.find(r => r.id === reportId); if (!rep) return showAlert('التقرير غير موجود (ربما تم حذفه).');
       const schInfo = schoolDataWrapper.list.find(s => s.name === rep.school);
       const minNoTxt = (schInfo && schInfo.minNo) ? ` [${esc(schInfo.minNo)}]` : '';
 
@@ -3322,12 +3460,14 @@
         }
       }
 
-      const w = window.open('', '_blank');
-      w.document.write(`<html lang="ar" dir="rtl"><head><title>تقرير معتمد - ${esc(rep.school)}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        <style>* { font-family:'Tajawal',sans-serif; box-sizing:border-box; } body { margin:0; padding:25px; color:#1f333a; background:#f4f7f9; font-size:13px; line-height:1.6; } .header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; } .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; } @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }</style>
-        </head><body>
-        <div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير / حفظ PDF</button></div>
+      const reportHtml = `
+        <style>
+          .pdf-report * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
+          .pdf-report { color:#1f333a; font-size:13px; line-height:1.6; }
+          .pdf-report .header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+          .pdf-report .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; }
+        </style>
+        <div class="pdf-report">
         <div class="header">
           <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
           <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">✅ تقرير حصر معتمد</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
@@ -3345,8 +3485,11 @@
           <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:13px;"><tbody>${rows}</tbody></table>
           ${imgs ? `<div style="font-weight:900; color:#276270; font-size:13px; margin-bottom:8px;">التوثيق المصور:</div><div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">${imgs}</div>` : ''}
         </div>
-        </body></html>`);
-      w.document.close();
+        </div>`;
+
+      document.getElementById('userGuideContent').innerHTML = reportHtml;
+      document.getElementById('userGuideOverlay').classList.remove('hidden');
+      window.scrollTo(0, 0);
     }
 
     // ================= نظام التصدير المتقدم (فلاتر متعددة: عملية الحصر + المكتب الفرعي + المشرف + المدرسة) =================
@@ -3413,7 +3556,8 @@
       return parts.join(' | ');
     }
 
-    function runAdvancedExportPDF() {
+    async function runAdvancedExportPDF() {
+      await pullFromCloud();
       const list = getAdvancedExportFilteredResponses();
       if (list.length === 0) return showAlert('لا توجد تقارير مطابقة لهذه الفلاتر.');
       const filterSummary = buildExportFilterSummaryText();
@@ -3460,12 +3604,18 @@
         </div>`;
       });
 
-      const w = window.open('', '_blank');
-      w.document.write(`<html lang="ar" dir="rtl"><head><title>تقرير مخصص - بوابة الحصر الشامل</title>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        <style>* { font-family:'Tajawal',sans-serif; box-sizing:border-box; } body { margin:0; padding:25px; color:#1f333a; background:#f4f7f9; font-size:13px; line-height:1.6; } .header { border-bottom:3px solid #37889b; padding-bottom:14px; margin-bottom:20px; } .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; } .box { background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; display:inline-block; margin:6px; width:170px; text-align:center; } table.brk { width:100%; border-collapse:collapse; margin-top:10px; font-size:12px; } table.brk th, table.brk td { border:1px solid #cbd5e1; padding:8px; text-align:right; } table.brk th { background:#37889b; color:#fff; } @media print { .no-print{display:none!important;} @page{size:A4; margin:10mm;} body{background:#fff;} }</style>
-        </head><body>
-        <div class="no-print" style="margin-bottom:20px; text-align:left;"><button onclick="window.print()" style="background:#37889b; color:#fff; border:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px; cursor:pointer;">🖨️ طباعة التقرير / حفظ PDF</button></div>
+      const reportHtml = `
+        <style>
+          .pdf-report * { font-family:'Tajawal',sans-serif; box-sizing:border-box; }
+          .pdf-report { color:#1f333a; font-size:13px; line-height:1.6; }
+          .pdf-report .header { border-bottom:3px solid #37889b; padding-bottom:14px; margin-bottom:20px; }
+          .pdf-report .badge-tbc { background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px; }
+          .pdf-report .box { background:#f8fafc; border:1px solid #cbd5e1; padding:15px; border-radius:8px; display:inline-block; margin:6px; width:170px; text-align:center; }
+          .pdf-report table.brk { width:100%; border-collapse:collapse; margin-top:10px; font-size:12px; }
+          .pdf-report table.brk th, .pdf-report table.brk td { border:1px solid #cbd5e1; padding:8px; text-align:right; }
+          .pdf-report table.brk th { background:#37889b; color:#fff; }
+        </style>
+        <div class="pdf-report">
         <div class="header"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div><div style="display:flex; align-items:center; gap:8px;"><span class="badge-tbc">TBC</span><span style="font-size:18px; font-weight:900; color:#276270;">شركة تطوير للمباني</span></div><div style="font-size:12px; font-weight:700; color:#5e7782; margin-top:4px;">إدارة التخطيط والتحكم</div></div>
           <div style="text-align:left;"><div style="font-weight:900; font-size:15px; color:#276270;">تقرير مخصص حسب الفلاتر</div><div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA')}</div></div>
@@ -3484,13 +3634,17 @@
 
         <h3 style="color:#276270; font-size:15px; margin-bottom:8px;">📑 التقارير التفصيلية (${total})</h3>
         ${sectionsHtml}
-        </body></html>`);
-      w.document.close();
+        </div>`;
+
+      document.getElementById('userGuideContent').innerHTML = reportHtml;
+      document.getElementById('userGuideOverlay').classList.remove('hidden');
+      window.scrollTo(0, 0);
       closeAdvancedExportModal();
     }
 
-    function runAdvancedExportExcel() {
+    async function runAdvancedExportExcel() {
       if (typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      await pullFromCloud();
       const list = getAdvancedExportFilteredResponses();
       if (list.length === 0) return showAlert('لا توجد تقارير مطابقة لهذه الفلاتر.');
 
@@ -3526,7 +3680,7 @@
     // ================= Logic: Schools Management =================
     function renderSchoolsManagement() {
       if(!currentUser) return;
-      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role);
+      const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       
       const views = ['schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4', 'pendingSchoolRequestsCard'];
       views.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isPlanning); });
@@ -3979,7 +4133,7 @@
     let complaintsRawStats = null;
 
     function initComplaintsTab() {
-      const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role);
+      const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       document.getElementById('complaintsImportBox').classList.toggle('hidden', !isPlanning);
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
@@ -4543,6 +4697,84 @@
         logAudit('TICKET_STATUS', `تحديث حالة تذكرة #${activeTicketId} إلى: ${newStatus}`);
         await pullFromCloud();
         openTicketDetail(activeTicketId);
+      } else showAlert(esc(res.message));
+    }
+
+    // ==================== نظام الإشعارات ====================
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notificationUnreadBadge'); if (!badge) return;
+      const unreadCount = notifications.filter(n => !n.isRead).length;
+      badge.classList.toggle('hidden', unreadCount === 0);
+      badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+    }
+
+    function toggleNotificationPanel(e) {
+      if (e) e.stopPropagation(); else if (window.event) window.event.stopPropagation();
+      const panel = document.getElementById('notificationPanel');
+      const willOpen = panel.classList.contains('hidden');
+      // إغلاق قائمة الملف الشخصي لو مفتوحة، منعاً لتراكب القوائم
+      document.getElementById('profileMenu')?.classList.add('hidden');
+      panel.classList.toggle('hidden');
+      if (willOpen) renderNotificationsList();
+    }
+
+    function renderNotificationsList() {
+      const container = document.getElementById('notificationListContainer'); if (!container) return;
+      if (notifications.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:24px 12px;">لا توجد إشعارات بعد.</div>`; return; }
+      container.innerHTML = notifications.map(n => `
+        <div onclick="markNotificationRead(${n.id})" style="padding:12px; border-radius:8px; margin-bottom:6px; cursor:pointer; background:${n.isRead ? '#fff' : 'var(--tbc-petrol-light)'}; border:1px solid ${n.isRead ? 'var(--border-subtle)' : '#c8e2e8'};">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
+            <div style="font-weight:900; font-size:0.88rem; color:var(--tbc-petrol-dark);">${n.isRead ? '' : '🔵 '}${esc(n.title)}</div>
+          </div>
+          <div style="font-size:0.82rem; font-weight:600; color:var(--text-main); margin-bottom:6px; white-space:pre-wrap;">${esc(n.message)}</div>
+          <div style="font-size:0.7rem; color:var(--text-muted);">${esc(n.sentByName)} — ${new Date(n.ts).toLocaleString('ar-SA-u-ca-gregory')}</div>
+        </div>`).join('');
+    }
+
+    async function markNotificationRead(notificationId) {
+      const n = notifications.find(x => x.id === notificationId);
+      if (n && !n.isRead) {
+        n.isRead = true; // تحديث فوري بالواجهة قبل تأكيد السيرفر
+        updateNotificationBadge(); renderNotificationsList();
+        await apiCall('MARK_NOTIFICATION_READ', { notificationId });
+      }
+    }
+
+    async function markAllNotificationsRead() {
+      notifications.forEach(n => n.isRead = true);
+      updateNotificationBadge(); renderNotificationsList();
+      await apiCall('MARK_NOTIFICATION_READ', { markAll: true });
+    }
+
+    function openBroadcastModal() {
+      document.getElementById('broadcastTargetType').value = 'all';
+      document.getElementById('broadcastTitle').value = '';
+      document.getElementById('broadcastMessage').value = '';
+      const userSel = document.getElementById('broadcastTargetUser');
+      userSel.innerHTML = usersList.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)} — ${esc(ROLE_LABELS[u.role] || u.role)}</option>`).join('');
+      onBroadcastTargetTypeChange();
+      document.getElementById('notificationPanel')?.classList.add('hidden');
+      document.getElementById('broadcastModal').classList.remove('hidden');
+    }
+
+    function onBroadcastTargetTypeChange() {
+      const type = document.getElementById('broadcastTargetType').value;
+      document.getElementById('broadcastRoleGroup').classList.toggle('hidden', type !== 'role');
+      document.getElementById('broadcastUserGroup').classList.toggle('hidden', type !== 'user');
+    }
+
+    async function submitBroadcast() {
+      const targetType = document.getElementById('broadcastTargetType').value;
+      const targetValue = targetType === 'role' ? document.getElementById('broadcastTargetRole').value : targetType === 'user' ? document.getElementById('broadcastTargetUser').value : null;
+      const title = document.getElementById('broadcastTitle').value.trim();
+      const message = document.getElementById('broadcastMessage').value.trim();
+      if (!title || !message) return showAlert('يرجى تعبئة عنوان الإشعار ونصه.');
+      const res = await apiCall('SEND_NOTIFICATION', { targetType, targetValue, title, message });
+      if (res.status === 'success') {
+        logAudit('NOTIFICATION_SEND', `إرسال إشعار "${title}" — الاستهداف: ${targetType}${targetValue ? ' (' + targetValue + ')' : ''}`);
+        document.getElementById('broadcastModal').classList.add('hidden');
+        showAlert('✓ تم إرسال الإشعار.');
+        pullFromCloud();
       } else showAlert(esc(res.message));
     }
 
