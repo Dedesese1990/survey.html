@@ -4360,7 +4360,11 @@
             progressText.innerText = isLastBatch
               ? `جاري إنهاء الاستيراد ودمج أي تكرارات... (${allRows.length} بلاغ إجمالاً)`
               : `جاري رفع الدفعة ${b + 1} من ${totalBatches} (${pct}%) — ${allRows.length} بلاغ إجمالاً...`;
-            // الدفعة الأخيرة بتعمل خطوة إضافية (قراءة الشيت كله ودمج التكرارات مرة واحدة)، فمهلة انتظارها أطول من العادي
+            // فاصل بسيط قبل كل دفعة (عدا الأولى): إرسال عشرات الطلبات المتتالية لنفس رابط Google Apps Script
+            // من غير أي فاصل بينها بيشبه "إغراق بالطلبات" في نظر جوجل، فبيحصل تأخير/تجاهل للرد أحياناً حتى لو
+            // الخادم نفذ الكود فعلياً في أقل من ثانية (تأكدنا من ده مباشرة من سجل Executions). الفاصل ده بسيط
+            // وما بيأثرش على وقت الاستيراد الكلي بشكل ملحوظ، لكنه بيدي وقت لجوجل يستوعب الطلبات بدل ما تتكدّس.
+            if (b > 0) await new Promise(r => setTimeout(r, 600));
             const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isLastBatch }, isLastBatch ? { timeoutMs: 90000 } : {});
             if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; if (res.finalTotalRows != null) finalTotalRows = res.finalTotalRows; }
             else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
