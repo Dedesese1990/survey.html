@@ -4398,18 +4398,18 @@
             // وما بيأثرش على وقت الاستيراد الكلي بشكل ملحوظ، لكنه بيدي وقت لجوجل يستوعب الطلبات بدل ما تتكدّس.
             if (b > 0) await new Promise(r => setTimeout(r, 600));
 
-            // ازدحام القفل (Lock timeout) عطل عابر بطبيعته — عملية تانية كانت ماسكة قفل الكتابة لحظة الطلب.
-            // بدل ما نلغي الاستيراد كله بسبب ثوانٍ زحمة عابرة، نعيد محاولة نفس الدفعة بس (لا نكرر غيرها) عدة مرات.
+            // أي فشل في دفعة الآن آمن نعيد محاولته (مش بس ازدحام القفل تحديداً): بما إن عندنا زرار "تنظيف
+            // التكرارات" منفصل، أسوأ سيناريو من إعادة محاولة دفعة نجحت فعلياً على الخادم لكن ردها اتأخر هو
+            // تكرار بسيط يتنضف بالزرار — أفضل بكتير من إلغاء الاستيراد كله بسبب انقطاع عابر واحد.
             let res = null;
             for (let attempt = 0; attempt <= 2; attempt++) {
               res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows });
-              const isLockContention = res.status !== 'success' && /مهلة التأمين|Lock timeout|lock for too long/i.test(res.message || '');
-              if (res.status === 'success' || !isLockContention || attempt === 2) break;
-              progressText.innerText = `ازدحام مؤقت على الخادم — إعادة محاولة الدفعة ${b + 1} (محاولة ${attempt + 2})...`;
+              if (res.status === 'success' || attempt === 2) break;
+              progressText.innerText = `انقطاع مؤقت — إعادة محاولة الدفعة ${b + 1} (محاولة ${attempt + 2})...`;
               await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
             }
             if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; }
-            else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
+            else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1} بعد عدة محاولات: ${esc(res.message)}`); }
           }
 
           progressBox.classList.add('hidden');
