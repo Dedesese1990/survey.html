@@ -4398,7 +4398,17 @@
             // الخادم نفذ الكود فعلياً في أقل من ثانية (تأكدنا من ده مباشرة من سجل Executions). الفاصل ده بسيط
             // وما بيأثرش على وقت الاستيراد الكلي بشكل ملحوظ، لكنه بيدي وقت لجوجل يستوعب الطلبات بدل ما تتكدّس.
             if (b > 0) await new Promise(r => setTimeout(r, 600));
-            const res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isLastBatch }, isLastBatch ? { timeoutMs: 90000 } : {});
+
+            // ازدحام القفل (Lock timeout) عطل عابر بطبيعته — عملية تانية كانت ماسكة قفل الكتابة لحظة الطلب.
+            // بدل ما نلغي الاستيراد كله بسبب ثوانٍ زحمة عابرة، نعيد محاولة نفس الدفعة بس (لا نكرر غيرها) عدة مرات.
+            let res = null;
+            for (let attempt = 0; attempt <= 2; attempt++) {
+              res = await apiCall('IMPORT_COMPLAINTS_BATCH', { rows: batchRows, isLastBatch }, isLastBatch ? { timeoutMs: 90000 } : {});
+              const isLockContention = res.status !== 'success' && /مهلة التأمين|Lock timeout|lock for too long/i.test(res.message || '');
+              if (res.status === 'success' || !isLockContention || attempt === 2) break;
+              progressText.innerText = `ازدحام مؤقت على الخادم — إعادة محاولة الدفعة ${b + 1} (محاولة ${attempt + 2})...`;
+              await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+            }
             if (res.status === 'success') { totalAdded += res.added; totalLinked += res.linked; if (res.finalTotalRows != null) finalTotalRows = res.finalTotalRows; }
             else { progressBox.classList.add('hidden'); return showAlert(`حدث خطأ في الدفعة ${b + 1}: ${esc(res.message)}`); }
           }
