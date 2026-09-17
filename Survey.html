@@ -586,36 +586,41 @@
               <div id="analyticsComplaintsSummaryCard">
                 <div id="analyticsComplaintsSummaryEmpty" class="empty-state" style="padding:24px; background:#fff; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">لا توجد بيانات بلاغات مستوردة بعد.</div>
                 <div id="analyticsComplaintsSummaryContent" class="hidden">
-                  <div class="exec-complaints-row" style="margin-bottom:18px;">
-                    <div class="bento-hero" id="acsSlaHero" style="flex:0 0 230px;">
-                      <div class="bi-title">الالتزام بـ SLA (أُغلق في الموعد)</div>
-                      <div class="radial-progress">
-                        <svg viewBox="0 0 120 120">
-                          <circle class="rp-track" cx="60" cy="60" r="50"></circle>
-                          <circle class="rp-fill" id="acsSlaRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
-                        </svg>
-                        <div class="rp-label" id="acsSla">0%</div>
+                  <div class="an-grid-2">
+                    <div class="an-card" style="margin-bottom:0;">
+                      <div class="exec-complaints-row">
+                        <div class="bento-hero" id="acsSlaHero" style="flex:0 0 200px;">
+                          <div class="bi-title">الالتزام بـ SLA (أُغلق في الموعد)</div>
+                          <div class="radial-progress">
+                            <svg viewBox="0 0 120 120">
+                              <circle class="rp-track" cx="60" cy="60" r="50"></circle>
+                              <circle class="rp-fill" id="acsSlaRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                            </svg>
+                            <div class="rp-label" id="acsSla">0%</div>
+                          </div>
+                          <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من البلاغات المغلقة خلال المهلة الزمنية المحددة</div>
+                        </div>
+                        <div class="exec-complaints-pills">
+                          <div class="exec-pill tone-neutral"><span class="exec-pill-label">إجمالي البلاغات</span><span class="exec-pill-value" id="acsTotal">0</span></div>
+                          <div class="exec-pill-ratio tone-pending clickable" onclick="showTab('complaints')">
+                            <div class="exec-pill-ratio-row"><span class="exec-pill-label">مفتوحة</span><span class="exec-pill-value"><span id="acsOpen">0</span><span class="exec-pill-pct" id="acsOpenPct">(0%)</span></span></div>
+                            <div class="exec-pill-ratio-track"><div class="exec-pill-ratio-fill" id="acsOpenBar"></div></div>
+                          </div>
+                          <div class="exec-pill-ratio tone-approved">
+                            <div class="exec-pill-ratio-row"><span class="exec-pill-label">مغلقة</span><span class="exec-pill-value"><span id="acsClosed">0</span><span class="exec-pill-pct" id="acsClosedPct">(0%)</span></span></div>
+                            <div class="exec-pill-ratio-track"><div class="exec-pill-ratio-fill" id="acsClosedBar"></div></div>
+                          </div>
+                          <div class="exec-pill tone-danger clickable" onclick="showTab('complaints')"><span class="exec-pill-label">🔁 معاد فتحها</span><span class="exec-pill-value" id="acsReopened">0</span></div>
+                        </div>
                       </div>
-                      <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من البلاغات المغلقة خلال المهلة الزمنية المحددة</div>
                     </div>
-                    <div class="exec-complaints-pills">
-                      <div class="exec-pill tone-neutral"><span class="exec-pill-label">إجمالي البلاغات</span><span class="exec-pill-value" id="acsTotal">0</span></div>
-                      <div class="exec-pill-ratio tone-pending clickable" onclick="showTab('complaints')">
-                        <div class="exec-pill-ratio-row"><span class="exec-pill-label">مفتوحة</span><span class="exec-pill-value"><span id="acsOpen">0</span><span class="exec-pill-pct" id="acsOpenPct">(0%)</span></span></div>
-                        <div class="exec-pill-ratio-track"><div class="exec-pill-ratio-fill" id="acsOpenBar"></div></div>
+                    <div class="an-card" style="margin-bottom:0;">
+                      <div class="an-card-title">توزيع البلاغات حسب الحالة التشغيلية</div>
+                      <p class="an-card-desc">نسبة كل حالة (مغلقة، مفتوحة، ملغاة، موافقة استشاري) من إجمالي البلاغات ضمن نطاقك الحالي.</p>
+                      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                        <div style="height:190px; position:relative; flex:1; min-width:150px;"><canvas id="acsStatusChart"></canvas></div>
+                        <div id="acsStatusLegend" style="flex:1; min-width:150px; display:flex; flex-direction:column; gap:8px;"></div>
                       </div>
-                      <div class="exec-pill-ratio tone-approved">
-                        <div class="exec-pill-ratio-row"><span class="exec-pill-label">مغلقة</span><span class="exec-pill-value"><span id="acsClosed">0</span><span class="exec-pill-pct" id="acsClosedPct">(0%)</span></span></div>
-                        <div class="exec-pill-ratio-track"><div class="exec-pill-ratio-fill" id="acsClosedBar"></div></div>
-                      </div>
-                      <div class="exec-pill tone-danger clickable" onclick="showTab('complaints')"><span class="exec-pill-label">🔁 معاد فتحها</span><span class="exec-pill-value" id="acsReopened">0</span></div>
-                    </div>
-                  </div>
-                  <div class="an-card">
-                    <div class="an-card-title">توزيع البلاغات حسب الحالة التشغيلية</div>
-                    <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
-                      <div style="height:220px; position:relative; flex:1; min-width:180px;"><canvas id="acsStatusChart"></canvas></div>
-                      <div id="acsStatusLegend" style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
                   </div>
                 </div>
@@ -635,11 +640,13 @@
               <div class="an-grid-2">
                 <div class="an-card">
                   <div class="an-card-title">📊 البلاغات حسب الحالة التشغيلية</div>
+                  <p class="an-card-desc">نسبة كل حالة (مغلقة، مفتوحة، ملغاة، موافقة استشاري) من إجمالي البلاغات ضمن نطاقك الحالي.</p>
                   <div style="height:230px; position:relative;"><canvas id="anCmpStatusChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
                 <div class="an-card">
                   <div class="an-card-title">🔺 أولوية البلاغات</div>
+                  <p class="an-card-desc">توزيع البلاغات حسب درجة الأولوية المسجّلة وقت الرفع — يساعد في تحديد أين التركيز أولاً.</p>
                   <div style="height:230px; position:relative;"><canvas id="anCmpPriorityChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
@@ -647,6 +654,7 @@
 
               <div class="an-card">
                 <div class="an-card-title">🗂️ تصنيف البلاغات</div>
+                  <p class="an-card-desc">عدد البلاغات في كل تصنيف فني (تكييف، صيانة، مدني، نظافة، مراقبة وأمن وسلامة) — يوضح أكثر أنواع الأعطال تكراراً.</p>
                 <div style="height:260px; position:relative;"><canvas id="anCmpCategoryChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
@@ -654,11 +662,13 @@
               <div class="an-grid-2">
                 <div class="an-card">
                   <div class="an-card-title">🎓 حسب المرحلة الدراسية</div>
+                  <p class="an-card-desc">توزيع البلاغات حسب المرحلة الدراسية للمدرسة صاحبة البلاغ.</p>
                   <div id="anCmpStageContainer"></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
                 <div class="an-card">
                   <div class="an-card-title">🚻 حسب نوع المبنى</div>
+                  <p class="an-card-desc">توزيع البلاغات حسب جنس المدرسة (بنين / بنات) المرتبطة بالبلاغ.</p>
                   <div id="anCmpGenderContainer"></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
@@ -666,18 +676,21 @@
 
               <div class="an-card">
                 <div class="an-card-title">🔁 تصنيف البلاغات المعاد فتحها</div>
+                  <p class="an-card-desc">من بين البلاغات التي أُعيد فتحها بعد إغلاقها، أي تصنيف فني الأكثر تكراراً — الارتفاع في تصنيف معين يشير لضعف جودة الإصلاح فيه.</p>
                 <div id="anCmpReopenedByCategoryContainer"></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
 
               <div class="an-card">
                 <div class="an-card-title">📉 الاتجاه اليومي حسب التصنيف</div>
+                  <p class="an-card-desc">عدد البلاغات الجديدة يومياً لكل تصنيف فني — يوضح هل المشكلة في تصاعد أم تراجع مع الوقت.</p>
                 <div style="height:320px; position:relative;"><canvas id="anCmpDailyCategoryChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
 
               <div class="an-card">
                 <div class="an-card-title">📈 الإجمالي التراكمي (مفتوحة / مغلقة / معاد فتحها)</div>
+                  <p class="an-card-desc">المجموع المتراكم (المتزايد يوماً بعد يوم) للبلاغات المفتوحة والمغلقة والمعاد فتحها منذ بداية الفترة — الفجوة بين خط "مفتوحة" وخط "مغلقة" تعكس حجم المتراكم غير المنجز.</p>
                 <div style="height:320px; position:relative;"><canvas id="anCmpDailyCumulativeChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
@@ -685,11 +698,13 @@
               <div class="an-grid-2">
                 <div class="an-card">
                   <div class="an-card-title">✅ معدل الالتزام بـ SLA يومياً</div>
+                  <p class="an-card-desc">لكل يوم: نسبة البلاغات التي أُغلقت خلال المهلة الزمنية المحددة (SLA) من إجمالي البلاغات المغلقة في نفس اليوم.<br><b>المعادلة:</b> (عدد المغلقة في الموعد ÷ إجمالي المغلقة في نفس اليوم) × 100.</p>
                   <div style="height:260px; position:relative;"><canvas id="anCmpDailySlaChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
                 <div class="an-card">
                   <div class="an-card-title">⏱️ متوسط زمن الاستجابة يومياً</div>
+                  <p class="an-card-desc">لكل يوم: متوسط عدد الأيام التي استغرقتها البلاغات المغلقة في ذلك اليوم، من تاريخ الفتح حتى الإغلاق.<br><b>المعادلة:</b> مجموع (تاريخ الإغلاق − تاريخ الفتح) لكل بلاغ ÷ عدد البلاغات المغلقة في نفس اليوم.</p>
                   <div style="height:260px; position:relative;"><canvas id="anCmpDailyResponseChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
@@ -697,12 +712,14 @@
 
               <div class="an-card">
                 <div class="an-card-title">⏱️ متوسط زمن الاستجابة حسب التصنيف</div>
+                  <p class="an-card-desc">متوسط أيام الاستجابة (من الفتح للإغلاق) لكل تصنيف فني على حدة — يوضح أي نوع أعطال يستغرق وقتاً أطول في الحل.</p>
                 <div id="anCmpAvgResponseByCategoryContainer"></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
 
               <div class="an-card">
                 <div class="an-card-title">🏆 أعلى المدارس (معاد فتحها — Top 20)</div>
+                  <p class="an-card-desc">أكثر 20 مدرسة لديها بلاغات أُعيد فتحها بعد إغلاقها — مؤشر على مواقع تحتاج متابعة إضافية لجودة الإصلاح.</p>
                 <div class="table-responsive">
                   <table class="data-table" id="anCmpTopSchoolsTable"><thead><tr><th>المدرسة</th><th>عدد البلاغات</th></tr></thead><tbody></tbody></table>
                 </div>
@@ -728,10 +745,12 @@
                   <div class="an-grid-2" style="margin-bottom:0;">
                     <div>
                       <div class="an-card-title">نصاب المدارس</div>
+                  <p class="an-card-desc">عدد المدارس المُسندة لكل مشرف ميداني ضمن نطاق الفلتر الحالي.</p>
                       <div id="supLoadList" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
                     <div>
                       <div class="an-card-title">الأكثر بلاغات</div>
+                  <p class="an-card-desc">عدد البلاغات المرتبطة بالمدارس المسندة لكل مشرف ميداني.</p>
                       <div id="supComplaintsList" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
                   </div>
@@ -752,10 +771,12 @@
                 <div class="an-grid-2" style="margin-bottom:0;">
                   <div>
                     <div class="an-card-title">الأعلى بلاغات</div>
+                  <p class="an-card-desc">المدن الأعلى في عدد البلاغات المسجّلة ضمن نطاقك.</p>
                     <div id="cityComplaintsLeaderboard" style="display:flex; flex-direction:column; gap:8px;"></div>
                   </div>
                   <div>
                     <div class="an-card-title">الأعلى مدارس</div>
+                  <p class="an-card-desc">المدن الأعلى في عدد المدارس المسجّلة ضمن نطاقك.</p>
                     <div id="citySchoolsLeaderboard" style="display:flex; flex-direction:column; gap:8px;"></div>
                   </div>
                 </div>
