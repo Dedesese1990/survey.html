@@ -210,7 +210,7 @@
     /* صف بلاغات مضغوط (بديل عن تكرار bento-cell لكل رقم) — كبسولات أفقية خفيفة بجانب مؤشر SLA الدائري */
     .exec-complaints-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
     .exec-complaints-pills { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-    .exec-pill { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid var(--border-subtle); border-radius: 999px; padding: 10px 18px; transition: box-shadow 0.2s, transform 0.2s; }
+    .exec-pill { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 10px 18px; min-height: 64px; box-sizing: border-box; transition: box-shadow 0.2s, transform 0.2s; }
     .exec-pill.clickable { cursor: pointer; }
     .exec-pill.clickable:hover { box-shadow: var(--shadow-sm); transform: translateX(-2px); }
     .exec-pill .exec-pill-label { font-size: 1rem; font-weight: 800; color: var(--text-muted); }
@@ -221,7 +221,7 @@
     .exec-pill.tone-neutral .exec-pill-value { color: var(--tbc-petrol-mid); }
 
     /* كبسولة برقم + شريط نسبة صغير تحته (يعكس النسبة من الإجمالي) — مستخدمة لأرقام "مفتوحة/مغلقة" */
-    .exec-pill-ratio { background: #fff; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 10px 18px; transition: box-shadow 0.2s, transform 0.2s; max-width: 460px; }
+    .exec-pill-ratio { background: #fff; border: 1px solid var(--border-subtle); border-radius: 16px; padding: 10px 18px; min-height: 64px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; transition: box-shadow 0.2s, transform 0.2s; max-width: 460px; }
     .exec-pill-ratio.clickable { cursor: pointer; }
     .exec-pill-ratio.clickable:hover { box-shadow: var(--shadow-sm); transform: translateX(-2px); }
     .exec-pill-ratio-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
@@ -627,6 +627,21 @@
               </div>
             </div>
 
+            <div class="an-grid-2">
+              <div class="an-card">
+                <div class="an-card-title">✅ معدل الالتزام بـ SLA يومياً</div>
+                <p class="an-card-desc">لكل يوم: نسبة البلاغات التي أُغلقت خلال المهلة الزمنية المحددة (SLA) من إجمالي البلاغات المغلقة في نفس اليوم.<br><b>المعادلة:</b> (عدد المغلقة في الموعد ÷ إجمالي المغلقة في نفس اليوم) × 100.</p>
+                <div style="height:260px; position:relative;"><canvas id="anCmpDailySlaChart"></canvas></div>
+                <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+              <div class="an-card">
+                <div class="an-card-title">⏱️ متوسط زمن الاستجابة يومياً</div>
+                <p class="an-card-desc">لكل يوم: متوسط عدد الأيام التي استغرقتها البلاغات المغلقة في ذلك اليوم، من تاريخ الفتح حتى الإغلاق.<br><b>المعادلة:</b> مجموع (تاريخ الإغلاق − تاريخ الفتح) لكل بلاغ ÷ عدد البلاغات المغلقة في نفس اليوم.</p>
+                <div style="height:260px; position:relative;"><canvas id="anCmpDailyResponseChart"></canvas></div>
+                <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
+              </div>
+            </div>
+
             <!-- ============ تحليلات البلاغات التفصيلية (منقولة من تاب البلاغات — نفس التناسق والدوال بالظبط) ============ -->
             <div class="exec-section" style="margin-top:34px;">
               <div class="exec-section-head">
@@ -693,21 +708,6 @@
                   <p class="an-card-desc">المجموع المتراكم (المتزايد يوماً بعد يوم) للبلاغات المفتوحة والمغلقة والمعاد فتحها منذ بداية الفترة — الفجوة بين خط "مفتوحة" وخط "مغلقة" تعكس حجم المتراكم غير المنجز.</p>
                 <div style="height:320px; position:relative;"><canvas id="anCmpDailyCumulativeChart"></canvas></div>
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
-              </div>
-
-              <div class="an-grid-2">
-                <div class="an-card">
-                  <div class="an-card-title">✅ معدل الالتزام بـ SLA يومياً</div>
-                  <p class="an-card-desc">لكل يوم: نسبة البلاغات التي أُغلقت خلال المهلة الزمنية المحددة (SLA) من إجمالي البلاغات المغلقة في نفس اليوم.<br><b>المعادلة:</b> (عدد المغلقة في الموعد ÷ إجمالي المغلقة في نفس اليوم) × 100.</p>
-                  <div style="height:260px; position:relative;"><canvas id="anCmpDailySlaChart"></canvas></div>
-                  <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
-                </div>
-                <div class="an-card">
-                  <div class="an-card-title">⏱️ متوسط زمن الاستجابة يومياً</div>
-                  <p class="an-card-desc">لكل يوم: متوسط عدد الأيام التي استغرقتها البلاغات المغلقة في ذلك اليوم، من تاريخ الفتح حتى الإغلاق.<br><b>المعادلة:</b> مجموع (تاريخ الإغلاق − تاريخ الفتح) لكل بلاغ ÷ عدد البلاغات المغلقة في نفس اليوم.</p>
-                  <div style="height:260px; position:relative;"><canvas id="anCmpDailyResponseChart"></canvas></div>
-                  <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
-                </div>
               </div>
 
               <div class="an-card">
@@ -5110,6 +5110,48 @@
     // منطق الحساب والرسم بالظبط (نفس الدالة) لضمان التناسق التام بينهم بصرياً ووظيفياً — الفرق الوحيد هو
     // الـID المستهدف. بعض الأقسام (حسب المدن، مقارنة المناطق، الخريطة الحرارية) عمداً مش بتتكرر في النسخة
     // التانية بناءً على طلب صريح، فبتتفعّل بس لما targetPrefix يكون فاضي (التاب الأصلي).
+    // يجمّع مصفوفة اتجاه يومي (بها date وbyCategory لكل تصنيف) إلى نقطة واحدة لكل شهر — الأعداد بتتجمّع
+    // (مجموع الشهر)، وأما القيم التراكمية (cumClosed/cumOpen/cumReopened) فبناخد آخر قيمة في الشهر لأنها
+    // أصلاً تراكمية من بداية الفترة، مش قيمة يومية منفصلة يصح جمعها.
+    function aggregateTrendMonthly(dailyTrend, catLabels) {
+      const byMonth = {};
+      const order = [];
+      dailyTrend.forEach(t => {
+        const monthKey = String(t.date || '').slice(0, 7); // 'YYYY-MM'
+        if (!monthKey) return;
+        if (!byMonth[monthKey]) { byMonth[monthKey] = { date: monthKey, byCategory: {}, cumClosed: 0, cumOpen: 0, cumReopened: 0 }; order.push(monthKey); }
+        const m = byMonth[monthKey];
+        catLabels.forEach(c => { m.byCategory[c] = (m.byCategory[c] || 0) + ((t.byCategory && t.byCategory[c]) || 0); });
+        m.cumClosed = t.cumClosed; m.cumOpen = t.cumOpen; m.cumReopened = t.cumReopened; // آخر يوم في الشهر بيغلب (الترتيب زمني أصلاً)
+      });
+      return order.map(k => byMonth[k]);
+    }
+
+    // نفس فكرة التجميع الشهري لكن لمصفوفة "اتجاه الإغلاق" (slaPct وavgResponseDays) — هنا القيم أصلاً
+    // متوسطات يومية، فتجميعها الصحيح متوسط بسيط للأيام المتاحة ضمن كل شهر (وليس مجموعها).
+    function aggregateResolutionTrendMonthly(resTrend) {
+      const byMonth = {};
+      const order = [];
+      resTrend.forEach(t => {
+        const monthKey = String(t.date || '').slice(0, 7);
+        if (!monthKey) return;
+        if (!byMonth[monthKey]) { byMonth[monthKey] = { date: monthKey, slaSum: 0, slaCount: 0, respSum: 0, respCount: 0 }; order.push(monthKey); }
+        const m = byMonth[monthKey];
+        if (t.slaPct != null) { m.slaSum += t.slaPct; m.slaCount++; }
+        if (t.avgResponseDays != null) { m.respSum += t.avgResponseDays; m.respCount++; }
+      });
+      return order.map(k => { const m = byMonth[k]; return { date: m.date, slaPct: m.slaCount > 0 ? Math.round(m.slaSum / m.slaCount) : null, avgResponseDays: m.respCount > 0 ? (m.respSum / m.respCount) : null }; });
+    }
+
+    // يحوّل 'YYYY-MM' لتسمية شهر عربية مقروءة، عشان محاور الشارتات الشهرية تبان "مارس 2026" بدل "2026-03"
+    const AR_MONTH_NAMES = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    function monthLabelAr(monthKey) {
+      const parts = String(monthKey).split('-');
+      const y = parts[0], m = parseInt(parts[1], 10);
+      if (!y || !m || m < 1 || m > 12) return monthKey;
+      return `${AR_MONTH_NAMES[m - 1]} ${y}`;
+    }
+
     function renderComplaintsDashboard(stats, targetPrefix) {
       targetPrefix = targetPrefix || '';
       const id = (base) => targetPrefix ? targetPrefix + base.charAt(0).toUpperCase() + base.slice(1) : base;
@@ -5150,9 +5192,11 @@
           const catColors = catLabels.map(c => CMP_CATEGORY_COLORS[c]);
           getOrCreateChart(id('cmpCategory'), el('cmpCategoryChart'), { type: 'bar', data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { family: 'Tajawal' } } }, y: { beginAtZero: true } } } });
 
-          // الاتجاه اليومي بالتصنيف
-          const trend = stats.dailyTrend || [];
-          const dLabels = trend.map(t => t.date);
+          // الاتجاه اليومي بالتصنيف — في لوحة المؤشرات (an) نجمّعها بالشهر لعرض أوضح على مدى أطول، وفي تاب
+          // البلاغات المستقل نفضل بالأيام زي ما هي (تفاصيل دقيقة لمن يحتاجها)
+          const catTrendKeys = catLabels; // مفاتيح التصنيف نفسها تُستخدم كأعمدة داخل byCategory لكل يوم/شهر
+          const trend = targetPrefix === 'an' ? aggregateTrendMonthly(stats.dailyTrend || [], catTrendKeys) : (stats.dailyTrend || []);
+          const dLabels = trend.map(t => targetPrefix === 'an' ? monthLabelAr(t.date) : t.date);
           const dailyDatasets = catLabels.map(c => ({ label: c, data: trend.map(t => (t.byCategory && t.byCategory[c]) || 0), borderColor: CMP_CATEGORY_COLORS[c], backgroundColor: CMP_CATEGORY_COLORS[c], tension: 0.3, fill: false }));
           getOrCreateChart(id('cmpDailyCategory'), el('cmpDailyCategoryChart'), { type: 'line', data: { labels: dLabels, datasets: dailyDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
@@ -5164,9 +5208,11 @@
           ];
           getOrCreateChart(id('cmpDailyCumulative'), el('cmpDailyCumulativeChart'), { type: 'line', data: { labels: dLabels, datasets: cumDatasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Tajawal', size: 11 } } } } } });
 
-          // معدل SLA اليومي ومتوسط زمن الاستجابة اليومي (حسب يوم الإغلاق الفعلي)
-          const resTrend = stats.dailyResolutionTrend || [];
-          const resLabels = resTrend.map(t => t.date);
+          // معدل SLA اليومي ومتوسط زمن الاستجابة اليومي (حسب يوم الإغلاق الفعلي) — نفس مبدأ التجميع الشهري
+          // في لوحة المؤشرات بس (متوسط بسيط للأيام ضمن كل شهر، بما إن التفاصيل اليومية الدقيقة مش الهدف هنا)
+          const resTrendRaw = stats.dailyResolutionTrend || [];
+          const resTrend = targetPrefix === 'an' ? aggregateResolutionTrendMonthly(resTrendRaw) : resTrendRaw;
+          const resLabels = resTrend.map(t => targetPrefix === 'an' ? monthLabelAr(t.date) : t.date);
           const slaData = resTrend.map(t => t.slaPct);
           getOrCreateChart(id('cmpDailySla'), el('cmpDailySlaChart'), { type: 'line', data: { labels: resLabels, datasets: [{ label: 'نسبة الالتزام بـ SLA %', data: slaData, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
 
