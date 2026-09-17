@@ -659,6 +659,9 @@
                 </div>
               </div>
 
+              <!-- فلتر منفصل عن فلتر الفروع العام فوق الصفحة — خاص بشارتات البلاغات التفصيلية دي بس -->
+              <div id="cmpDetailBranchPills" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;"></div>
+
               <div class="an-grid-2">
                 <div class="an-card">
                   <div class="an-card-title">📊 البلاغات حسب الحالة التشغيلية</div>
@@ -3369,7 +3372,34 @@
         renderSupervisorPerformance(s.byInspector || {});
         renderComplaintsDashboard(s, 'an');
         renderTopCitiesPerformance(s.byCity || {});
+        cmpDetailAllBranchesStats = s; // نحتفظ بنسخة "الكل" عشان فلتر الفروع الخاص بالتحليلات التفصيلية يرجعلها بسرعة
+        buildCmpDetailBranchPills();
       } catch (e) {}
+    }
+
+    // فلتر فروع منفصل عن فلتر الفروع العام فوق الصفحة — خاص بالـ12 شارت في "تحليلات البلاغات التفصيلية" بس.
+    // بيجيب إحصائيات الفرع المطلوب أول مرة تُختار بس (مش مقدماً)، ويحتفظ بيها بعد كده لإعادة الاستخدام السريع.
+    let cmpDetailAllBranchesStats = null;
+    let cmpDetailSelectedBranch = 'ALL';
+    const cmpDetailBranchCache = {};
+    const CMP_DETAIL_BRANCHES = [
+      { key: 'ALL', label: 'الكل' },
+      { key: 'المكتب الفرعي بالشرقية', label: 'الشرقية' },
+      { key: 'المكتب الفرعي بالأحساء', label: 'الأحساء' },
+      { key: 'المكتب الفرعي بحفر الباطن', label: 'حفر الباطن' }
+    ];
+    function buildCmpDetailBranchPills() {
+      const row = document.getElementById('cmpDetailBranchPills'); if (!row) return;
+      row.innerHTML = CMP_DETAIL_BRANCHES.map(b => `<button class="btn ${cmpDetailSelectedBranch === b.key ? 'btn-petrol' : 'btn-outline'}" style="font-size:0.8rem; padding:8px 14px; width:auto;" onclick="selectCmpDetailBranch('${b.key}')">${esc(b.label)}</button>`).join('');
+    }
+    async function selectCmpDetailBranch(key) {
+      cmpDetailSelectedBranch = key;
+      buildCmpDetailBranchPills();
+      if (key === 'ALL') { renderComplaintsDashboard(cmpDetailAllBranchesStats, 'an'); return; }
+      if (cmpDetailBranchCache[key]) { renderComplaintsDashboard(cmpDetailBranchCache[key], 'an'); return; }
+      const res = await apiCall('PULL_COMPLAINTS_STATS', { branches: [key] }, { timeoutMs: 60000 });
+      if (res.status === 'success') { cmpDetailBranchCache[key] = res.stats; renderComplaintsDashboard(res.stats, 'an'); }
+      else showAlert(esc(res.message));
     }
 
     // ============ أداء المشرفين: نصاب المدارس والأكثر بلاغات، مع فلتر تقاطع (دوس على مشرف في أي قائمة
