@@ -593,6 +593,8 @@
               <div id="analyticsComplaintsSummaryCard">
                 <div id="analyticsComplaintsSummaryEmpty" class="empty-state" style="padding:24px; background:#fff; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">لا توجد بيانات بلاغات مستوردة بعد.</div>
                 <div id="analyticsComplaintsSummaryContent" class="hidden">
+                  <!-- فلتر منفصل عن فلتر الفروع العام فوق الصفحة — خاص بكارتَي البلاغات دول والـ12 شارت تحت في التحليلات التفصيلية -->
+                  <div id="cmpDetailBranchPills" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
                   <div class="an-grid-2">
                     <div class="an-card" style="margin-bottom:0;">
                       <div class="exec-complaints-row">
@@ -658,9 +660,6 @@
                   <p>نفس التحليلات الموجودة في تاب "البلاغات"، معروضة هنا لسهولة المتابعة ضمن لوحة المؤشرات</p>
                 </div>
               </div>
-
-              <!-- فلتر منفصل عن فلتر الفروع العام فوق الصفحة — خاص بشارتات البلاغات التفصيلية دي بس -->
-              <div id="cmpDetailBranchPills" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;"></div>
 
               <div class="an-grid-2">
                 <div class="an-card">
@@ -3318,62 +3317,69 @@
         document.getElementById('analyticsComplaintsSummaryEmpty').classList.add('hidden');
         document.getElementById('analyticsComplaintsSummaryContent').classList.remove('hidden');
         const s = res.stats;
-        animateCountUp(document.getElementById('acsTotal'), s.total);
-        animateCountUp(document.getElementById('acsOpen'), s.openCount);
-        animateCountUp(document.getElementById('acsClosed'), s.closedCount);
-        animateCountUp(document.getElementById('acsReopened'), s.reopenedCount);
-        animateCountUp(document.getElementById('acsSla'), s.slaCompliancePct, '%');
-
-        // نسبة كل من "مفتوحة" و"مغلقة" من الإجمالي — رقم مكتوب + شريط بيمتلئ لنفس النسبة، بدل ما تكون
-        // "نسبة الإغلاق" كبسولة منفصلة زيادة (نفس الحساب أصلاً، بس مدموج جنب رقمه مباشرة أوضح للعين).
-        const openPct = s.total > 0 ? Math.round((s.openCount / s.total) * 100) : 0;
-        const closedPct = s.total > 0 ? Math.round((s.closedCount / s.total) * 100) : 0;
-        animateCountUp(document.getElementById('acsOpenPct'), openPct, '%)', 900, '(');
-        animateCountUp(document.getElementById('acsClosedPct'), closedPct, '%)', 900, '(');
-        setTimeout(() => {
-          document.getElementById('acsOpenBar').style.width = openPct + '%';
-          document.getElementById('acsClosedBar').style.width = closedPct + '%';
-        }, 50);
-
-        // حلقة SLA — بلون يعكس مستوى الالتزام (أخضر ممتاز، ذهبي متوسط، أحمر ضعيف)
-        const slaRing = document.getElementById('acsSlaRing');
-        const circumference = 314.159; const pct = Math.max(0, Math.min(100, s.slaCompliancePct));
-        slaRing.style.strokeDashoffset = circumference - (pct / 100) * circumference;
-        slaRing.style.stroke = pct >= 70 ? '#34d399' : pct >= 40 ? '#eebb43' : '#f87171';
-
-        // توزيع البلاغات حسب الحالة التشغيلية — ليجند مخصص جنب الرسمة (بدل الليجند الافتراضي تحتها) يوضح
-        // النسبة المئوية لكل حالة صراحة، مش بس اللون في الرسمة
-        if (s.total === 0) {
-          showEmptyChartPlaceholder('acsStatusChart', 'لا توجد بيانات بلاغات بعد');
-          document.getElementById('acsStatusLegend').innerHTML = '';
-        } else {
-          hideEmptyChartPlaceholder('acsStatusChart');
-          try {
-            if (typeof Chart !== 'undefined') {
-              const labels = ['مغلق', 'مفتوح', 'ملغى', 'موافقة الاستشاري قيد التنفيذ'];
-              const data = [s.closedCount, s.openCount, s.cancelledCount, s.consultantCount];
-              const colors = ['#10b981', '#f59e0b', '#94a3b8', '#a855f7'];
-              if (acsStatusChartInstance) { acsStatusChartInstance.data.datasets[0].data = data; acsStatusChartInstance.update('none'); }
-              else acsStatusChartInstance = new Chart(document.getElementById('acsStatusChart').getContext('2d'), { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-
-              const legendTotal = data.reduce((a, b) => a + b, 0) || 1;
-              document.getElementById('acsStatusLegend').innerHTML = labels.map((lbl, i) => `
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="width:12px; height:12px; border-radius:50%; background:${colors[i]}; flex-shrink:0;"></span>
-                  <span style="flex:1; font-size:0.85rem; font-weight:700; color:var(--text-main);">${lbl}</span>
-                  <span style="font-size:1.05rem; font-weight:900; color:${colors[i]};" id="acsStatusLegendVal${i}">0</span>
-                  <span style="font-size:0.8rem; font-weight:800; color:var(--text-muted); min-width:38px; text-align:left;">${Math.round((data[i] / legendTotal) * 100)}%</span>
-                </div>`).join('');
-              labels.forEach((_, i) => animateCountUp(document.getElementById(`acsStatusLegendVal${i}`), data[i]));
-            }
-          } catch (e) {}
-        }
+        updateComplaintsSummaryCards(s);
 
         renderSupervisorPerformance(s.byInspector || {});
         renderComplaintsDashboard(s, 'an');
         renderTopCitiesPerformance(s.byCity || {});
         cmpDetailAllBranchesStats = s; // نحتفظ بنسخة "الكل" عشان فلتر الفروع الخاص بالتحليلات التفصيلية يرجعلها بسرعة
         buildCmpDetailBranchPills();
+      } catch (e) {}
+    }
+
+    // كارتَي "الالتزام بـSLA وأرقام البلاغات" و"توزيع البلاغات حسب الحالة" — دالة مستقلة عشان تتنادى من مكانين:
+    // التحميل العادي (بفلتر الفروع العام فوق الصفحة)، وفلتر الفروع الخاص بقسم التحليلات التفصيلية تحت (بطلب
+    // المستخدم إشراك الكارتين دول في نفس الفلتر ده كمان، مش بس الـ12 شارت).
+    function updateComplaintsSummaryCards(s) {
+      animateCountUp(document.getElementById('acsTotal'), s.total);
+      animateCountUp(document.getElementById('acsOpen'), s.openCount);
+      animateCountUp(document.getElementById('acsClosed'), s.closedCount);
+      animateCountUp(document.getElementById('acsReopened'), s.reopenedCount);
+      animateCountUp(document.getElementById('acsSla'), s.slaCompliancePct, '%');
+
+      // نسبة كل من "مفتوحة" و"مغلقة" من الإجمالي — رقم مكتوب + شريط بيمتلئ لنفس النسبة، بدل ما تكون
+      // "نسبة الإغلاق" كبسولة منفصلة زيادة (نفس الحساب أصلاً، بس مدموج جنب رقمه مباشرة أوضح للعين).
+      const openPct = s.total > 0 ? Math.round((s.openCount / s.total) * 100) : 0;
+      const closedPct = s.total > 0 ? Math.round((s.closedCount / s.total) * 100) : 0;
+      animateCountUp(document.getElementById('acsOpenPct'), openPct, '%)', 900, '(');
+      animateCountUp(document.getElementById('acsClosedPct'), closedPct, '%)', 900, '(');
+      setTimeout(() => {
+        document.getElementById('acsOpenBar').style.width = openPct + '%';
+        document.getElementById('acsClosedBar').style.width = closedPct + '%';
+      }, 50);
+
+      // حلقة SLA — بلون يعكس مستوى الالتزام (أخضر ممتاز، ذهبي متوسط، أحمر ضعيف)
+      const slaRing = document.getElementById('acsSlaRing');
+      const circumference = 314.159; const pct = Math.max(0, Math.min(100, s.slaCompliancePct));
+      slaRing.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+      slaRing.style.stroke = pct >= 70 ? '#34d399' : pct >= 40 ? '#eebb43' : '#f87171';
+
+      // توزيع البلاغات حسب الحالة التشغيلية — ليجند مخصص جنب الرسمة (بدل الليجند الافتراضي تحتها) يوضح
+      // النسبة المئوية لكل حالة صراحة، مش بس اللون في الرسمة
+      if (s.total === 0) {
+        showEmptyChartPlaceholder('acsStatusChart', 'لا توجد بيانات بلاغات بعد');
+        document.getElementById('acsStatusLegend').innerHTML = '';
+        return;
+      }
+      hideEmptyChartPlaceholder('acsStatusChart');
+      try {
+        if (typeof Chart !== 'undefined') {
+          const labels = ['مغلق', 'مفتوح', 'ملغى', 'موافقة الاستشاري قيد التنفيذ'];
+          const data = [s.closedCount, s.openCount, s.cancelledCount, s.consultantCount];
+          const colors = ['#10b981', '#f59e0b', '#94a3b8', '#a855f7'];
+          if (acsStatusChartInstance) { acsStatusChartInstance.data.datasets[0].data = data; acsStatusChartInstance.update('none'); }
+          else acsStatusChartInstance = new Chart(document.getElementById('acsStatusChart').getContext('2d'), { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+          const legendTotal = data.reduce((a, b) => a + b, 0) || 1;
+          document.getElementById('acsStatusLegend').innerHTML = labels.map((lbl, i) => `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="width:12px; height:12px; border-radius:50%; background:${colors[i]}; flex-shrink:0;"></span>
+              <span style="flex:1; font-size:0.85rem; font-weight:700; color:var(--text-main);">${lbl}</span>
+              <span style="font-size:1.05rem; font-weight:900; color:${colors[i]};" id="acsStatusLegendVal${i}">0</span>
+              <span style="font-size:0.8rem; font-weight:800; color:var(--text-muted); min-width:38px; text-align:left;">${Math.round((data[i] / legendTotal) * 100)}%</span>
+            </div>`).join('');
+          labels.forEach((_, i) => animateCountUp(document.getElementById(`acsStatusLegendVal${i}`), data[i]));
+        }
       } catch (e) {}
     }
 
@@ -3395,10 +3401,10 @@
     async function selectCmpDetailBranch(key) {
       cmpDetailSelectedBranch = key;
       buildCmpDetailBranchPills();
-      if (key === 'ALL') { renderComplaintsDashboard(cmpDetailAllBranchesStats, 'an'); return; }
-      if (cmpDetailBranchCache[key]) { renderComplaintsDashboard(cmpDetailBranchCache[key], 'an'); return; }
+      if (key === 'ALL') { updateComplaintsSummaryCards(cmpDetailAllBranchesStats); renderComplaintsDashboard(cmpDetailAllBranchesStats, 'an'); return; }
+      if (cmpDetailBranchCache[key]) { updateComplaintsSummaryCards(cmpDetailBranchCache[key]); renderComplaintsDashboard(cmpDetailBranchCache[key], 'an'); return; }
       const res = await apiCall('PULL_COMPLAINTS_STATS', { branches: [key] }, { timeoutMs: 60000 });
-      if (res.status === 'success') { cmpDetailBranchCache[key] = res.stats; renderComplaintsDashboard(res.stats, 'an'); }
+      if (res.status === 'success') { cmpDetailBranchCache[key] = res.stats; updateComplaintsSummaryCards(res.stats); renderComplaintsDashboard(res.stats, 'an'); }
       else showAlert(esc(res.message));
     }
 
