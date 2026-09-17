@@ -1282,6 +1282,7 @@
               <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:16px; font-size:0.95rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
               <button class="btn btn-outline hidden" id="complaintsDedupeBtn" style="padding:16px; font-size:0.95rem;" onclick="dedupeAllComplaints()">🧹 تنظيف التكرارات</button>
               <button class="btn btn-outline hidden" id="complaintsClearCacheBtn" style="padding:16px; font-size:0.95rem;" onclick="clearStatsCache()">🔄 مسح الكاش</button>
+              <button class="btn btn-outline hidden" id="complaintsRelinkBtn" style="padding:16px; font-size:0.95rem;" onclick="relinkComplaints()" title="أعد الربط بعد أي تغيير في تصنيف المدارس أو الفروع">🔗 إعادة ربط البلاغات بالمدارس</button>
             </div>
             <div id="complaintsImportProgress" class="hidden" style="margin-top:16px;">
               <div style="background:#f1f5f9; border-radius:8px; height:14px; overflow:hidden;"><div id="complaintsImportProgressBar" style="background:var(--tbc-petrol); height:100%; width:0%; transition:width 0.3s;"></div></div>
@@ -2235,7 +2236,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
-      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", RESTORE_BACKUP: "جاري استرجاع النسخة الاحتياطية...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", RESTORE_BACKUP: "جاري استرجاع النسخة الاحتياطية...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", RELINK_COMPLAINTS: "جاري إعادة ربط البلاغات بالمدارس...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
       EXPORT_COMPLAINTS_TABLE: "جاري تجهيز ملف التصدير...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESOLVE_SCHOOL_GOVERNORATES: "جاري تحديد محافظات المدارس...",
@@ -5547,6 +5548,7 @@
       document.getElementById('complaintsClearAllBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       document.getElementById('complaintsDedupeBtn')?.classList.toggle('hidden', !isPlanning);
       document.getElementById('complaintsClearCacheBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
+      document.getElementById('complaintsRelinkBtn')?.classList.toggle('hidden', !isPlanning);
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
@@ -5888,6 +5890,16 @@
     async function clearStatsCache() {
       const res = await apiCall('CLEAR_STATS_CACHE', {});
       if (res.status === 'success') { showAlert('✓ ' + res.message); loadComplaintsStats(); }
+      else showAlert(esc(res.message));
+    }
+
+    // إعادة ربط كل البلاغات بالمدارس ببياناتها الحالية — لازم بعد أي تغيير في تصنيف المدارس/الفروع، لأن الفرع
+    // والمشرف بيتخزّنوا داخل كل بلاغ لحظة استيراده ومش بيتحدّثوا تلقائياً لما بيانات المدرسة تتغيّر.
+    async function relinkComplaints() {
+      const ok = await showConfirm('🔗 هيتم إعادة ربط كل البلاغات بالمدارس حسب بياناتها الحالية (الفرع والمشرف). العملية آمنة ولا تحذف أي بلاغ. متابعة؟');
+      if (!ok) return;
+      const res = await apiCall('RELINK_COMPLAINTS', {}, { timeoutMs: 180000 });
+      if (res.status === 'success') { showAlert('✓ ' + res.message); logAudit('COMPLAINTS_RELINK', 'إعادة ربط البلاغات بالمدارس'); loadComplaintsStats(); }
       else showAlert(esc(res.message));
     }
 
