@@ -2226,7 +2226,7 @@
     // فقط في نهاية الطلب، فمفيش طريقة نعرف بيها نسبة الإنجاز الحقيقية أثناء التنفيذ. الهدف منه بصرياً هو
     // طمأنة المستخدم إن العملية شغالة والموقع مش معلّق، مش عرض رقم دقيق. لذلك يتقدّم بسرعة في البداية ثم
     // يتباطأ ويثبت عند 90% لحد ما يوصل رد فعلي من الخادم، وعندها يقفز لـ100% فوراً.
-    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS", "PULL_COMPLAINTS_TABLE", "GET_DRIVE_IMAGE", "LOGOUT"];
+    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS", "PULL_COMPLAINTS_TABLE", "GET_DRIVE_IMAGE", "LOGOUT", "CHECK_VERSION"];
     const ACTION_PROGRESS_LABELS = {
       ADD_REPORT: "جاري رفع التقرير...", UPDATE_REPORT: "جاري حفظ تعديلات التقرير...",
       APPROVE_REPORT: "جاري تحديث حالة التقرير...", CREATE_TICKET: "جاري إرسال التذكرة...",
@@ -2572,6 +2572,7 @@
       } catch (e) { return false; }
     }
 
+    let lastSeenDataVersion = null; // آخر رقم إصدار بيانات شافته الواجهة من الخادم
     async function pullFromCloud() {
       if(!currentSessionToken || pullInFlight) return;
       pullInFlight = true;
@@ -2582,6 +2583,7 @@
         pullInFlight = false;
       }
       if (resData.status === "success") {
+        if (resData.version !== undefined) lastSeenDataVersion = resData.version;
         applyPulledData(resData.data);
         saveDataSnapshot(resData.data);
       }
@@ -3273,7 +3275,20 @@
     // ================= Analytics & Dashboard =================
     // كانت المزامنة كل 20 ثانية أضيق من مهلة انتظار الطلب نفسها (20 ثانية أيضاً) — يعني لو طلب اتأخر شوية،
     // كان بيتحط طلب جديد فوقه فوراً بدل ما يستنى. رفعناها لـ30 ثانية عشان تدي مساحة كافية للرد يوصل عادي.
-    setInterval(() => { if (currentUser && currentSessionToken) pullFromCloud(); }, 30000);
+    // التحديث الدوري بقى خفيف: كل 60 ثانية بيسأل الخادم عن "رقم إصدار البيانات" بس (طلب لا يقرأ أي شيت)،
+    // وما بيسحب البيانات الكاملة إلا لو الرقم اتغيّر فعلاً. وبيتوقف تماماً لما التاب مش ظاهر (المستخدم في
+    // تاب تاني أو الشاشة مقفولة). ده بيقلل حمل الخادم بنسبة تفوق 90% ويخلي النظام يتحمل مئات المستخدمين.
+    async function pollForChanges() {
+      if (!currentUser || !currentSessionToken || document.hidden) return;
+      try {
+        const v = await apiCall('CHECK_VERSION', {});
+        if (v.status !== 'success') return;
+        if (lastSeenDataVersion !== null && String(v.version) === String(lastSeenDataVersion)) return; // مفيش جديد
+        await pullFromCloud();
+      } catch (e) {}
+    }
+    setInterval(pollForChanges, 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollForChanges(); }); // لحظة الرجوع للتاب
 
     function refreshAnalyticsDashboard(isSilent = false) {
       if (!currentUser || !schoolDataWrapper.list) return;
