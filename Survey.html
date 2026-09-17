@@ -1140,6 +1140,15 @@
             <p id="governorateResolveStatus" style="font-size:0.82rem; color:var(--text-muted); font-weight:700; margin-top:10px;"></p>
           </div>
 
+          <div class="card" id="schoolsBackupRestoreCard" style="border-right:4px solid var(--tbc-gold);">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; font-weight:900; margin-bottom:8px;">⏪ استرجاع آخر نسخة احتياطية</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">قبل أي استبدال كامل لبيانات المدارس أو النماذج (استيراد، حذف جماعي...) النظام بيحتفظ تلقائياً بنسخة من الوضع السابق. لو حصل مسح أو استيراد غلط، ترجّع الوضع اللي قبله بضغطة. (الاسترجاع نفسه بيحتفظ بالوضع الحالي كنسخة، فتقدر ترجع تاني لو غيّرت رأيك.)</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 18px;" onclick="restoreBackup('schools')">⏪ استرجاع المدارس</button>
+              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 18px;" onclick="restoreBackup('surveys')">⏪ استرجاع النماذج</button>
+            </div>
+          </div>
+
           <div class="card hidden" id="schoolsInspectorView">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900; margin-bottom:8px;">🏫 المدارس المسندة في عهدتك</h4>
             <p style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-bottom:20px;">يمكنك تحديث بيانات التواصل الخاصة بالمدارس في حال فتحت الإدارة الصلاحية.</p>
@@ -2147,7 +2156,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
-      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", RESTORE_BACKUP: "جاري استرجاع النسخة الاحتياطية...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
       EXPORT_COMPLAINTS_TABLE: "جاري تجهيز ملف التصدير...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESOLVE_SCHOOL_GOVERNORATES: "جاري تحديد محافظات المدارس...",
@@ -2412,6 +2421,20 @@
     // (كل 30 ثانية) حاولت تبعت طلب جديد قبل ما يخلص، كان ده بيسبب "طوفان" طلبات متزاحمة على نفس الخادم في
     // نفس اللحظة (خصوصاً وقت الضغط العالي أو لو رد الخادم اتأخر شوية)، وكل طلب زيادة بيبطّئ اللي قبله أكتر.
     let pullInFlight = false;
+    // غلاف موحّد لـ SYNC_GENERAL_DATA: الخادم بيرفض أي استبدال يقلّل البيانات أكتر من 20% (حماية من المسح
+    // بالخطأ أو من جلسة مخترقة) ويرجّع "SHRINK_GUARD:label:old:new" — هنا بنعرض الأرقام للمستخدم ونطلب تأكيداً
+    // صريحاً، وبعدها نعيد الإرسال بـ confirmShrink. الخادم كمان بيحتفظ بنسخة احتياطية قبل أي استبدال.
+    async function syncGeneralData(payload) {
+      let res = await apiCall('SYNC_GENERAL_DATA', payload);
+      const m = /^SHRINK_GUARD:(.+?):(\d+):(\d+)$/.exec(String(res.message || ''));
+      if (res.status !== 'success' && m) {
+        const ok = await showConfirm(`⚠️ تنبيه حماية البيانات\n\nالعملية دي هتقلّل عدد ${m[1]} من ${Number(m[2]).toLocaleString('en-US')} إلى ${Number(m[3]).toLocaleString('en-US')} (نقص ${Math.round((1 - m[3] / m[2]) * 100)}%).\n\nلو ده مقصود اضغط "تأكيد". هيتم حفظ نسخة احتياطية تلقائياً قبل التنفيذ ويمكن استرجاعها من إدارة المدارس.`);
+        if (!ok) return { status: 'error', message: 'تم إلغاء العملية حفاظاً على البيانات.' };
+        res = await apiCall('SYNC_GENERAL_DATA', Object.assign({}, payload, { confirmShrink: true }));
+      }
+      return res;
+    }
+
     // ---- فتح فوري للموقع (Stale-While-Revalidate) ----
     // بدل ما المستخدم يستنى شاشة فاضية لحد ما PULL_DATA يرجع (قراءة 6 شيتات كاملة من الخادم)، بنعرض
     // آخر نسخة بيانات اتحفظت محلياً في نفس اللحظة، وبعدين بنحدّث من الخادم في الخلفية. الفرق في الإحساس
@@ -2749,7 +2772,7 @@
       const mergedSurveys = surveys.slice();
       const mergeIdx = mergedSurveys.findIndex(s => String(s.id) === String(surveyPayload.id));
       if (mergeIdx > -1) mergedSurveys[mergeIdx] = surveyPayload; else mergedSurveys.push(surveyPayload);
-      const res = await apiCall('SYNC_GENERAL_DATA', { surveys: mergedSurveys });
+      const res = await syncGeneralData({ surveys: mergedSurveys });
       btn.disabled = false; btn.innerText = 'حفظ ونشر النموذج ✓';
 
       if (res.status === 'success') {
@@ -2774,7 +2797,7 @@
       }
 
       const mergedSurveys = surveys.filter(s => String(s.id) !== String(surveyId));
-      const res = await apiCall('SYNC_GENERAL_DATA', { surveys: mergedSurveys });
+      const res = await syncGeneralData({ surveys: mergedSurveys });
       if (res.status !== 'success') return showAlert(esc(res.message || 'تعذر حذف النموذج.'));
 
       surveys = mergedSurveys;
@@ -4616,6 +4639,15 @@
       }
     }
 
+    async function restoreBackup(target) {
+      const label = target === 'schools' ? 'المدارس' : 'النماذج';
+      const ok = await showConfirm(`⏪ هيتم استرجاع آخر نسخة احتياطية من ${label} واستبدال الوضع الحالي بها.\n\nالوضع الحالي هيتحفظ هو كمان كنسخة يمكن الرجوع لها. متأكد؟`);
+      if (!ok) return;
+      const res = await apiCall('RESTORE_BACKUP', { target });
+      if (res.status === 'success') { showAlert('✓ ' + res.message); logAudit('RESTORE_BACKUP', `استرجاع نسخة احتياطية: ${label}`); await pullFromCloud(); }
+      else showAlert(esc(res.message));
+    }
+
     function renderSchoolsManagement() {
       if(!currentUser) return;
       const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
@@ -4623,6 +4655,7 @@
       const views = ['schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4', 'pendingSchoolRequestsCard'];
       views.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isPlanning); });
       document.getElementById('schoolsGovernorateResolveCard')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
+      document.getElementById('schoolsBackupRestoreCard')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       
       const vInsp = document.getElementById('schoolsInspectorView'); if(vInsp) vInsp.classList.toggle('hidden', isPlanning);
 
@@ -4657,7 +4690,7 @@
 
     async function toggleSchoolEditPermission() {
       schoolDataWrapper.settings.allowInspectorEdit = document.getElementById('toggleInspectorEdit').checked;
-      const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+      const res = await syncGeneralData({ schools: schoolDataWrapper });
       if(res.status === "success") { logAudit('SETTINGS_CHANGE', `تغيير صلاحية تحديث المدارس للمشرفين إلى: ${schoolDataWrapper.settings.allowInspectorEdit ? 'مفعّلة' : 'معطّلة'}`); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
@@ -4679,7 +4712,7 @@
       else { schoolDataWrapper.list.push(schoolRecord); }
       
       document.getElementById('singleSchoolMinNo').value = ''; document.getElementById('singleSchoolName').value = ''; document.getElementById('singleSchoolEduAdmin').value = ''; document.getElementById('singleSchoolLng').value = ''; document.getElementById('singleSchoolLat').value = ''; document.getElementById('singleSchoolGender').value = ''; document.getElementById('singleSchoolBuildingCategory').value = ''; document.getElementById('singleSchoolIsRented').checked = false;
-      const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+      const res = await syncGeneralData({ schools: schoolDataWrapper });
       if(res.status === "success") { logAudit('SCHOOL_SYNC', `${exists > -1 ? 'تحديث' : 'إضافة'} مدرسة: ${name} → المشرف: ${inspectorDisplay}`); showAlert('✓ تم الحفظ وربط المدرسة بالمشرف بنجاح!'); pullFromCloud(); } else showAlert(esc(res.message));
     }
 
@@ -4693,7 +4726,9 @@
     }
 
     // كلمة مرور مؤقتة موحّدة للحسابات التي يُنشئها استيراد المدارس تلقائياً (أرقام 1-9، 9 خانات) — يُطلب تغييرها فوراً عند أول دخول
-    const SCHOOL_IMPORT_TEMP_PASSWORD = 'Tbc@123456'; // يجب أن تحقق شرط قوة كلمة المرور الجديد (كبير+صغير+رقم+رمز)
+    // كلمات المرور المؤقتة للحسابات التي يُنشئها الاستيراد بقت عشوائية لكل حساب ويولّدها الخادم (generateTempPassword)
+    // بدل كلمة موحّدة معلنة في الكود كان أي حد يقدر يدخل بيها بحساب موظف جديد قبل أول تسجيل له.
+    let importCredentialsLog = [];
 
     function generateUsernameFromName(name, sessionMap, preferredEmail) {
       const isValidEmail = preferredEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(preferredEmail.trim());
@@ -4704,11 +4739,21 @@
       return candidate;
     }
 
+    // ملف بيانات الدخول المؤقتة للحسابات الجديدة — يُعرض مرة واحدة فقط وقت الاستيراد (الخادم لا يحتفظ بالكلمة
+    // كنص، بيخزّن الهاش بس)، فالأدمن لازم يوزّعها فوراً ويحذف الملف بعدها.
+    function downloadImportCredentials() {
+      if (typeof XLSX === 'undefined' || importCredentialsLog.length === 0) return;
+      const rows = [["الاسم", "الرمز الوظيفي (اسم الدخول)", "الدور", "البريد الإلكتروني", "كلمة المرور المؤقتة"]].concat(importCredentialsLog.map(r => [r.name, r.username, r.role, r.email, r.password]));
+      const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "بيانات الدخول");
+      XLSX.writeFile(wb, `بيانات_دخول_الحسابات_الجديدة_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+
     async function handleExcelUpload(event) {
       const file = event.target.files[0]; if (!file) return;
       const willSendEmail = document.getElementById('schoolsBulkSendEmailNotify')?.checked === true;
-      const proceed = await showConfirm(`أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً (وكذلك "المدير المباشر" كحساب مدير إشراف لو غير موجود)، بكلمة مرور مؤقتة موحّدة (Tbc@123456)، وسيُطلب تغييرها فور أول دخول.\n\n${willSendEmail ? '📧 خيار إرسال إشعار بريدي مفعّل — سيصل إيميل ببيانات الدخول لكل حساب مشرف جديد له بريد إلكتروني بالملف.' : '📧 خيار إرسال إشعار بريدي غير مفعّل — لن تُرسل أي إيميلات، وعليك تبليغ المشرفين ببياناتهم يدوياً.'}\n\nهل تريد المتابعة؟`);
+      const proceed = await showConfirm(`أي مشرف اسمه في الملف غير مسجّل حالياً كحساب في النظام سيتم إنشاء حساب جديد له تلقائياً (وكذلك "المدير المباشر" و"مدير القطاع" كحسابات إدارية لو غير موجودة)، بكلمة مرور مؤقتة عشوائية مختلفة لكل حساب، وسيُطلب تغييرها فور أول دخول. في نهاية الاستيراد هيتم تنزيل ملف Excel ببيانات الدخول لكل الحسابات الجديدة — احتفظ به بأمان.\n\n${willSendEmail ? '📧 خيار إرسال إشعار بريدي مفعّل — سيصل إيميل ببيانات الدخول لكل حساب مشرف جديد له بريد إلكتروني بالملف.' : '📧 خيار إرسال إشعار بريدي غير مفعّل — لن تُرسل أي إيميلات، وعليك تبليغ المشرفين ببياناتهم يدوياً.'}\n\nهل تريد المتابعة؟`);
       if (!proceed) { event.target.value = ''; return; }
+      importCredentialsLog = [];
 
       const reader = new FileReader();
       reader.onload = async function(e) {
@@ -4771,10 +4816,10 @@
               const newUsername = generateUsernameFromName(mgrName, {});
               const createRes = await apiCall('CREATE_USER', {
                 username: newUsername, fullName: mgrName, email: '', phone: '',
-                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_SUPERVISION_LEAD', branch: 'الكل', sendEmailNotification: false,
+                generateTempPassword: true, role: 'ROLE_SUPERVISION_LEAD', branch: 'الكل', sendEmailNotification: false,
                 permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
               });
-              if (createRes.status === 'success') { usersList = createRes.users; mgrUser = usersList.find(u => u.username === newUsername); managersCreated++; }
+              if (createRes.status === 'success') { usersList = createRes.users; mgrUser = usersList.find(u => u.username === newUsername); managersCreated++; importCredentialsLog.push({ name: mgrName, username: newUsername, role: 'مدير إشراف', email: '', password: createRes.tempPassword || '' }); }
             }
             if (mgrUser) managerUsernameMap[mgrName] = mgrUser.username;
           }
@@ -4788,10 +4833,10 @@
               const newUsername = generateUsernameFromName(boName, {}, info.email);
               const createRes = await apiCall('CREATE_USER', {
                 username: newUsername, fullName: boName, email: info.email, phone: '',
-                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_BRANCH_OFFICE', branch: info.branch, sendEmailNotification: false,
+                generateTempPassword: true, role: 'ROLE_BRANCH_OFFICE', branch: info.branch, sendEmailNotification: false,
                 permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
               });
-              if (createRes.status === 'success') { usersList = createRes.users; branchOfficeManagersCreated++; }
+              if (createRes.status === 'success') { usersList = createRes.users; branchOfficeManagersCreated++; importCredentialsLog.push({ name: boName, username: newUsername, role: 'إدارة المكتب الفرعي', email: info.email, password: createRes.tempPassword || '' }); }
             }
           }
 
@@ -4808,11 +4853,11 @@
               const newUsername = generateUsernameFromName(inspName, {}, info.email);
               const createRes = await apiCall('CREATE_USER', {
                 username: newUsername, fullName: inspName, email: info.email, phone: info.phone,
-                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch: info.branch, sendEmailNotification: willSendEmail,
+                generateTempPassword: true, role: 'ROLE_INSPECTOR', branch: info.branch, sendEmailNotification: willSendEmail,
                 permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
                 nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager, supervisorType: info.supervisorType
               });
-              if (createRes.status === 'success') { usersList = createRes.users; inspUser = usersList.find(u => u.username === newUsername); accountsCreated++; }
+              if (createRes.status === 'success') { usersList = createRes.users; inspUser = usersList.find(u => u.username === newUsername); accountsCreated++; importCredentialsLog.push({ name: inspName, username: newUsername, role: 'مشرف ميداني', email: info.email, password: createRes.tempPassword || '' }); }
             }
             if (inspUser) inspectorUsernameMap[inspName] = inspUser.username;
           }
@@ -4833,7 +4878,7 @@
             added++;
           });
 
-          const res = await apiCall("SYNC_GENERAL_DATA", { schools: schoolDataWrapper });
+          const res = await syncGeneralData({ schools: schoolDataWrapper });
           if(res.status === "success") {
             // تحديث ملفات المشرفين الذين كان لهم حساب من قبل (الجوال، الايميل، الجنسية، الشهادة، الخبرة، تاريخ الالتحاق، المدير المباشر)
             let supervisorsUpdated = 0;
@@ -4853,9 +4898,10 @@
             }
 
             let msg = `✓ تمت العملية بنجاح!\nتم استيراد وربط [ ${added} ] مدرسة.\nتم تحديث بيانات [ ${supervisorsUpdated} ] مشرف كان له حساب مسبقاً.`;
-            if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: Tbc@123456 (سيُطلب من كل واحد تغييرها فور أول دخول). ${willSendEmail ? 'وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.' : 'لم يتم إرسال أي إيميلات (الخيار كان معطّلاً) — يرجى تبليغهم ببياناتهم يدوياً.'}`;
-            if (managersCreated > 0) msg += `\n👤 تم إنشاء [ ${managersCreated} ] حساب "مدير إشراف" جديد تلقائياً من عمود "المدير المباشر"، بنفس كلمة المرور المؤقتة.`;
-            if (branchOfficeManagersCreated > 0) msg += `\n🏢 تم إنشاء [ ${branchOfficeManagersCreated} ] حساب "إدارة المكتب الفرعي" جديد تلقائياً من عمود "مدير القطاع لشركة تطوير"، بنفس كلمة المرور المؤقتة.`;
+            if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، لكل واحد كلمة مرور مؤقتة عشوائية مختلفة (سيُطلب تغييرها فور أول دخول). ${willSendEmail ? 'وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.' : 'لم يتم إرسال أي إيميلات (الخيار كان معطّلاً).'}`;
+            if (managersCreated > 0) msg += `\n👤 تم إنشاء [ ${managersCreated} ] حساب "مدير إشراف" جديد تلقائياً من عمود "المدير المباشر".`;
+            if (branchOfficeManagersCreated > 0) msg += `\n🏢 تم إنشاء [ ${branchOfficeManagersCreated} ] حساب "إدارة المكتب الفرعي" جديد تلقائياً من عمود "مدير القطاع لشركة تطوير".`;
+            if (importCredentialsLog.length > 0) { downloadImportCredentials(); msg += `\n🔐 تم تنزيل ملف Excel ببيانات الدخول المؤقتة لـ [ ${importCredentialsLog.length} ] حساب جديد — احتفظ به بأمان واحذفه بعد التوزيع (لن يُعرض مرة أخرى).`; }
             if (unresolved > 0) msg += `\n⚠️ تعذّر ربط [ ${unresolved} ] مدرسة بحساب مشرف — راجعها يدوياً من نموذج الإضافة اليدوية.`;
             logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب مشرف جديد، ${managersCreated} حساب مدير إشراف جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
             showAlert(msg);
