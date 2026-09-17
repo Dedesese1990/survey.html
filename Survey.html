@@ -70,14 +70,23 @@
     /* ================= App Layout ================= */
     .app-layout { display: flex; flex-direction: row; min-height: calc(100vh - 75px); }
 
-    .sidebar { width: 260px; background-color: var(--tbc-petrol-sidebar); box-shadow: -2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex-shrink: 0; z-index: 900; }
-    .sidebar-title { color: #b0c4de; font-size: 0.85rem; font-weight: 500; padding: 24px 24px 10px; letter-spacing: 0.5px; }
-    .sidebar-menu { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
-    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: #e2e8f0; font-weight: 500; font-size: 0.82rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border-right: 4px solid transparent; white-space: nowrap; }
+    /* الشريط الجانبي: عرض مطوي 72px (أيقونات فقط) وبيتوسّع لـ260px عند مرور الماوس. المحتوى الرئيسي بيبدأ
+       من بعد العرض المطوي دايماً، والتوسّع بيطفو فوقه (position:absolute داخل حاوية ثابتة العرض) عشان
+       الصفحة ما تنطّش يميناً ويساراً مع كل مرور ماوس. */
+    .app-layout { position: relative; }
+    .sidebar { position: absolute; top: 0; right: 0; height: 100%; width: 72px; z-index: 900; background-color: var(--tbc-petrol-sidebar); box-shadow: -2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; transition: width 0.22s ease, box-shadow 0.22s ease; }
+    .sidebar:hover, .sidebar.sb-pinned { width: 260px; box-shadow: -6px 0 24px rgba(0,0,0,0.18); }
+    .sidebar-title { color: #b0c4de; font-size: 0.85rem; font-weight: 500; padding: 24px 24px 10px; letter-spacing: 0.5px; white-space: nowrap; opacity: 0; transition: opacity 0.15s; }
+    .sidebar:hover .sidebar-title, .sidebar.sb-pinned .sidebar-title { opacity: 1; }
+    .sidebar-menu { display: flex; flex-direction: column; gap: 4px; padding: 14px 12px 0; }
+    .sidebar:hover .sidebar-menu, .sidebar.sb-pinned .sidebar-menu { padding-top: 0; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; color: #dbe7ec; font-weight: 500; font-size: 0.82rem; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; border-right: 4px solid transparent; white-space: nowrap; }
+    .sidebar-item .sb-ico { width: 22px; height: 22px; flex-shrink: 0; stroke: currentColor; }
+    .sidebar-item .sb-label { opacity: 0; transition: opacity 0.15s ease 0.05s; }
+    .sidebar:hover .sidebar-item .sb-label, .sidebar.sb-pinned .sidebar-item .sb-label { opacity: 1; }
     .sidebar-item:hover { background-color: rgba(255,255,255,0.08); color: #ffffff; }
     .sidebar-item.active { background-color: rgba(255,255,255,0.15); color: var(--tbc-gold); border-right-color: var(--tbc-gold); font-weight: 800; }
-
-    .main-content { flex: 1; padding: 24px; width: calc(100% - 260px); }
+    .main-content { flex: 1; padding: 24px; margin-right: 72px; width: calc(100% - 72px); min-width: 0; }
     .card { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: box-shadow 0.3s; }
     .hidden { display: none !important; }
 
@@ -163,6 +172,32 @@
     .an-card-desc { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin: -8px 0 14px; }
     .an-card-link { margin-top: auto; padding-top: 12px; text-align: left; }
     .an-card-link span { color: var(--tbc-petrol); font-weight: 800; font-size: 0.8rem; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+    .analytics-header-pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .analytics-header-pills .btn { font-size: 0.8rem; padding: 8px 14px; width: auto; }
+    .analytics-survey-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .analytics-survey-filter-row label { font-size: 0.82rem; font-weight: 800; color: var(--tbc-petrol-dark); margin: 0; white-space: nowrap; }
+    .analytics-survey-filter-row select { width: auto; max-width: 100%; font-size: 0.85rem; padding: 8px 14px; font-weight: 700; border-radius: 999px; }
+    /* ================= المساعد الذكي: زرار عائم + لوحة محادثة ================= */
+    #aiFab { position: fixed; bottom: 22px; left: 22px; z-index: 9000; width: 56px; height: 56px; border-radius: 50%; border: none; background: linear-gradient(135deg, var(--tbc-petrol-dark), var(--tbc-petrol)); color: #fff; font-size: 1.5rem; cursor: pointer; box-shadow: var(--shadow-lift); display: flex; align-items: center; justify-content: center; }
+    #aiPanel { position: fixed; bottom: 90px; left: 22px; z-index: 9001; width: min(420px, calc(100vw - 32px)); height: min(600px, calc(100vh - 120px)); background: #fff; border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: var(--shadow-lift); display: flex; flex-direction: column; overflow: hidden; direction: rtl; }
+    #aiPanel .ai-head { background: linear-gradient(135deg, var(--tbc-petrol-dark), var(--tbc-petrol)); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+    #aiPanel .ai-head b { font-size: 0.95rem; }
+    #aiPanel .ai-head button { background: rgba(255,255,255,0.15); border: none; color: #fff; border-radius: 8px; padding: 4px 10px; cursor: pointer; font-weight: 800; }
+    #aiMessages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--bg-canvas); }
+    .ai-msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.7; word-wrap: break-word; }
+    .ai-msg.user { align-self: flex-start; background: var(--tbc-petrol); color: #fff; }
+    .ai-msg.assistant { align-self: flex-end; background: #fff; border: 1px solid var(--border-subtle); color: var(--text-main); }
+    .ai-msg.assistant table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 0.82rem; }
+    .ai-msg.assistant th, .ai-msg.assistant td { border: 1px solid var(--border-subtle); padding: 5px 8px; text-align: right; }
+    .ai-msg.assistant th { background: var(--tbc-petrol-light); }
+    .ai-msg.assistant h1, .ai-msg.assistant h2, .ai-msg.assistant h3 { font-size: 1rem; margin: 8px 0 4px; color: var(--tbc-petrol-dark); }
+    .ai-msg.assistant ul { padding-right: 18px; margin: 4px 0; }
+    .ai-msg-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .ai-msg-actions button { font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-subtle); background: #fff; color: var(--tbc-petrol-dark); font-weight: 800; cursor: pointer; }
+    #aiInputRow { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--border-subtle); background: #fff; }
+    #aiInputRow textarea { flex: 1; resize: none; font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; height: 44px; }
+    #aiInputRow button { width: auto; padding: 0 16px; font-size: 0.85rem; }
+    .ai-typing { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; padding: 4px 8px; }
     .an-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; align-items: stretch; }
     .an-grid-2 > .an-card { margin-bottom: 0; }
     @media (max-width: 760px) { .an-grid-2 { grid-template-columns: 1fr; } }
@@ -261,12 +296,14 @@
     /* ================= Mobile Adjustments ================= */
     @media (max-width: 992px) {
       .app-layout { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; position: static; padding: 5px; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--tbc-petrol); -webkit-overflow-scrolling: touch; }
+      .sidebar, .sidebar:hover, .sidebar.sb-pinned { width: 100%; height: auto; position: static; padding: 5px; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--tbc-petrol); -webkit-overflow-scrolling: touch; box-shadow: none; }
       .sidebar-title { display: none; }
       .sidebar-menu { display: flex; flex-direction: row; gap: 8px; padding: 0 5px; }
-      .sidebar-item { border-right: none; border-bottom: 4px solid transparent; padding: 12px 14px; border-radius: 0; font-size: 0.78rem; white-space: normal; }
+      .sidebar-item { border-right: none; border-bottom: 4px solid transparent; padding: 12px 14px; border-radius: 0; font-size: 0.78rem; white-space: normal; flex-direction: column; gap: 6px; }
+      .sidebar-item .sb-label { opacity: 1; }
+      .sidebar-item .sb-ico { width: 20px; height: 20px; }
       .sidebar-item.active { border-right-color: transparent; border-bottom-color: var(--tbc-gold); border-radius: 8px 8px 0 0; }
-      .main-content { padding: 16px 12px; width: 100%; }
+      .main-content { padding: 16px 12px; width: 100%; margin-right: 0; }
       .card { padding: 20px 16px; margin-bottom: 16px; }
     }
 
@@ -362,6 +399,9 @@
                 <button class="profile-menu-item hidden" id="permissionsReportMenuItem" onclick="openPermissionsReport(); window.closeProfileMenu();">
                   <span>📊</span> <span>تقرير الصلاحيات</span>
                 </button>
+                <button class="profile-menu-item hidden" id="permissionsEditorMenuItem" onclick="openPermissionsEditor(); window.closeProfileMenu();">
+                  <span>✏️</span> <span>تعديل الصلاحيات</span>
+                </button>
                 <button class="profile-menu-item logout-item" onclick="logout(); window.closeProfileMenu();">
                   <span>🚪</span> <span>تسجيل الخروج من المنظومة</span>
                 </button>
@@ -401,35 +441,45 @@
 
   <!-- ================= Main App View ================= -->
   <div id="appView" class="hidden">
+    <button id="aiFab" class="hidden" onclick="toggleAiPanel()" title="المساعد الذكي">🤖</button>
+    <div id="aiPanel" class="hidden">
+      <div class="ai-head"><b>🤖 المساعد الذكي</b><div style="display:flex; gap:6px;"><button onclick="clearAiChat()" title="محادثة جديدة">↺</button><button onclick="toggleAiPanel()">✕</button></div></div>
+      <div id="aiMessages"></div>
+      <div id="aiInputRow">
+        <textarea id="aiInput" placeholder="اسأل عن البيانات أو اطلب تقريراً..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMessage();}"></textarea>
+        <button class="btn btn-petrol" onclick="sendAiMessage()">إرسال</button>
+      </div>
+    </div>
     <div class="app-layout">
       
       <!-- Professional Sidebar -->
-      <aside class="sidebar">
+      <!-- الشريط الجانبي: مطوي افتراضياً (أيقونات بس) وبيتفتح عند مرور الماوس؛ أيقونات خطية بلون واحد -->
+      <aside class="sidebar" id="mainSidebar">
         <div class="sidebar-title">القائمة الرئيسية للمنظومة</div>
         <div class="sidebar-menu">
-          <div class="sidebar-item active" id="tabAnalytics" onclick="showTab('analytics')">
-            <span style="font-size:1.1rem;">📊</span> <span>لوحة المؤشرات والتحليلات</span>
+          <div class="sidebar-item active" id="tabAnalytics" onclick="showTab('analytics')" title="لوحة المؤشرات والتحليلات">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 3 5-6"/></svg><span class="sb-label">لوحة المؤشرات والتحليلات</span>
           </div>
-          <div class="sidebar-item" id="tabSurveys" onclick="showTab('surveys')">
-            <span style="font-size:1.1rem;">📋</span> <span>نماذج وعمليات الحصر</span>
+          <div class="sidebar-item" id="tabSurveys" onclick="showTab('surveys')" title="نماذج وعمليات الحصر">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span class="sb-label">نماذج وعمليات الحصر</span>
           </div>
-          <div class="sidebar-item" id="tabRecords" onclick="showTab('records')">
-            <span style="font-size:1.1rem;">📑</span> <span>السجلات والاعتمادات</span>
+          <div class="sidebar-item" id="tabRecords" onclick="showTab('records')" title="السجلات والاعتمادات">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l4 4v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 14l2 2 4-4"/></svg><span class="sb-label">السجلات والاعتمادات</span>
           </div>
-          <div class="sidebar-item hidden" id="tabSchools" onclick="showTab('schools')">
-            <span style="font-size:1.1rem;">🏫</span> <span>إدارة المدارس والبيانات</span>
+          <div class="sidebar-item hidden" id="tabSchools" onclick="showTab('schools')" title="إدارة المدارس والبيانات">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-5h4v5"/></svg><span class="sb-label">إدارة المدارس والبيانات</span>
           </div>
-          <div class="sidebar-item" id="tabComplaints" onclick="showTab('complaints')">
-            <span style="font-size:1.1rem;">🚨</span> <span>البلاغات</span>
+          <div class="sidebar-item" id="tabComplaints" onclick="showTab('complaints')" title="البلاغات">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 16.5H2.5L12 3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="sb-label">البلاغات</span>
           </div>
-          <div class="sidebar-item hidden" id="tabUsers" onclick="showTab('users')">
-            <span style="font-size:1.1rem;">👥</span> <span>إدارة الهيكل والمستخدمين</span>
+          <div class="sidebar-item hidden" id="tabUsers" onclick="showTab('users')" title="إدارة الهيكل والمستخدمين">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 15.5a5 5 0 0 1 6.5 4.5"/></svg><span class="sb-label">إدارة الهيكل والمستخدمين</span>
           </div>
-          <div class="sidebar-item hidden" id="tabAuditLog" onclick="showTab('auditLog')">
-            <span style="font-size:1.1rem;">🧾</span> <span>سجل التدقيق</span>
+          <div class="sidebar-item hidden" id="tabAuditLog" onclick="showTab('auditLog')" title="سجل التدقيق">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h6"/><path d="M9 8h2"/></svg><span class="sb-label">سجل التدقيق</span>
           </div>
-          <div class="sidebar-item" id="tabSupport" onclick="showTab('support')">
-            <span style="font-size:1.1rem;">🎫</span> <span>الدعم الفني</span>
+          <div class="sidebar-item" id="tabSupport" onclick="showTab('support')" title="الدعم الفني">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/><path d="M12 6v12" stroke-dasharray="2 2"/></svg><span class="sb-label">الدعم الفني</span>
           </div>
         </div>
       </aside>
@@ -444,13 +494,11 @@
               <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.25rem; font-weight:900;">📈 المؤشرات التنفيذية ونسب الإنجاز</h3>
               <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="analyticsScopeNote">متابعة الأداء الحي لعمليات الحصر الميداني</p>
             </div>
-            <div class="action-buttons-mobile" style="display:flex; gap:10px; align-items:center;">
-              <select id="analyticsSurveyFilter" style="width:auto; font-size:0.88rem; padding:10px 16px; font-weight:700;" onchange="refreshAnalyticsDashboard(false)">
-                <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
-              </select>
-              <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="document.getElementById('branchFilterPanel').classList.remove('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
-              <button class="btn btn-outline" style="font-size:0.85rem; padding:10px 16px;" onclick="refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
-              <button class="btn btn-gold" style="font-size:0.85rem; padding:10px 16px;" onclick="exportAnalyticsPDF()">📤 تصدير تقرير PDF شامل</button>
+            <!-- نفس أسلوب كبسولات "أعلى المدارس": أزرار مضغوطة بتلف طبيعي بدل ما تتمدّ بعرض الشاشة كله على الموبايل -->
+            <div class="analytics-header-pills">
+              <button type="button" class="btn btn-outline" onclick="document.getElementById('branchFilterPanel').classList.remove('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
+              <button class="btn btn-outline" onclick="__forceStatsRefresh = true; refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
+              <button class="btn btn-gold" onclick="exportAnalyticsPDF()">📤 تصدير تقرير PDF شامل</button>
             </div>
           </div>
 
@@ -719,6 +767,13 @@
 
           <!-- ============ القسم 2: عمليات الحصر ============ -->
           <div id="analyticsSectionOperations" class="analytics-section hidden">
+            <!-- فلتر عملية الحصر: خاص بهذا القسم فقط (ما له معنى في قسم المدارس/البلاغات) فاتنقل هنا من الهيدر -->
+            <div class="analytics-survey-filter-row">
+              <label for="analyticsSurveyFilter">📋 عملية الحصر:</label>
+              <select id="analyticsSurveyFilter" onchange="refreshAnalyticsDashboard(false)">
+                <option value="ALL">-- عرض إجمالي كافة عمليات الحصر --</option>
+              </select>
+            </div>
             <div class="exec-section-head">
               <span class="exec-section-tag" style="background:var(--tbc-gold);"></span>
               <div>
@@ -1105,7 +1160,7 @@
                 <h3 style="color:var(--tbc-petrol-dark); margin-bottom:4px; font-size:1.2rem;">🚨 بلاغات الدعم الموحد</h3>
                 <p style="font-size:0.85rem; font-weight:600; color:var(--text-muted);" id="complaintsScopeNote">تحليل أداء وأنماط البلاغات</p>
               </div>
-              <button class="btn btn-outline" id="complaintsRefreshBtn" style="font-size:0.85rem; padding:10px 16px;" onclick="loadComplaintsStats()">تحديث ↺</button>
+              <button class="btn btn-outline" id="complaintsRefreshBtn" style="font-size:0.85rem; padding:10px 16px;" onclick="loadComplaintsStats(true)">تحديث ↺</button>
             </div>
             <div class="action-buttons-mobile" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
               <div style="flex:1; min-width:130px;"><label style="font-size:0.8rem; margin-bottom:4px;">من تاريخ</label><input type="date" id="cmpFilterFrom" onchange="loadComplaintsStats()"></div>
@@ -1128,6 +1183,7 @@
               <input type="file" id="complaintsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsExcelUpload(event)">
               <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:16px; font-size:0.95rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
               <button class="btn btn-outline hidden" id="complaintsDedupeBtn" style="padding:16px; font-size:0.95rem;" onclick="dedupeAllComplaints()">🧹 تنظيف التكرارات</button>
+              <button class="btn btn-outline hidden" id="complaintsClearCacheBtn" style="padding:16px; font-size:0.95rem;" onclick="clearStatsCache()">🔄 مسح الكاش</button>
             </div>
             <div id="complaintsImportProgress" class="hidden" style="margin-top:16px;">
               <div style="background:#f1f5f9; border-radius:8px; height:14px; overflow:hidden;"><div id="complaintsImportProgressBar" style="background:var(--tbc-petrol); height:100%; width:0%; transition:width 0.3s;"></div></div>
@@ -1588,6 +1644,22 @@
     </div>
   </div>
 
+  <!-- محرّر مصفوفة الصلاحيات: نفس الجدول اللي في التقرير، لكن بمربعات اختيار قابلة للتعديل -->
+  <div id="permissionsEditorModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:min(92vw, 900px);">
+      <h3 style="color:var(--tbc-petrol-dark); margin-bottom:6px; font-size:1.3rem;">✏️ تعديل مصفوفة الصلاحيات</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:16px;">حدّد مين يشوف كل تاب ويقدر يعمل كل صلاحية. التعديل بيُطبَّق على كل المستخدمين فور الحفظ. لازم يفضل دور إداري واحد على الأقل معه "إدارة المستخدمين" و"تعديل الصلاحيات" — الأعمدة دي مقفولة على أدوار الإدارة الكاملة لمنع قفل الوصول بالغلط.</p>
+      <div style="max-height:60vh; overflow:auto; border:1px solid var(--border-subtle); border-radius:10px;">
+        <table class="data-table" id="permEditorTable" style="font-size:0.8rem; white-space:nowrap;"><thead></thead><tbody></tbody></table>
+      </div>
+      <div class="action-buttons-mobile" style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+        <button class="btn btn-gold" style="flex:1;" onclick="savePermissionsEditor()">💾 حفظ التعديلات</button>
+        <button class="btn btn-outline" onclick="resetPermissionsEditor()">↺ إرجاع الكل للافتراضي</button>
+        <button class="btn btn-outline" onclick="document.getElementById('permissionsEditorModal').classList.add('hidden')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <div id="ticketDetailModal" class="modal-overlay hidden">
     <div class="modal-content" style="max-width:640px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
@@ -1958,9 +2030,24 @@
         { key: 'sendBroadcast', label: 'إرسال إشعار / تعميم', roles: FULL_ADMIN_ROLES },
         { key: 'delegateApproval', label: 'تفويض صلاحية الاعتماد', roles: FULL_ADMIN_ROLES.concat(MANAGER_ROLES) },
         { key: 'viewPermissionsReport', label: 'عرض تقرير الصلاحيات هذا', roles: ['ROLE_PLANNING', 'ROLE_SUPPORT'] },
+        { key: 'editPermissions', label: 'تعديل مصفوفة الصلاحيات', roles: FULL_ADMIN_ROLES },
       ]
     };
     function roleHasAccess(entryRoles, role) { return entryRoles === 'ALL' || entryRoles.includes(role); }
+
+    // نسخة أصلية من الصلاحيات الافتراضية (زي ما هي مكتوبة في الكود) — تُستخدم لإرجاع أي صف لوضعه الافتراضي
+    // في محرّر الصلاحيات، ولاكتشاف الصفوف المخصَّصة فعلياً (لو عدد الأدوار مختلف عن النسخة الأصلية).
+    const PERMISSIONS_MATRIX_DEFAULTS = { tabs: {}, actions: {} };
+    PERMISSIONS_MATRIX.tabs.forEach(t => { PERMISSIONS_MATRIX_DEFAULTS.tabs[t.key] = t.roles === 'ALL' ? 'ALL' : t.roles.slice(); });
+    PERMISSIONS_MATRIX.actions.forEach(a => { PERMISSIONS_MATRIX_DEFAULTS.actions[a.key] = a.roles === 'ALL' ? 'ALL' : a.roles.slice(); });
+
+    // تُدمَج فوق الافتراضي وقت تحميل بيانات المستخدم في كل مرة — أي مفتاح تاب/صلاحية غير موجود في التخصيص
+    // المحفوظ يفضل على قيمته الافتراضية زي ما هي، فإضافة تاب جديد للكود لاحقاً ميحتاجش أي تعديل هنا.
+    function applyPermissionsOverrides(overrides) {
+      const ov = overrides || {};
+      PERMISSIONS_MATRIX.tabs.forEach(t => { if (ov.tabs && ov.tabs[t.key] !== undefined) t.roles = ov.tabs[t.key]; else t.roles = PERMISSIONS_MATRIX_DEFAULTS.tabs[t.key]; });
+      PERMISSIONS_MATRIX.actions.forEach(a => { if (ov.actions && ov.actions[a.key] !== undefined) a.roles = ov.actions[a.key]; else a.roles = PERMISSIONS_MATRIX_DEFAULTS.actions[a.key]; });
+    }
 
 
     // يبحث عن حساب المشرف المطابق لنص (يقبل الرمز الوظيفي أو الاسم الكامل) — يُستخدم لربط المدارس بالمشرفين بشكل موثوق
@@ -2047,7 +2134,7 @@
     // فقط في نهاية الطلب، فمفيش طريقة نعرف بيها نسبة الإنجاز الحقيقية أثناء التنفيذ. الهدف منه بصرياً هو
     // طمأنة المستخدم إن العملية شغالة والموقع مش معلّق، مش عرض رقم دقيق. لذلك يتقدّم بسرعة في البداية ثم
     // يتباطأ ويثبت عند 90% لحد ما يوصل رد فعلي من الخادم، وعندها يقفز لـ100% فوراً.
-    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS", "PULL_COMPLAINTS_TABLE", "GET_DRIVE_IMAGE"];
+    const SILENT_BACKGROUND_ACTIONS = ["PULL_DATA", "LOG_AUDIT_EVENT", "MARK_NOTIFICATION_READ", "PULL_COMPLAINTS_STATS", "PULL_COMPLAINTS_TABLE", "GET_DRIVE_IMAGE", "LOGOUT"];
     const ACTION_PROGRESS_LABELS = {
       ADD_REPORT: "جاري رفع التقرير...", UPDATE_REPORT: "جاري حفظ تعديلات التقرير...",
       APPROVE_REPORT: "جاري تحديث حالة التقرير...", CREATE_TICKET: "جاري إرسال التذكرة...",
@@ -2060,7 +2147,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
-      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
       EXPORT_COMPLAINTS_TABLE: "جاري تجهيز ملف التصدير...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESOLVE_SCHOOL_GOVERNORATES: "جاري تحديد محافظات المدارس...",
@@ -2286,6 +2373,20 @@
       } else showAlert(esc(res.message || 'تعذر إرسال طلب التسجيل.'));
     }
 
+    // إظهار/إخفاء كل تاب وكل عنصر مرتبط بصلاحية حسب مصفوفة الصلاحيات المركزية (مصدر واحد للحقيقة يغذّي
+    // أيضاً تقرير الصلاحيات ومحرّرها) — دالة منفصلة عشان تتنادى فور حفظ تعديل على الصلاحيات، من غير ما
+    // المستخدم يحتاج يعمل تسجيل خروج ودخول تاني عشان التغيير ينعكس.
+    function applyRoleBasedUiVisibility() {
+      PERMISSIONS_MATRIX.tabs.forEach(t => {
+        document.getElementById('tab' + t.key.charAt(0).toUpperCase() + t.key.slice(1))?.classList.toggle('hidden', !roleHasAccess(t.roles, currentUser.role));
+      });
+      document.getElementById('notificationBroadcastBtnWrap')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'sendBroadcast').roles, currentUser.role));
+      document.getElementById('permissionsReportMenuItem')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'viewPermissionsReport').roles, currentUser.role));
+      document.getElementById('permissionsEditorMenuItem')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'editPermissions').roles, currentUser.role));
+      // "مشرف البلاغات": يرى البلاغات والمدارس والمشرفين، ولا يرى قسم عمليات الحصر داخل لوحة المؤشرات إطلاقاً
+      document.querySelector('.analytics-subnav-btn[data-key="operations"]')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.tabs.find(t => t.key === 'surveys').roles, currentUser.role));
+    }
+
     function loginSuccess() {
       document.getElementById('loginView').classList.add('hidden'); document.getElementById('appView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.remove('hidden');
       document.getElementById('helpGuideBtn')?.classList.remove('hidden');
@@ -2295,19 +2396,13 @@
       const isPlanning = FULL_ADMIN_ROLES.includes(currentUser.role); // "إدارة القطاع الشرقي" و"الدعم الفني" لهم نفس صلاحيات إدارة التخطيط حالياً
       const canDelegate = isPlanning || MANAGER_ROLES.includes(currentUser.role);
       document.getElementById('adminPanel')?.classList.toggle('hidden', !isPlanning);
-      // إظهار/إخفاء كل تاب حسب مصفوفة الصلاحيات المركزية (مصدر واحد للحقيقة يغذّي أيضاً تقرير الصلاحيات)
-      PERMISSIONS_MATRIX.tabs.forEach(t => {
-        document.getElementById('tab' + t.key.charAt(0).toUpperCase() + t.key.slice(1))?.classList.toggle('hidden', !roleHasAccess(t.roles, currentUser.role));
-      });
+      applyRoleBasedUiVisibility();
       document.getElementById('delegateMenuItem')?.classList.toggle('hidden', !canDelegate);
       document.getElementById('adminFilterSection')?.classList.toggle('hidden', !canDelegate);
       document.getElementById('notificationBellContainer')?.classList.remove('hidden');
-      document.getElementById('notificationBroadcastBtnWrap')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'sendBroadcast').roles, currentUser.role));
-      document.getElementById('permissionsReportMenuItem')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.actions.find(a => a.key === 'viewPermissionsReport').roles, currentUser.role));
-      // "مشرف البلاغات": يرى البلاغات والمدارس والمشرفين، ولا يرى قسم عمليات الحصر داخل لوحة المؤشرات إطلاقاً
-      document.querySelector('.analytics-subnav-btn[data-key="operations"]')?.classList.toggle('hidden', !roleHasAccess(PERMISSIONS_MATRIX.tabs.find(t => t.key === 'surveys').roles, currentUser.role));
       // نعرض آخر نسخة محلية فوراً (لو موجودة لنفس المستخدم) عشان الصفحة تظهر بمحتوى في نفس اللحظة،
       // وبعدين pullFromCloud بيحدّثها من الخادم في الخلفية — الترتيب مهم: العرض المحلي الأول ثم التحديث
+      document.getElementById('aiFab')?.classList.remove('hidden');
       restoreDataSnapshot();
       pullFromCloud(); showTab('analytics');
       logAudit('LOGIN', `تسجيل دخول`);
@@ -2325,6 +2420,8 @@
     function applyPulledData(data) {
       if (data.surveys) surveys = data.surveys; if (data.responses) responses = data.responses; if (data.schools) schoolDataWrapper = data.schools; if (data.users) usersList = data.users;
       pendingRegistrations = data.pendingRegistrations || []; pendingSchoolRequests = data.pendingSchoolRequests || []; tickets = data.tickets || []; notifications = data.notifications || [];
+      applyPermissionsOverrides(data.permissionsOverrides || {});
+      applyRoleBasedUiVisibility();
       if (!schoolDataWrapper.list) schoolDataWrapper.list = [];
       if (!schoolDataWrapper.settings) schoolDataWrapper.settings = {};
       if (!schoolDataWrapper.logs) schoolDataWrapper.logs = [];
@@ -2369,7 +2466,7 @@
       }
     }
 
-    function logout() { logAudit('LOGOUT', 'تسجيل خروج'); currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); localStorage.removeItem(DATA_SNAPSHOT_KEY); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); document.getElementById('helpGuideBtn')?.classList.add('hidden'); }
+    function logout() { logAudit('LOGOUT', 'تسجيل خروج'); try { apiCall('LOGOUT', {}); } catch (e) {} currentUser = null; currentSessionToken = null; localStorage.removeItem('tbc_session_token'); localStorage.removeItem('tbc_current_user'); localStorage.removeItem(DATA_SNAPSHOT_KEY); document.getElementById('aiFab')?.classList.add('hidden'); document.getElementById('aiPanel')?.classList.add('hidden'); document.getElementById('appView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); document.getElementById('profileDropdownContainer').classList.add('hidden'); document.getElementById('helpGuideBtn')?.classList.add('hidden'); }
     function forceLogout() { showAlert("انتهت الجلسة."); logout(); }
 
     window.toggleProfileMenu = function(e) { if (e) e.stopPropagation(); document.getElementById('notificationPanel')?.classList.add('hidden'); document.getElementById('profileMenu').classList.toggle('hidden'); };
@@ -3120,7 +3217,8 @@
         const branchFilter = getSelectedAnalyticsBranches();
         // مهلة أطول من المعتاد: حساب مؤشرات البلاغات (متوسطات، اتجاه يومي...) على عشرات الآلاف من الصفوف
         // عملية ثقيلة نسبياً، والمهلة الافتراضية (30 ثانية) مش كافية دايماً مع كمية بيانات كبيرة.
-        const res = await apiCall('PULL_COMPLAINTS_STATS', { branches: branchFilter || [] }, { timeoutMs: 60000 });
+        const forceRefresh = __forceStatsRefresh === true; __forceStatsRefresh = false;
+        const res = await apiCall('PULL_COMPLAINTS_STATS', { branches: branchFilter || [], forceRefresh }, { timeoutMs: 60000 });
         if (res.status !== 'success') {
           document.getElementById('analyticsComplaintsSummaryEmpty').classList.remove('hidden');
           document.getElementById('analyticsComplaintsSummaryContent').classList.add('hidden');
@@ -3179,6 +3277,7 @@
     // يفلتر القائمة التانية بيه بس) — بيانات نصاب المدارس تُحسب من البيانات المحمّلة أصلاً في المتصفح (بدون
     // أي طلب إضافي للخادم)، وبيانات البلاغات جاية من s.byInspector المحسوبة أصلاً مع باقي إحصائيات البلاغات.
     let lastByInspectorComplaints = {};
+    let __forceStatsRefresh = false; // زرار "تحديث يدوي" بيرفعها عشان الطلب التالي يتجاوز كاش الخادم
     let selectedSupervisorUsername = null;
 
     function renderSupervisorPerformance(byInspectorComplaints) {
@@ -3847,19 +3946,14 @@
     // ================= دليل الاستخدام حسب الصلاحية (قابل للطباعة كـ PDF) =================
     // يرسم شكلاً توضيحياً مصغّراً للشريط الجانبي مع تظليل التبويب المقصود — بديل عن لقطة شاشة حقيقية
     // (لا توجد أداة لالتقاط لقطات فعلية من الموقع المنشور).
-    function buildSidebarMockup(highlightIndex) {
-      const tabs = [
-        { icon: '📊', label: 'لوحة المؤشرات والتحليلات' },
-        { icon: '📋', label: 'نماذج وعمليات الحصر' },
-        { icon: '📑', label: 'السجلات والاعتمادات' },
-        { icon: '🏫', label: 'إدارة المدارس والبيانات' },
-        { icon: '👥', label: 'إدارة الهيكل والمستخدمين' },
-        { icon: '🧾', label: 'سجل التدقيق' }
-      ];
-      return `<div style="background:#2b5460; border-radius:10px; padding:10px; width:190px; flex-shrink:0;">
-        ${tabs.map((t, i) => `<div style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:6px; margin-bottom:4px; ${i === highlightIndex ? 'background:rgba(255,255,255,0.18); border-right:4px solid #eebb43;' : ''} color:#fff; font-size:11px; font-weight:${i === highlightIndex ? '900' : '500'};">
-          ${i === highlightIndex ? '<span style="color:#eebb43;">◄</span>' : '<span style="width:10px;"></span>'}<span>${t.icon}</span><span>${esc(t.label)}</span>
-        </div>`).join('')}
+    // رسمة الشريط الجانبي في الدليل بتتبنى من PERMISSIONS_MATRIX.tabs مباشرة (نفس مصدر التابات الحقيقية)،
+    // فأي تاب جديد يتضاف للنظام يظهر هنا تلقائياً بدون تعديل يدوي. التمييز بمفتاح التاب مش برقم ترتيب ثابت.
+    function buildSidebarMockup(highlightKey, role) {
+      const tabs = PERMISSIONS_MATRIX.tabs.filter(t => !role || roleHasAccess(t.roles, role));
+      return `<div style="background:#2b5460; border-radius:10px; padding:10px; width:200px; flex-shrink:0;">
+        ${tabs.map(t => { const on = t.key === highlightKey; return `<div style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; margin-bottom:4px; ${on ? 'background:rgba(255,255,255,0.18); border-right:4px solid #eebb43;' : ''} color:#fff; font-size:11px; font-weight:${on ? '900' : '500'};">
+          ${on ? '<span style="color:#eebb43;">◄</span>' : '<span style="width:10px;"></span>'}<span>${esc(t.label)}</span>
+        </div>`; }).join('')}
       </div>`;
     }
     function buildProfileMenuMockup() {
@@ -3945,78 +4039,117 @@
       return ['حاليًا لا توجد صلاحية إدارية إضافية على المدارس لهذا الدور غير المتاحة لإدارة التخطيط — هذا القسم مُخصَّص لها فقط.'];
     }
 
-    const GUIDE_SECTION_BUILDERS = [
-      { icon: '📊', title: 'لوحة المؤشرات والتحليلات', sidebarIndex: 0, allRoles: true,
-        purpose: 'نظرة سريعة وشاملة على أداء عمليات الحصر الميداني كله في مكان واحد.',
+    // محتوى الدليل لكل تاب بمفتاحه. الأقسام نفسها (وترتيبها، ومين يشوفها) بتيجي من PERMISSIONS_MATRIX.tabs —
+    // فأي تاب جديد يظهر في الدليل تلقائياً حتى لو ما اتكتبتش له خطوات بعد (بيظهر بنص افتراضي واضح بدل ما يختفي).
+    const GUIDE_STEPS_BY_TAB = {
+      analytics: { purpose: 'نظرة تنفيذية شاملة: المدارس والمباني، حالة البلاغات، أداء المشرفين، وعمليات الحصر — كلها بفلتر فروع واحد فوق الصفحة.',
         steps: (role) => {
           const s = [
-            'من الشريط الجانبي، دوس على "📊 لوحة المؤشرات والتحليلات" (أول عنصر).',
-            'فوق هتلاقي كروت بالأرقام (إجمالي، بانتظار الاعتماد، معتمدة، متأخرة عن 48 ساعة). دوس على أي كارت وهيفلترلك جدول السجلات تلقائيًا.',
-            'تحت كده: رسم بياني لتقدم رفع التقارير أسبوعيًا، ومخطط دائري لنسبة "مطابق" مقابل "غير مطابق".',
-            '"تغطية المدارس" بتوريك أي مدرسة تحت مسؤوليتك لسه ما اتزارتش، وخريطة تفاعلية بآخر حالة معروفة لكل مدرسة.'
+            'الصفحة مقسومة لقسمين من الزرارين فوق: "المدارس والمباني والبلاغات" و"عمليات الحصر".',
+            'زرار "🏢 كل الفروع" فوق بيفلتر كل الصفحة مرة واحدة (بلاطات المدارس، ملخص البلاغات، أداء المشرفين، المدن، والشارت).',
+            'قسم المدارس: بلاطة كبيرة لإجمالي المباني، وبلاطات صغيرة للمدارس والمشرفين والمستأجرة والمعاهد والإدارية، ثم توزيع الجنس.',
+            'قسم البلاغات: دايرة الالتزام بـSLA، وكبسولات (إجمالي/مفتوحة/مغلقة بنسبتها) و"معاد فتحها"، ثم التحليلات التفصيلية وتحت كل واحدة رابط "عرض التفاصيل الكاملة" يوديك لتاب البلاغات.',
+            '"أداء المشرفين": نصاب المدارس والأكثر بلاغات جنب بعض — دوس على اسم مشرف في أي قائمة تفلتر التانية بيه بس.',
+            '"المدن الأعلى" و"المدارس مقابل البلاغات": ترتيب المدن ومقارنة بيانية بينهم.',
+            'قسم "عمليات الحصر": نسبة الإنجاز، المعتمدة/قيد الاعتماد، متأخرة عن 48 ساعة (مع زرار مشاركة تنبيه)، وقائمة عملية الحصر بتظهر في القسم ده بس.',
+            'الأرقام بتعدّ تصاعدياً أول ما الصفحة تفتح — ده طبيعي مش تأخير.'
           ];
-          if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) s.push('هتلاقي كمان جدول "أداء المشرفين الميدانيين" في آخر الصفحة يوضح إنتاجية كل مشرف ونسبة قبول تقاريره من أول مرة.');
+          if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) s.push('في قسم عمليات الحصر هتلاقي جدول "أداء المشرفين الميدانيين" والخريطة الميدانية وتغطية المدارس.');
+          s.push('"📤 تصدير تقرير PDF شامل" بيفتح نسخة قابلة للطباعة من نفس الصفحة بآخر بيانات.');
           return s;
-        }
-      },
-      { icon: '📋', title: 'نماذج وعمليات الحصر', sidebarIndex: 1, allRoles: true,
-        purpose: 'هنا بتتم تعبئة نماذج الفحص الميدانية، أو إنشاؤها وإدارتها حسب صلاحيتك.',
-        steps: (role) => ['من الشريط الجانبي دوس "📋 نماذج وعمليات الحصر".'].concat(getSurveysGuideSteps(role))
-      },
-      { icon: '📑', title: 'السجلات والاعتمادات', sidebarIndex: 2, allRoles: true,
-        purpose: 'هنا تراجع كل التقارير المرفوعة، وتعتمدها أو ترفضها حسب صلاحيتك، وتصدّرها.',
-        steps: (role) => ['من الشريط الجانبي دوس "📑 السجلات والاعتمادات".'].concat(getRecordsGuideSteps(role))
-      },
-      { icon: '🏫', title: 'إدارة المدارس والبيانات', sidebarIndex: 3, allRoles: true,
-        purpose: 'قاعدة بيانات المدارس وربطها بالمشرفين المسؤولين عنها.',
-        steps: (role) => ['من الشريط الجانبي دوس "🏫 إدارة المدارس والبيانات".'].concat(getSchoolsGuideSteps(role))
-      },
-      { icon: '👥', title: 'إدارة الهيكل والمستخدمين', sidebarIndex: 4, allRoles: false, onlyRoles: FULL_ADMIN_ROLES,
-        purpose: 'إدارة كل حسابات النظام — إضافة، تعديل، إيقاف، حذف، ومراجعة طلبات التسجيل الجديدة.',
+        } },
+      surveys: { purpose: 'هنا بتتم تعبئة نماذج الفحص الميدانية، أو إنشاؤها وإدارتها حسب صلاحيتك.', steps: (role) => getSurveysGuideSteps(role) },
+      records: { purpose: 'مراجعة كل التقارير المرفوعة، اعتمادها أو رفضها حسب صلاحيتك، وتصديرها.', steps: (role) => getRecordsGuideSteps(role) },
+      schools: { purpose: 'قاعدة بيانات المدارس وربطها بالمشرفين المسؤولين عنها.',
+        steps: (role) => { const s = getSchoolsGuideSteps(role); if (FULL_ADMIN_ROLES.includes(role)) s.push('زرار "🌍 تحديد محافظات المدارس تلقائياً": شغّله مرة (أو أكتر لو المدارس كتير) عشان قوائم "المدن الأعلى" في لوحة المؤشرات تشتغل.'); return s; } },
+      complaints: { purpose: 'إحصائيات بلاغات الدعم الموحد (الصيانة والدعم) ضمن نطاقك، مع جدول تفصيلي قابل للبحث والتصدير.',
+        steps: (role) => {
+          const s = [
+            'فوق: فلاتر التاريخ والفروع والمشرف. افتراضياً بيعرض البلاغات من 10 أغسطس 2026 لتسريع التحميل — امسح "من تاريخ" لعرض فترة أقدم.',
+            'الكروت العلوية: الإجمالي، المفتوحة، المغلقة، SLA، متوسط زمن الاستجابة، معاد فتحها، معدل الإغلاق، مدارس رفعت بلاغات.',
+            'الشارتات: الحالة التشغيلية، الأولوية، التصنيف، المرحلة، نوع المبنى، المدن، الاتجاه اليومي، التراكمي، SLA اليومي، أعلى المدارس (Top 20 بتبويبات)، مقارنة المناطق، والخريطة الحرارية.',
+            'في الآخر "📋 جدول البلاغات": بحث برقم البلاغ/المدرسة/الوصف، زرار "🧩 الأعمدة" لاختيار الأعمدة، ترقيم صفحات، و"📤 تصدير Excel" للأعمدة المختارة بنفس الفلاتر.'
+          ];
+          if (SCHOOLS_MANAGE_ROLES.includes(role)) s.push('الاستيراد: "📤 رفع ملف البلاغات" (ملف "كل البلاغات" اليومي) — الروتين المقترح: "🗑️ مسح كل البلاغات" ثم رفع الملف كامل، والتكرارات بتتنضف تلقائياً بعد الرفع (وفيه زرار "🧹 تنظيف التكرارات" يدوي كمان).');
+          if (FULL_ADMIN_ROLES.includes(role)) s.push('"🔄 مسح الكاش": لو عدّلت شيت البلاغات يدوياً أو عايز تتأكد إن الأرقام حديثة فوراً.');
+          return s;
+        } },
+      users: { purpose: 'إدارة كل حسابات النظام — إضافة، تعديل، إيقاف، حذف، ومراجعة طلبات التسجيل الجديدة.',
         steps: () => [
-          'من الشريط الجانبي دوس "👥 إدارة الهيكل والمستخدمين" (يظهر لإدارة التخطيط فقط).',
           'لو فيه طلبات تسجيل جديدة من صفحة الدخول، هتلاقيها فوق في كارت أصفر — دوس "قبول واعتماد ✓" أو "رفض ✕".',
-          'تقدر تضيف مستخدم يدويًا، أو تستورد عدد كبير دفعة واحدة عبر Excel (الاستيراد بيحدّث الموجودين ويضيف الجدد من غير ما يمسح حد).',
-          'من الجدول تقدر: تعدّل بياناته، تعيّن له كلمة مرور جديدة، توقف حسابه مؤقتًا، أو تحذفه نهائيًا.'
-        ]
-      },
-      { icon: '🧾', title: 'سجل التدقيق', sidebarIndex: 5, allRoles: false, onlyRoles: FULL_ADMIN_ROLES,
-        purpose: 'سجل كامل بكل عملية مهمة حصلت في النظام — للمراجعة والمساءلة.',
+          'تقدر تضيف مستخدم يدوياً، أو تستورد عدد كبير دفعة واحدة عبر Excel (الاستيراد بيحدّث الموجودين ويضيف الجدد من غير ما يمسح حد).',
+          'من الجدول تقدر: تعدّل بياناته، تعيّن له كلمة مرور جديدة، توقف حسابه مؤقتاً، أو تحذفه نهائياً.'
+        ] },
+      auditLog: { purpose: 'سجل كامل بكل عملية مهمة حصلت في النظام — للمراجعة والمساءلة.',
+        steps: () => ['هتلاقي جدول بآخر 500 عملية: الوقت، المستخدم، نوع الإجراء، والتفاصيل.', 'دوس "تحديث ↺" لجلب أحدث الأحداث.'] },
+      support: { purpose: 'تذاكر الدعم الفني: بلّغ عن مشكلة في النظام وتابع الرد عليها.',
+        steps: (role) => {
+          const s = [
+            '"🎫 تذكرة جديدة": اكتب عنوان وتفاصيل المشكلة، وتقدر ترفق **صورة توضيحية** (اختياري) — الصور بتتصغّر تلقائياً قبل الرفع.',
+            'دوس على أي تذكرة لفتح المحادثة والرد عليها، وتقدر ترفق صورة مع أي رد.',
+            'حالات التذكرة: مفتوحة → قيد المعالجة → مغلقة.'
+          ];
+          if (FULL_ADMIN_ROLES.includes(role) || role === 'ROLE_SUPPORT') s.push('بصفتك دعم/إدارة بتشوف كل التذاكر وتقدر تغيّر حالتها من نافذة التذكرة.');
+          else s.push('بتشوف تذاكرك أنت فقط.');
+          return s;
+        } }
+    };
+
+    // أقسام عامة مش مربوطة بتاب معيّن (متاحة لكل الأدوار)
+    const GUIDE_GENERAL_SECTIONS = [
+      { icon: '🤖', title: 'المساعد الذكي', purpose: 'مساعد يجاوب على أسئلتك عن بياناتك ويجهّز تقارير جاهزة للتصدير — محصور بنطاق صلاحيتك تلقائياً.',
         steps: () => [
-          'من الشريط الجانبي دوس "🧾 سجل التدقيق".',
-          'هتلاقي جدول بآخر 500 عملية: الوقت، المستخدم، نوع الإجراء، والتفاصيل.',
-          'دوس "تحديث ↺" لجلب أحدث الأحداث.'
-        ]
-      }
+          'الزرار العائم 🤖 أسفل الشاشة بيفتح المحادثة. اسأل بالعربي زي: "كام بلاغ مفتوح في الأحساء؟" أو "مين أعلى 3 مشرفين بلاغات؟".',
+          'اطلب تقرير: "اعملّي تقرير مختصر عن حالة البلاغات" — وتحت رده أزرار "📄 PDF" و"📊 Excel" (لو فيه جدول) و"📋 نسخ".',
+          'بيعتمد على الإحصائيات الموجودة بس ومش بيخمّن أرقام — لو المعلومة مش متاحة هيقولك. زرار ↺ يبدأ محادثة جديدة.'
+        ] },
+      { icon: '🔔', title: 'الإشعارات وحسابك', purpose: 'المتابعة اليومية والإعدادات الشخصية من أعلى الصفحة.',
+        steps: (role) => {
+          const s = [
+            'جرس الإشعارات 🔔: تنبيهات الاعتماد/الرفض والتعميمات. الرقم الأحمر = غير مقروءة.',
+            'اسمك أعلى الصفحة يفتح قايمة: تغيير كلمة المرور، وتسجيل الخروج.',
+            'زرار "؟" بيفتح هذا الدليل (مخصص لصلاحيتك)، وبتقدر تطبعه أو تحفظه PDF.'
+          ];
+          if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) s.push('"🔄 تفويض صلاحية الاعتماد": لو هتكون غير متاح (إجازة مثلاً)، فوّض صلاحية الاعتماد لشخص تاني مؤقتاً بتاريخ نهاية، وتقدر تلغيه في أي وقت.');
+          return s;
+        } }
     ];
 
     function buildUserGuideHtml(role) {
       const roleLabel = ROLE_LABELS[role] || role;
-      const sections = GUIDE_SECTION_BUILDERS
-        .filter(sec => sec.allRoles || (sec.onlyRoles && sec.onlyRoles.includes(role)))
-        .map(sec => buildGuideSectionHtml(sec.icon, sec.title, buildSidebarMockup(sec.sidebarIndex), sec.purpose, sec.steps(role)))
-        .join('');
-
-      let delegationSection = '';
-      if (FULL_ADMIN_ROLES.includes(role) || MANAGER_ROLES.includes(role)) {
-        delegationSection = buildGuideSectionHtml('🔄', 'تفويض صلاحية الاعتماد المؤقت', buildProfileMenuMockup(),
-          'لو هتكون غير متاح لفترة (إجازة مثلاً)، تقدر تدّي صلاحية الاعتماد بتاعتك لشخص تاني مؤقتًا.',
-          ['دوس على اسمك أعلى يمين الصفحة، واختار "🔄 تفويض صلاحية الاعتماد".',
-           'اختار الشخص اللي هيتولى الصلاحية وحدد تاريخ نهاية التفويض.',
-           'من نفس النافذة تقدر تلغي أي تفويض قائم في أي وقت.']);
-      }
+      const visibleTabs = PERMISSIONS_MATRIX.tabs.filter(t => roleHasAccess(t.roles, role));
+      const tabSections = visibleTabs.map((t, i) => {
+        const def = GUIDE_STEPS_BY_TAB[t.key];
+        const icon = (t.label.match(/^\S+/) || [''])[0];
+        const title = t.label.replace(/^\S+\s*/, '');
+        const purpose = def ? def.purpose : (t.note || 'قسم متاح لصلاحيتك.');
+        const steps = [`من الشريط الجانبي دوس "${t.label}".`].concat(def ? def.steps(role) : ['التفاصيل الكاملة لهذا القسم هتتضاف للدليل قريباً.']);
+        return { anchor: 'guide-' + t.key, icon, title, html: buildGuideSectionHtml(icon, `${i + 1}. ${title}`, buildSidebarMockup(t.key, role), purpose, steps) };
+      });
+      const generalSections = GUIDE_GENERAL_SECTIONS.map((g, i) => ({ anchor: 'guide-g' + i, icon: g.icon, title: g.title, html: buildGuideSectionHtml(g.icon, `${tabSections.length + i + 1}. ${g.title}`, buildProfileMenuMockup(), g.purpose, g.steps(role)) }));
+      const all = tabSections.concat(generalSections);
+      const toc = all.map(s => `<li><a href="#${s.anchor}" style="color:#276270; font-weight:800; text-decoration:none;">${s.icon} ${esc(s.title)}</a></li>`).join('');
 
       return `
-        <div style="display:flex; align-items:center; gap:10px; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px;">
-          <span style="background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px;">TBC</span>
-          <div>
-            <div style="font-weight:900; font-size:17px; color:#276270;">دليل استخدام بوابة الحصر الشامل</div>
-            <div style="font-weight:700; font-size:13px; color:#5e7782;">حسب صلاحية: ${esc(roleLabel)}</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:3px solid #37889b; padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="background:#37889b; color:#fff; font-weight:900; font-size:20px; padding:6px 14px; border-radius:6px;">TBC</span>
+            <div>
+              <div style="font-weight:900; font-size:17px; color:#276270;">دليل استخدام بوابة الحصر الشامل</div>
+              <div style="font-weight:700; font-size:13px; color:#5e7782;">حسب صلاحية: ${esc(roleLabel)} — ${esc(currentUser?.fullName || '')}</div>
+            </div>
           </div>
+          <div style="font-size:12px; font-weight:700; color:#5e7782;">تاريخ الإصدار: ${new Date().toLocaleDateString('ar-SA-u-ca-gregory')}</div>
         </div>
-        <p style="font-size:12px; color:#536e7a; font-weight:600; margin-bottom:20px;">هذا الدليل مُعدّ خصيصاً لعرض الأقسام والعمليات المتاحة لصلاحيتك الحالية فقط. الرسومات أدناه توضيحية لمكان كل ميزة في الشريط الجانبي، وليست لقطات شاشة فعلية.</p>
-        ${sections}
-        ${delegationSection}
+        <p style="font-size:12px; color:#536e7a; font-weight:600; margin-bottom:14px;">هذا الدليل يُولَّد تلقائياً حسب الأقسام المتاحة لصلاحيتك الحالية فقط. الرسومات توضيحية لمكان كل ميزة في الشريط الجانبي.</p>
+        <div style="background:#f8fafc; border:1px solid #d0dfe5; border-radius:10px; padding:14px 18px; margin-bottom:22px;">
+          <div style="font-weight:900; color:#276270; margin-bottom:8px;">📑 المحتويات</div>
+          <ol style="margin:0; padding-right:20px; line-height:2; columns:2; column-gap:24px;">${toc}</ol>
+        </div>
+        ${all.map(s => `<div id="${s.anchor}">${s.html}</div>`).join('')}
+        <div style="margin-top:24px; padding:14px 18px; background:#fefce8; border:1px solid #eebb43; border-radius:10px; font-size:12px; font-weight:700; color:#5e5232;">
+          💡 محتاج مساعدة؟ استخدم المساعد الذكي 🤖 أو افتح تذكرة من "🎫 الدعم الفني".
+        </div>
       `;
     }
 
@@ -4027,6 +4160,78 @@
       window.scrollTo(0, 0);
     }
     function closeUserGuide() { document.getElementById('userGuideOverlay').classList.add('hidden'); }
+
+    // ================= محرّر مصفوفة الصلاحيات (تفاعلي) =================
+    // نسخة عمل مؤقتة (draft) بيتم التعديل عليها في الشاشة، ومفيش أي حفظ فعلي إلا بعد الضغط على "حفظ التعديلات"
+    // وتأكيد صريح — عشان محدش يغيّر صلاحية بالخطأ بمجرد فتح النافذة أو الضغط بالغلط على مربع اختيار.
+    let permEditorDraft = null;
+    const PERM_LOCKED_KEYS = { tabs: ['users'], actions: ['editPermissions'] }; // أعمدة مقفولة لأدوار الإدارة الكاملة دايماً
+
+    function openPermissionsEditor() {
+      permEditorDraft = { tabs: {}, actions: {} };
+      PERMISSIONS_MATRIX.tabs.forEach(t => { permEditorDraft.tabs[t.key] = t.roles === 'ALL' ? ALL_ROLES_ORDERED.slice() : t.roles.slice(); });
+      PERMISSIONS_MATRIX.actions.forEach(a => { permEditorDraft.actions[a.key] = a.roles === 'ALL' ? ALL_ROLES_ORDERED.slice() : a.roles.slice(); });
+      renderPermissionsEditor();
+      document.getElementById('permissionsEditorModal').classList.remove('hidden');
+    }
+
+    function renderPermissionsEditor() {
+      const table = document.getElementById('permEditorTable');
+      const headHtml = `<tr><th style="text-align:right;">التاب / الصلاحية</th>${ALL_ROLES_ORDERED.map(r => `<th style="text-align:center;">${esc(ROLE_LABELS[r] || r)}</th>`).join('')}</tr>`;
+      function buildRows(entries, section) {
+        return entries.map(e => {
+          const isLocked = PERM_LOCKED_KEYS[section].includes(e.key);
+          return `<tr>
+            <td style="text-align:right; font-weight:800; background:#f8fafc;">${esc(e.label)}${isLocked ? ' <span title="مقفول على أدوار الإدارة الكاملة دايماً" style="cursor:help;">🔒</span>' : ''}</td>
+            ${ALL_ROLES_ORDERED.map(r => {
+              const checked = permEditorDraft[section][e.key].includes(r);
+              const lockedForRole = isLocked && FULL_ADMIN_ROLES.includes(r);
+              return `<td style="text-align:center;"><input type="checkbox" ${checked ? 'checked' : ''} ${lockedForRole ? 'disabled title="مقفول لأدوار الإدارة الكاملة"' : ''} onchange="togglePermEditorCell('${section}','${e.key}','${r}',this.checked)"></td>`;
+            }).join('')}
+          </tr>`;
+        }).join('');
+      }
+      table.querySelector('thead').innerHTML = headHtml;
+      table.querySelector('tbody').innerHTML =
+        `<tr><td colspan="${ALL_ROLES_ORDERED.length + 1}" style="background:var(--tbc-petrol-light); font-weight:900;">🗂️ الوصول للتابات</td></tr>` + buildRows(PERMISSIONS_MATRIX.tabs, 'tabs') +
+        `<tr><td colspan="${ALL_ROLES_ORDERED.length + 1}" style="background:var(--tbc-petrol-light); font-weight:900;">🔐 الصلاحيات التفصيلية</td></tr>` + buildRows(PERMISSIONS_MATRIX.actions, 'actions');
+    }
+
+    function togglePermEditorCell(section, key, role, isChecked) {
+      const list = permEditorDraft[section][key];
+      const idx = list.indexOf(role);
+      if (isChecked && idx === -1) list.push(role);
+      else if (!isChecked && idx > -1) list.splice(idx, 1);
+      // حماية إضافية في الواجهة (غير كافية لوحدها): لو صف مقفول وخلاص معاهش ولا دور إدارة كاملة، نرجّع آخر دور اتشال فوراً
+      if (PERM_LOCKED_KEYS[section].includes(key) && !FULL_ADMIN_ROLES.some(r => list.includes(r))) {
+        list.push(role);
+        showAlert('لازم يفضل دور إداري واحد على الأقل معه هذه الصلاحية، منعاً لقفل الوصول عن الجميع بالغلط.');
+        renderPermissionsEditor();
+      }
+    }
+
+    function resetPermissionsEditor() {
+      PERMISSIONS_MATRIX.tabs.forEach(t => { permEditorDraft.tabs[t.key] = PERMISSIONS_MATRIX_DEFAULTS.tabs[t.key] === 'ALL' ? ALL_ROLES_ORDERED.slice() : PERMISSIONS_MATRIX_DEFAULTS.tabs[t.key].slice(); });
+      PERMISSIONS_MATRIX.actions.forEach(a => { permEditorDraft.actions[a.key] = PERMISSIONS_MATRIX_DEFAULTS.actions[a.key] === 'ALL' ? ALL_ROLES_ORDERED.slice() : PERMISSIONS_MATRIX_DEFAULTS.actions[a.key].slice(); });
+      renderPermissionsEditor();
+    }
+
+    async function savePermissionsEditor() {
+      const confirmed = await showConfirm('⚠️ سيتم تطبيق هذا التعديل على صلاحيات كل المستخدمين في النظام فوراً بعد الحفظ. متأكد من المتابعة؟');
+      if (!confirmed) return;
+      // 'ALL' بدل قائمة كاملة بكل الأدوار — أوضح وأخف في التخزين، ومطابق لصيغة الافتراضي في الكود
+      const overrides = { tabs: {}, actions: {} };
+      Object.keys(permEditorDraft.tabs).forEach(k => { const list = permEditorDraft.tabs[k]; overrides.tabs[k] = list.length === ALL_ROLES_ORDERED.length ? 'ALL' : list; });
+      Object.keys(permEditorDraft.actions).forEach(k => { const list = permEditorDraft.actions[k]; overrides.actions[k] = list.length === ALL_ROLES_ORDERED.length ? 'ALL' : list; });
+      const res = await apiCall('SAVE_PERMISSIONS_OVERRIDES', { overrides });
+      if (res.status === 'success') {
+        applyPermissionsOverrides(overrides);
+        logAudit('SAVE_PERMISSIONS', 'تعديل مصفوفة الصلاحيات');
+        document.getElementById('permissionsEditorModal').classList.add('hidden');
+        showAlert('✓ ' + res.message);
+        applyRoleBasedUiVisibility();
+      } else showAlert(esc(res.message));
+    }
 
     // تقرير مقارنة صلاحيات كل أنواع الحسابات — يُبنى بالكامل من PERMISSIONS_MATRIX (مصدر الحقيقة الوحيد)،
     // فأي تعديل على الصلاحيات الفعلية في المصفوفة ينعكس هنا تلقائياً في نفس اللحظة
@@ -4481,8 +4686,8 @@
     function downloadSchoolsTemplate() {
       if(typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
       const ws_data = [
-        ["م", "اسم المشرف ", "رقم الجوال", "المدير المباشر ", "الجنسية", "الشهادة", "سنوات الخبرة", "تاريخ الالتحاق", "إدارة التعليم ", "المنطقة ", "أسماء المدارس ", "الرقم الوزاري ", "الايميل", "الجنس ( بنين - بنات )", "خط الطول", "خط العرض"],
-        [1, "أحمد الهنوف", "0555555555", "خالد العتيبي", "سعودي", "بكالوريوس", 5, "2021-01-01", "إدارة تعليم الدمام", "الشرقية", "ابتدائية المنذر بن الزبير بالدمام", "55608", "ahmed.h@example.com", "بنين", "50.0888", "26.4207"]
+        ["م", "اسم المشرف ", "رقم الجوال", "المدير المباشر ", "الجنسية", "الشهادة", "سنوات الخبرة", "تاريخ الالتحاق", "إدارة التعليم ", "المنطقة ", "أسماء المدارس ", "الرقم الوزاري ", "الايميل", "الجنس ( بنين - بنات )", "خط الطول", "خط العرض", "مدير الاشراف للاستشاري ", "ايميل مدير الاشراف ", "مدير القطاع لشركة تطوير  ( المكتب الفرعي )", "ايميل مدير القطاع ", "نوع المشرف"],
+        [1, "أحمد الهنوف", "0555555555", "خالد العتيبي", "سعودي", "بكالوريوس", 5, "2021-01-01", "إدارة تعليم الدمام", "الشرقية", "ابتدائية المنذر بن الزبير بالدمام", "55608", "ahmed.h@example.com", "بنين", "50.0888", "26.4207", "سارة القحطاني", "sara.q@example.com", "محمد الدوسري", "mohammed.d@example.com", "ميداني"]
       ];
       const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "حصر المشرفين والمدارس"); XLSX.writeFile(wb, "قالب_استيراد_المدارس_TBC.xlsx");
     }
@@ -4514,8 +4719,12 @@
           // ===== تمريرة 1: نجمع بيانات كل مشرف/مدير فريد مرة واحدة، وكل صفوف المدارس الخام =====
           // ترتيب أعمدة قالب "حصر المشرفين والمدارس": م(0) اسم المشرف(1) جوال(2) مدير مباشر(3) جنسية(4) شهادة(5)
           // خبرة(6) تاريخ التحاق(7) إدارة تعليم(8) منطقة(9) اسم المدرسة(10) رقم وزاري(11) ايميل(12) جنس(13) طول(14) عرض(15)
+          // مدير الاشراف للاستشاري(16) ايميله(17) [غير مفعّلة حالياً — بانتظار توضيح علاقتها بعمود "المدير المباشر"]
+          // مدير القطاع/إدارة المكتب الفرعي(18) ايميله(19) — بينشئ حساب "إدارة المكتب الفرعي" لو مش موجود، زي منطق المدير المباشر بالظبط
+          // نوع المشرف(20) — يُخزَّن كبيان توثيقي على ملف المشرف فقط، بدون أي تأثير وظيفي حالياً
           const inspectorInfo = {}; // اسم المشرف -> بياناته (آخر صف شوهد فيه)
           const managerNames = new Set();
+          const branchOfficeManagers = {}; // اسم مدير القطاع -> { email, branch } (آخر صف شوهد فيه)
           const schoolRows = [];
 
           for (let i = 1; i < json.length; i++) {
@@ -4534,6 +4743,9 @@
             const supEmail = row[12] ? String(row[12]).trim() : '';
             const genderRaw = row[13] ? String(row[13]).trim() : '';
             const lngRaw = row[14]; const latRaw = row[15];
+            const branchOfficeManagerName = row[18] ? String(row[18]).trim() : '';
+            const branchOfficeManagerEmail = row[19] ? String(row[19]).trim() : '';
+            const supervisorType = row[20] ? String(row[20]).trim() : '';
             if (!name || !inspectorText) continue;
 
             let branch = "المكتب الفرعي بالشرقية";
@@ -4544,8 +4756,9 @@
             const lng = (lngRaw !== undefined && lngRaw !== '' && !isNaN(parseFloat(lngRaw))) ? parseFloat(lngRaw) : null;
             const lat = (latRaw !== undefined && latRaw !== '' && !isNaN(parseFloat(latRaw))) ? parseFloat(latRaw) : null;
 
-            inspectorInfo[inspectorText] = { phone: supPhone, email: supEmail, nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager, branch };
+            inspectorInfo[inspectorText] = { phone: supPhone, email: supEmail, nationality: supNationality, certificate: supCertificate, yearsExperience: supYearsExperience, joinDate: supJoinDate, directManager: supDirectManager, branch, supervisorType };
             if (supDirectManager) managerNames.add(supDirectManager);
+            if (branchOfficeManagerName) branchOfficeManagers[branchOfficeManagerName] = { email: branchOfficeManagerEmail, branch };
             schoolRows.push({ name, minNo, branch, gender, lng, lat, eduAdmin, inspectorText });
           }
 
@@ -4566,6 +4779,22 @@
             if (mgrUser) managerUsernameMap[mgrName] = mgrUser.username;
           }
 
+          // ===== تمريرة 2ب: نفس منطق تمريرة 2 بالظبط، لعمود "مدير القطاع لشركة تطوير" بدور "إدارة المكتب الفرعي" =====
+          let branchOfficeManagersCreated = 0;
+          for (const boName in branchOfficeManagers) {
+            let boUser = resolveInspectorUser(boName);
+            if (!boUser) {
+              const info = branchOfficeManagers[boName];
+              const newUsername = generateUsernameFromName(boName, {}, info.email);
+              const createRes = await apiCall('CREATE_USER', {
+                username: newUsername, fullName: boName, email: info.email, phone: '',
+                password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_BRANCH_OFFICE', branch: info.branch, sendEmailNotification: false,
+                permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true }
+              });
+              if (createRes.status === 'success') { usersList = createRes.users; branchOfficeManagersCreated++; }
+            }
+          }
+
           // ===== تمريرة 3: حل/إنشاء حساب لكل مشرف فريد بدور "مشرف ميداني" — خريطة نهائية واحدة قبل أي ربط مدارس =====
           const inspectorUsernameMap = {};
           const supervisorUpdates = {};
@@ -4574,14 +4803,14 @@
             const info = inspectorInfo[inspName];
             let inspUser = resolveInspectorUser(inspName);
             if (inspUser) {
-              supervisorUpdates[inspUser.username] = { phone: info.phone, email: info.email, nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager };
+              supervisorUpdates[inspUser.username] = { phone: info.phone, email: info.email, nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager, supervisorType: info.supervisorType };
             } else {
               const newUsername = generateUsernameFromName(inspName, {}, info.email);
               const createRes = await apiCall('CREATE_USER', {
                 username: newUsername, fullName: inspName, email: info.email, phone: info.phone,
                 password: SCHOOL_IMPORT_TEMP_PASSWORD, role: 'ROLE_INSPECTOR', branch: info.branch, sendEmailNotification: willSendEmail,
                 permissions: { allowEdit: true, requireGps: true, requirePhoto: true, allowPdf: true },
-                nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager
+                nationality: info.nationality, certificate: info.certificate, yearsExperience: info.yearsExperience, joinDate: info.joinDate, directManager: info.directManager, supervisorType: info.supervisorType
               });
               if (createRes.status === 'success') { usersList = createRes.users; inspUser = usersList.find(u => u.username === newUsername); accountsCreated++; }
             }
@@ -4616,7 +4845,8 @@
                 email: hr.email || existing.email || '', phone: hr.phone || existing.phone || '',
                 nationality: hr.nationality || existing.nationality || '', certificate: hr.certificate || existing.certificate || '',
                 yearsExperience: hr.yearsExperience !== '' ? hr.yearsExperience : (existing.yearsExperience || ''),
-                joinDate: hr.joinDate || existing.joinDate || '', directManager: hr.directManager || existing.directManager || ''
+                joinDate: hr.joinDate || existing.joinDate || '', directManager: hr.directManager || existing.directManager || '',
+                supervisorType: hr.supervisorType || existing.supervisorType || ''
               };
               const uRes = await apiCall('UPDATE_USER', payload);
               if (uRes.status === 'success') { supervisorsUpdated++; usersList = uRes.users; }
@@ -4625,6 +4855,7 @@
             let msg = `✓ تمت العملية بنجاح!\nتم استيراد وربط [ ${added} ] مدرسة.\nتم تحديث بيانات [ ${supervisorsUpdated} ] مشرف كان له حساب مسبقاً.`;
             if (accountsCreated > 0) msg += `\n🆕 تم إنشاء [ ${accountsCreated} ] حساب مشرف جديد تلقائياً، بكلمة مرور مؤقتة موحّدة: Tbc@123456 (سيُطلب من كل واحد تغييرها فور أول دخول). ${willSendEmail ? 'وصل إيميل ببيانات الدخول لمن كان بريده مسجّلاً بالملف.' : 'لم يتم إرسال أي إيميلات (الخيار كان معطّلاً) — يرجى تبليغهم ببياناتهم يدوياً.'}`;
             if (managersCreated > 0) msg += `\n👤 تم إنشاء [ ${managersCreated} ] حساب "مدير إشراف" جديد تلقائياً من عمود "المدير المباشر"، بنفس كلمة المرور المؤقتة.`;
+            if (branchOfficeManagersCreated > 0) msg += `\n🏢 تم إنشاء [ ${branchOfficeManagersCreated} ] حساب "إدارة المكتب الفرعي" جديد تلقائياً من عمود "مدير القطاع لشركة تطوير"، بنفس كلمة المرور المؤقتة.`;
             if (unresolved > 0) msg += `\n⚠️ تعذّر ربط [ ${unresolved} ] مدرسة بحساب مشرف — راجعها يدوياً من نموذج الإضافة اليدوية.`;
             logAudit('SCHOOL_BULK_IMPORT', `استيراد Excel: ${added} مدرسة، ${accountsCreated} حساب مشرف جديد، ${managersCreated} حساب مدير إشراف جديد، ${supervisorsUpdated} ملف محدّث، ${unresolved} غير مرتبط`);
             showAlert(msg);
@@ -4958,6 +5189,7 @@
       document.getElementById('complaintsImportBox').classList.toggle('hidden', !isPlanning);
       document.getElementById('complaintsClearAllBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       document.getElementById('complaintsDedupeBtn')?.classList.toggle('hidden', !isPlanning);
+      document.getElementById('complaintsClearCacheBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
@@ -4996,7 +5228,7 @@
       return { dateFrom, dateTo, branches, inspectorUsername };
     }
 
-    async function loadComplaintsStats() {
+    async function loadComplaintsStats(forceRefresh = false) {
       const { dateFrom, dateTo, branches, inspectorUsername } = getCmpCurrentFilters();
 
       // زرار التحديث بيدخل حالة انتظار مرئية: الحساب على عدد كبير من الصفوف ممكن ياخد وقت، وهذا الأكشن صامت
@@ -5007,7 +5239,7 @@
 
       // مهلة أطول من المعتاد: حساب مؤشرات البلاغات الكاملة (متوسطات، اتجاه يومي، جداول أعلى المدارس...) على
       // عشرات الآلاف من الصفوف عملية ثقيلة نسبياً، والمهلة الافتراضية (30 ثانية) مش كافية دايماً.
-      const res = await apiCall('PULL_COMPLAINTS_STATS', { dateFrom, dateTo, branches, inspectorUsername }, { timeoutMs: 60000 });
+      const res = await apiCall('PULL_COMPLAINTS_STATS', { dateFrom, dateTo, branches, inspectorUsername, forceRefresh: forceRefresh === true }, { timeoutMs: 60000 });
 
       if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerText = refreshBtnOriginalText; }
       if (res.status !== 'success') return showAlert(esc(res.message));
@@ -5294,6 +5526,14 @@
 
     // خطوة منفصلة عن الاستيراد نفسه: تدمج أي بلاغات تكرر معرّفها (يفوز آخر ظهور). مفصولة عمداً عشان تُشغَّل
     // وقت ما المستخدم مرتاح ومستعد ينتظر، بدل ما تكون مربوطة بتوقيت ضيق جوه عملية الاستيراد الحرجة.
+    // مسح كاش الإحصائيات يدوياً — البيانات بتتحدّث تلقائياً عند أي استيراد/مسح/تنظيف، فالزرار ده للحالات
+    // الاستثنائية بس (تعديل يدوي مباشر في شيت Complaints، أو التأكد إن الأرقام حديثة بعد نشر كود جديد).
+    async function clearStatsCache() {
+      const res = await apiCall('CLEAR_STATS_CACHE', {});
+      if (res.status === 'success') { showAlert('✓ ' + res.message); loadComplaintsStats(); }
+      else showAlert(esc(res.message));
+    }
+
     async function dedupeAllComplaints() {
       if (complaintsImportInProgress) return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.');
       const confirmed = await showConfirm('هتفحص كل البلاغات وتدمج أي معرّف مكرر (تفضل آخر نسخة). العملية دي ممكن تاخد دقيقة أو أكتر مع عدد بلاغات كبير — سيب الصفحة مفتوحة لحد ما تخلص. متابعة؟');
@@ -5846,6 +6086,75 @@
         const timeTxt = isNaN(dt.getTime()) ? '-' : dt.toLocaleString('ar-SA-u-ca-gregory');
         return `<tr><td style="white-space:nowrap; direction:ltr;">${esc(timeTxt)}</td><td style="font-weight:800;">${esc(l.userName || l.user)}</td><td>${esc(l.action)}</td><td>${esc(l.details)}</td></tr>`;
       }).join('');
+    }
+
+    // ================= المساعد الذكي (الواجهة) =================
+    // الطلب بيمشي للباك إند (ASK_AI) اللي بيبني السياق بنطاق صلاحية المستخدم ويكلّم المزوّد بمفتاح مخزّن عنده.
+    // الواجهة بتحتفظ بآخر 10 رسائل كسياق للمحادثة، وبتحوّل رد المساعد (Markdown) لـHTML آمن (تهريب أولاً).
+    let aiHistory = [];
+    function toggleAiPanel() { const p = document.getElementById('aiPanel'); p.classList.toggle('hidden'); if (!p.classList.contains('hidden')) { if (aiHistory.length === 0 && document.getElementById('aiMessages').children.length === 0) appendAiMessage('assistant', 'أهلاً! اسألني عن إحصائيات البلاغات أو المدارس أو التقارير الميدانية ضمن نطاقك، أو اطلب تقريراً وهجهّزه لك بصيغة قابلة للتصدير PDF/Excel.', false); document.getElementById('aiInput').focus(); } }
+    function clearAiChat() { aiHistory = []; document.getElementById('aiMessages').innerHTML = ''; appendAiMessage('assistant', 'محادثة جديدة. اسألني أي حاجة عن بياناتك.', false); }
+
+    // محوّل Markdown مبسّط وآمن: بيهرّب النص الأول ثم يطبّق عناوين/غامق/قوائم/جداول فقط
+    function aiMarkdownToHtml(md) {
+      const lines = esc(md).split('\n'); let html = ''; let inList = false; let tableRows = [];
+      const flushTable = () => { if (tableRows.length === 0) return; const rows = tableRows.filter(r => !/^\s*\|?\s*:?-{2,}/.test(r)); html += '<table>' + rows.map((r, i) => { const cells = r.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(x => x.trim()); return '<tr>' + cells.map(x => `<${i === 0 ? 'th' : 'td'}>${x}</${i === 0 ? 'th' : 'td'}>`).join('') + '</tr>'; }).join('') + '</table>'; tableRows = []; };
+      const flushList = () => { if (inList) { html += '</ul>'; inList = false; } };
+      for (const raw of lines) {
+        const line = raw.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+        if (/^\s*\|.*\|\s*$/.test(line)) { flushList(); tableRows.push(line); continue; } else flushTable();
+        const h = line.match(/^\s*(#{1,3})\s+(.*)$/); if (h) { flushList(); html += `<h${h[1].length + 1}>${h[2]}</h${h[1].length + 1}>`; continue; }
+        const li = line.match(/^\s*[-*•]\s+(.*)$/); if (li) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${li[1]}</li>`; continue; }
+        flushList();
+        if (line.trim() === '') html += '<div style="height:6px;"></div>'; else html += `<div>${line}</div>`;
+      }
+      flushList(); flushTable(); return html;
+    }
+
+    function appendAiMessage(role, text, withActions) {
+      const box = document.getElementById('aiMessages');
+      const div = document.createElement('div'); div.className = 'ai-msg ' + role;
+      if (role === 'assistant') {
+        div.innerHTML = aiMarkdownToHtml(text);
+        if (withActions) {
+          const idx = aiHistory.length; // مؤشر الرد داخل السجل عشان التصدير يستخدم النص الأصلي
+          const hasTable = /^\s*\|.*\|\s*$/m.test(text);
+          div.innerHTML += `<div class="ai-msg-actions"><button onclick="exportAiMessagePdf(${idx})">📄 PDF</button>${hasTable ? `<button onclick="exportAiMessageExcel(${idx})">📊 Excel</button>` : ''}<button onclick="navigator.clipboard.writeText(aiHistory[${idx}].content)">📋 نسخ</button></div>`;
+        }
+      } else div.innerText = text;
+      box.appendChild(div); box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendAiMessage() {
+      const input = document.getElementById('aiInput'); const text = input.value.trim(); if (!text) return;
+      input.value = ''; appendAiMessage('user', text, false);
+      aiHistory.push({ role: 'user', content: text });
+      const box = document.getElementById('aiMessages'); const typing = document.createElement('div'); typing.className = 'ai-typing'; typing.innerText = 'المساعد بيفكّر...'; box.appendChild(typing); box.scrollTop = box.scrollHeight;
+      const res = await apiCall('ASK_AI', { messages: aiHistory.slice(-10) }, { timeoutMs: 90000 });
+      typing.remove();
+      if (res.status === 'success') { aiHistory.push({ role: 'assistant', content: res.answer }); appendAiMessage('assistant', res.answer, true); }
+      else { aiHistory.pop(); appendAiMessage('assistant', '⚠️ ' + (res.message || 'تعذر الحصول على رد.'), false); }
+    }
+
+    // تصدير رد المساعد: PDF عبر نفس صفحة الطباعة الداخلية، وExcel من أول جدول Markdown في الرد
+    function exportAiMessagePdf(idx) {
+      const msg = aiHistory[idx]; if (!msg) return;
+      const html = `<div style="font-family:'Tajawal',sans-serif; direction:rtl; padding:24px; max-width:900px; margin:0 auto; line-height:1.8;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--tbc-petrol); padding-bottom:12px; margin-bottom:20px;">
+          <div><div style="font-size:1.3rem; font-weight:900; color:var(--tbc-petrol-dark);">شركة تطوير للمباني — تقرير المساعد الذكي</div><div style="font-size:0.85rem; color:var(--text-muted);">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-SA-u-ca-gregory')} — بواسطة: ${esc(currentUser?.fullName || '')}</div></div>
+          <div style="width:52px; height:52px; border-radius:12px; background:var(--tbc-petrol); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900;">TBC</div>
+        </div>
+        <div class="ai-msg assistant" style="max-width:100%; border:none; padding:0;">${aiMarkdownToHtml(msg.content)}</div></div>`;
+      document.getElementById('userGuideContent').innerHTML = html;
+      document.getElementById('userGuideOverlay').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+    function exportAiMessageExcel(idx) {
+      const msg = aiHistory[idx]; if (!msg) return;
+      const rows = msg.content.split('\n').filter(l => /^\s*\|.*\|\s*$/.test(l)).filter(l => !/^\s*\|?\s*:?-{2,}/.test(l)).map(l => l.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(x => x.trim().replace(/\*\*/g, '')));
+      if (rows.length === 0) return showAlert('لا يوجد جدول في هذا الرد لتصديره.');
+      const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'تقرير');
+      XLSX.writeFile(wb, `تقرير_المساعد_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
     // Init App Check
