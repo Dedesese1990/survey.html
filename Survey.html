@@ -3380,6 +3380,7 @@
         renderComplaintsDashboard(s, 'an');
         renderTopCitiesPerformance(s.byCity || {});
         cmpDetailAllBranchesStats = s; // نحتفظ بنسخة "الكل" عشان فلتر الفروع الخاص بالتحليلات التفصيلية يرجعلها بسرعة
+        resetCmpDetailBranchCache();
         buildCmpDetailBranchPills();
       } catch (e) {}
     }
@@ -3452,6 +3453,10 @@
       { key: 'المكتب الفرعي بالأحساء', label: 'الأحساء' },
       { key: 'المكتب الفرعي بحفر الباطن', label: 'حفر الباطن' }
     ];
+    // مسح كاش الفروع الخاص بالتحليلات التفصيلية — لازم بعد أي تغيير في بيانات البلاغات (استيراد، مسح، تنظيف،
+    // إعادة ربط) وإلا الضغط على نفس الفرع يرجّع النتيجة القديمة المحفوظة في المتصفح بدل ما يسأل الخادم.
+    function resetCmpDetailBranchCache() { for (const k in cmpDetailBranchCache) delete cmpDetailBranchCache[k]; cmpDetailSelectedBranch = 'ALL'; }
+
     function buildCmpDetailBranchPills() {
       const row = document.getElementById('cmpDetailBranchPills'); if (!row) return;
       row.innerHTML = CMP_DETAIL_BRANCHES.map(b => `<button class="btn ${cmpDetailSelectedBranch === b.key ? 'btn-petrol' : 'btn-outline'}" style="font-size:0.8rem; padding:8px 14px; width:auto;" onclick="selectCmpDetailBranch('${b.key}')">${esc(b.label)}</button>`).join('');
@@ -5899,7 +5904,7 @@
       const ok = await showConfirm('🔗 هيتم إعادة ربط كل البلاغات بالمدارس حسب بياناتها الحالية (الفرع والمشرف). العملية آمنة ولا تحذف أي بلاغ. متابعة؟');
       if (!ok) return;
       const res = await apiCall('RELINK_COMPLAINTS', {}, { timeoutMs: 180000 });
-      if (res.status === 'success') { showAlert('✓ ' + res.message); logAudit('COMPLAINTS_RELINK', 'إعادة ربط البلاغات بالمدارس'); loadComplaintsStats(); }
+      if (res.status === 'success') { showAlert('✓ ' + res.message); logAudit('COMPLAINTS_RELINK', 'إعادة ربط البلاغات بالمدارس'); resetCmpDetailBranchCache(); loadComplaintsStats(); loadAnalyticsComplaintsSummary(); }
       else showAlert(esc(res.message));
     }
 
