@@ -865,7 +865,7 @@
                 <p>نسبة الإنجاز الفعلي وحالة التقارير ضمن نطاقك الحالي</p>
               </div>
             </div>
-            <div class="an-grid-2">
+            <div class="an-grid-3">
               <div class="an-card" style="margin-bottom:0;">
                 <div class="an-card-title">🏢 استجابة المكاتب الفرعية</div>
                 <p class="an-card-desc">عدد التقارير المرفوعة ونسبة اعتمادها لكل مكتب فرعي ضمن نطاقك.</p>
@@ -887,9 +887,15 @@
                   <div class="exec-complaints-pills">
                     <div class="exec-pill tone-approved clickable" onclick="goToRecordsFiltered('approved')"><span class="exec-pill-label">المعتمدة</span><span class="exec-pill-value" id="biApprovedCount">0</span></div>
                     <div class="exec-pill tone-pending clickable" onclick="goToRecordsFiltered('pending')"><span class="exec-pill-label">قيد الاعتماد</span><span class="exec-pill-value" id="biPendingCount">0</span></div>
-                    <div class="exec-pill tone-neutral"><span class="exec-pill-label">⏱️ متوسط زمن الاعتماد</span><span class="exec-pill-value" style="font-size:1.3rem;" id="biAvgTurnaround">-</span></div>
                   </div>
                 </div>
+              </div>
+
+              <div class="an-card exec-avgresp-card" style="margin-bottom:0;">
+                <div class="exec-avgresp-icon">⏱️</div>
+                <div class="exec-avgresp-value" id="biAvgTurnaround">-</div>
+                <div class="exec-avgresp-label">متوسط زمن الاعتماد</div>
+                <div class="exec-avgresp-desc">من رفع التقرير حتى اعتماده أو رفضه، لكل التقارير المعتمدة ضمن نطاقك</div>
               </div>
             </div>
 
