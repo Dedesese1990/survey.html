@@ -887,17 +887,13 @@
                   <div class="exec-complaints-pills">
                     <div class="exec-pill tone-approved clickable" onclick="goToRecordsFiltered('approved')"><span class="exec-pill-label">المعتمدة</span><span class="exec-pill-value" id="biApprovedCount">0</span></div>
                     <div class="exec-pill tone-pending clickable" onclick="goToRecordsFiltered('pending')"><span class="exec-pill-label">قيد الاعتماد</span><span class="exec-pill-value" id="biPendingCount">0</span></div>
+                    <div class="exec-pill tone-neutral"><span class="exec-pill-label">⏱️ متوسط زمن الاعتماد</span><span class="exec-pill-value" style="font-size:1.3rem;" id="biAvgTurnaround">-</span></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="exec-tile-grid" style="grid-template-columns:repeat(3,1fr);">
-              <div class="exec-tile">
-                <div class="exec-tile-icon tone-petrol">⏱️</div>
-                <div class="exec-tile-value" style="font-size:0.95rem;" id="biAvgTurnaround">-</div>
-                <div class="exec-tile-label">متوسط زمن الاعتماد</div>
-              </div>
+            <div class="exec-tile-grid" style="grid-template-columns:repeat(2,1fr);">
               <div class="exec-tile">
                 <div class="exec-tile-icon tone-gold">📅</div>
                 <div class="exec-tile-value" id="biOnTimeRate">-</div>
