@@ -2514,8 +2514,23 @@
     // آخر نسخة بيانات اتحفظت محلياً في نفس اللحظة، وبعدين بنحدّث من الخادم في الخلفية. الفرق في الإحساس
     // كبير جداً: الصفحة بتظهر بمحتوى فوراً بدل ثوانٍ من الانتظار في كل مرة فتح.
     const DATA_SNAPSHOT_KEY = 'tbc_data_snapshot_v1';
+    // النماذج المضافة محلياً واللي لسه الخادم ما أكّدش حفظها — بنحميها من إن التحديث الدوري (pullFromCloud)
+    // يمسحها من القائمة مؤقتاً لو اتصادف إنه سحب بيانات الخادم قبل ما الحفظ يكتمل (كان ده بيبان كإن النموذج
+    // "بيتأخر" في الظهور أو بيختفي ويرجع).
+    const pendingLocalSurveyIds = new Set();
+
     function applyPulledData(data) {
-      if (data.surveys) surveys = data.surveys; if (data.responses) responses = data.responses; if (data.schools) schoolDataWrapper = data.schools; if (data.users) usersList = data.users;
+      const previousLocalSurveys = surveys || [];
+      if (data.surveys) {
+        surveys = data.surveys;
+        pendingLocalSurveyIds.forEach(pendingId => {
+          if (!surveys.some(s => String(s.id) === String(pendingId))) {
+            const local = previousLocalSurveys.find(s => String(s.id) === String(pendingId));
+            if (local) surveys.push(local);
+          }
+        });
+      }
+      if (data.responses) responses = data.responses; if (data.schools) schoolDataWrapper = data.schools; if (data.users) usersList = data.users;
       pendingRegistrations = data.pendingRegistrations || []; pendingSchoolRequests = data.pendingSchoolRequests || []; tickets = data.tickets || []; notifications = data.notifications || [];
       applyPermissionsOverrides(data.permissionsOverrides || {});
       applyRoleBasedUiVisibility();
@@ -2850,12 +2865,14 @@
 
       // تحديث تفاؤلي فوري: نظهر النموذج في القائمة ونقفل النافذة على طول بدل ما نستنى رحلة الشبكة كاملة
       // (قراءة + نسخة احتياطية + كتابة في الخادم) — لو فشل الحفظ فعلياً، نتراجع ونبلّغ المستخدم بوضوح.
+      pendingLocalSurveyIds.add(String(surveyPayload.id)); // حماية من التحديث الدوري لحد ما الخادم يأكّد
       surveys = mergedSurveys;
       closeNewSurveyModal();
       populateAnalyticsSurveyFilter();
       btn.disabled = false; btn.innerText = 'حفظ ونشر النموذج ✓';
 
       const res = await syncGeneralData({ surveys: mergedSurveys });
+      pendingLocalSurveyIds.delete(String(surveyPayload.id));
       if (res.status === 'success') {
         logAudit('SURVEY_SAVE', `${editingSurveyId ? 'تعديل' : 'إنشاء'} نموذج حصر: ${title}`);
       } else {
