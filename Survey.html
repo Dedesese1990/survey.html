@@ -835,21 +835,30 @@
                 <p>نسبة الإنجاز الفعلي وحالة التقارير ضمن نطاقك الحالي</p>
               </div>
             </div>
-            <div class="exec-complaints-row" style="margin-bottom:20px;">
-              <div class="bento-hero" style="flex:0 0 230px;">
-                <div class="bi-title">نسبة الإنجاز الفعلي</div>
-                <div class="radial-progress">
-                  <svg viewBox="0 0 120 120">
-                    <circle class="rp-track" cx="60" cy="60" r="50"></circle>
-                    <circle class="rp-fill" id="actualRateRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
-                  </svg>
-                  <div class="rp-label" id="biActualRate">0.0%</div>
-                </div>
-                <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من إجمالي المستهدف لعمليات الحصر الجارية</div>
+            <div class="an-grid-2">
+              <div class="an-card" style="margin-bottom:0;">
+                <div class="an-card-title">🏢 استجابة المكاتب الفرعية</div>
+                <p class="an-card-desc">عدد التقارير المرفوعة ونسبة اعتمادها لكل مكتب فرعي ضمن نطاقك.</p>
+                <div id="branchResponsivenessContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
               </div>
-              <div class="exec-complaints-pills">
-                <div class="exec-pill tone-approved clickable" onclick="goToRecordsFiltered('approved')"><span class="exec-pill-label">المعتمدة</span><span class="exec-pill-value" id="biApprovedCount">0</span></div>
-                <div class="exec-pill tone-pending clickable" onclick="goToRecordsFiltered('pending')"><span class="exec-pill-label">قيد الاعتماد</span><span class="exec-pill-value" id="biPendingCount">0</span></div>
+              <div class="an-card" style="margin-bottom:0;">
+                <div class="exec-complaints-row">
+                  <div class="bento-hero" style="flex:0 0 200px;">
+                    <div class="bi-title">نسبة الإنجاز الفعلي</div>
+                    <div class="radial-progress">
+                      <svg viewBox="0 0 120 120">
+                        <circle class="rp-track" cx="60" cy="60" r="50"></circle>
+                        <circle class="rp-fill" id="actualRateRing" cx="60" cy="60" r="50" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                      </svg>
+                      <div class="rp-label" id="biActualRate">0.0%</div>
+                    </div>
+                    <div style="font-size:0.76rem; color:#a8c4cc; font-weight:700; text-align:center;">من إجمالي المستهدف لعمليات الحصر الجارية</div>
+                  </div>
+                  <div class="exec-complaints-pills">
+                    <div class="exec-pill tone-approved clickable" onclick="goToRecordsFiltered('approved')"><span class="exec-pill-label">المعتمدة</span><span class="exec-pill-value" id="biApprovedCount">0</span></div>
+                    <div class="exec-pill tone-pending clickable" onclick="goToRecordsFiltered('pending')"><span class="exec-pill-label">قيد الاعتماد</span><span class="exec-pill-value" id="biPendingCount">0</span></div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -3278,6 +3287,7 @@
       renderSupervisoryStaffStats(branchFilter);
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped, branchFilter);
+      renderBranchResponsiveness(scoped);
       lastScopedResponsesForMap = scoped;
       renderFieldMap(scoped);
       renderPeriodComparison();
@@ -3621,6 +3631,31 @@
 
 
     // لوحة أداء المشرفين الميدانيين — مرئية فقط لإدارة التخطيط ومدير الإشراف
+    // استجابة المكاتب الفرعية: عدد التقارير المرفوعة ونسبة الاعتماد لكل مكتب فرعي، لمقارنة سرعة استجابة
+    // الفروع في نفس المستوى الإداري ببعضها — يعتمد على نفس التقارير المحصورة أصلاً بنطاق المستخدم الحالي.
+    function renderBranchResponsiveness(scopedResponses) {
+      const container = document.getElementById('branchResponsivenessContainer'); if (!container) return;
+      const branches = [
+        { key: 'المكتب الفرعي بالشرقية', label: 'الشرقية' },
+        { key: 'المكتب الفرعي بالأحساء', label: 'الأحساء' },
+        { key: 'المكتب الفرعي بحفر الباطن', label: 'حفر الباطن' }
+      ];
+      container.innerHTML = branches.map(b => {
+        const rows = scopedResponses.filter(r => r.branch === b.key);
+        const total = rows.length;
+        const approved = rows.filter(r => r.status === 'approved').length;
+        const pct = total > 0 ? Math.round((approved / total) * 100) : 0;
+        return `<div style="background:var(--surface-2, #f8fafc); border:1px solid var(--border-subtle); border-radius:10px; padding:12px 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-weight:800; font-size:0.9rem; color:var(--text-main);">${esc(b.label)}</span>
+            <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">${total.toLocaleString('en-US')} تقرير</span>
+          </div>
+          <div style="height:6px; border-radius:99px; background:var(--tbc-petrol-light); overflow:hidden; margin-bottom:4px;"><div style="height:100%; width:${pct}%; border-radius:99px; background:var(--tbc-petrol);"></div></div>
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">${pct}% معتمدة</div>
+        </div>`;
+      }).join('');
+    }
+
     function renderInspectorPerformance(scopedResponses, branchFilter) {
       const card = document.getElementById('inspectorPerfCard'); if (!card) return;
       const canSeeThis = FULL_ADMIN_ROLES.includes(currentUser.role) || MANAGER_ROLES.includes(currentUser.role);
