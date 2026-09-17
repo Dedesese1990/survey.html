@@ -173,7 +173,12 @@
     .an-card-link { margin-top: auto; padding-top: 12px; text-align: left; }
     .an-card-link span { color: var(--tbc-petrol); font-weight: 800; font-size: 0.8rem; cursor: pointer; text-decoration: underline; white-space: nowrap; }
     .analytics-header-pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .analytics-header-pills .btn { font-size: 0.8rem; padding: 8px 14px; width: auto; }
+    .analytics-header-pills .btn { font-size: 0.95rem; padding: 12px 18px; width: auto; }
+    /* قائمة منسدلة أنيقة بدل نافذة منبثقة كاملة الشاشة لفلتر الفروع — بتفتح وتقفل مكانها بجانب الزرار */
+    .analytics-dropdown-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 500; background: #fff; border: 1px solid var(--border-subtle); border-radius: 12px; box-shadow: var(--shadow-lift); padding: 10px; min-width: 200px; }
+    .analytics-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background-color 0.15s; }
+    .analytics-dropdown-item:hover { background: var(--tbc-petrol-light); }
+    .analytics-dropdown-item input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--tbc-petrol); }
     .analytics-survey-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
     .analytics-survey-filter-row label { font-size: 0.82rem; font-weight: 800; color: var(--tbc-petrol-dark); margin: 0; white-space: nowrap; }
     .analytics-survey-filter-row select { width: auto; max-width: 100%; font-size: 0.85rem; padding: 8px 14px; font-weight: 700; border-radius: 999px; }
@@ -258,7 +263,7 @@
     .exec-tile-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .exec-tile-icon.tone-petrol { background: var(--tbc-petrol-light); }
     .exec-tile-icon.tone-gold { background: #fbf3e2; }
-    .exec-tile-value { font-size: 1.35rem; font-weight: 900; color: var(--tbc-petrol-dark); font-variant-numeric: tabular-nums; }
+    .exec-tile-value { font-size: 1.7rem; font-weight: 900; color: var(--tbc-petrol-dark); font-variant-numeric: tabular-nums; }
     .exec-tile-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; }
     @media (max-width: 500px) { .exec-tile-hero { padding: 18px; justify-content: center; } }
 
@@ -270,7 +275,7 @@
 
     /* تنقّل مقسّم لأقسام لوحة المؤشرات الثلاثة */
     .analytics-subnav { display: flex; gap: 6px; background: #e9eef1; padding: 6px; border-radius: 14px; margin-bottom: 26px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .analytics-subnav-btn { flex: 1; white-space: nowrap; padding: 13px 16px; border: none; background: transparent; border-radius: 10px; font-weight: 800; font-size: 0.88rem; color: var(--text-muted); cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; font-family: 'Tajawal', sans-serif; }
+    .analytics-subnav-btn { flex: 1; white-space: nowrap; padding: 16px 18px; border: none; background: transparent; border-radius: 10px; font-weight: 800; font-size: 1.02rem; color: var(--text-muted); cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; font-family: 'Tajawal', sans-serif; }
     .analytics-subnav-btn.active { background: #fff; color: var(--tbc-petrol-dark); box-shadow: var(--shadow-sm); }
     .analytics-subnav-btn:not(.active):hover { color: var(--tbc-petrol-dark); }
 
@@ -496,7 +501,14 @@
             </div>
             <!-- نفس أسلوب كبسولات "أعلى المدارس": أزرار مضغوطة بتلف طبيعي بدل ما تتمدّ بعرض الشاشة كله على الموبايل -->
             <div class="analytics-header-pills">
-              <button type="button" class="btn btn-outline" onclick="document.getElementById('branchFilterPanel').classList.remove('hidden')" id="branchFilterBtn">🏢 كل الفروع ▾</button>
+              <div style="position:relative; display:inline-block;">
+                <button type="button" class="btn btn-outline" onclick="toggleBranchFilterDropdown(event)" id="branchFilterBtn">🏢 كل الفروع ▾</button>
+                <div id="branchFilterPanel" class="analytics-dropdown-panel hidden">
+                  <label class="analytics-dropdown-item"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onAnalyticsBranchFilterChange()"> الشرقية</label>
+                  <label class="analytics-dropdown-item"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onAnalyticsBranchFilterChange()"> الأحساء</label>
+                  <label class="analytics-dropdown-item"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onAnalyticsBranchFilterChange()"> حفر الباطن</label>
+                </div>
+              </div>
               <button class="btn btn-outline" onclick="__forceStatsRefresh = true; refreshAnalyticsDashboard(false)">تحديث يدوي ↺</button>
               <button class="btn btn-gold" onclick="exportAnalyticsPDF()">📤 تصدير تقرير PDF شامل</button>
             </div>
@@ -548,6 +560,11 @@
                 <div class="exec-tile-icon tone-petrol">🏛️</div>
                 <div class="exec-tile-value" id="biAdminBuildingsCount">0</div>
                 <div class="exec-tile-label">إدارية</div>
+              </div>
+              <div class="exec-tile">
+                <div class="exec-tile-icon tone-gold">🚪</div>
+                <div class="exec-tile-value" id="biVacantCount">0</div>
+                <div class="exec-tile-label">مباني مخلاة</div>
               </div>
             </div>
 
@@ -1117,7 +1134,7 @@
               <div class="form-group"><label>إدارة التعليم</label><input type="text" id="singleSchoolEduAdmin" placeholder="اختياري"></div>
               <div class="form-group"><label>خط الطول (Longitude)</label><input type="number" step="any" id="singleSchoolLng" placeholder="اختياري"></div>
               <div class="form-group"><label>خط العرض (Latitude)</label><input type="number" step="any" id="singleSchoolLat" placeholder="اختياري"></div>
-              <div class="form-group"><label>تصنيف المبنى</label><select id="singleSchoolBuildingCategory"><option value="">مدرسة (افتراضي)</option><option value="معهد">معهد</option><option value="إداري">مبنى إداري</option></select></div>
+              <div class="form-group"><label>تصنيف المبنى</label><select id="singleSchoolBuildingCategory"><option value="">مدرسة (افتراضي)</option><option value="معهد">معهد</option><option value="إداري">مبنى إداري</option><option value="مخلاة">مبنى مخلى</option></select></div>
               <div class="form-group">
                 <label>حالة الملكية</label>
                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; background:#f8fafc; padding:10px 12px; border-radius:8px;"><input type="checkbox" id="singleSchoolIsRented"> <span>🔑 مبنى مستأجر</span></label>
@@ -1577,16 +1594,6 @@
         <button class="btn btn-petrol" style="flex:1;" onclick="submitPasswordChange()">تحديث ✓</button>
         <button class="btn btn-outline" onclick="closeChangePasswordModal()">إلغاء</button>
       </div>
-    </div>
-  </div>
-
-  <div id="branchFilterPanel" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px;">
-      <h4 style="color:var(--tbc-petrol-dark); margin-bottom:16px; font-size:1.1rem; font-weight:900;">🏢 اختر الفروع المعروضة</h4>
-      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالشرقية" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> الشرقية</label>
-      <label style="display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بالأحساء" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> الأحساء</label>
-      <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer; font-weight:700; font-size:0.95rem;"><input type="checkbox" class="analyticsBranchCheckbox" value="المكتب الفرعي بحفر الباطن" checked onchange="onAnalyticsBranchFilterChange()" style="width:20px; height:20px;"> حفر الباطن</label>
-      <button class="btn btn-petrol" style="width:100%;" onclick="document.getElementById('branchFilterPanel').classList.add('hidden')">تم ✓</button>
     </div>
   </div>
 
@@ -3221,6 +3228,7 @@
       animateCountUp(document.getElementById('biRentedBuildingsCount'), buildingStats.rentedBuildings);
       animateCountUp(document.getElementById('biInstitutesCount'), buildingStats.institutesCount);
       animateCountUp(document.getElementById('biAdminBuildingsCount'), buildingStats.adminBuildingsCount);
+      animateCountUp(document.getElementById('biVacantCount'), buildingStats.vacantCount);
 
       const withDuration = scoped.filter(r => typeof r.fillDurationSeconds === 'number' && r.fillDurationSeconds > 0);
       document.getElementById('biAvgFillDuration').innerText = withDuration.length > 0
@@ -3444,7 +3452,8 @@
         totalBuildings: buildingGroups.length,
         rentedBuildings: buildingGroups.filter(g => g.some(s => s.isRented === true)).length,
         institutesCount: schools.filter(s => s.buildingCategory === 'معهد').length,
-        adminBuildingsCount: schools.filter(s => s.buildingCategory === 'إداري').length
+        adminBuildingsCount: schools.filter(s => s.buildingCategory === 'إداري').length,
+        vacantCount: schools.filter(s => s.buildingCategory === 'مخلاة').length
       };
     }
 
@@ -4326,6 +4335,7 @@
         ['🔑 المباني المستأجرة', document.getElementById('biRentedBuildingsCount')?.innerText || '-'],
         ['🎓 عدد المعاهد', document.getElementById('biInstitutesCount')?.innerText || '-'],
         ['🏛️ المباني الإدارية', document.getElementById('biAdminBuildingsCount')?.innerText || '-'],
+        ['🚪 المباني المخلاة', document.getElementById('biVacantCount')?.innerText || '-'],
       ];
       const kpisHtml = kpis.map(([label, val]) => `<div class="pdf-kpi"><div class="pdf-kpi-val">${esc(val)}</div><div class="pdf-kpi-label">${esc(label)}</div></div>`).join('');
 
@@ -4632,6 +4642,16 @@
     // يُشغَّل يدوياً من إدارة المدارس: يحدد محافظة/مدينة كل مدرسة لها إحداثيات مسجّلة عبر خدمة جغرافية
     // خارجية (محدودة بحد أقصى 220 مدرسة وطلب واحد بالثانية لكل تشغيلة) — لازم لعرض قسم "المدن الأعلى"
     // ولشارت "المدارس مقابل البلاغات" في لوحة المؤشرات، لأنهم بيعتمدوا على حقل المحافظة ده.
+    // قائمة فلتر الفروع المنسدلة: بتفتح جنب زرارها وتتقفل تلقائياً عند الضغط في أي مكان تاني بالصفحة
+    function toggleBranchFilterDropdown(evt) {
+      evt.stopPropagation();
+      document.getElementById('branchFilterPanel').classList.toggle('hidden');
+    }
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('branchFilterPanel');
+      if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && e.target.id !== 'branchFilterBtn') panel.classList.add('hidden');
+    });
+
     async function resolveSchoolGovernorates(evt) {
       const statusEl = document.getElementById('governorateResolveStatus');
       const btn = evt?.target;
