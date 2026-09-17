@@ -568,10 +568,17 @@
               </div>
             </div>
 
-            <div class="an-card">
-              <div class="an-card-title">🚻 توزيع المدارس حسب الجنس</div>
-              <p class="an-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
-              <div id="schoolsByGenderContainer"></div>
+            <div class="an-grid-2">
+              <div class="an-card" style="margin-bottom:0;">
+                <div class="an-card-title">🚻 توزيع المدارس حسب الجنس</div>
+                <p class="an-card-desc">عدد مدارس البنين مقابل البنات ضمن نطاقك (حسب البيانات المستوردة).</p>
+                <div id="schoolsByGenderContainer"></div>
+              </div>
+              <div class="an-card" style="margin-bottom:0;">
+                <div class="an-card-title">👷 الكادر الإشرافي</div>
+                <p class="an-card-desc">عدد أفراد الكادر الإشرافي حسب الدور الوظيفي ضمن نطاقك.</p>
+                <div id="supervisoryStaffContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+              </div>
             </div>
 
             <!-- البلاغات دلوقتي مدمجة هنا مباشرة تحت المدارس، بدل ما تكون تاب منفصل يحتاج تنقّل -->
@@ -717,13 +724,19 @@
                   <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
               </div>
 
-              <div class="an-card">
-                <div class="an-card-title">🏆 أعلى المدارس (معاد فتحها — Top 20)</div>
+              <div class="an-grid-2">
+                <div class="an-card" style="margin-bottom:0;">
+                  <div class="an-card-title">🏆 أعلى المدارس (معاد فتحها — Top 20)</div>
                   <p class="an-card-desc">أكثر 20 مدرسة لديها بلاغات أُعيد فتحها بعد إغلاقها — مؤشر على مواقع تحتاج متابعة إضافية لجودة الإصلاح.</p>
-                <div class="table-responsive">
-                  <table class="data-table" id="anCmpTopSchoolsTable"><thead><tr><th>المدرسة</th><th>عدد البلاغات</th></tr></thead><tbody></tbody></table>
+                  <div style="height:420px; position:relative;"><canvas id="anCmpTopSchoolsChart"></canvas></div>
+                  <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
                 </div>
-                <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
+                <div class="an-card" style="margin-bottom:0;">
+                  <div class="an-card-title">🏙️ أعلى المدن بلاغات</div>
+                  <p class="an-card-desc">المدن الأعلى في إجمالي عدد البلاغات المسجّلة ضمن نطاقك.</p>
+                  <div style="height:420px; position:relative;"><canvas id="anCmpTopCitiesChart"></canvas></div>
+                  <div class="an-card-link"><span onclick="showTab('complaints')">عرض التفاصيل الكاملة ←</span></div>
+                </div>
               </div>
             </div>
 
@@ -3262,6 +3275,7 @@
       renderSCurveChart(scoped);
       renderCoverageGap(scoped, branchFilter);
       renderSchoolsByGender(branchFilter);
+      renderSupervisoryStaffStats(branchFilter);
       renderRecurringIssues(scoped);
       renderInspectorPerformance(scoped, branchFilter);
       lastScopedResponsesForMap = scoped;
@@ -3585,6 +3599,24 @@
         </div>`;
       if (unknown > 0) html += `<p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px;">💡 المدارس "غير محدد" يمكن تحديد جنسها لاحقاً من نموذج إضافة/استيراد المدارس.</p>`;
       container.innerHTML = html;
+    }
+
+    // عدد الكادر الإشرافي حسب الدور الوظيفي ضمن النطاق الحالي — مشرف تجهيزات ومكتب فني أدوار قيد الإضافة
+    // للنظام لاحقاً، فبتظهر بصفر مؤقتاً ولحظة إنشاء هذين الدورين هيحسبوا تلقائياً من غير أي تعديل هنا.
+    function renderSupervisoryStaffStats(branchFilter) {
+      const container = document.getElementById('supervisoryStaffContainer'); if (!container) return;
+      const inScope = u => !branchFilter || branchFilter.includes(u.branch) || u.branch === 'الكل';
+      const rows = [
+        { label: '👤 مشرف ميداني', count: usersList.filter(u => u.role === 'ROLE_INSPECTOR' && inScope(u)).length },
+        { label: '🧑‍💼 مدير إشراف', count: usersList.filter(u => u.role === 'ROLE_SUPERVISION_LEAD' && inScope(u)).length },
+        { label: '🛠️ مشرف تجهيزات', count: usersList.filter(u => u.role === 'ROLE_EQUIPMENT_SUPERVISOR' && inScope(u)).length, soon: true },
+        { label: '🏢 مكتب فني', count: usersList.filter(u => u.role === 'ROLE_TECHNICAL_OFFICE' && inScope(u)).length, soon: true },
+      ];
+      container.innerHTML = rows.map(r => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-2, #f8fafc); border:1px solid var(--border-subtle); border-radius:10px; padding:12px 16px;">
+          <span style="font-weight:700; font-size:0.9rem; color:var(--text-main);">${r.label}${r.soon ? ' <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">(قريباً)</span>' : ''}</span>
+          <span style="font-size:1.3rem; font-weight:900; color:var(--tbc-petrol-dark);">${r.count}</span>
+        </div>`).join('');
     }
 
 
@@ -5254,11 +5286,32 @@
 
       // أعلى المدارس (Top 20) — النسخة المكررة بتعرض تبويب "معاد فتحها" الافتراضي بس، من غير تبويبات تفاعلية،
       // للحفاظ على البساطة في صفحة المؤشرات (التبويبات الكاملة بالتفصيل تفضل في تاب البلاغات المستقل)
+      // أعلى المدارس (معاد فتحها): جدول في التاب الأصلي، وشارت أفقي في لوحة المؤشرات (نفس البيانات، عرض مختلف)
+      const topSchoolsList = (stats.topSchools && stats.topSchools.reopened) || [];
       const topTable = el('cmpTopSchoolsTable');
       if (topTable) {
         const tbody = topTable.querySelector('tbody');
-        const list = (stats.topSchools && stats.topSchools.reopened) || [];
-        tbody.innerHTML = list.length === 0 ? `<tr><td colspan="2" style="text-align:center; padding:20px;">لا توجد بيانات.</td></tr>` : list.map(r => `<tr><td style="font-weight:700;">${esc(r.school)}</td><td>${r.count.toLocaleString('en-US')}</td></tr>`).join('');
+        tbody.innerHTML = topSchoolsList.length === 0 ? `<tr><td colspan="2" style="text-align:center; padding:20px;">لا توجد بيانات.</td></tr>` : topSchoolsList.map(r => `<tr><td style="font-weight:700;">${esc(r.school)}</td><td>${r.count.toLocaleString('en-US')}</td></tr>`).join('');
+      }
+      const topSchoolsChartEl = document.getElementById('anCmpTopSchoolsChart');
+      if (topSchoolsChartEl && typeof Chart !== 'undefined') {
+        const top10 = topSchoolsList.slice(0, 10).reverse(); // معكوسة عشان الأعلى يبان فوق في الشارت الأفقي
+        getOrCreateChart('anTopSchoolsBar', topSchoolsChartEl, {
+          type: 'bar',
+          data: { labels: top10.map(r => r.school), datasets: [{ data: top10.map(r => r.count), backgroundColor: '#ef4444', borderRadius: 6 }] },
+          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true }, y: { ticks: { font: { family: 'Tajawal', size: 10 } } } } }
+        });
+      }
+
+      // أعلى المدن بلاغات — شارت أعمدة رأسية (شكل مختلف عن شارت المدارس الأفقي) من نفس بيانات stats.byCity
+      const topCitiesChartEl = document.getElementById('anCmpTopCitiesChart');
+      if (topCitiesChartEl && typeof Chart !== 'undefined') {
+        const topCities = Object.entries(stats.byCity || {}).filter(([name]) => name && name !== 'غير محدد').sort((a, b) => b[1] - a[1]).slice(0, 10);
+        getOrCreateChart('anTopCitiesBar', topCitiesChartEl, {
+          type: 'bar',
+          data: { labels: topCities.map(([name]) => name), datasets: [{ data: topCities.map(([, v]) => v), backgroundColor: '#eebb43', borderRadius: 6 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { family: 'Tajawal', size: 10 } } }, y: { beginAtZero: true } } }
+        });
       }
 
       // الأقسام دي عمداً بتفضل بس في التاب المستقل (مش متكررة في صفحة المؤشرات) بناءً على طلب صريح
