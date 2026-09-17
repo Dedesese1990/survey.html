@@ -494,6 +494,12 @@
           <div class="sidebar-item hidden" id="tabSchools" onclick="showTab('schools')" title="إدارة المدارس والبيانات">
             <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-5h4v5"/></svg><span class="sb-label">إدارة المدارس والبيانات</span>
           </div>
+          <div class="sidebar-item hidden" id="tabSchoolRecord" onclick="showTab('schoolRecord')" title="سجل المدارس التراكمي">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h7"/></svg><span class="sb-label">سجل المدارس التراكمي</span>
+          </div>
+          <div class="sidebar-item hidden" id="tabBaselineSurvey" onclick="showTab('baselineSurvey')" title="بناء القاعدة الأساسية">
+            <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="16" width="7" height="5"/><rect x="9" y="10" width="7" height="11"/><rect x="15" y="4" width="6" height="17"/></svg><span class="sb-label">بناء القاعدة الأساسية</span>
+          </div>
           <div class="sidebar-item" id="tabComplaints" onclick="showTab('complaints')" title="البلاغات">
             <svg class="sb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 16.5H2.5L12 3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="sb-label">البلاغات</span>
           </div>
@@ -1161,6 +1167,15 @@
         <!-- ================= 4. Schools Tab ================= -->
         <section id="secSchools" class="hidden">
           
+          <div class="card" id="schoolsAdminGuideCard" style="border-right:6px solid var(--tbc-gold); background:#fffdf5;">
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.05rem; font-weight:900; margin-bottom:10px;">🗺️ من أين أحدّث كل شيء؟ (3 أماكن بس)</h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px; font-size:0.85rem; font-weight:700;">
+              <div style="background:#fff; border:1px solid var(--border-subtle); border-radius:10px; padding:12px;"><div style="color:var(--tbc-petrol-dark); font-weight:900; margin-bottom:4px;">🏫 المدارس + المشرفين + المدراء</div><div style="color:var(--text-muted); font-weight:600;">استيراد <b>قالب المدارس</b> (الصندوق الأصفر تحت). ده المصدر الوحيد للتحديث الجماعي: بيضيف المدارس ويُنشئ/يحدّث حسابات المشرفين والمدراء وإدارات المكاتب الفرعية كلها مرة واحدة.</div></div>
+              <div style="background:#fff; border:1px solid var(--border-subtle); border-radius:10px; padding:12px;"><div style="color:var(--tbc-petrol-dark); font-weight:900; margin-bottom:4px;">👤 تعديل حساب واحد</div><div style="color:var(--text-muted); font-weight:600;">تاب <b>"إدارة الهيكل والمستخدمين"</b> — للاستثناءات بس: تعديل بيانات شخص، إيقاف/تفعيل حساب، إعادة تعيين كلمة مرور، أو إنشاء حساب فرد (زي مشرف حصر أساسي).</div></div>
+              <div style="background:#fff; border:1px solid var(--border-subtle); border-radius:10px; padding:12px;"><div style="color:var(--tbc-petrol-dark); font-weight:900; margin-bottom:4px;">🚨 البلاغات اليومية</div><div style="color:var(--text-muted); font-weight:600;">تاب <b>"البلاغات"</b> → زرار <b>"التحديث اليومي"</b> واحد بس: اختر ملف "كل البلاغات" وهو يعمل كل الخطوات لوحده (مسح، رفع، تنظيف، ربط، تحديث).</div></div>
+            </div>
+          </div>
+
           <div class="card" id="schoolsAdminView1" style="border-right: 6px solid var(--tbc-petrol); padding:24px 30px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
               <div>
@@ -1247,12 +1262,58 @@
           <div class="card hidden" id="schoolsInspectorView">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.25rem; font-weight:900; margin-bottom:8px;">🏫 المدارس المسندة في عهدتك</h4>
             <p style="font-size:0.95rem; font-weight:600; color:var(--text-muted); margin-bottom:20px;">يمكنك تحديث بيانات التواصل الخاصة بالمدارس في حال فتحت الإدارة الصلاحية.</p>
+            <div id="inspectorSchoolsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px;"></div>
+          </div>
+        </section>
+
+        <!-- ================= 5.4 سجل المدارس التراكمي ================= -->
+        <section id="secSchoolRecord" class="hidden">
+          <div class="card" style="padding:24px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+            <div>
+              <h2 style="color:var(--tbc-petrol-dark); font-size:1.4rem; font-weight:900;">📚 سجل المدارس التراكمي</h2>
+              <p style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">آخر إجابة معروفة عن كل مدرسة، من كل تقارير الحصر السابقة — بحث بموضوع بدل ما تحتاج نموذج جديد كل مرة</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <label for="schoolRecordSearch" style="font-weight:800; color:var(--tbc-petrol-dark); font-size:0.95rem;">🔍 دوّر على موضوع (مثال: مظلات، تكييف، سياج...)</label>
+            <input type="text" id="schoolRecordSearch" placeholder="اكتب كلمة من الموضوع..." style="margin-top:10px;" oninput="onSchoolRecordSearchInput()">
+            <div id="schoolRecordQuestionsList" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;"></div>
+          </div>
+
+          <div class="card hidden" id="schoolRecordResultsCard">
+            <div class="chart-card-header-row">
+              <div class="chart-card-title" id="schoolRecordResultsTitle">النتائج</div>
+              <button class="btn btn-outline" style="width:auto; font-size:0.85rem; padding:8px 16px;" onclick="exportSchoolRecordResults()">📤 تصدير Excel</button>
+            </div>
+            <input type="text" id="schoolRecordResultsFilter" placeholder="فلترة داخل النتائج (مثال: تالف)..." style="margin-bottom:14px;" oninput="renderSchoolRecordResultsTable()">
             <div class="table-responsive">
-              <table class="data-table" id="inspectorSchoolsTable">
-                <thead><tr><th>الرقم الوزاري</th><th>اسم المدرسة</th><th>المكتب</th><th>رقم جوال التواصل</th><th>اسم المدير</th><th>إجراء</th></tr></thead>
+              <table class="data-table" id="schoolRecordResultsTable">
+                <thead><tr><th>المدرسة</th><th>الفرع</th><th>آخر إجابة</th><th>التاريخ</th><th>عملية الحصر</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
+          </div>
+        </section>
+
+        <!-- ================= 5.4.5 بناء القاعدة الأساسية (دور مؤقت) ================= -->
+        <section id="secBaselineSurvey" class="hidden">
+          <div class="card" style="padding:24px 30px;">
+            <h2 style="color:var(--tbc-petrol-dark); font-size:1.4rem; font-weight:900;">🧱 بناء القاعدة الأساسية</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">اختر مدرسة عشان تأكّد على آخر إجابة معروفة عن كل سؤال، أو تجاوب على الأسئلة الجديدة اللي مالهاش إجابة قديمة أصلاً.</p>
+            <p id="baselineScopeNote" style="font-size:0.82rem; color:var(--tbc-petrol); font-weight:800; margin-top:6px;"></p>
+          </div>
+
+          <!-- شاشة 1: اختيار المدرسة -->
+          <div class="card" id="baselineSchoolPickerCard">
+            <input type="text" id="baselineSchoolSearch" placeholder="🔍 دوّر باسم المدرسة أو الرقم الوزاري..." style="margin-bottom:16px;" oninput="renderBaselineSchoolPicker()">
+            <div id="baselineSchoolList" style="display:flex; flex-direction:column; gap:8px; max-height:65vh; overflow-y:auto;"></div>
+          </div>
+
+          <!-- شاشة 2: العمل على مدرسة مختارة (تأكيد + أسئلة جديدة) — هتُبنى في الخطوة الجاية -->
+          <div class="card hidden" id="baselineWorkCard">
+            <button class="btn btn-outline" style="width:auto; padding:8px 16px; font-size:0.85rem; margin-bottom:14px;" onclick="exitBaselineWork()">→ رجوع لقائمة المدارس</button>
+            <div id="baselineWorkContent"></div>
           </div>
         </section>
 
@@ -1280,17 +1341,25 @@
           </div>
 
           <div class="bulk-import-box card hidden" id="complaintsImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
-            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد بلاغات الدعم الموحد (عبر Excel)</h4>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">القالب مطابق لملف "كل البلاغات". يمكن رفعه يومياً — البيانات تُحدَّث وتتراكم تلقائياً (كل بلاغ برقمه الفريد يُحدَّث لو موجود، ويُضاف لو جديد، من غير حذف القديم). كل بلاغ يُربط تلقائياً بالمدرسة والمشرف والفرع حسب الرقم الوزاري.</p>
-            <div class="action-buttons-mobile" style="display:flex; gap:16px; flex-wrap:wrap;">
-              <label for="complaintsExcelInput" class="btn btn-petrol" style="flex:1; padding:16px; font-size:1.05rem; cursor:pointer; text-align:center;">📤 رفع ملف البلاغات</label>
-              <input type="file" id="complaintsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsExcelUpload(event)">
-              <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:16px; font-size:0.95rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
-              <button class="btn btn-outline hidden" id="complaintsDedupeBtn" style="padding:16px; font-size:0.95rem;" onclick="dedupeAllComplaints()">🧹 تنظيف التكرارات</button>
-              <button class="btn btn-outline hidden" id="complaintsClearCacheBtn" style="padding:16px; font-size:0.95rem;" onclick="clearStatsCache()">🔄 مسح الكاش</button>
-              <button class="btn btn-outline hidden" id="complaintsRelinkBtn" style="padding:16px; font-size:0.95rem;" onclick="relinkComplaints()" title="أعد الربط بعد أي تغيير في تصنيف المدارس أو الفروع">🔗 إعادة ربط البلاغات بالمدارس</button>
-              <button class="btn btn-outline hidden" id="complaintsDiagBtn" style="padding:16px; font-size:0.95rem;" onclick="diagComplaintsBranches()">🧪 تشخيص الفروع</button>
-            </div>
+            <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 التحديث اليومي لبلاغات الدعم الموحد</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">زرار واحد بيعمل كل شيء بالترتيب الصح: يستبدل البلاغات الحالية بملف "كل البلاغات" الجديد، ينظّف التكرارات، يعيد ربط كل بلاغ بمدرسته ومشرفه وفرعه، ويحدّث الإحصائيات — بتأكيد واحد في الأول ورسالة واحدة في الآخر. مفيش أي خطوة يدوية بعده.</p>
+            <label for="complaintsDailyInput" class="btn btn-petrol" style="display:block; padding:18px; font-size:1.1rem; cursor:pointer; text-align:center;">📥 اختر ملف "كل البلاغات" وابدأ التحديث اليومي</label>
+            <input type="file" id="complaintsDailyInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsDailyUpdate(event)">
+
+            <details style="margin-top:16px;">
+              <summary style="cursor:pointer; font-size:0.85rem; font-weight:800; color:var(--text-muted); padding:6px 0;">⚙️ أدوات متقدمة (لا تحتاجها في الاستخدام اليومي) ▾</summary>
+              <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:8px 0 10px;">أدوات للحالات الخاصة بس: إضافة ملف <b>فوق</b> الموجود بدون مسح، أو معالجة مشكلة بعينها. التحديث اليومي فوق بيعمل كل ده تلقائياً.</p>
+              <div class="action-buttons-mobile" style="display:flex; gap:10px; flex-wrap:wrap;">
+                <label for="complaintsExcelInput" class="btn btn-outline" style="flex:1; padding:12px; font-size:0.85rem; cursor:pointer; text-align:center;">📤 رفع ملف فوق الموجود (بدون مسح)</label>
+                <input type="file" id="complaintsExcelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleComplaintsExcelUpload(event)">
+                <button class="btn btn-outline hidden" id="complaintsClearAllBtn" style="padding:12px; font-size:0.85rem; color:#b91c1c; border-color:#fecaca;" onclick="clearAllComplaints()">🗑️ مسح كل البلاغات نهائياً</button>
+                <button class="btn btn-outline hidden" id="complaintsDedupeBtn" style="padding:12px; font-size:0.85rem;" onclick="dedupeAllComplaints()">🧹 تنظيف التكرارات</button>
+                <button class="btn btn-outline hidden" id="complaintsClearCacheBtn" style="padding:12px; font-size:0.85rem;" onclick="clearStatsCache()">🔄 مسح الكاش</button>
+                <button class="btn btn-outline hidden" id="complaintsRelinkBtn" style="padding:12px; font-size:0.85rem;" onclick="relinkComplaints()" title="أعد الربط بعد أي تغيير في تصنيف المدارس أو الفروع">🔗 إعادة ربط البلاغات بالمدارس</button>
+                <button class="btn btn-outline hidden" id="complaintsDiagBtn" style="padding:12px; font-size:0.85rem;" onclick="diagComplaintsBranches()">🧪 تشخيص الفروع</button>
+                <button class="btn btn-outline hidden" id="complaintsUnlinkedBtn" style="padding:12px; font-size:0.85rem;" onclick="exportUnlinkedComplaints()">📋 تصدير المدارس غير المرتبطة</button>
+              </div>
+            </details>
             <div id="complaintsImportProgress" class="hidden" style="margin-top:16px;">
               <div style="background:#f1f5f9; border-radius:8px; height:14px; overflow:hidden;"><div id="complaintsImportProgressBar" style="background:var(--tbc-petrol); height:100%; width:0%; transition:width 0.3s;"></div></div>
               <div id="complaintsImportProgressText" style="font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-top:8px; text-align:center;"></div>
@@ -1454,6 +1523,8 @@
 
         <!-- ================= 5. Users Tab ================= -->
         <section id="secUsers" class="hidden">
+          <details id="usersBulkImportAdvanced" style="margin-bottom:16px;">
+            <summary style="cursor:pointer; font-size:0.85rem; font-weight:800; color:var(--text-muted); padding:8px 0;">⚙️ استيراد مستخدمين بالإكسل (متقدم — الطريقة الأساسية هي قالب المدارس من تاب "إدارة المدارس") ▾</summary>
           <div class="bulk-import-box card" id="usersBulkImportBox" style="border-top: 5px solid var(--tbc-gold); background:#fefce8; border-color:var(--tbc-gold);">
             <h4 style="color:var(--tbc-petrol-dark); font-size:1.2rem; font-weight:900; margin-bottom:6px;">📥 استيراد / تصدير جماعي للمستخدمين (عبر Excel)</h4>
             <p style="font-size:0.9rem; font-weight:600; color:var(--text-muted); margin-bottom:12px;">مناسب عند وجود عدد كبير من المشرفين. الاستيراد لا يحذف أي مستخدم موجود: يتم تحديث من يطابق الرمز الوظيفي، وإضافة من هو جديد فقط.</p>
@@ -1470,6 +1541,7 @@
             </div>
             <small style="color:var(--text-muted); display:block; margin-top:10px; font-weight:600;">💡 عمود "المسمى الوظيفي" يقبل: إدارة التخطيط والتحكم / إدارة المكتب الفرعي / مدير إشراف / مشرف ميداني. عمود "المكتب الفرعي" يقبل: الكل / الشرقية / الأحساء / حفر الباطن. عمود "كلمة المرور" اختياري للمستخدمين الجدد — إن تُرك فارغاً أو لم تحقق شرط القوة (8 خانات + حرف كبير وصغير ورقم ورمز) يتم توليد كلمة قوية تلقائياً بدلاً منها. الأعمدة الإضافية (الجنسية، الشهادة، سنوات الخبرة، تاريخ الالتحاق، المدير المباشر) اختيارية بالكامل.</small>
           </div>
+          </details>
 
           <div class="card hidden" id="pendingRegistrationsCard" style="border-right:6px solid #f59e0b; background:#fffbeb;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
@@ -1548,7 +1620,14 @@
                 </div>
                 <small style="color:var(--text-muted); font-weight:600;">💡 يجب ألا تقل عن 8 خانات، وتحتوي حرف كبير وحرف صغير ورقم ورمز — مثال: <code>Tbc@2026</code></small>
               </div>
-              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_SUPPORT">الدعم الفني</option><option value="ROLE_COMPLAINTS_SUPERVISOR">مشرف البلاغات</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option></select></div>
+              <div class="form-group"><label>المسمى الوظيفي *</label><select id="usrRole" onchange="onUsrRoleChange()"><option value="ROLE_PLANNING">إدارة التخطيط والتحكم</option><option value="ROLE_EASTERN_SECTOR">إدارة القطاع الشرقي</option><option value="ROLE_SUPPORT">الدعم الفني</option><option value="ROLE_COMPLAINTS_SUPERVISOR">مشرف البلاغات</option><option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option><option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option><option value="ROLE_INSPECTOR" selected>مشرف ميداني</option><option value="ROLE_BASELINE_INSPECTOR">🧱 مشرف حصر أساسي (دور مؤقت)</option></select></div>
+              <div class="form-group hidden" id="usrBaselineSchoolsGroup">
+                <label>المدارس المخصّصة له (اختياري)</label>
+                <p style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin:-4px 0 8px;">اتركها فاضية عشان يشوف كل المدارس بلا استثناء، أو حدّد مدرسة/مجموعة مدارس معيّنة يقتصر عليها.</p>
+                <input type="text" id="usrBaselineSchoolSearch" placeholder="🔍 دوّر باسم مدرسة عشان تضيفها..." oninput="renderUsrBaselineSchoolSuggestions()">
+                <div id="usrBaselineSchoolSuggestions" style="margin-top:6px; max-height:150px; overflow-y:auto;"></div>
+                <div id="usrBaselineSchoolChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;"></div>
+              </div>
               <div class="form-group"><label>المكتب الفرعي</label><select id="usrBranch"><option value="الكل">الكل</option><option value="المكتب الفرعي بالشرقية">الشرقية</option><option value="المكتب الفرعي بالأحساء">الأحساء</option><option value="المكتب الفرعي بحفر الباطن">حفر الباطن (تابع للشرقية)</option></select></div>
             </div>
 
@@ -1708,6 +1787,7 @@
           <option value="ROLE_BRANCH_OFFICE">إدارة المكتب الفرعي</option>
           <option value="ROLE_SUPERVISION_LEAD">مدير إشراف</option>
           <option value="ROLE_INSPECTOR">مشرف ميداني</option>
+          <option value="ROLE_BASELINE_INSPECTOR">🧱 مشرف حصر أساسي (دور مؤقت)</option>
         </select>
       </div>
       <div class="form-group hidden" id="broadcastUserGroup">
@@ -2090,7 +2170,7 @@
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHCAOOPdEvmLbQa2TpfTihmyP6t-Pwnrl5qZEZwXav32HekCvX0Xw9GWfITq1hWkuD/exec';
     const SECURE_API_TOKEN = "TBC_PROD_SECURE_2026"; 
-    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_SUPPORT: "الدعم الفني", ROLE_COMPLAINTS_SUPERVISOR: "مشرف البلاغات", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني" };
+    const ROLE_LABELS = { ROLE_PLANNING: "إدارة التخطيط والتحكم", ROLE_EASTERN_SECTOR: "إدارة القطاع الشرقي", ROLE_SUPPORT: "الدعم الفني", ROLE_COMPLAINTS_SUPERVISOR: "مشرف البلاغات", ROLE_BRANCH_OFFICE: "إدارة المكتب الفرعي", ROLE_SUPERVISION_LEAD: "مدير إشراف", ROLE_INSPECTOR: "مشرف ميداني", ROLE_BASELINE_INSPECTOR: "مشرف حصر أساسي" };
     const ROLE_LABELS_REVERSE = Object.fromEntries(Object.entries(ROLE_LABELS).map(([k, v]) => [v, k]));
     // "إدارة المكتب الفرعي" دور رابع أعلى تنظيمياً من "مدير إشراف"، لكن بنفس صلاحياته بالضبط —
     // فيُعامَل بنفس المنطق في كل مكان عبر هذا الثابت المشترك بدل تكرار الشرط يدوياً.
@@ -2102,20 +2182,26 @@
     // "مشرف البلاغات": يدير البلاغات والمدارس، ممنوع من نماذج/سجلات/إحصائيات عمليات الحصر الميداني
     const COMPLAINTS_SUPERVISOR_ROLE = 'ROLE_COMPLAINTS_SUPERVISOR';
     const SCHOOLS_MANAGE_ROLES = FULL_ADMIN_ROLES.concat([COMPLAINTS_SUPERVISOR_ROLE]);
-    const ALL_ROLES_ORDERED = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR', 'ROLE_SUPPORT', 'ROLE_COMPLAINTS_SUPERVISOR', 'ROLE_BRANCH_OFFICE', 'ROLE_SUPERVISION_LEAD', 'ROLE_INSPECTOR'];
+    const ALL_ROLES_ORDERED = ['ROLE_PLANNING', 'ROLE_EASTERN_SECTOR', 'ROLE_SUPPORT', 'ROLE_COMPLAINTS_SUPERVISOR', 'ROLE_BRANCH_OFFICE', 'ROLE_SUPERVISION_LEAD', 'ROLE_INSPECTOR', 'ROLE_BASELINE_INSPECTOR'];
+    const BASELINE_INSPECTOR_ROLE = 'ROLE_BASELINE_INSPECTOR'; // دور مؤقت لفريق بناء القاعدة الأساسية — يرى كل المدارس، ومحصور على تاب "بناء القاعدة الأساسية" بس
 
     // مصفوفة صلاحيات مركزية — مصدر واحد للحقيقة: تتحكم فعلياً في إظهار التابات (عبر loginSuccess)، وتُستخدم لتوليد
     // تقرير مقارنة الصلاحيات تلقائياً. أي تعديل هنا ينعكس في الاثنين معاً في نفس اللحظة.
+    // الأدوار العادية (بلا الدور المؤقت لفريق بناء القاعدة الأساسية) — تُستخدم بدل 'ALL' الحرفية في أي تاب
+    // عادي، عشان الدور الجديد ميشوفش غير تابه المخصص "بناء القاعدة الأساسية" ومفيش حاجة تانية بالغلط.
+    const NORMAL_ROLES = ALL_ROLES_ORDERED.filter(r => r !== BASELINE_INSPECTOR_ROLE);
     const PERMISSIONS_MATRIX = {
       tabs: [
-        { key: 'analytics', label: '📈 لوحة المؤشرات والتحليلات', roles: 'ALL' },
-        { key: 'surveys', label: '📋 نماذج وعمليات الحصر', roles: ALL_ROLES_ORDERED.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
-        { key: 'records', label: '📑 السجلات والاعتمادات', roles: ALL_ROLES_ORDERED.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
-        { key: 'schools', label: '🏫 إدارة المدارس والبيانات', roles: 'ALL', note: 'المحتوى يختلف حسب الدور: إدارة كاملة للأدوار الإدارية ومشرف البلاغات، وعرض المدارس المُسندة فقط لبقية الأدوار' },
-        { key: 'complaints', label: '🚨 البلاغات', roles: 'ALL', note: 'الاستيراد واعتماد الطلبات للأدوار الإدارية ومشرف البلاغات فقط؛ الباقي يرى إحصائيات نطاقه' },
+        { key: 'analytics', label: '📈 لوحة المؤشرات والتحليلات', roles: NORMAL_ROLES },
+        { key: 'surveys', label: '📋 نماذج وعمليات الحصر', roles: NORMAL_ROLES.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
+        { key: 'records', label: '📑 السجلات والاعتمادات', roles: NORMAL_ROLES.filter(r => r !== COMPLAINTS_SUPERVISOR_ROLE) },
+        { key: 'schools', label: '🏫 إدارة المدارس والبيانات', roles: NORMAL_ROLES, note: 'المحتوى يختلف حسب الدور: إدارة كاملة للأدوار الإدارية ومشرف البلاغات، وعرض المدارس المُسندة فقط لبقية الأدوار' },
+        { key: 'schoolRecord', label: '📚 سجل المدارس التراكمي', roles: FULL_ADMIN_ROLES.concat(MANAGER_ROLES), note: 'ذاكرة دائمة لآخر إجابة معروفة عن كل مدرسة، من كل تقارير الحصر السابقة — بحث عن أي موضوع (مظلات، تكييف...) وعرض حالته الحالية في كل مدرسة دفعة واحدة' },
+        { key: 'baselineSurvey', label: '🧱 بناء القاعدة الأساسية', roles: FULL_ADMIN_ROLES.concat([BASELINE_INSPECTOR_ROLE]), note: 'تاب مؤقت مخصص لفريق بناء القاعدة الأساسية: يعرض كل مدرسة بكل الأسئلة السابقة، مع تأكيد سريع للإجابات القديمة أو تحديثها، وشاشة منفصلة للأسئلة الجديدة كلياً' },
+        { key: 'complaints', label: '🚨 البلاغات', roles: NORMAL_ROLES, note: 'الاستيراد واعتماد الطلبات للأدوار الإدارية ومشرف البلاغات فقط؛ الباقي يرى إحصائيات نطاقه' },
         { key: 'users', label: '👥 إدارة الهيكل والمستخدمين', roles: FULL_ADMIN_ROLES },
         { key: 'auditLog', label: '🧾 سجل التدقيق', roles: FULL_ADMIN_ROLES },
-        { key: 'support', label: '🎫 الدعم الفني (تذاكر)', roles: 'ALL', note: 'كل مستخدم يرى تذاكره فقط، إلا الأدوار الإدارية والدعم الفني اللي تشوف كل التذاكر' },
+        { key: 'support', label: '🎫 الدعم الفني (تذاكر)', roles: NORMAL_ROLES, note: 'كل مستخدم يرى تذاكره فقط، إلا الأدوار الإدارية والدعم الفني اللي تشوف كل التذاكر' },
       ],
       actions: [
         { key: 'approveReports', label: 'اعتماد / رفض التقارير', roles: MANAGER_ROLES.concat(FULL_ADMIN_ROLES) },
@@ -2243,7 +2329,7 @@
       APPROVE_SCHOOL_REQUEST: "جاري اعتماد المدرسة...", REJECT_SCHOOL_REQUEST: "جاري رفض الطلب...",
       SET_DELEGATION: "جاري حفظ التفويض...", IMPORT_COMPLAINTS_BATCH: "جاري استيراد البيانات...",
       DELETE_RESPONSES_BY_SURVEY: "جاري حذف البيانات...", UPDATE_SCHOOL_CONTACT: "جاري حفظ بيانات التواصل...",
-      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", RESTORE_BACKUP: "جاري استرجاع النسخة الاحتياطية...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", RELINK_COMPLAINTS: "جاري إعادة ربط البلاغات بالمدارس...", DIAG_COMPLAINTS_BRANCHES: "جاري التشخيص...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
+      CLEAR_ALL_COMPLAINTS: "جاري مسح بيانات البلاغات...", RESTORE_BACKUP: "جاري استرجاع النسخة الاحتياطية...", ASK_AI: "المساعد بيفكّر...", CLEAR_STATS_CACHE: "جاري مسح الكاش...", RELINK_COMPLAINTS: "جاري إعادة ربط البلاغات بالمدارس...", DIAG_COMPLAINTS_BRANCHES: "جاري التشخيص...", EXPORT_UNLINKED_COMPLAINTS: "جاري تجهيز قائمة المدارس غير المرتبطة...", DEDUPE_COMPLAINTS: "جاري فحص ودمج التكرارات...",
       EXPORT_COMPLAINTS_TABLE: "جاري تجهيز ملف التصدير...",
       REQUEST_NEW_SCHOOL: "جاري إرسال طلب المدرسة...", FORGOT_PASSWORD: "جاري إرسال رمز التحقق...",
       RESOLVE_SCHOOL_GOVERNORATES: "جاري تحديد محافظات المدارس...",
@@ -2605,12 +2691,12 @@
 
     function showTab(tab) {
       if(!currentUser) return;
-      ['analytics', 'surveys', 'records', 'schools', 'complaints', 'users', 'auditLog', 'support'].forEach(t => {
+      ['analytics', 'surveys', 'records', 'schools', 'schoolRecord', 'baselineSurvey', 'complaints', 'users', 'auditLog', 'support'].forEach(t => {
         const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)); if (btn) btn.classList.toggle('active', tab === t);
         const sec = document.getElementById('sec' + t.charAt(0).toUpperCase() + t.slice(1)); if (sec) sec.classList.toggle('hidden', tab !== t);
       });
       ['secNewSurvey', 'secFillSurvey'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-      if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); } else if(tab === 'support') { renderTicketsList(); }
+      if(tab === 'analytics') { refreshAnalyticsDashboard(false); } else if(tab === 'surveys') { renderSurveysList(); } else if(tab === 'records') { populateFilterDropdowns(); updateKPIs(); renderRecords(); } else if(tab === 'schools') { renderSchoolsManagement(); } else if(tab === 'schoolRecord') { renderSchoolRecordTab(); } else if(tab === 'baselineSurvey') { renderBaselineSurveyTab(); } else if(tab === 'complaints') { initComplaintsTab(); } else if(tab === 'users') { renderUsersManagement(); } else if(tab === 'auditLog') { renderAuditLog(); } else if(tab === 'support') { renderTicketsList(); }
     }
 
     // التنقّل بين قسمي لوحة المؤشرات (المدارس+البلاغات مدمجين معاً / عمليات الحصر)
@@ -2624,6 +2710,129 @@
       if (key === 'operations') {
         setTimeout(() => { try { fieldMapInstance?.invalidateSize(); sCurveChartInstance?.resize(); } catch (e) {} }, 50);
       }
+    }
+
+    // ================= بناء القاعدة الأساسية (تاب مؤقت لفريق مخصص) =================
+    // الخطوة 1 بس دلوقتي: اختيار المدرسة. منطق التأكيد/الأسئلة الجديدة هيُبنى في خطوة تالية.
+    function renderBaselineSurveyTab() {
+      document.getElementById('baselineWorkCard').classList.add('hidden');
+      document.getElementById('baselineSchoolPickerCard').classList.remove('hidden');
+      document.getElementById('baselineSchoolSearch').value = '';
+      const note = document.getElementById('baselineScopeNote');
+      if (currentUser.baselineSchools && currentUser.baselineSchools.length > 0) {
+        note.innerText = `📌 أنت مخصَّص لـ ${currentUser.baselineSchools.length} مدرسة بس.`;
+      } else if (currentUser.role === BASELINE_INSPECTOR_ROLE || FULL_ADMIN_ROLES.includes(currentUser.role)) {
+        note.innerText = '';
+      } else {
+        note.innerText = '📌 بتشوف مدارسك المُسندة إليك بس.';
+      }
+      renderBaselineSchoolPicker();
+    }
+
+    function renderBaselineSchoolPicker() {
+      const kw = document.getElementById('baselineSchoolSearch').value.trim();
+      const list = document.getElementById('baselineSchoolList');
+      // هذا الدور يرى كل مدرسة بلا استثناء (بلا تقييد فرع أو إسناد) — العرض هنا من كامل schoolDataWrapper.list
+      // مصدر قائمة المدارس بيختلف حسب طبيعة الدور: فريق بناء القاعدة الأساسية (أو أي حد عنده تخصيص مدارس
+      // محدد) يشوف نطاقه هو، لكن لو التاب ده اتفعّل يوماً لمشرف ميداني عادي (عبر محرّر الصلاحيات، بدون أي
+      // كود إضافي)، لازم يشوف مدارسه المُسندة له بس زي باقي شاشاته — مش كل قاعدة بيانات المدارس.
+      let scopedList;
+      if (currentUser.baselineSchools && currentUser.baselineSchools.length > 0) {
+        scopedList = (schoolDataWrapper.list || []).filter(s => currentUser.baselineSchools.includes(s.name));
+      } else if (currentUser.role === BASELINE_INSPECTOR_ROLE || FULL_ADMIN_ROLES.includes(currentUser.role)) {
+        scopedList = schoolDataWrapper.list || []; // الدور المؤقت أو الإدارة: كل المدارس بلا استثناء
+      } else {
+        scopedList = (schoolDataWrapper.list || []).filter(s => schoolBelongsToUser(s, currentUser)); // أي دور تاني: مدارسه المُسندة بس
+      }
+      const all = scopedList.filter(s => !kw || s.name.includes(kw) || (s.minNo && String(s.minNo).includes(kw)));
+      if (all.length === 0) { list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">لا توجد نتائج.</div>`; return; }
+      list.innerHTML = all.slice(0, 100).map(s => `
+        <div onclick="openBaselineSchool('${esc(s.name).replace(/'/g, "\\'")}')" style="cursor:pointer; padding:12px 16px; background:#fff; border:1px solid var(--border-subtle); border-radius:10px; display:flex; justify-content:space-between; align-items:center; transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.boxShadow='none'">
+          <span style="font-weight:800; color:var(--tbc-petrol-dark);">${esc(s.name)}</span>
+          <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">🔢 ${esc(s.minNo) || '-'} &nbsp; 🏢 ${esc(s.branch) || '-'}</span>
+        </div>`).join('') + (all.length > 100 ? `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:0.8rem;">اعرض بحث أدق — فيه ${all.length} نتيجة، بنعرض أول 100 بس.</div>` : '');
+    }
+
+    let baselineActiveSchool = null;
+    function openBaselineSchool(schoolName) {
+      baselineActiveSchool = schoolName;
+      document.getElementById('baselineSchoolPickerCard').classList.add('hidden');
+      document.getElementById('baselineWorkCard').classList.remove('hidden');
+      document.getElementById('baselineWorkContent').innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">جاري تجهيز شاشة "${esc(schoolName)}"... (الخطوة الجاية في التنفيذ)</div>`;
+    }
+    function exitBaselineWork() { baselineActiveSchool = null; renderBaselineSurveyTab(); }
+
+    // ================= سجل المدارس التراكمي: ذاكرة دائمة من كل التقارير المحمّلة (بدون أي تعديل في الباك
+    // إند — البيانات محمّلة أصلاً في المتصفح ضمن نطاق دور المستخدم الحالي). آخر تقرير (بالتاريخ) يفوز بالقيمة
+    // لكل سؤال، بغض النظر عن أي نموذج/عملية حصر جاء منه. التقارير المرفوضة مُستبعدة عمداً (بياناتها غير موثوقة).
+    let schoolRecordSelectedQuestion = null;
+    let schoolRecordCurrentRows = [];
+
+    function renderSchoolRecordTab() {
+      document.getElementById('schoolRecordSearch').value = '';
+      document.getElementById('schoolRecordQuestionsList').innerHTML = '';
+      document.getElementById('schoolRecordResultsCard').classList.add('hidden');
+      schoolRecordSelectedQuestion = null;
+    }
+
+    function onSchoolRecordSearchInput() {
+      const kw = document.getElementById('schoolRecordSearch').value.trim();
+      const list = document.getElementById('schoolRecordQuestionsList');
+      if (kw.length < 2) { list.innerHTML = ''; return; }
+      const counts = {};
+      (responses || []).forEach(r => {
+        if (r.status === 'rejected') return;
+        Object.keys(r.answers || {}).forEach(q => {
+          if (q.includes(kw)) counts[q] = (counts[q] || 0) + 1;
+        });
+      });
+      const matches = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 20);
+      list.innerHTML = matches.length === 0
+        ? `<div style="font-size:0.85rem; color:var(--text-muted); padding:8px;">لا توجد أسئلة سابقة تحتوي على "${esc(kw)}".</div>`
+        : matches.map(([q, count]) => `<div onclick="selectSchoolRecordQuestion('${esc(q).replace(/'/g, "\\'")}')" style="cursor:pointer; padding:10px 14px; background:var(--surface-2, #f8fafc); border:1px solid var(--border-subtle); border-radius:10px; display:flex; justify-content:space-between; align-items:center; transition:background-color 0.15s;" onmouseover="this.style.backgroundColor='var(--tbc-petrol-light)'" onmouseout="this.style.backgroundColor=''"><span style="font-weight:700; font-size:0.88rem;">${esc(q)}</span><span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; flex-shrink:0; margin-right:10px;">أُجيب عليه ${count} مرة</span></div>`).join('');
+    }
+
+    function selectSchoolRecordQuestion(questionText) {
+      schoolRecordSelectedQuestion = questionText;
+      // لكل مدرسة: نلاقي آخر تقرير (بالتاريخ) فيه إجابة فعلية على السؤال ده، ونتجاهل التقارير المرفوضة
+      const latestByschool = {}; // schoolName -> {value, date, surveyTitle}
+      (responses || []).forEach(r => {
+        if (r.status === 'rejected') return;
+        const val = r.answers ? r.answers[questionText] : undefined;
+        if (val === undefined || val === null || val === '') return;
+        if (isImageValue(val)) return; // إجابات الصور مالهاش معنى في جدول نصي
+        const existing = latestByschool[r.school];
+        if (!existing || new Date(r.date) > new Date(existing.date)) {
+          latestByschool[r.school] = { value: val, date: r.date, surveyTitle: r.surveyTitle || '-' };
+        }
+      });
+      schoolRecordCurrentRows = Object.entries(latestByschool).map(([school, info]) => {
+        const schObj = (schoolDataWrapper.list || []).find(s => s.name === school);
+        return { school, branch: (schObj && schObj.branch) || '-', value: info.value, date: info.date, surveyTitle: info.surveyTitle };
+      }).sort((a, b) => a.school.localeCompare(b.school, 'ar'));
+      document.getElementById('schoolRecordResultsTitle').innerText = `النتائج: "${questionText}" (${schoolRecordCurrentRows.length} مدرسة)`;
+      document.getElementById('schoolRecordResultsFilter').value = '';
+      document.getElementById('schoolRecordResultsCard').classList.remove('hidden');
+      renderSchoolRecordResultsTable();
+    }
+
+    function renderSchoolRecordResultsTable() {
+      const filterKw = document.getElementById('schoolRecordResultsFilter').value.trim();
+      const tbody = document.querySelector('#schoolRecordResultsTable tbody'); if (!tbody) return;
+      const filtered = filterKw ? schoolRecordCurrentRows.filter(r => String(r.value).includes(filterKw) || r.school.includes(filterKw)) : schoolRecordCurrentRows;
+      tbody.innerHTML = filtered.length === 0
+        ? `<tr><td colspan="5" style="text-align:center; padding:20px;">لا توجد نتائج مطابقة.</td></tr>`
+        : filtered.map(r => `<tr><td style="font-weight:800;">${esc(r.school)}</td><td>${esc(r.branch)}</td><td>${esc(r.value)}</td><td>${esc(r.date)}</td><td>${esc(r.surveyTitle)}</td></tr>`).join('');
+    }
+
+    function exportSchoolRecordResults() {
+      if (typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      const filterKw = document.getElementById('schoolRecordResultsFilter').value.trim();
+      const filtered = filterKw ? schoolRecordCurrentRows.filter(r => String(r.value).includes(filterKw) || r.school.includes(filterKw)) : schoolRecordCurrentRows;
+      if (filtered.length === 0) return showAlert('لا توجد بيانات لتصديرها.');
+      const rows = [["المدرسة", "الفرع", "آخر إجابة", "التاريخ", "عملية الحصر"]].concat(filtered.map(r => [r.school, r.branch, r.value, r.date, r.surveyTitle]));
+      const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "سجل المدارس");
+      XLSX.writeFile(wb, `سجل_المدارس_${(schoolRecordSelectedQuestion || 'نتائج').slice(0, 20)}_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
     // ================= Logic: Surveys Management (النماذج) =================
@@ -3389,6 +3598,7 @@
         cmpDetailAllBranchesStats = s; // نحتفظ بنسخة "الكل" عشان فلتر الفروع الخاص بالتحليلات التفصيلية يرجعلها بسرعة
         resetCmpDetailBranchCache();
         buildCmpDetailBranchPills();
+        setTimeout(prefetchCmpDetailBranches, 1500); // بعد ما الصفحة تستقر، مش في نفس لحظة التحميل
       } catch (e) {}
     }
 
@@ -3464,18 +3674,46 @@
     // إعادة ربط) وإلا الضغط على نفس الفرع يرجّع النتيجة القديمة المحفوظة في المتصفح بدل ما يسأل الخادم.
     function resetCmpDetailBranchCache() { for (const k in cmpDetailBranchCache) delete cmpDetailBranchCache[k]; cmpDetailSelectedBranch = 'ALL'; }
 
+    const cmpDetailBranchInFlight = {}; // طلبات الفروع الجارية — عشان الضغطة والتجهيز الخلفي ما يطلبوش نفس الفرع مرتين
+    let cmpDetailLoadingKey = null;
     function buildCmpDetailBranchPills() {
       const row = document.getElementById('cmpDetailBranchPills'); if (!row) return;
-      row.innerHTML = CMP_DETAIL_BRANCHES.map(b => `<button class="btn ${cmpDetailSelectedBranch === b.key ? 'btn-petrol' : 'btn-outline'}" style="font-size:0.8rem; padding:8px 14px; width:auto;" onclick="selectCmpDetailBranch('${b.key}')">${esc(b.label)}</button>`).join('');
+      row.innerHTML = CMP_DETAIL_BRANCHES.map(b => {
+        const active = cmpDetailSelectedBranch === b.key;
+        const loading = cmpDetailLoadingKey === b.key;
+        const ready = b.key === 'ALL' || !!cmpDetailBranchCache[b.key];
+        return `<button class="btn ${active ? 'btn-petrol' : 'btn-outline'}" style="font-size:0.8rem; padding:8px 14px; width:auto; ${loading ? 'opacity:0.7;' : ''}" onclick="selectCmpDetailBranch('${b.key}')" title="${ready ? 'جاهز' : 'سيتم التحميل عند الاختيار'}">${loading ? '⏳ ' : ''}${esc(b.label)}${(!ready && !loading) ? ' <span style="opacity:0.55; font-size:0.7rem;">·</span>' : ''}</button>`;
+      }).join('') + (cmpDetailLoadingKey ? `<span style="align-self:center; font-size:0.78rem; font-weight:700; color:var(--text-muted);">جاري تحميل بيانات الفرع من الخادم... (أول مرة فقط، بعدها فوري)</span>` : '');
+    }
+    // يجيب إحصائيات فرع واحد (أو يرجّع الطلب الجاري لنفس الفرع لو موجود) ويحفظها في الكاش
+    function fetchCmpDetailBranch(key) {
+      if (cmpDetailBranchCache[key]) return Promise.resolve(cmpDetailBranchCache[key]);
+      if (cmpDetailBranchInFlight[key]) return cmpDetailBranchInFlight[key];
+      cmpDetailBranchInFlight[key] = apiCall('PULL_COMPLAINTS_STATS', { branches: [key] }, { timeoutMs: 90000 })
+        .then(res => { if (res.status === 'success') { cmpDetailBranchCache[key] = res.stats; return res.stats; } throw new Error(res.message || 'تعذر تحميل بيانات الفرع'); })
+        .finally(() => { delete cmpDetailBranchInFlight[key]; buildCmpDetailBranchPills(); });
+      return cmpDetailBranchInFlight[key];
+    }
+    // تجهيز الفروع الثلاثة في الخلفية بعد ما الصفحة تفتح، واحد ورا التاني (مش كلهم مرة واحدة عشان ما نضغطش
+    // على الخادم) — فأول ضغطة على أي فرع بتبقى فورية بدل ثواني انتظار. الخادم نفسه بيحتفظ بالنتيجة 30 دقيقة
+    // ومشتركة بين كل الإدارة، فالتكلفة بتتدفع مرة واحدة للجميع.
+    async function prefetchCmpDetailBranches() {
+      for (const b of CMP_DETAIL_BRANCHES) {
+        if (b.key === 'ALL' || cmpDetailBranchCache[b.key]) continue;
+        try { await fetchCmpDetailBranch(b.key); } catch (e) {}
+        await new Promise(r => setTimeout(r, 400));
+      }
     }
     async function selectCmpDetailBranch(key) {
       cmpDetailSelectedBranch = key;
-      buildCmpDetailBranchPills();
-      if (key === 'ALL') { updateComplaintsSummaryCards(cmpDetailAllBranchesStats); renderComplaintsDashboard(cmpDetailAllBranchesStats, 'an'); return; }
-      if (cmpDetailBranchCache[key]) { updateComplaintsSummaryCards(cmpDetailBranchCache[key]); renderComplaintsDashboard(cmpDetailBranchCache[key], 'an'); return; }
-      const res = await apiCall('PULL_COMPLAINTS_STATS', { branches: [key] }, { timeoutMs: 60000 });
-      if (res.status === 'success') { cmpDetailBranchCache[key] = res.stats; updateComplaintsSummaryCards(res.stats); renderComplaintsDashboard(res.stats, 'an'); }
-      else showAlert(esc(res.message));
+      if (key === 'ALL') { buildCmpDetailBranchPills(); updateComplaintsSummaryCards(cmpDetailAllBranchesStats); renderComplaintsDashboard(cmpDetailAllBranchesStats, 'an'); return; }
+      if (cmpDetailBranchCache[key]) { buildCmpDetailBranchPills(); updateComplaintsSummaryCards(cmpDetailBranchCache[key]); renderComplaintsDashboard(cmpDetailBranchCache[key], 'an'); return; }
+      cmpDetailLoadingKey = key; buildCmpDetailBranchPills();
+      try {
+        const stats = await fetchCmpDetailBranch(key);
+        if (cmpDetailSelectedBranch === key) { updateComplaintsSummaryCards(stats); renderComplaintsDashboard(stats, 'an'); }
+      } catch (e) { showAlert(esc(e.message)); }
+      finally { cmpDetailLoadingKey = null; buildCmpDetailBranchPills(); }
     }
 
     // ============ أداء المشرفين: نصاب المدارس والأكثر بلاغات، مع فلتر تقاطع (دوس على مشرف في أي قائمة
@@ -4311,6 +4549,14 @@
       records: { purpose: 'مراجعة كل التقارير المرفوعة، اعتمادها أو رفضها حسب صلاحيتك، وتصديرها.', steps: (role) => getRecordsGuideSteps(role) },
       schools: { purpose: 'قاعدة بيانات المدارس وربطها بالمشرفين المسؤولين عنها.',
         steps: (role) => { const s = getSchoolsGuideSteps(role); if (FULL_ADMIN_ROLES.includes(role)) s.push('زرار "🌍 تحديد محافظات المدارس تلقائياً": شغّله مرة (أو أكتر لو المدارس كتير) عشان قوائم "المدن الأعلى" في لوحة المؤشرات تشتغل.'); return s; } },
+      schoolRecord: { purpose: 'ذاكرة دائمة لآخر إجابة معروفة عن كل مدرسة، مجمّعة تلقائياً من كل تقارير الحصر (المعتمدة وقيد الاعتماد) بغض النظر عن أي نموذج جاءت منه أو تاريخه — بحيث لو حد طلب "حصر المظلات التالفة"، الإجابة تطلع فوراً من بيانات موجودة أصلاً بدل ما تحتاج نموذج جديد.',
+        steps: () => [
+          'اكتب كلمة عن الموضوع اللي عايز تدوّر عليه (زي "مظلات" أو "تكييف") في خانة البحث — هيطلعلك كل الأسئلة اللي اتسألت قبل كده وفيها نفس الكلمة، مهما كان اختلاف الصياغة.',
+          'دوس على أي سؤال من النتائج — هيطلعلك جدول بكل مدرسة وآخر إجابة معروفة عن السؤال ده، وتاريخها، وعملية الحصر اللي جات منها.',
+          'رتّب أو ابحث جوه الجدول نفسه (زي "تالف") عشان تلاقي المدارس اللي محتاجة متابعة بسرعة.',
+          '"📤 تصدير Excel" بيصدّر نفس الجدول اللي قدامك.',
+          'ملحوظة: البيانات دي بتتحسب من التقارير المحمّلة في متصفحك، فبتشمل كل التقارير اللي في نطاقك أنت.'
+        ] },
       complaints: { purpose: 'إحصائيات بلاغات الدعم الموحد (الصيانة والدعم) ضمن نطاقك، مع جدول تفصيلي قابل للبحث والتصدير.',
         steps: (role) => {
           const s = [
@@ -4889,7 +5135,7 @@
       if(!currentUser) return;
       const isPlanning = SCHOOLS_MANAGE_ROLES.includes(currentUser.role);
       
-      const views = ['schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4', 'pendingSchoolRequestsCard'];
+      const views = ['schoolsAdminGuideCard', 'schoolsAdminView1', 'schoolsAdminView2', 'schoolsAdminView3', 'schoolsAdminView4', 'pendingSchoolRequestsCard'];
       views.forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !isPlanning); });
       document.getElementById('schoolsGovernorateResolveCard')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       document.getElementById('schoolsBackupRestoreCard')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
@@ -4911,15 +5157,24 @@
           });
         }
       } else {
-        const tbody = document.querySelector('#inspectorSchoolsTable tbody'); if(tbody) { tbody.innerHTML = '';
+        const grid = document.getElementById('inspectorSchoolsGrid'); if (grid) { grid.innerHTML = '';
           const mySchools = (schoolDataWrapper.list || []).filter(s => schoolBelongsToUser(s, currentUser));
-          if(mySchools.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">لا توجد مدارس مسندة إليك حالياً.</td></tr>`; } 
+          if (mySchools.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--text-muted);">لا توجد مدارس مسندة إليك حالياً.</div>`; }
           else {
-            mySchools.forEach((sch) => {
-              let updateBtn = `<span style="color:var(--text-muted); font-size:0.85rem;">مغلق من الإدارة</span>`;
-              if(schoolDataWrapper.settings?.allowInspectorEdit) { updateBtn = `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;" onclick="openUpdateSchoolModal('${esc(sch.name)}')">✏️ تحديث البيانات</button>`; }
-              tbody.innerHTML += `<tr><td><code style="font-size:0.95rem; font-weight:bold;">${esc(sch.minNo) || '-'}</code></td><td style="font-weight:900; color:var(--tbc-petrol-dark);">${esc(sch.name)}</td><td>${esc(sch.branch)}</td><td style="direction:ltr;">${esc(sch.phone) || '-'}</td><td>${esc(sch.manager) || '-'}</td><td>${updateBtn}</td></tr>`;
-            });
+            grid.innerHTML = mySchools.map(sch => {
+              const mapsLink = (sch.lat != null && sch.lng != null) ? `<a href="https://www.google.com/maps?q=${sch.lat},${sch.lng}" target="_blank" style="color:var(--tbc-petrol); font-weight:800; font-size:0.82rem; text-decoration:underline;">📍 فتح في خرائط جوجل ↗</a>` : `<span style="font-size:0.8rem; color:var(--text-muted);">لا توجد إحداثيات مسجّلة</span>`;
+              const editBtn = schoolDataWrapper.settings?.allowInspectorEdit ? `<button class="btn btn-outline" style="width:100%; padding:8px; font-size:0.82rem; margin-top:10px;" onclick="openUpdateSchoolModal('${esc(sch.name)}')">✏️ تحديث بيانات التواصل</button>` : `<div style="font-size:0.78rem; color:var(--text-muted); margin-top:10px; text-align:center;">التعديل مغلق من الإدارة حالياً</div>`;
+              return `<div style="background:#fff; border:1px solid var(--border-subtle); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px;">
+                <div style="font-weight:900; color:var(--tbc-petrol-dark); font-size:1rem;">${esc(sch.name)}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">🔢 ${esc(sch.minNo) || '-'} &nbsp;|&nbsp; 🏢 ${esc(sch.branch) || '-'}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${sch.gender ? '🚻 ' + esc(sch.gender) : ''} ${sch.eduAdmin ? '· 🎓 ' + esc(sch.eduAdmin) : ''}</div>
+                <div style="border-top:1px solid var(--border-subtle); margin:6px 0;"></div>
+                <div style="font-size:0.82rem;"><b>📞 التواصل:</b> ${esc(sch.phone) || '-'}</div>
+                <div style="font-size:0.82rem;"><b>👤 المدير:</b> ${esc(sch.manager) || '-'}</div>
+                ${mapsLink}
+                ${editBtn}
+              </div>`;
+            }).join('');
           }
         }
       }
@@ -5562,6 +5817,7 @@
       document.getElementById('complaintsClearCacheBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
       document.getElementById('complaintsRelinkBtn')?.classList.toggle('hidden', !isPlanning);
       document.getElementById('complaintsDiagBtn')?.classList.toggle('hidden', !FULL_ADMIN_ROLES.includes(currentUser.role));
+      document.getElementById('complaintsUnlinkedBtn')?.classList.toggle('hidden', !(isPlanning || currentUser.role === COMPLAINTS_SUPERVISOR_ROLE));
       const inspSel = document.getElementById('cmpFilterInspector');
       const scopedInspectors = usersList.filter(u => u.role === 'ROLE_INSPECTOR' && (isPlanning || currentUser.branch === 'الكل' || u.branch === currentUser.branch));
       inspSel.innerHTML = '<option value="">-- كل المشرفين --</option>' + scopedInspectors.map(u => `<option value="${esc(u.username)}">${esc(u.fullName)}</option>`).join('');
@@ -5786,10 +6042,27 @@
     // يمنع بدء رفع جديد وهو رفع تاني لسه شغال — الحماية دي مهمة جداً هنا تحديداً: لو رفعان اشتغلوا في نفس
     // الوقت بالغلط (دبل كليك، أو تاب تاني)، كل واحد كان بيقدر يمسح أو يجاوز بيانات التاني بسبب تداخل الدفعات.
     let complaintsImportInProgress = false;
+    // التحديث اليومي بزرار واحد: مسح القديم → استيراد الملف الجديد → تنظيف التكرارات → إعادة ربط بالمدارس → تحديث
+    // الإحصائيات. بيستخدم نفس دالة الاستيراد الموجودة (handleComplaintsExcelUpload) بوضع خاص يتخطى تأكيدها ويكمل
+    // بإعادة الربط بعدها — عشان منطق الاستيراد نفسه (التقسيم لدفعات، إعادة المحاولة...) يفضل في مكان واحد.
+    let complaintsDailyMode = null;
+    async function handleComplaintsDailyUpdate(event) {
+      if (complaintsImportInProgress) { event.target.value = ''; return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.'); }
+      const file = event.target.files[0]; if (!file) return;
+      const ok = await showConfirm(`📥 التحديث اليومي\n\nهيتم استبدال كل البلاغات الحالية بمحتوى الملف "${file.name}"، ثم تنظيف التكرارات، ثم إعادة ربط كل بلاغ بمدرسته، ثم تحديث الإحصائيات — كل ده تلقائياً وقد يستغرق عدة دقائق.\n\nمتابعة؟`);
+      if (!ok) { event.target.value = ''; return; }
+      const clr = await apiCall('CLEAR_ALL_COMPLAINTS', {});
+      if (clr.status !== 'success') { event.target.value = ''; return showAlert('تعذر مسح البيانات القديمة، لم يبدأ التحديث: ' + esc(clr.message)); }
+      logAudit('COMPLAINTS_CLEAR', 'مسح البلاغات ضمن التحديث اليومي');
+      complaintsDailyMode = { relinkAfter: true };
+      await handleComplaintsExcelUpload({ target: { files: [file], value: '' } });
+      event.target.value = '';
+    }
+
     async function handleComplaintsExcelUpload(event) {
       if (complaintsImportInProgress) { event.target.value = ''; return showAlert('في عملية استيراد شغالة بالفعل، يرجى الانتظار لحد ما تخلص.'); }
       const file = event.target.files[0]; if (!file) return;
-      const proceed = await showConfirm('استيراد ملف بلاغات كبير قد يستغرق عدة دقائق حسب عدد الصفوف. البلاغات الموجودة بنفس الرقم (DisplayID) تُحدَّث، والجديدة تُضاف — لا يُحذف شيء. هل تريد المتابعة؟');
+      const proceed = complaintsDailyMode ? true : await showConfirm('استيراد ملف بلاغات كبير قد يستغرق عدة دقائق حسب عدد الصفوف. البلاغات الموجودة بنفس الرقم (DisplayID) تُحدَّث، والجديدة تُضاف — لا يُحذف شيء. هل تريد المتابعة؟');
       if (!proceed) { event.target.value = ''; return; }
       complaintsImportInProgress = true;
 
@@ -5878,10 +6151,19 @@
           const dedupeRes = await apiCall('DEDUPE_COMPLAINTS', {}, { timeoutMs: 120000 });
           progressBox.classList.add('hidden');
           const dedupeNote = dedupeRes.status === 'success' ? `\n🧹 ${dedupeRes.message}` : '\n⚠️ لم يكتمل فحص التكرارات — يمكنك تشغيل زرار "تنظيف التكرارات" يدوياً.';
-          showAlert(`✓ اكتمل استيراد الملف (${allRows.length} صف).\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)${dedupeNote}`);
+          let relinkNote = '';
+          if (complaintsDailyMode && complaintsDailyMode.relinkAfter) {
+            progressText.innerText = 'جاري إعادة ربط البلاغات بالمدارس...'; progressBox.classList.remove('hidden');
+            const rl = await apiCall('RELINK_COMPLAINTS', {}, { timeoutMs: 180000 });
+            progressBox.classList.add('hidden');
+            relinkNote = rl.status === 'success' ? `\n🔗 ${rl.message}` : '\n⚠️ لم تكتمل إعادة الربط — شغّلها يدوياً من الأدوات المتقدمة.';
+          }
+          showAlert(`✓ ${complaintsDailyMode ? 'اكتمل التحديث اليومي' : 'اكتمل استيراد الملف'} (${allRows.length} صف).\n🔗 مرتبط بمدرسة: ${totalLinked} (${Math.round((totalLinked / allRows.length) * 100)}%)${dedupeNote}${relinkNote}`);
+          resetCmpDetailBranchCache();
           loadComplaintsStats();
+          loadAnalyticsComplaintsSummary();
         } catch (err) { progressBox.classList.add('hidden'); showAlert('حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب المعتمد. (' + err.message + ')'); }
-        finally { complaintsImportInProgress = false; }
+        finally { complaintsImportInProgress = false; complaintsDailyMode = null; }
         event.target.value = '';
       };
       reader.readAsArrayBuffer(file);
@@ -5908,6 +6190,17 @@
 
     // إعادة ربط كل البلاغات بالمدارس ببياناتها الحالية — لازم بعد أي تغيير في تصنيف المدارس/الفروع، لأن الفرع
     // والمشرف بيتخزّنوا داخل كل بلاغ لحظة استيراده ومش بيتحدّثوا تلقائياً لما بيانات المدرسة تتغيّر.
+    async function exportUnlinkedComplaints() {
+      if (typeof XLSX === 'undefined') return showAlert('الرجاء الانتظار قليلاً حتى يتم تحميل المكتبات المساعدة.');
+      const res = await apiCall('EXPORT_UNLINKED_COMPLAINTS', {}, { timeoutMs: 120000 });
+      if (res.status !== 'success') return showAlert(esc(res.message));
+      if (res.items.length === 0) return showAlert('✓ كل البلاغات مرتبطة بمدارس — لا يوجد شيء لتصديره.');
+      const rows = [["اسم المدرسة كما ورد في ملف البلاغات", "الرقم الوزاري كما ورد", "عدد البلاغات"]].concat(res.items.map(it => [it.name, it.minNo, it.count]));
+      const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "غير مرتبطة");
+      XLSX.writeFile(wb, `مدارس_بلاغات_غير_مرتبطة_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      showAlert(`تم تصدير ${res.items.length} مدرسة مختلفة غير مرتبطة (إجمالي ${res.totalUnlinked.toLocaleString('en-US')} بلاغ). راجع القيم الأعلى تكراراً أولاً — غالباً هي أسماء/أرقام مكتوبة بشكل مختلف عن ملف المدارس.`);
+    }
+
     async function diagComplaintsBranches() {
       const res = await apiCall('DIAG_COMPLAINTS_BRANCHES', {}, { timeoutMs: 120000 });
       if (res.status === 'success') showAlert(res.report); else showAlert(esc(res.message));
@@ -6122,6 +6415,33 @@
       if (res.status === 'success') { logAudit('USER_DELETE', `حذف حساب نهائياً: ${fullName} (${username})`); usersList = res.users; renderUsersManagement(); showAlert('✓ تم حذف الحساب.'); } else showAlert(esc(res.message));
     }
 
+    let usrBaselineSchoolsSelected = []; // أسماء المدارس المخصّصة للحساب اللي بيتعمله/تعديله دلوقتي في النموذج
+
+    function onUsrRoleChange() {
+      document.getElementById('usrBaselineSchoolsGroup').classList.toggle('hidden', document.getElementById('usrRole').value !== 'ROLE_BASELINE_INSPECTOR');
+    }
+
+    function renderUsrBaselineSchoolSuggestions() {
+      const kw = document.getElementById('usrBaselineSchoolSearch').value.trim();
+      const box = document.getElementById('usrBaselineSchoolSuggestions');
+      if (kw.length < 2) { box.innerHTML = ''; return; }
+      const matches = (schoolDataWrapper.list || []).filter(s => !usrBaselineSchoolsSelected.includes(s.name) && (s.name.includes(kw) || (s.minNo && String(s.minNo).includes(kw)))).slice(0, 15);
+      box.innerHTML = matches.map(s => `<div onclick="addUsrBaselineSchool('${esc(s.name).replace(/'/g, "\\'")}')" style="cursor:pointer; padding:8px 12px; font-size:0.85rem; border-radius:8px;" onmouseover="this.style.backgroundColor='var(--tbc-petrol-light)'" onmouseout="this.style.backgroundColor=''">➕ ${esc(s.name)} <span style="color:var(--text-muted); font-size:0.78rem;">(${esc(s.minNo) || '-'})</span></div>`).join('');
+    }
+    function addUsrBaselineSchool(name) {
+      if (!usrBaselineSchoolsSelected.includes(name)) usrBaselineSchoolsSelected.push(name);
+      document.getElementById('usrBaselineSchoolSearch').value = '';
+      document.getElementById('usrBaselineSchoolSuggestions').innerHTML = '';
+      renderUsrBaselineSchoolChips();
+    }
+    function removeUsrBaselineSchool(name) {
+      usrBaselineSchoolsSelected = usrBaselineSchoolsSelected.filter(n => n !== name);
+      renderUsrBaselineSchoolChips();
+    }
+    function renderUsrBaselineSchoolChips() {
+      document.getElementById('usrBaselineSchoolChips').innerHTML = usrBaselineSchoolsSelected.map(name => `<span style="display:inline-flex; align-items:center; gap:6px; background:var(--tbc-petrol-light); color:var(--tbc-petrol-dark); padding:6px 10px; border-radius:99px; font-size:0.8rem; font-weight:700;">${esc(name)} <span onclick="removeUsrBaselineSchool('${esc(name).replace(/'/g, "\\'")}')" style="cursor:pointer; font-weight:900;">✕</span></span>`).join('');
+    }
+
     async function saveUserRecord() {
       const fullName = document.getElementById('usrFullName').value.trim(); const username = document.getElementById('usrUsername').value.trim(); const email = document.getElementById('usrEmail').value.trim(); const phone = document.getElementById('usrPhone').value.trim(); const password = document.getElementById('usrPassword').value.trim(); const role = document.getElementById('usrRole').value; const branch = document.getElementById('usrBranch').value;
       const nationality = document.getElementById('usrNationality').value.trim(); const certificate = document.getElementById('usrCertificate').value.trim(); const yearsExperience = document.getElementById('usrYearsExperience').value; const joinDate = document.getElementById('usrJoinDate').value; const directManager = document.getElementById('usrDirectManager').value.trim();
@@ -6130,13 +6450,14 @@
       if (sendEmailNotification && !email) return showAlert("فعّلت خيار إرسال الإشعار بالبريد، لكن لم تُدخل بريداً إلكترونياً — يرجى إدخال البريد أو إلغاء تفعيل الخيار.");
       const permissions = { allowEdit: document.getElementById('permAllowEdit').checked, requireGps: document.getElementById('permRequireGps').checked, requirePhoto: document.getElementById('permRequirePhoto').checked, allowPdf: document.getElementById('permAllowPdf').checked };
       const hrFields = { nationality, certificate, yearsExperience, joinDate, directManager };
-      
+      const baselineSchools = role === 'ROLE_BASELINE_INSPECTOR' ? usrBaselineSchoolsSelected : [];
+
       let res;
       if (editingUserIndex >= 0) { 
-        res = await apiCall("UPDATE_USER", { username, fullName, email, phone, role, branch, permissions, ...hrFields });
+        res = await apiCall("UPDATE_USER", { username, fullName, email, phone, role, branch, permissions, baselineSchools, ...hrFields });
       } else { 
         if(!password || !isPasswordStrong(password)) return showAlert(PASSWORD_HINT_TEXT);
-        res = await apiCall("CREATE_USER", { username, fullName, email, phone, password, role, branch, permissions, sendEmailNotification, ...hrFields });
+        res = await apiCall("CREATE_USER", { username, fullName, email, phone, password, role, branch, permissions, baselineSchools, sendEmailNotification, ...hrFields });
       }
 
       if(res.status === "success") {
@@ -6160,6 +6481,9 @@
       const p = u.permissions || { allowEdit:true, requireGps:true, requirePhoto:true, allowPdf:true };
       document.getElementById('permAllowEdit').checked = p.allowEdit !== false; document.getElementById('permRequireGps').checked = p.requireGps !== false; document.getElementById('permRequirePhoto').checked = p.requirePhoto !== false; document.getElementById('permAllowPdf').checked = p.allowPdf !== false;
       document.getElementById('userFormTitle').innerText = `⚙️ جاري تعديل الحساب: ${esc(u.fullName)}`; document.getElementById('usrUsername').disabled = true;
+      usrBaselineSchoolsSelected = Array.isArray(u.baselineSchools) ? u.baselineSchools.slice() : [];
+      document.getElementById('usrBaselineSchoolSearch').value = ''; document.getElementById('usrBaselineSchoolSuggestions').innerHTML = ''; renderUsrBaselineSchoolChips();
+      onUsrRoleChange();
       document.getElementById('userFormModal').classList.remove('hidden');
     }
 
@@ -6167,6 +6491,8 @@
       editingUserIndex = -1; document.getElementById('usrFullName').value = ''; document.getElementById('usrUsername').value = ''; document.getElementById('usrUsername').disabled = false; delete document.getElementById('usrUsername').dataset.manuallyEdited; document.getElementById('usrEmail').value = ''; document.getElementById('usrPhone').value = ''; document.getElementById('usrPasswordGroup').style.display = 'block'; document.getElementById('usrSendEmailNotifyGroup').style.display = 'block'; document.getElementById('usrSendEmailNotify').checked = false; document.getElementById('usrPassword').value = ''; document.getElementById('usrRole').value = 'ROLE_INSPECTOR'; document.getElementById('usrBranch').value = 'المكتب الفرعي بالشرقية';
       document.getElementById('usrNationality').value = ''; document.getElementById('usrCertificate').value = ''; document.getElementById('usrYearsExperience').value = ''; document.getElementById('usrJoinDate').value = ''; document.getElementById('usrDirectManager').value = '';
       document.getElementById('permAllowEdit').checked = true; document.getElementById('permRequireGps').checked = true; document.getElementById('permRequirePhoto').checked = true; document.getElementById('permAllowPdf').checked = true; document.getElementById('userFormTitle').innerText = '➕ إضافة مستخدم جديد';
+      usrBaselineSchoolsSelected = []; document.getElementById('usrBaselineSchoolSearch').value = ''; document.getElementById('usrBaselineSchoolSuggestions').innerHTML = ''; renderUsrBaselineSchoolChips();
+      onUsrRoleChange();
     }
 
     let arpTargetUsername = '';
