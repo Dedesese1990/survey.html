@@ -2769,19 +2769,27 @@
       const btn = document.getElementById('saveSurveyBtn'); btn.disabled = true; btn.innerText = 'جاري الحفظ...';
       const surveyPayload = { id: editingSurveyId || ('SRV_' + Date.now()), title, dueDate, desc, questions: cleanQuestions, targetSchoolsCount: 15 };
       // SYNC_GENERAL_DATA يستبدل كامل محتوى شيت النماذج بما يُرسل، لذلك يجب دمج التعديل في القائمة كاملة قبل الإرسال
+      const previousSurveys = surveys.slice(); // نسخة للتراجع لو فشل الحفظ فعلياً في الخادم
       const mergedSurveys = surveys.slice();
       const mergeIdx = mergedSurveys.findIndex(s => String(s.id) === String(surveyPayload.id));
       if (mergeIdx > -1) mergedSurveys[mergeIdx] = surveyPayload; else mergedSurveys.push(surveyPayload);
-      const res = await syncGeneralData({ surveys: mergedSurveys });
+
+      // تحديث تفاؤلي فوري: نظهر النموذج في القائمة ونقفل النافذة على طول بدل ما نستنى رحلة الشبكة كاملة
+      // (قراءة + نسخة احتياطية + كتابة في الخادم) — لو فشل الحفظ فعلياً، نتراجع ونبلّغ المستخدم بوضوح.
+      surveys = mergedSurveys;
+      closeNewSurveyModal();
+      populateAnalyticsSurveyFilter();
       btn.disabled = false; btn.innerText = 'حفظ ونشر النموذج ✓';
 
+      const res = await syncGeneralData({ surveys: mergedSurveys });
       if (res.status === 'success') {
         logAudit('SURVEY_SAVE', `${editingSurveyId ? 'تعديل' : 'إنشاء'} نموذج حصر: ${title}`);
-        showAlert('✓ تم حفظ النموذج بنجاح!');
-        surveys = mergedSurveys;
-        closeNewSurveyModal();
+      } else {
+        surveys = previousSurveys; // تراجع: الحفظ فشل فعلياً في الخادم رغم إننا عرضناه مؤقتاً
+        renderSurveysList();
         populateAnalyticsSurveyFilter();
-      } else showAlert(esc(res.message || 'حدث خطأ أثناء الحفظ.'));
+        showAlert('⚠️ لم يتم حفظ النموذج في الخادم: ' + esc(res.message || 'خطأ غير معروف') + '\n\nيرجى المحاولة مرة أخرى.');
+      }
     }
 
     async function deleteSurvey(surveyId, title) {
