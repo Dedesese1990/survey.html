@@ -611,6 +611,7 @@
                         </div>
                         <div class="exec-complaints-pills">
                           <div class="exec-pill tone-neutral"><span class="exec-pill-label">إجمالي البلاغات</span><span class="exec-pill-value" id="acsTotal">0</span></div>
+                          <div class="exec-pill tone-neutral"><span class="exec-pill-label">⏱️ متوسط زمن الاستجابة الإجمالي</span><span class="exec-pill-value" id="acsAvgResponse" style="font-size:1.3rem;">-</span></div>
                           <div class="exec-pill-ratio tone-pending clickable" onclick="showTab('complaints')">
                             <div class="exec-pill-ratio-row"><span class="exec-pill-label">مفتوحة</span><span class="exec-pill-value"><span id="acsOpen">0</span><span class="exec-pill-pct" id="acsOpenPct">(0%)</span></span></div>
                             <div class="exec-pill-ratio-track"><div class="exec-pill-ratio-fill" id="acsOpenBar"></div></div>
@@ -3332,6 +3333,7 @@
     // المستخدم إشراك الكارتين دول في نفس الفلتر ده كمان، مش بس الـ12 شارت).
     function updateComplaintsSummaryCards(s) {
       animateCountUp(document.getElementById('acsTotal'), s.total);
+      const acsAvgRespEl = document.getElementById('acsAvgResponse'); if (acsAvgRespEl) acsAvgRespEl.innerText = formatDays(s.avgResponseDays);
       animateCountUp(document.getElementById('acsOpen'), s.openCount);
       animateCountUp(document.getElementById('acsClosed'), s.closedCount);
       animateCountUp(document.getElementById('acsReopened'), s.reopenedCount);
